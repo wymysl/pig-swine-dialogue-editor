@@ -389,8 +389,30 @@ def test_dialogue_choices_implemented():
         check(phrase in HTML, f'missing dialogue choices implementation: {phrase}')
 
 
+def test_quest_gated_dialogue_topics():
+    """NPCs should have a quest-aware 'Ask about the case' topic that changes based on current quest progress."""
+    required = [
+        # Core mechanism: function that returns contextual topics based on quest state
+        'function getContextualTopics',
+        # Quest-gated case topic label
+        'Ask about the case',
+        # Muraś gives law-binder hint before player collects it
+        'Find the Polish law binder',
+        # Rak gives evidence hint when nowakCase active
+        'lease agreement in the office',
+        # Wymysl gives strategy hint when nowakCase active
+        'Article 2 of Protocol 1',
+        # Mr. Pig gives financial pressure hint early
+        'Firm Liquidity is dangerously low',
+        # Generic fallback for case topic when no active quest
+        'all quiet on the legal front',
+    ]
+    for phrase in required:
+        check(phrase in HTML, f'missing quest-gated dialogue topics: {phrase}')
+
+
 if __name__ == '__main__':
-    tests = [test_new_campaign_cast_is_present, test_new_story_beats_are_present, test_new_quest_flags_exist, test_interaction_markers_are_implemented, test_docket_overlay_is_implemented, test_case_bag_overlay_is_implemented, test_mr_pig_opening_scene_is_implemented, test_court_argument_choice_is_implemented, test_court_result_screen_is_implemented, test_smooth_movement_is_implemented, test_save_load_system_is_implemented, test_quest_tracking_is_fixed, test_pixel_portraits_implemented, test_coffee_mini_game_is_implemented, test_sound_system_is_implemented, test_enhanced_npc_post_quest_dialogue, test_day_two_client_ms_nowak, test_nowak_court_puzzle_implemented, test_rak_nowak_evidence_hint, test_wymysl_nowak_strategy_hint, test_nowak_evidence_items_in_world, test_day_two_overlays_track_nowak_evidence, test_playtest_regressions_fixed, test_dialogue_choices_implemented]
+    tests = [test_new_campaign_cast_is_present, test_new_story_beats_are_present, test_new_quest_flags_exist, test_interaction_markers_are_implemented, test_docket_overlay_is_implemented, test_case_bag_overlay_is_implemented, test_mr_pig_opening_scene_is_implemented, test_court_argument_choice_is_implemented, test_court_result_screen_is_implemented, test_smooth_movement_is_implemented, test_save_load_system_is_implemented, test_quest_tracking_is_fixed, test_pixel_portraits_implemented, test_coffee_mini_game_is_implemented, test_sound_system_is_implemented, test_enhanced_npc_post_quest_dialogue, test_day_two_client_ms_nowak, test_nowak_court_puzzle_implemented, test_rak_nowak_evidence_hint, test_wymysl_nowak_strategy_hint, test_nowak_evidence_items_in_world, test_day_two_overlays_track_nowak_evidence, test_playtest_regressions_fixed, test_dialogue_choices_implemented, test_quest_gated_dialogue_topics]
     for test in tests:
         test()
     print(f'{len(tests)} story checks passed')

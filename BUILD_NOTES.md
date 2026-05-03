@@ -1,5 +1,38 @@
 
 
+## Build Note: 2026-05-03T12:00:00+00:00
+
+Changed:
+- Added quest-gated contextual dialogue topics (Milestone 3: Dialogue Choices enhancement, TDD RED → GREEN).
+- `getCaseTopic(npcId)`: returns a dynamic "Ask about the case" topic object based on current quest state (7 quest phases × NPC-specific lines for Pig, Muraś, Rak, Wymysl + generic fallback).
+- `getContextualTopics(npcId)`: composes base topics + quest case topic + [Close] into live topic list.
+- Updated `drawDialogTopics`, `selectDialogTopic`, and ArrowUp/Down keyboard handler to use `getContextualTopics` instead of static `dialogTopics`.
+- Each NPC now gives specific quest-stage advice: Rak points to evidence items, Wymysl names the legal basis (Article 2 of Protocol 1), Muraś gives the checklist, Mr. Pig adds financial pressure.
+- After both cases complete: fallback "all quiet on the legal front" line with toner joke.
+- New test: `test_quest_gated_dialogue_topics` — verifies `getContextualTopics`, "Ask about the case" label, and 6 unique phrases across quest phases.
+
+Verified:
+- `python3 test_story.py` → 26 checks passed.
+- `node --check /tmp/pig_inline.js` → 0 syntax errors.
+- Parens balanced: 1068/1068. Braces balanced: 464/464.
+
+Observed:
+- NPCs now feel like advisors, not just comedians. Rak, Wymysl, Muraś, and Mr. Pig all give quest-appropriate guidance when player asks "Ask about the case."
+- Ace Attorney–style feel: player can explicitly query experts about the active case rather than clicking through auto-cycling lines.
+- Design Bible compliance: satisfies Taste Standard #2 (feel clever — hints are specific, not vague) and #3 (world feels alive — NPCs respond to progress).
+- Browser verification gap remains (no Chrome binary).
+
+Curated/Cut:
+- Did not add more than one quest-aware topic per NPC (YAGNI — the case topic is enough for now).
+- Did not change the static Mr. Swine / printer / coffee topics — they remain the character-building layer; the case topic adds the quest-navigation layer.
+- Topic count per NPC is now 5 (3 static + 1 case + Close). The box height accommodates this well.
+
+Next best task:
+- Milestone 3 Task 1: Improved office map layout — clearer interior paths, desk clusters, named zones.
+- Or: Quest-gated topic for "Ask about Ms. Nowak" (Nowak herself has no self-referential topic yet).
+- Or: A "writing pass" on the full NPC dialogue for variety, rhythm, and running-joke density.
+
+
 ## Build Note: 2026-05-03T09:09:00+00:00
 
 Changed:
