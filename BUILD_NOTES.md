@@ -1,4 +1,5 @@
 
+
 ## Build Note: 2026-05-03T09:09:00+00:00
 
 Changed:
@@ -31,6 +32,40 @@ Next best task:
 - Add Ms. Nowak's post-quest dialogue with funny reactions (e.g., "Mr. Swine would be proud — if he were not skiing in Japan").
 - Or add Day Two map zone (court annex for eviction cases) to expand world.
 - Or enhance sound effects with evidence collection sound (paper rustle for documents, poster unroll sound).
+
+## Build Note: 2026-05-03T11:50:00+00:00
+
+Changed:
+- Added NPC dialogue topics system (Milestone 3: Dialogue Choices, TDD RED → GREEN).
+- `dialogTopics` object: 10 NPCs × 4 selectable questions each — "Ask about Mr. Swine", "Ask about the printer", "Ask about coffee", "[Close]".
+- Each topic has a character-specific funny response matching Design Bible humor rules (running jokes: Swine skiing, printer as villain, coffee as legal fuel).
+- `drawDialogTopics()`: renders topic panel with highlighted cursor row, NPC portrait, and response line above.
+- `selectDialogTopic()`: shows NPC response or closes dialogue on [Close].
+- `advanceDialog()` updated: after all NPC lines shown, opens topic panel (instead of closing immediately).
+- Keydown handler updated: ArrowUp/Down navigate topics; Space/Enter selects; all other keys consumed.
+- Movement blocked during topic selection.
+- New test: `test_dialogue_choices_implemented` — checks `dialogTopics`, `drawDialogTopics`, `selectDialogTopic`, `activeTopicIdx`, topic labels.
+
+Verified:
+- `python3 test_story.py` → 24 checks passed (new test passes, all previous pass).
+- `node --check /tmp/pig_inline.js` → 0 syntax errors.
+- Parens balanced: 1042/1042. Braces balanced: 438/438.
+
+Observed:
+- Dialogue topics make world feel alive: every NPC now has something to say about Mr. Swine, the printer, and coffee — three of the game's core running jokes.
+- Adds Ace Attorney flavor: player actively asks questions rather than passively advancing monologue.
+- Design Bible compliance: satisfies Taste Standard #1 (laugh), #2 (feel clever), #3 (world feels alive).
+- Browser verification gap remains (no Chrome binary in this environment).
+
+Curated/Cut:
+- Topics are uniform (same 3 labels per NPC) for consistency; future runs can differentiate per quest state.
+- Did not add quest-gated topics yet (e.g., "Ask about the Nowak case" only after nowakCase starts) — that's a good follow-up.
+- Did not add keyboard number shortcuts (1/2/3/4) for topics — Arrow navigation matches Pokémon feel better.
+
+Next best task:
+- Milestone 3 Task 1: Improved office map layout — clearer paths, richer interior zones.
+- Or: Quest-gated dialogue topics (NPC says different things about current case depending on progress).
+- Or: Dialogue topic for "Ask about current case" that gives quest-relevant hints.
 
 ## Build Note: 2026-05-03T10:19:55+00:00
 
