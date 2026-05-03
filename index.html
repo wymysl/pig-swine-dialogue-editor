@@ -1,0 +1,1315 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+<title>Dr. A. Kula and the Pig & Swine Crisis</title>
+<meta name="description" content="Pig & Swine: Aplikant in Warsaw - a legal RPG game" />
+<meta name="theme-color" content="#1b1f31" />
+<style>
+  :root {
+    --ink:#1b1f31; --paper:#f5ead2; --gold:#d7a84f; --red:#aa3d42; --green:#526f45;
+  }
+  html, body { margin:0; height:100%; background:#161827; font-family: system-ui, Segoe UI, sans-serif; color:var(--paper); overflow:hidden; }
+  #wrap { display:grid; place-items:center; height:100%; background: radial-gradient(circle at 50% 20%, #2a2f4a, #131522 65%); }
+  canvas { image-rendering: pixelated; border: 6px solid #0b0d16; box-shadow: 0 25px 70px #0009; background:#27334a; max-width: min(96vw, 1200px); max-height: 82vh; }
+  #panel { width:min(96vw, 1200px); display:flex; gap:14px; justify-content:space-between; align-items:center; margin-top:10px; color:#f8efd8; font-size:14px; }
+  kbd { background:#0b0d16; border:1px solid #59617f; border-radius:5px; padding:2px 7px; box-shadow: inset 0 -2px #0008; }
+  #hint { opacity:.88; }
+  a { color:#ffd76c; }
+
+  /* Touch Controls */
+  #touch-controls { display:none; position:fixed; bottom:20px; left:0; right:0; z-index:1000; pointer-events:none; }
+  #dpad { position:absolute; left:20px; bottom:0; width:150px; height:150px; }
+  #dpad button { position:absolute; width:50px; height:50px; background:rgba(11,13,22,.75); border:2px solid #d7a84f; color:#f5ead2; font-size:24px; border-radius:8px; pointer-events:auto; cursor:pointer; user-select:none; -webkit-user-select:none; }
+  #dpad .up { top:0; left:50px; }
+  #dpad .down { bottom:0; left:50px; }
+  #dpad .left { top:50px; left:0; }
+  #dpad .right { top:50px; right:0; }
+  #action-buttons { position:absolute; right:20px; bottom:0; display:flex; gap:10px; }
+  #action-buttons button { width:60px; height:60px; background:rgba(170,61,66,.75); border:2px solid #ffd76c; color:#f5ead2; font-size:14px; font-weight:bold; border-radius:10px; pointer-events:auto; cursor:pointer; user-select:none; -webkit-user-select:none; }
+  #action-buttons button.qbtn { background:rgba(215,168,79,.75); border-color:#1b1f31; }
+  #action-buttons button.ibtn { background:rgba(82,111,69,.75); border-color:#d7a84f; }
+  @media (hover:none) and (pointer:coarse) {
+    #touch-controls { display:block; }
+    #panel { display:none; }
+  }
+  </style>
+</head>
+<body>
+<div id="wrap">
+  <div>
+    <canvas id="game" width="960" height="640"></canvas>
+    <div id="panel">
+      <div><strong>Dr. A. Kula</strong> — Pig & Swine, Polish law, courts, and human rights</div>
+      <div id="hint"><kbd>Arrows/WASD</kbd> move · <kbd>Space/Enter</kbd> talk/interact · <kbd>Q</kbd> docket · <kbd>I</kbd> case bag · <kbd>M</kbd> map</div>
+    </div>
+  </div>
+</div>
+<div id="touch-controls">
+  <div id="dpad">
+    <button class="up" data-key="ArrowUp">↑</button>
+    <button class="down" data-key="ArrowDown">↓</button>
+    <button class="left" data-key="ArrowLeft">←</button>
+    <button class="right" data-key="ArrowRight">→</button>
+  </div>
+  <div id="action-buttons">
+    <button class="spacebtn" data-key=" ">Space</button>
+    <button class="qbtn" data-key="q">Q</button>
+    <button class="ibtn" data-key="i">I</button>
+  </div>
+</div>
+<script>
+(() => {
+const canvas = document.getElementById('game');
+const ctx = canvas.getContext('2d');
+ctx.imageSmoothingEnabled = false;
+
+const W = canvas.width, H = canvas.height;
+const TILE_W = 64, TILE_H = 32;
+const ORIGIN_X = W/2, ORIGIN_Y = 92;
+const MAP_W = 24, MAP_H = 24;
+const keys = {};
+let showMap = false, showDocket = false, showCaseBag = false, showResult = false, showDaySummary = false, frame = 0;
+let resultData = null;
+let coffeeMiniGame = null; // { brewCount, brewTimer, active }
+
+const state = {
+  mode:'title',
+  gold: 12,
+  reputation: 0,
+  stress: 0,
+  coffee: 0,
+  files: 0,
+  evidence: 0,
+  rightsMemo: 0,
+  nowakEvidence: { lease: false, poster: false, notice: false },
+  activeDialog: null,
+  choiceMenu: null,
+  flashMessage: null,
+  flashTimer: 0,
+  message: 'Press Space to begin Dr. A. Kulas adventure.',
+  quests: {
+    orientation:false, guide:false, friends:false, law:false, rights:false, court:false,
+    archive:false, courtHall:false, coffeeRun:false, nowakCase:false
+  },
+  badges: [] // Progression badges (Pokémon-style)
+};
+
+const player = { x: 8, y: 12, facing:'down', moving:false, bob:0, visualX:8, visualY:12, moveTimer:0 };
+const BADGES = [
+  { id:'orientation', name:'First Day', desc:'Completed orientation with Mr. Pig', color:'#FFD700' },
+  { id:'guide', name:'Mentor', desc:'Found Muraś the guide', color:'#FFA500' },
+  { id:'friends', name:'Ally', desc:'Recruited Rak and Wymysl', color:'#7fb069' },
+  { id:'law', name:'Law Binder', desc:'Collected Polish law binder', color:'#4a6b8a' },
+  { id:'rights', name:'Human Rights', desc:'Found human rights memo', color:'#e1d156' },
+  { id:'court', name:'Courtroom', desc:'Won first court case', color:'#8bb1e0' },
+  { id:'archive', name:'Archivist', desc:'Explored The Archive', color:'#8b5a2b' },
+  { id:'courtHall', name:'Court Hall', desc:'Accessed expanded court hall', color:'#4a6b8a' },
+  { id:'coffeeRun', name:'Barista', desc:'Completed coffee run', color:'#6b3fa0' },
+  { id:'nowakCase', name:'Eviction Defender', desc:'Saved Ms. Nowak from eviction', color:'#d46a6b' }
+];
+function awardBadge(questId) {
+  const badge = BADGES.find(b => b.id === questId);
+  if (badge && !state.badges.some(b => b.id === questId)) {
+    state.badges.push({ ...badge });
+    state.flashMessage = `Badge earned: ${badge.name}!`;
+    state.flashTimer = 120;
+    playSound('badge');
+    saveGame();
+  }
+}
+const MOVE_SPEED = 0.12; // tiles per frame — smooth walk
+
+// Sound System
+let audioCtx = null;
+let bgMusicNode = null;
+let isMuted = false;
+const SOUND_VOL = 0.3;
+
+function initAudio() {
+  if (!audioCtx) {
+    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  }
+}
+
+function playSound(type) {
+  if (isMuted || !audioCtx) return;
+  const osc = audioCtx.createOscillator();
+  const gain = audioCtx.createGain();
+  osc.connect(gain);
+  gain.connect(audioCtx.destination);
+  gain.gain.setValueAtTime(SOUND_VOL, audioCtx.currentTime);
+  
+  switch(type) {
+    case 'docket':
+      osc.frequency.setValueAtTime(440, audioCtx.currentTime); // A4
+      gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.1);
+      osc.start(); osc.stop(audioCtx.currentTime + 0.1);
+      break;
+    case 'casebag':
+      osc.frequency.setValueAtTime(523.25, audioCtx.currentTime); // C5
+      gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.1);
+      osc.start(); osc.stop(audioCtx.currentTime + 0.1);
+      break;
+    case 'badge':
+      osc.frequency.setValueAtTime(659.25, audioCtx.currentTime); // E5
+      gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.2);
+      osc.start(); osc.stop(audioCtx.currentTime + 0.2);
+      break;
+    case 'move':
+      osc.frequency.setValueAtTime(220, audioCtx.currentTime); // A3
+      gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.05);
+      osc.start(); osc.stop(audioCtx.currentTime + 0.05);
+      break;
+  }
+}
+
+function toggleBgMusic() {
+  if (!audioCtx) initAudio();
+  if (bgMusicNode) {
+    bgMusicNode.stop();
+    bgMusicNode = null;
+  } else {
+    bgMusicNode = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    bgMusicNode.connect(gain);
+    gain.connect(audioCtx.destination);
+    bgMusicNode.frequency.setValueAtTime(220, audioCtx.currentTime);
+    gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
+    bgMusicNode.start();
+  }
+}
+
+function toggleMute() {
+  isMuted = !isMuted;
+}
+
+function iso(x,y,z=0){ return { x: ORIGIN_X + (x-y)*TILE_W/2, y: ORIGIN_Y + (x+y)*TILE_H/2 - z }; }
+function tileAt(px,py){ return { x: Math.floor(px), y: Math.floor(py) }; }
+function manhattan(a,b){ return Math.abs(a.x-b.x)+Math.abs(a.y-b.y); }
+
+const tiles = Array.from({length:MAP_H}, (_,y)=>Array.from({length:MAP_W}, (_,x)=>{
+  if (x===0||y===0||x===MAP_W-1||y===MAP_H-1) return 'wall';
+  // The Archive (top-left)
+  if (x>1&&x<7&&y>1&&y<7) return 'archive';
+  // Office buildings (original)
+  if ((x>1&&x<7&&y>7&&y<12) || (x>10&&x<16&&y>2&&y<7)) return 'building';
+  // Expanded Court Hall (right area)
+  if (x>16&&x<22&&y>2&&y<10) return 'court';
+  // Coffee Shop (bottom-right)
+  if (x>16&&x<22&&y>12&&y<20) return 'cafe';
+  // Streets
+  if (x===12 || y===12 || (y===8&&x>3&&x<18)) return 'street';
+  // Side street to new areas
+  if (x===18 && y>7&&y<13) return 'street';
+  if ((x+y)%7===0) return 'cobble';
+  return 'park';
+}));
+// Pig & Swine office interior-ish plaza
+for (let y=9;y<13;y++) for (let x=3;x<8;x++) tiles[y][x]='office';
+for (let x=4;x<7;x++) tiles[8][x]='street';
+tiles[11][5]='desk'; tiles[10][6]='books'; tiles[9][4]='files';
+// Court
+for (let y=4;y<8;y++) for (let x=12;x<16;x++) tiles[y][x]='court';
+tiles[7][14]='street';
+// Cafe and tram stop
+for (let y=13;y<16;y++) for (let x=11;x<15;x++) tiles[y][x]='cafe';
+tiles[12][13]='street';
+tiles[15][8]='tram';
+
+function blocked(x,y){
+  if (x<1||y<1||x>=MAP_W-1||y>=MAP_H-1) return true;
+  return ['building','wall','desk','books'].includes(tiles[y][x]);
+}
+
+const npcs = [
+  {id:'pig', name:'Mr. Pig', x:5, y:10, hue:'#c96c78',
+    lines:()=>{
+      if(state.quests.court) return ['Dr. A. Kula! Day One complete. Pig & Swine survives. Mr. Swine is still skiing.', 'The toner budget is safe. Justice, it seems, is billable.', 'We can buy toner for the printer now! It was plotting against us.', 'The firm survives another day. Rent invoice still pending, but we have toner.'];
+      if(state.quests.rights) return ['You have the rights memo. Now go to court — defective service awaits.', 'Remember: fair hearing, proportionality, and Mr. Swine is still in Japan.'];
+      if(state.quests.law) return ['You found the binder. Heavy, isnt it? Polish law always is.', 'Now find the human rights memo near the court. Dignity is just a filing away.'];
+      if(state.quests.friends) return ['Rak and Wymysl are with you. Good. The firm needs a legal strike team.', 'Now find the Polish law binder in the office.'];
+      if(state.quests.guide) return ['Muraś found. Good. He will guide you through Pig & Swine.', 'Find Rak and Wymysl next. They are your real friends.'];
+      return ['Dr. A. Kula, welcome to Pig & Swine.', 'Our financial situation is very difficult. The firm is held together by coffee, unpaid invoices, and procedural optimism.', 'Mr. Swine is skiing in Japan, so you must help us survive Warsaw courts, Polish law, and human rights cases.', 'Find Muraś. He will guide you through the firm.'];
+    },
+    onTalk:()=>{ if(!state.quests.orientation){ state.quests.orientation=true; state.reputation++; awardBadge('orientation'); saveGame(); } }},
+  {id:'muras', name:'Muraś', x:4, y:11, hue:'#e0b35b',
+    lines:()=>{
+      // Track progress precisely
+      if(state.quests.court) return ['Day One complete. The firm survives. Mr. Swine still skis.', 'Rest. Tomorrow brings new deadlines, new archives, new anxieties.', 'I have the court transcript. It\'s 40 pages. I\'ll summarize: you were great.', 'The archive is organized. For now.'];
+      if(state.quests.rights && !state.quests.court) return ['You have the rights memo! Now go to court — the Clerk awaits Dr. A. Kula.', 'Defective service, fair hearing, proportionality. You have all the pieces.'];
+      if(state.quests.law && !state.quests.rights) return ['Excellent. The Polish law binder is heavy because justice requires gravity.', 'Now find the human rights memo near the court building. It explains dignity and proportionality.'];
+      if(state.quests.friends && !state.quests.law) return ['Good. Rak and Wymysl are with you. The firm now has a legal strike team.', 'Next: collect the Polish law binder from the office. It explains why every simple matter has seven attachments.'];
+      if(state.quests.guide && !state.quests.friends) return ['You found me. Now find Rak and Wymysl near the cafe.', 'They are your real friends — they will help with courts, Polish law, and human rights.'];
+      return ['I am Muraś, your guide in Pig & Swine.', 'First rule: never enter the archive without a quest. Second rule: always know who your real friends are.', 'Find me near reception. If lost, follow the smell of binders.'];
+    },
+    onTalk:()=>{ if(!state.quests.guide){ state.quests.guide=true; awardBadge('guide'); saveGame(); } }},
+  {id:'rak', name:'Rak', x:12, y:14, hue:'#7fb069',
+    lines:()=>{
+      if(state.quests.court) return ['Rak reporting. Day One complete. The archive grows, the deadlines multiply.', 'See you tomorrow, Dr. A. Kula. Bring coffee.', 'Evidence from the case is filed. Also, your coffee mug is chipped.', 'I spotted three missing annexes already. Classic Pig & Swine.'];
+      if(state.quests.nowakCase) return ['Nowak case: eviction notice, lease agreement, human rights poster.', 'I spotted the missing annex on the landlord notice. Classic Pig & Swine.', 'Evidence checklist: lease agreement (office), human rights poster (cafe), landlord notice (Nowak).', 'My sharp eyes see all. Also, your coffee is cold.'];
+      if(state.quests.rights) return ['You have the memo! Now for court — defective service awaits.', 'I have spotted three missing annexes already. Classic Pig & Swine.'];
+      if(state.quests.law) return ['Binder acquired. My sharp eyes approve.', 'Now find the human rights memo near the court. Dignity needs evidence.'];
+      if(state.quests.friends) return ['Rak reporting for duty. I can spot a missing annex from across Warsaw.', 'eyes sharp, evidence and coffee ready.'];
+      return ['Dr. A. Kula! We heard Pig & Swine is in trouble.', 'Wymysl and I are your real friends. We will help you sort facts from office folklore.'];
+    }},
+  {id:'wymysl', name:'Wymysl', x:14, y:14, hue:'#d7a84f',
+    lines:()=>{
+      if(state.quests.nowakCase) return ['Nowak case: eviction defense. Polish lease law + human rights defense.', 'Article 2 of Protocol 1: right to peaceful enjoyment of possessions.', 'My chaotic but clever strategy: combine lease law with human rights memo.', 'Wymysl here. Theory brewing for Nowak\'s case.'];
+      if(state.quests.court) return ['Wymysl here. Day One done. Strategy proved correct.', 'Tomorrow: new cases, new chaos, same Swine in Japan.', 'The legal theory holds. Next time, we’ll add a human rights glitter bomb.', 'Chaos to case, completed.'];
+      if(state.quests.rights) return ['Memo secured! The court will not know what hit it.', 'Strategy: defective service + human rights = victory.'];
+      if(state.quests.law) return ['Binder found. Good. Now the human rights memo — near the court building.', 'Strategy: read the law, protect rights, avoid printer jams.'];
+      if(state.quests.friends) return ['Wymysl here. Strategy: read the law, protect human rights, avoid printer jams.', 'theory brewing. Chaos to case in three steps.'];
+      return ['A difficult financial situation? Classic Pig & Swine.', 'Gather Rak, me, and the binder. Then we go from chaos to case theory.'];
+    }},
+  {id:'clerk', name:'Court Clerk', x:14, y:6, hue:'#8bb1e0',
+    lines:()=> state.quests.court
+      ? ['The court quest is complete. Pig & Swine survives another docket.', 'The court record is closed. Don\'t lose the stamped copy. Again.', 'Case filed. Justice served. For now.']
+      : state.quests.law && state.quests.rights
+      ? ['You have the binder, the rights memo, and a calm face. The court is ready for Dr. A. Kula.']
+      : ['Court corridor rule: bring the right binder, the rights memo, and a calm face.', 'If you understand Polish law and human rights, the hearing may actually go well.']},
+  {id:'tram', name:'Tram 17 Oracle', x:8, y:15, hue:'#e1d156',
+    lines:()=> ['Ding ding. Warsaw wisdom: courts are near, deadlines are nearer.', 'Mr. Swine sends a postcard from Japan: “excellent powder, terrifying exchange rate.”']},
+  // New NPCs in expanded map
+  {id:'archivist', name:'Archivist', x:4, y:4, hue:'#8b5a2b',
+    lines:()=> state.quests.archive
+      ? ['The Archive is organized. For now. Come back if you need more ancient case files.']
+      : ['Shh! This is The Archive. Ancient case files, dusty precedents, and Mr. Swine’s old ski photos.', 'Find the Ancient Case Files hidden behind the shelves. They contain powerful legal arguments.']},
+  {id:'judge', name:'Judge', x:19, y:6, hue:'#4a6b8a',
+    lines:()=> state.quests.court
+      ? ['Court is adjourned. Pig & Swine survives. For now.']
+      : ['Order! The court expects proper filings, Polish law knowledge, and human rights awareness.', 'Dr. A. Kula, bring your binder and memo. Justice waits for no invoice.']},
+  {id:'barista', name:'Barista', x:19, y:16, hue:'#6b3fa0',
+    lines:()=> state.quests.coffeeRun
+      ? ['Specialty Coffee Beans activated! More coffee? Reduces anxiety like magic.']
+      : state.coffee >= 3
+      ? ['More coffee? You know it reduces Procedural Anxiety. Pig & Swine runs on caffeine.']
+      : ['Welcome to the Coffee Shop. We serve the best legal brew in Warsaw.', 'Drink coffee to reduce stress. Press B when near me to brew a cup!']},
+  // Day Two client
+  {id:'nowak', name:'Ms. Nowak', x:10, y:4, hue:'#d46a6b',
+    lines:()=> state.quests.nowakCase
+      ? ['Thank you, Dr. A. Kula. The eviction notice is defeated. My home is safe.', 'Pig & Swine is a lifesaver. Mr. Swine would be proud — if he were not skiing in Japan.']
+      : ['Dr. A. Kula! I have an eviction notice. My landlord says I violated the lease, but I only hung a human rights poster!', 'Please help me. The court date is tomorrow. I need Polish law and human rights support.'],
+    onTalk:()=>{ 
+      if(!state.quests.nowakCase){
+        // Give Landlord Notice directly when talking to Nowak
+        if(!state.nowakEvidence.notice) {
+          state.nowakEvidence.notice = true;
+          flashDialog('Landlord Eviction Notice received from Ms. Nowak: "Lease violated due to unauthorized wall decorations (posters)"');
+          saveGame();
+        }
+        startNowakCourtChoice(); 
+      } 
+    }}
+];
+
+const items = [
+  {id:'lawBinder', x:4, y:9, label:'Polish law binder', kind:'binder', taken:false},
+  {id:'rightsMemo', x:9, y:7, label:'human rights memo', kind:'usb', taken:false},
+  // Nowak eviction case evidence
+  {id:'leaseAgreement', x:11, y:4, label:'Lease Agreement', kind:'document', taken:false, evidenceFor:'nowak'},
+  {id:'humanRightsPoster', x:18, y:14, label:'Human Rights Poster', kind:'poster', taken:false, evidenceFor:'nowak'},
+  // Remove landlordNotice from items array - it's given by Nowak directly
+  // {id:'landlordNotice', x:12, y:4, label:'Landlord Eviction Notice', kind:'document', taken:false, evidenceFor:'nowak'},
+  // Hidden items in new areas (exploration rewards)
+  {id:'ancientCaseFiles', x:3, y:3, label:'Ancient Case Files', kind:'files', taken:false, hidden:true},
+  {id:'courtStamps', x:20, y:5, label:'Court Stamps', kind:'stamps', taken:false, hidden:true},
+  {id:'specialtyCoffee', x:20, y:15, label:'Specialty Coffee Beans', kind:'coffee', taken:false, hidden:true}
+];
+const interactables = [
+  {id:'coffeeMachine', name:'Coffee Machine', x:6, y:10, label:'Coffee Machine'}
+];
+
+function titleScreen(){
+  ctx.fillStyle='#151827'; ctx.fillRect(0,0,W,H);
+  drawPixelWarsawSkyline();
+  ctx.textAlign='center';
+  pixelText('PIG & SWINE', W/2, 132, 48, '#ffd76c', '#6d2f45');
+  pixelText('DR. A. KULA IN WARSAW', W/2, 190, 24, '#f5ead2', '#22263a');
+  drawLawyerSprite(W/2-24, 278, 3, '#33415f');
+  drawPigSeal(W/2+88, 318, 2);
+  box(170,410,620,136);
+  writeWrapped('Dr. A. Kula begins at Pig & Swine: Mr. Pig warns of a very difficult financial situation while Mr. Swine skis in Japan. Find Rak, Wymysl, and Muraś to face courts, Polish law, and human rights.', 205,438,550,21,'#1b1f31');
+  ctx.fillStyle = Math.floor(frame/25)%2 ? '#aa3d42' : '#1b1f31';
+  ctx.font='20px monospace'; ctx.fillText('Press Space / Enter', W/2, 580);
+}
+
+function draw(){
+  try {
+  frame++;
+  if (state.mode==='title') { titleScreen(); requestAnimationFrame(draw); return; }
+  // Smooth movement interpolation
+  if(player.visualX!==player.x||player.visualY!==player.y){
+    const dx=player.x-player.visualX, dy=player.y-player.visualY;
+    const step=MOVE_SPEED;
+    player.visualX += Math.abs(dx)<step ? dx : Math.sign(dx)*step;
+    player.visualY += Math.abs(dy)<step ? dy : Math.sign(dy)*step;
+    player.moving=true; player.bob=Math.sin(frame/4)*2;
+  } else { player.moving=false; player.bob=0; }
+  ctx.clearRect(0,0,W,H);
+  drawBackground();
+  const entities = [];
+  for (let y=0;y<MAP_H;y++) for (let x=0;x<MAP_W;x++) entities.push({type:'tile', x,y, sort:x+y, draw:()=>drawTile(x,y,tiles[y][x])});
+  for (const item of items) if(!item.taken) entities.push({type:'item', x:item.x, y:item.y, sort:item.x+item.y+.2, draw:()=>drawItem(item)});
+  for (const inter of interactables) entities.push({type:'interactable', x:inter.x, y:inter.y, sort:inter.x+inter.y+.3, draw:()=>drawInteractable(inter)});
+  for (const n of npcs) entities.push({type:'npc', x:n.x, y:n.y, sort:n.x+n.y+.4, draw:()=>drawNPC(n)});
+  entities.push({type:'player', x:player.visualX, y:player.visualY, sort:player.visualX+player.visualY+.5, draw:drawPlayer});
+  entities.sort((a,b)=>a.sort-b.sort).forEach(e=>e.draw());
+  drawInteractHint();
+  drawHUD();
+  if (state.flashMessage && state.flashTimer > 0){
+    state.flashTimer--;
+    ctx.save();
+    ctx.fillStyle = 'rgba(82,111,69,.85)';
+    ctx.fillRect(W/2-100, 20, 200, 40);
+    ctx.strokeStyle='#d7a84f'; ctx.lineWidth=2; ctx.strokeRect(W/2-100, 20, 200, 40);
+    ctx.fillStyle='#f5ead2'; ctx.font='18px monospace'; ctx.textAlign='center';
+    ctx.fillText(state.flashMessage, W/2, 46);
+    ctx.restore();
+  }
+  if (showMap) drawMiniMap();
+  if (showDocket) drawDocket();
+  if (showCaseBag) drawCaseBag();
+  if (showResult) drawResultScreen();
+  if (showDaySummary) drawDaySummary();
+  if (state.choiceMenu) drawChoiceMenu();
+  if (state.choiceMenu && state.choiceMenu.title.includes('NOVAK')) drawNowakCourtChoice();
+  if (state.activeDialog) drawDialog();
+  if (coffeeMiniGame && coffeeMiniGame.active) drawCoffeeMiniGame();
+  requestAnimationFrame(draw);
+  } catch(e) {
+    ctx.fillStyle='#151827'; ctx.fillRect(0,0,W,H);
+    ctx.fillStyle='#aa3d42'; ctx.font='16px monospace'; ctx.textAlign='left';
+    ctx.fillText('JS Error: ' + e.message, 20, 40);
+    ctx.fillText('Line: ' + (e.lineNumber||'unknown'), 20, 65);
+    console.error('Draw error:', e);
+    requestAnimationFrame(draw);
+  }
+}
+
+function drawBackground(){
+  const g = ctx.createLinearGradient(0,0,0,H);
+  g.addColorStop(0,'#222943'); g.addColorStop(1,'#1a2134'); ctx.fillStyle=g; ctx.fillRect(0,0,W,H);
+  ctx.globalAlpha=.25; drawPixelWarsawSkyline(); ctx.globalAlpha=1;
+}
+function drawPixelWarsawSkyline(){
+  ctx.fillStyle='#0e1120'; ctx.fillRect(0,360,W,280);
+  const b=[60,90,50,130,70,105,44,160,70,88,55,118,40]; let x=35;
+  b.forEach((h,i)=>{ ctx.fillRect(x,360-h,50,h); for(let yy=360-h+14; yy<348; yy+=18){ for(let xx=x+8; xx<x+44; xx+=16){ ctx.fillStyle=(i+yy+frame)%3?'#242b45':'#d7a84f'; ctx.fillRect(xx,yy,6,8); }} ctx.fillStyle='#0e1120'; x+=62; });
+  ctx.fillStyle='#0e1120'; ctx.fillRect(730,170,56,190); ctx.fillRect(748,122,20,50); ctx.fillRect(755,92,6,36);
+}
+
+function drawTile(x,y,t){
+  const p=iso(x,y);
+  const palette={street:['#536176','#3c475c'], cobble:['#697077','#4e5966'], park:['#57734b','#3f5a38'], office:['#b99562','#7d543c'], cafe:['#8b6d4b','#5b4634'], court:['#c9c3ad','#8f897d'], archive:['#8b6d4b','#5b4634'], tram:['#b6a83e','#6e692c'], files:['#b99562','#7d543c'], wall:['#303647','#202536'], building:['#41485f','#272d40'], desk:['#7b4b32','#43291f'], books:['#66563a','#332b26']};
+  const [a,b]=palette[t]||palette.park;
+  diamond(p.x,p.y,TILE_W,TILE_H,a,b);
+  if (t==='building' || t==='court') drawBlock(p.x,p.y,t==='court'?'#d8d1bd':'#4f5872', t==='court'?'#aaa28e':'#303850', 42);
+  if (t==='office') { ctx.fillStyle='#3e2b22'; ctx.fillRect(p.x-14,p.y-20,28,12); ctx.fillStyle='#ffd76c'; ctx.fillRect(p.x-8,p.y-17,16,4); }
+  if (t==='cafe') { ctx.fillStyle='#2e2018'; ctx.fillRect(p.x-16,p.y-18,32,10); ctx.fillStyle='#f5ead2'; ctx.fillRect(p.x-11,p.y-16,22,5); }
+  if (t==='archive') { 
+    // Shelves with books
+    ctx.fillStyle='#5b4634'; ctx.fillRect(p.x-18,p.y-24,36,16); 
+    // Books on shelves (colored rectangles)
+    const bookColors = ['#c96c78','#e0b35b','#7fb069','#d7a84f','#8bb1e0','#aa3d42'];
+    for(let i=0; i<6; i++) {
+      ctx.fillStyle=bookColors[i];
+      ctx.fillRect(p.x-15+i*5, p.y-22, 4, 12);
+    }
+  }
+  if (t==='tram') { ctx.fillStyle='#e1d156'; ctx.fillRect(p.x-22,p.y-23,44,16); ctx.fillStyle='#222'; ctx.fillRect(p.x-15,p.y-20,12,7); ctx.fillRect(p.x+4,p.y-20,12,7); }
+}
+function diamond(x,y,w,h,top,edge){
+  ctx.fillStyle=top; ctx.beginPath(); ctx.moveTo(x,y-h/2); ctx.lineTo(x+w/2,y); ctx.lineTo(x,y+h/2); ctx.lineTo(x-w/2,y); ctx.closePath(); ctx.fill();
+  ctx.strokeStyle=edge; ctx.lineWidth=2; ctx.stroke();
+}
+function drawBlock(x,y,front,side,h){
+  ctx.fillStyle=side; ctx.beginPath(); ctx.moveTo(x+32,y); ctx.lineTo(x+32,y-h); ctx.lineTo(x,y+16-h); ctx.lineTo(x,y+16); ctx.closePath(); ctx.fill();
+  ctx.fillStyle=front; ctx.beginPath(); ctx.moveTo(x-32,y); ctx.lineTo(x-32,y-h); ctx.lineTo(x,y+16-h); ctx.lineTo(x,y+16); ctx.closePath(); ctx.fill();
+  ctx.fillStyle=lighten(front,18); ctx.beginPath(); ctx.moveTo(x,y-16-h); ctx.lineTo(x+32,y-h); ctx.lineTo(x,y+16-h); ctx.lineTo(x-32,y-h); ctx.closePath(); ctx.fill();
+  ctx.strokeStyle='#202536'; ctx.stroke();
+}
+function lighten(hex, amt){ let n=parseInt(hex.slice(1),16); let r=Math.min(255,(n>>16)+amt),g=Math.min(255,((n>>8)&255)+amt),b=Math.min(255,(n&255)+amt); return `rgb(${r},${g},${b})`; }
+
+function drawItem(item){
+  if(item.taken) return;
+  // Hidden items only visible when player is very close
+  if(item.hidden && manhattan(player, item) > 1) return;
+  const p=iso(item.x+.5,item.y+.5,18+Math.sin(frame/12)*3);
+  ctx.save(); ctx.translate(p.x,p.y);
+  ctx.fillStyle='rgba(255,215,108,.25)'; ctx.beginPath(); ctx.ellipse(0,20,22,8,0,0,Math.PI*2); ctx.fill();
+  if(item.kind==='binder'){ ctx.fillStyle='#aa3d42'; ctx.fillRect(-13,-16,26,28); ctx.fillStyle='#f5ead2'; ctx.fillRect(-8,-10,16,4); ctx.fillRect(-8,-2,16,4); }
+  else if(item.kind==='files'){ ctx.fillStyle='#8b6d4b'; ctx.fillRect(-15,-18,30,24); ctx.fillStyle='#d7a84f'; ctx.fillRect(-10,-14,20,4); ctx.fillRect(-10,-6,20,4); }
+  else if(item.kind==='stamps'){ ctx.fillStyle='#4a6b8a'; ctx.fillRect(-8,-12,16,20); ctx.fillStyle='#d7a84f'; ctx.fillRect(-6,-8,12,3); ctx.fillRect(-6,-2,12,3); }
+  else if(item.kind==='coffee'){ ctx.fillStyle='#6b3fa0'; ctx.fillRect(-6,-14,12,24); ctx.fillStyle='#3e2b22'; ctx.fillRect(-4,-10,8,6); }
+  else { ctx.fillStyle='#d7d8e0'; ctx.fillRect(-5,-14,10,24); ctx.fillStyle='#526f45'; ctx.fillRect(-3,-10,6,10); }
+  ctx.restore();
+}
+function drawInteractable(inter){
+  const p=iso(inter.x+.5,inter.y+.5,20+Math.sin(frame/10)*2);
+  ctx.save(); ctx.translate(p.x,p.y);
+  // Simple coffee machine sprite
+  ctx.fillStyle='#59617f'; ctx.fillRect(-12,-16,24,28); // body
+  ctx.fillStyle='#aa3d42'; ctx.fillRect(-8,-20,16,6); // top
+  ctx.fillStyle='#d7a84f'; ctx.fillRect(-4,-12,8,4); // brew button
+  ctx.fillStyle='#1b1f31'; ctx.fillRect(-6,-6,4,2); // display
+  ctx.fillRect(2,-6,4,2);
+  ctx.restore();
+}
+function drawNPC(n){ const p=iso(n.x+.5,n.y+.5,22); drawLawyerSprite(p.x-16,p.y-40,2,n.hue); }
+function drawPlayer(){ const p=iso(player.visualX+.5,player.visualY+.5,23+Math.sin(frame/8)*2+player.bob); drawLawyerSprite(p.x-16,p.y-42,2.2,'#33415f'); }
+function getNearbyInteractable(){
+  for(const n of npcs) if(manhattan(player,n)<=1) return {type:'npc', name:n.name, x:n.x, y:n.y};
+  for(const item of items) if(!item.taken && manhattan(player,item)<=1) return {type:'item', name:item.label, x:item.x, y:item.y, item};
+  for(const inter of interactables) if(manhattan(player,inter)<=1) return {type:'interactable', name:inter.name, x:inter.x, y:inter.y, inter};
+  return null;
+}
+function drawInteractHint(){
+  const target = getNearbyInteractable();
+  if(!target || state.activeDialog || state.mode==='title') return;
+  const p=iso(target.x+.5,target.y+.5,58+Math.sin(frame/10)*4);
+  ctx.save();
+  ctx.textAlign='center';
+  ctx.fillStyle='rgba(11,13,22,.82)';
+  const label = target.type==='item' ? `Pick up ${target.item.label}` : target.type==='interactable' ? `Use ${target.name}` : `Talk to ${target.name}`;
+  const text = `${label} · Press Space`;
+  const width = Math.min(420, ctx.measureText(text).width + 26);
+  ctx.fillRect(p.x-width/2, p.y-34, width, 28);
+  ctx.strokeStyle='#ffd76c'; ctx.lineWidth=2; ctx.strokeRect(p.x-width/2, p.y-34, width, 28);
+  ctx.fillStyle='#ffd76c'; ctx.font='16px monospace'; ctx.fillText(text, p.x, p.y-14);
+  ctx.fillStyle='#f5ead2'; ctx.beginPath(); ctx.moveTo(p.x, p.y); ctx.lineTo(p.x-8, p.y-10); ctx.lineTo(p.x+8, p.y-10); ctx.closePath(); ctx.fill();
+  ctx.restore();
+}
+function drawLawyerSprite(x,y,s,coat){
+  ctx.save(); ctx.translate(x,y); ctx.scale(s,s);
+  ctx.fillStyle='#f1bd93'; ctx.fillRect(5,1,8,8); ctx.fillStyle='#2b1a12'; ctx.fillRect(4,0,10,3);
+  ctx.fillStyle=coat; ctx.fillRect(3,9,12,14); ctx.fillStyle='#f5ead2'; ctx.fillRect(7,10,4,10); ctx.fillStyle='#aa3d42'; ctx.fillRect(8,13,2,7);
+  ctx.fillStyle='#1b1f31'; ctx.fillRect(4,23,4,7); ctx.fillRect(11,23,4,7); ctx.fillStyle='#0b0d16'; ctx.fillRect(3,30,5,2); ctx.fillRect(11,30,5,2);
+  ctx.restore();
+}
+function drawPigSeal(x,y,s){
+  ctx.save(); ctx.translate(x,y); ctx.scale(s,s); ctx.fillStyle='#d88992'; ctx.fillRect(0,8,30,20); ctx.fillRect(5,2,6,8); ctx.fillRect(20,2,6,8); ctx.fillStyle='#b95f6b'; ctx.fillRect(9,15,12,8); ctx.fillStyle='#1b1f31'; ctx.fillRect(7,12,3,3); ctx.fillRect(21,12,3,3); ctx.restore();
+}
+function drawPortrait(npcId, x, y){
+  ctx.save();
+  ctx.translate(x, y);
+
+  // Color palettes for each character (Pokémon Yellow style with shading)
+  const palette = {
+    pig:    { base:'#c96c78', shadow:'#b95f6b', face:'#f1bd93', eyes:'#1b1f31', snout:'#d7a84f' },
+    muras:  { base:'#e0b35b', shadow:'#c89a32', face:'#f1bd93', eyes:'#1b1f31', glasses:'#d7a84f', hair:'#33415f' },
+    rak:    { base:'#7fb069', shadow:'#6a9a52', face:'#f1bd93', eyes:'#1b1f31', hair:'#33415f' },
+    wymysl: { base:'#d7a84f', shadow:'#c0913a', face:'#f1bd93', eyes:'#1b1f31', mouth:'#aa3d42', hair:'#33415f' },
+    clerk:  { base:'#8bb1e0', shadow:'#7a9bcc', face:'#f1bd93', eyes:'#1b1f31', hair:'#33415f' },
+    tram:   { base:'#e1d156', shadow:'#c9b848', face:'#f1bd93', eyes:'#1b1f31', smile:'#d7a84f' },
+    nowak:  { base:'#d46a6b', shadow:'#b85a5b', face:'#f1bd93', eyes:'#1b1f31', hair:'#33415f', scarf:'#8bb1e0' }
+  };
+
+  let p;
+  if(npcId === 'pig') p = palette.pig;
+  else if(npcId === 'muras') p = palette.muras;
+  else if(npcId === 'rak') p = palette.rak;
+  else if(npcId === 'wymysl') p = palette.wymysl;
+  else if(npcId === 'clerk') p = palette.clerk;
+  else if(npcId === 'nowak') p = palette.nowak;
+  else p = palette.tram;
+
+  // Draw 32x32 pixel art with shading (Pokémon Yellow style)
+  // Background/base (32x32)
+  ctx.fillStyle=p.base; ctx.fillRect(2,2,28,28);
+
+  // Shading on left and bottom sides (darker pixels)
+  ctx.fillStyle=p.shadow;
+  ctx.fillRect(2,2,2,28);     // Left shadow
+  ctx.fillRect(2,28,28,2);   // Bottom shadow
+  ctx.fillRect(28,2,2,28);    // Right shadow (thinner)
+
+  // Face area (peach, 16x16)
+  ctx.fillStyle=p.face; ctx.fillRect(8,8,16,16);
+
+  // Hair on top (for human characters)
+  if(npcId !== 'pig'){
+    ctx.fillStyle=p.hair; ctx.fillRect(8,6,16,4);
+  }
+
+  // Eyes (black, 3x3 pixels)
+  ctx.fillStyle=p.eyes;
+  if(npcId === 'rak'){
+    // Rak has "sharp" eyes (slightly larger)
+    ctx.fillRect(10,10,4,3); ctx.fillRect(18,10,4,3);
+  } else {
+    ctx.fillRect(11,10,3,3); ctx.fillRect(18,10,3,3);
+  }
+
+  // Character-specific details
+  if(npcId === 'pig'){
+    // Pig snout
+    ctx.fillStyle=p.snout; ctx.fillRect(12,18,8,4);
+    // Nostrils
+    ctx.fillStyle=p.eyes; ctx.fillRect(13,19,2,2); ctx.fillRect(17,19,2,2);
+  }
+  else if(npcId === 'muras'){
+    // Glasses (yellow bridge)
+    ctx.fillStyle=p.glasses; ctx.fillRect(14,12,4,1);
+    // Eyebrows (slightly above eyes)
+    ctx.fillStyle=p.hair; ctx.fillRect(10,9,5,1); ctx.fillRect(17,9,5,1);
+  }
+  else if(npcId === 'rak'){
+    // Sharp eyebrows
+    ctx.fillStyle=p.hair; ctx.fillRect(9,8,6,2); ctx.fillRect(17,8,6,2);
+  }
+  else if(npcId === 'wymysl'){
+    // Serious mouth (red line)
+    ctx.fillStyle=p.mouth; ctx.fillRect(13,20,6,2);
+    // Eyebrows
+    ctx.fillStyle=p.hair; ctx.fillRect(10,9,5,1); ctx.fillRect(17,9,5,1);
+  }
+  else if(npcId === 'clerk'){
+    // Thin mouth
+    ctx.fillStyle='#1b1f31'; ctx.fillRect(13,20,6,1);
+    // Official cap shadow
+    ctx.fillStyle=p.shadow; ctx.fillRect(8,6,16,2);
+  }
+  else if(npcId === 'nowak'){
+    // Scarf (blue, like clerk but brighter)
+    ctx.fillStyle=p.scarf; ctx.fillRect(8,6,16,4);
+    // Eyebrows (worried)
+    ctx.fillStyle=p.hair; ctx.fillRect(10,9,5,1); ctx.fillRect(17,9,5,1);
+    // Small smile (relieved after case)
+    if(state.quests.nowakCase){
+      ctx.fillStyle='#1b1f31'; ctx.fillRect(13,20,6,1);
+    }
+  }
+  else {
+    // Tram Oracle - mystical smile
+    ctx.fillStyle=p.smile; ctx.fillRect(13,20,6,2);
+  }
+
+  ctx.restore();
+}
+function drawBubble(x,y,text){ ctx.fillStyle='#f5ead2'; ctx.fillRect(x-10,y-14,20,16); ctx.fillStyle='#1b1f31'; ctx.font='14px monospace'; ctx.textAlign='center'; ctx.fillText(text,x,y-2); }
+
+function drawHUD(){
+  ctx.fillStyle='rgba(11,13,22,.84)'; ctx.fillRect(18,16,365,78);
+  ctx.strokeStyle='#d7a84f'; ctx.strokeRect(18,16,365,78);
+  ctx.font='16px monospace'; ctx.textAlign='left'; ctx.fillStyle='#f5ead2';
+  ctx.fillText(`zł ${state.gold}   Reputation ${state.reputation}   Coffee ${state.coffee}`, 34,43);
+  const q = nextQuest(); ctx.fillStyle='#ffd76c'; ctx.fillText(`Quest: ${q}`, 34,70);
+}
+function nextQuest(){
+  if(!state.quests.orientation) return 'Speak with Mr. Pig about the financial crisis';
+  if(!state.quests.guide) return 'Find Muraś, your guide through Pig & Swine';
+  if(!state.quests.friends) return 'Find Rak and Wymysl, your real friends';
+  if(!state.quests.law) return 'Collect the Polish law binder';
+  if(!state.quests.rights) return 'Recover the human rights memo';
+  if(!state.quests.court) return 'Go to court and save Pig & Swine';
+  if(!state.quests.nowakCase) return 'Day Two: Help Ms. Nowak with eviction notice';
+  return 'Day Two: Defend human rights in Warsaw courts';
+}
+function box(x,y,w,h){ ctx.fillStyle='#f5ead2'; ctx.fillRect(x,y,w,h); ctx.strokeStyle='#1b1f31'; ctx.lineWidth=4; ctx.strokeRect(x,y,w,h); ctx.strokeStyle='#d7a84f'; ctx.lineWidth=2; ctx.strokeRect(x+7,y+7,w-14,h-14); }
+function drawDialog(){
+  box(70,466,820,138);
+  ctx.fillStyle='#1b1f31'; ctx.font='18px monospace'; ctx.textAlign='left';
+  // Draw portrait if NPC
+  const hasPortrait = !!state.activeDialog.npcId;
+  const textX = hasPortrait ? 130 : 100;
+  const maxWidth = hasPortrait ? 680 : 760;
+  const nextX = hasPortrait ? 650 : 690;
+  if(hasPortrait){
+    drawPortrait(state.activeDialog.npcId, 90, 480);
+  }
+  ctx.fillText(state.activeDialog.name, textX, 490);
+  writeWrapped(state.activeDialog.text, textX, 520, maxWidth, 22, '#1b1f31');
+  ctx.fillStyle='#aa3d42'; ctx.fillText('Space/Enter: next', nextX, 580);
+}
+function drawChoiceMenu(){
+  const menu = state.choiceMenu;
+  if(!menu) return;
+  ctx.save();
+  ctx.fillStyle='rgba(8,10,18,.70)'; ctx.fillRect(0,0,W,H);
+  box(95,120,770,390);
+  ctx.textAlign='left';
+  ctx.fillStyle='#1b1f31'; ctx.font='24px monospace'; ctx.fillText(menu.title, 130,160);
+  ctx.font='17px monospace'; writeWrapped(menu.prompt, 130,195,700,22,'#1b1f31');
+  let y=270;
+  menu.options.forEach((opt, idx)=>{
+    ctx.fillStyle= idx===0 ? '#f1e2bf' : '#f7eed8'; ctx.fillRect(130,y-25,700,62);
+    ctx.strokeStyle='#d7a84f'; ctx.strokeRect(130,y-25,700,62);
+    ctx.fillStyle='#1b1f31'; ctx.font='16px monospace';
+    writeWrapped(`${idx+1}. ${opt.text}`, 150, y-15, 660, 18, '#1b1f31');
+    y += 76;
+  });
+  ctx.fillStyle='#aa3d42'; ctx.font='16px monospace'; ctx.fillText('Press 1, 2, or 3', 130,480);
+  ctx.restore();
+}
+function writeWrapped(text,x,y,maxWidth,lineHeight,color){
+  ctx.fillStyle=color; ctx.font=`${lineHeight-6}px monospace`; const words=text.split(' '); let line='';
+  for(const w of words){ const test=line+w+' '; if(ctx.measureText(test).width>maxWidth){ ctx.fillText(line,x,y); line=w+' '; y+=lineHeight; } else line=test; }
+  ctx.fillText(line,x,y);
+}
+function pixelText(txt,x,y,size,fill,shadow){ ctx.font=`900 ${size}px monospace`; ctx.textAlign='center'; ctx.fillStyle=shadow; ctx.fillText(txt,x+4,y+4); ctx.fillStyle=fill; ctx.fillText(txt,x,y); }
+function drawMiniMap(){
+  const sx=732, sy=20, sc=7; ctx.fillStyle='rgba(11,13,22,.86)'; ctx.fillRect(sx-12,sy-12,154,154); ctx.strokeStyle='#ffd76c'; ctx.strokeRect(sx-12,sy-12,154,154);
+  for(let y=0;y<MAP_H;y++) for(let x=0;x<MAP_W;x++){ ctx.fillStyle=blocked(x,y)?'#303647': tiles[y][x]==='street'?'#78869b':tiles[y][x]==='park'?'#526f45':'#b99562'; ctx.fillRect(sx+x*sc,sy+y*sc,sc-1,sc-1); }
+  ctx.fillStyle='#ffd76c'; ctx.fillRect(sx+player.x*sc, sy+player.y*sc, sc, sc);
+}
+function questSteps(){
+  return [
+    {flag:'orientation', text:'Speak with Mr. Pig about the firm’s financial crisis'},
+    {flag:'guide', text:'Find Muraś, your guide through Pig & Swine'},
+    {flag:'friends', text:'Find Rak and Wymysl, Dr. A. Kula’s real friends'},
+    {flag:'law', text:'Collect the Polish law binder'},
+    {flag:'rights', text:'Recover the human rights memo'},
+    {flag:'court', text:'Go to court and save Pig & Swine'}
+  ];
+}
+function docketNote(){
+  if(!state.quests.orientation) return 'Muraś note: Start with Mr. Pig. Panic is not a procedural remedy.';
+  if(!state.quests.guide) return 'Muraś note: I am near reception. If lost, follow the smell of binders.';
+  if(!state.quests.friends) return 'Muraś note: Find your friends before the firm mistakes you for office furniture.';
+  if(!state.quests.law) return 'Muraś note: The binder is heavy because Polish law contains gravity.';
+  if(!state.quests.rights) return 'Muraś note: Human rights arguments work best when actually brought to court.';
+  if(!state.quests.court) return 'Muraś note: You have law, rights, and friends. That is almost a litigation strategy.';
+  return 'Muraś note: Pig & Swine survives. For now. Mr. Swine remains in Japan.';
+}
+function drawDocket(){
+  ctx.save();
+  ctx.fillStyle='rgba(8,10,18,.72)'; ctx.fillRect(0,0,W,H);
+  box(160,84,640,470);
+  ctx.textAlign='left';
+  ctx.fillStyle='#1b1f31'; ctx.font='28px monospace'; ctx.fillText('DOCKET: Day One — The Financial Crisis', 195,130);
+  ctx.font='16px monospace'; ctx.fillStyle='#6d2f45'; ctx.fillText('Press Q to close · Pig & Swine internal case file', 195,158);
+  const steps = questSteps();
+  let y=190;
+  for(const step of steps){
+    const done = state.quests[step.flag];
+    const mark = done ? '✓' : '□';
+    ctx.fillStyle = done ? '#526f45' : (step.text===nextQuest() ? '#aa3d42' : '#1b1f31');
+    ctx.font = done ? '18px monospace' : '19px monospace';
+    ctx.fillText(`${mark} ${step.text}`, 205, y);
+    y += 34;
+  }
+  ctx.fillStyle='#f1e2bf'; ctx.fillRect(195,405,570,92);
+  ctx.strokeStyle='#d7a84f'; ctx.lineWidth=2; ctx.strokeRect(195,405,570,92);
+  writeWrapped(docketNote(), 215,435,530,23,'#1b1f31');
+  ctx.fillStyle='#6d2f45'; ctx.font='15px monospace';
+  ctx.fillText(`Firm Liquidity: zł ${state.gold}   Bar Reputation: ${state.reputation}`, 215,520);
+  ctx.restore();
+}
+function caseBagItems(){
+  return [
+    {name:'Polish law binder', owned:state.quests.law, desc:'A sacred red binder. Heavy enough to support legal arguments and unstable furniture.'},
+    {name:'human rights memo', owned:state.quests.rights, desc:'Notes on dignity, fair trial, proportionality, and why bureaucracy should fear Dr. A. Kula.'},
+    {name:'Coffee reserve', owned:state.coffee>0, desc:state.coffee>0 ? 'Procedural fuel. The true source of interim relief.' : 'Empty. Dangerous for both deadlines and morale.'},
+    {name:'Mr. Swine postcard', owned:true, desc:'Greetings from Japan: excellent powder, alarming expenses, unclear comparative-law value.'}
+  ];
+}
+function drawCaseBag(){
+  ctx.save();
+  ctx.fillStyle='rgba(8,10,18,.72)'; ctx.fillRect(0,0,W,H);
+  box(130,70,700,500);
+  ctx.textAlign='left';
+  ctx.fillStyle='#1b1f31'; ctx.font='30px monospace'; ctx.fillText('CASE BAG', 175,120);
+  ctx.font='16px monospace'; ctx.fillStyle='#6d2f45'; ctx.fillText('Press I to close · Evidence, notes, and survival objects', 175,150);
+  ctx.fillStyle='#f1e2bf'; ctx.fillRect(170,178,600,66);
+  ctx.strokeStyle='#d7a84f'; ctx.lineWidth=2; ctx.strokeRect(170,178,600,66);
+  ctx.fillStyle='#1b1f31'; ctx.font='16px monospace';
+  ctx.fillText(`Firm Liquidity: zł ${state.gold}`, 195,205);
+  ctx.fillText(`Bar Reputation: ${state.reputation}`, 430,205);
+  ctx.fillText(`Procedural Anxiety: ${state.stress}`, 195,230);
+  ctx.fillText(`Coffee: ${state.coffee}`, 430,230);
+  // Draw badges
+  ctx.fillStyle='#1b1f31'; ctx.font='18px monospace'; ctx.fillText('BADGES:', 175, 260);
+  let bx = 175, by = 275;
+  if(state.badges.length === 0) {
+    ctx.fillStyle='#7b7f8e'; ctx.font='15px monospace'; ctx.fillText('No badges yet. Complete quests to earn them!', bx, by+20);
+  } else {
+    state.badges.forEach((badge, i) => {
+      ctx.fillStyle = badge.color;
+      ctx.fillRect(bx + i*60, by, 40, 40);
+      ctx.fillStyle='#1b1f31'; ctx.font='10px monospace'; ctx.fillText(badge.name, bx + i*60, by+52);
+    });
+  }
+  let y=340;
+  for(const item of caseBagItems()){
+    ctx.fillStyle = item.owned ? '#526f45' : '#7b7f8e';
+    ctx.font='18px monospace'; ctx.fillText(`${item.owned ? '✓' : '□'} ${item.name}`, 175, y);
+    ctx.fillStyle='#1b1f31'; ctx.font='15px monospace';
+    writeWrapped(item.desc, 205, y+24, 545, 19, item.owned ? '#1b1f31' : '#59617f');
+    y += 60;
+  }
+  writeWrapped('Muraś says: A good case bag contains law, facts, and one snack nobody admits owning.', 175,530,600,18,'#aa3d42');
+  ctx.fillStyle='#1b1f31'; ctx.font='14px monospace'; ctx.textAlign='center';
+  ctx.fillText('S: Save Game   L: Load Game   B: Music   Ctrl+M: Mute', W/2, 555);
+  ctx.restore();
+}
+
+function drawResultScreen(){
+  ctx.save();
+  ctx.fillStyle='rgba(8,10,18,.82)'; ctx.fillRect(0,0,W,H);
+  // Main panel
+  box(120,60,720,520);
+  ctx.textAlign='center';
+  // Victory / Failure header
+  const victory = resultData && resultData.victory;
+  const isNowak = resultData && resultData.caseName === 'Nowak Eviction';
+  ctx.fillStyle = victory ? '#526f45' : '#aa3d42';
+  ctx.font='900 36px monospace';
+  ctx.fillText(victory ? `⚖️  ${isNowak ? 'NOWAK CASE RESULT' : 'CASE RESULT'}  ⚖️` : '⚖️  CASE DISMISSED  ⚖️', W/2, 110);
+
+  ctx.textAlign='left';
+  ctx.font='20px monospace';
+  // Argument quality
+  ctx.fillStyle='#1b1f31';
+  ctx.fillText('Argument Quality:', 175, 160);
+  ctx.fillStyle = victory ? '#526f45' : '#aa3d42';
+  ctx.fillText(victory ? 'Strong — legally grounded' : 'Weak — comedically grounded', 420, 160);
+
+  ctx.fillStyle='#1b1f31';
+  ctx.fillText('Human Rights Angle:', 175, 195);
+  ctx.fillStyle = victory ? '#526f45' : '#7b7f8e';
+  ctx.fillText(victory ? 'Persuasive — proportionality cited' : 'Absent — Mr. Swine cited instead', 420, 195);
+
+  ctx.fillText('Defective Service:', 175, 230);
+  ctx.fillStyle = victory ? '#526f45' : '#7b7f8e';
+  ctx.fillText(victory ? 'Identified — fair hearing affected' : 'Ignored — emotional printers cited', 420, 230);
+
+  // Stat deltas box
+  ctx.fillStyle='#f1e2bf'; ctx.fillRect(165,260,630,100);
+  ctx.strokeStyle='#d7a84f'; ctx.lineWidth=2; ctx.strokeRect(165,260,630,100);
+  ctx.font='22px monospace'; ctx.textAlign='center';
+  if(victory){
+    ctx.fillStyle='#526f45'; ctx.fillText(`Firm Liquidity: +${isNowak ? '30' : '20'} zł`, W/2-150, 300);
+    ctx.fillText(`Bar Reputation: +${isNowak ? '5' : '3'}`, W/2+150, 300);
+    ctx.fillStyle='#1b1f31'; ctx.fillText('Procedural Anxiety: 0', W/2, 340);
+  } else {
+    ctx.fillStyle='#aa3d42'; ctx.fillText('Firm Liquidity: +0 zł', W/2-150, 300);
+    ctx.fillText(`Bar Reputation: +0`, W/2+150, 300);
+    ctx.fillText(`Procedural Anxiety: +${isNowak ? '2' : '1'}`, W/2, 340);
+  }
+
+  // Mr. Pig reaction
+  ctx.textAlign='left';
+  ctx.fillStyle='#f1e2bf'; ctx.fillRect(165,385,630,110);
+  ctx.strokeStyle='#c96c78'; ctx.lineWidth=2; ctx.strokeRect(165,385,630,110);
+  drawPigSeal(195,420,1.5);
+  ctx.fillStyle='#1b1f31'; ctx.font='18px monospace';
+  ctx.fillText('Mr. Pig:', 248, 410);
+  ctx.font='17px monospace';
+  if(victory){
+    writeWrapped(isNowak 
+      ? '"Excellent! Ms. Nowak keeps her home, and we keep a client. Mr. Swine would be proud — if he ever leaves the Japanese slopes."'
+      : '"We may yet afford toner. Mr. Swine will receive a fax about this victory — if he ever leaves the slopes."', 248, 435, 520, 21, '#1b1f31');
+  } else {
+    writeWrapped('"That was not a legal argument. That was a holiday postcard. Try again before the court loses all patience."', 248, 435, 520, 21, '#aa3d42');
+  }
+
+  // Footer
+  ctx.textAlign='center';
+  ctx.fillStyle= Math.floor(frame/20)%2 ? '#aa3d42' : '#1b1f31';
+  ctx.font='18px monospace';
+  ctx.fillText(victory ? (isNowak ? 'Press Space to continue — Ms. Nowak saved!' : 'Press Space to continue — Day One complete') : 'Press Space to try again', W/2, 545);
+  ctx.restore();
+}
+
+function drawDaySummary(){
+  ctx.save();
+  ctx.fillStyle='rgba(8,10,18,.92)'; ctx.fillRect(0,0,W,H);
+  // Draw faint skyline
+  ctx.globalAlpha=.15; drawPixelWarsawSkyline(); ctx.globalAlpha=1;
+  // Main panel
+  box(100,40,760,560);
+  ctx.textAlign='center';
+
+  // Header
+  ctx.fillStyle='#d7a84f'; ctx.font='900 32px monospace';
+  ctx.fillText('DAY ONE COMPLETE', W/2, 88);
+  ctx.fillStyle='#aa3d42'; ctx.font='22px monospace';
+  ctx.fillText('Dr. A. Kula — Pig & Swine, Warsaw', W/2, 120);
+
+  // Narrative summary
+  ctx.textAlign='left';
+  const lines = [
+    'Dr. A. Kula arrived at Pig & Swine on the worst possible morning.',
+    'Mr. Pig confirmed the financial crisis. Mr. Swine remained in Japan.',
+    'Muraś guided the way. Rak and Wymysl proved their loyalty.',
+    'A Polish law binder was found. A human rights memo was recovered.',
+    'In court, Dr. A. Kula argued that defective service violated',
+    'the right to a fair hearing — and the court agreed.',
+    '',
+    'Pig & Swine survives. For now.'
+  ];
+  let y = 165;
+  for(const line of lines){
+    ctx.fillStyle = line==='' ? '#1b1f31' : '#1b1f31';
+    ctx.font = line.startsWith('Pig & Swine') ? '900 20px monospace' : '18px monospace';
+    if(line!=='') ctx.fillText(line, 150, y);
+    y += 28;
+  }
+
+  // Final stats box
+  ctx.fillStyle='#f1e2bf'; ctx.fillRect(145,400,670,80);
+  ctx.strokeStyle='#d7a84f'; ctx.lineWidth=2; ctx.strokeRect(145,400,670,80);
+  ctx.font='20px monospace'; ctx.textAlign='center';
+  ctx.fillStyle='#526f45'; ctx.fillText(`Firm Liquidity: zł ${state.gold}`, W/2-180, 435);
+  ctx.fillText(`Bar Reputation: ${state.reputation}`, W/2+180, 435);
+  ctx.fillStyle='#1b1f31'; ctx.fillText(`Quests Completed: ${Object.values(state.quests).filter(v=>v).length}/6`, W/2, 465);
+
+  // Muraś epilogue
+  ctx.textAlign='left';
+  ctx.fillStyle='#aa3d42'; ctx.font='17px monospace';
+  writeWrapped('Muraś note: Day One is done. Tomorrow the deadlines return, the archive grows, and Mr. Swine will still be skiing. Rest while you can.', 150, 510, 660, 21, '#aa3d42');
+
+  // Footer
+  ctx.textAlign='center';
+  ctx.fillStyle= Math.floor(frame/22)%2 ? '#d7a84f' : '#1b1f31';
+  ctx.font='18px monospace';
+  ctx.fillText('Press Space to return to Warsaw', W/2, 580);
+  ctx.restore();
+}
+
+// Save/Load System
+function saveGame(){
+  const saveData = {
+    state: {
+      gold: state.gold,
+      reputation: state.reputation,
+      stress: state.stress,
+      coffee: state.coffee,
+      files: state.files,
+      evidence: state.evidence,
+      rightsMemo: state.rightsMemo,
+      quests: {...state.quests}
+    },
+    player: {
+      x: player.x,
+      y: player.y,
+      facing: player.facing
+    },
+    timestamp: Date.now()
+  };
+  try {
+    localStorage.setItem('pigSwineSave', JSON.stringify(saveData));
+    showSaveFlash();
+    console.log('Game saved');
+  } catch(e) {
+    console.error('Save failed:', e);
+  }
+}
+
+function loadGame(){
+  const saveStr = localStorage.getItem('pigSwineSave');
+  if(!saveStr) return false;
+  try {
+    const saveData = JSON.parse(saveStr);
+    // Restore state
+    Object.assign(state, saveData.state);
+    // Restore player position
+    Object.assign(player, saveData.player);
+    player.visualX = player.x;
+    player.visualY = player.y;
+    player.moving = false;
+    state.mode = 'play';
+    state.activeDialog = null;
+    state.choiceMenu = null;
+    showResult = false;
+    showDaySummary = false;
+    console.log('Game loaded');
+    return true;
+  } catch(e) {
+    console.error('Load failed:', e);
+    return false;
+  }
+}
+
+function showSaveFlash(){
+  state.flashMessage = 'Game Saved!';
+  state.flashTimer = 90; // ~1.5 seconds at 60fps
+}
+
+function checkLoadOnStart(){
+  if(localStorage.getItem('pigSwineSave')){
+    state.mode = 'play';
+    loadGame();
+  }
+}
+
+function interact(){
+  if(state.mode==='title'){ startOpeningScene(); return; }
+  if(showDaySummary){ showDaySummary=false; return; }
+  if(showResult){
+    const wasVictory = resultData && resultData.victory;
+    showResult=false; resultData=null;
+    if(wasVictory){ showDaySummary=true; }
+    return;
+  }
+  if(state.activeDialog){ advanceDialog(); return; }
+  for(const n of npcs){ if(manhattan(player,n)<=1){ startDialog(n); return; }}
+  for(const item of items){ if(!item.taken && manhattan(player,item)<=1){ takeItem(item); return; }}
+  for(const inter of interactables){ if(manhattan(player,inter)<=1){ startCoffeeMiniGame(); return; }}
+  state.message='Nothing billable here.';
+}
+function startOpeningScene(){
+  state.mode='play';
+  if(!state.quests.orientation){ state.quests.orientation=true; state.reputation++; }
+  const lines=[
+    'Welcome to Pig & Swine, Dr. A. Kula.',
+    'Our financial situation is very difficult. Justice may be priceless, but rent has an invoice number.',
+    'Mr. Swine is skiing in Japan, allegedly studying comparative snow liability.',
+    'Find Muraś near reception. He will guide you through courts, Polish law, human rights, and the printer.'
+  ];
+  state.activeDialog={ name:'Mr. Pig', lines, idx:0, text:lines[0] };
+}
+function startDialog(n){
+  if(n.onTalk) n.onTalk();
+  if((n.id==='rak' || n.id==='wymysl') && !state.quests.friends){
+    const rakClose = manhattan(player, npcs.find(p=>p.id==='rak'))<=2;
+    const wymyslClose = manhattan(player, npcs.find(p=>p.id==='wymysl'))<=2;
+    if(rakClose || wymyslClose){ state.quests.friends=true; state.reputation++; awardBadge('friends'); saveGame(); }
+  }
+  if(n.id==='clerk' && state.quests.law && state.quests.rights && !state.quests.court){ startCourtArgumentChoice(); return; }
+  const lines=n.lines(); state.activeDialog={ name:n.name, npcId: n.id, lines, idx:0, text:lines[0] };
+  saveGame();
+}
+function advanceDialog(){ const d=state.activeDialog; d.idx++; if(d.idx>=d.lines.length) state.activeDialog=null; else d.text=d.lines[d.idx]; }
+function startCourtArgumentChoice(){
+  state.choiceMenu={
+    title:'Court Argument — Urgent Filing',
+    prompt:'Court Clerk: Dr. A. Kula, why should the court accept this filing despite the procedural chaos?',
+    options:[
+      {correct:true, text:'Because defective service affected the right to a fair hearing, and the human rights memo supports proportionality.'},
+      {correct:false, text:'Because Pig & Swine has a difficult financial situation and the printer suffered emotionally.'},
+      {correct:false, text:'Because Mr. Swine is skiing in Japan and cannot be expected to process defeat across time zones.'}
+    ]
+  };
+}
+function resolveCourtChoice(index){
+  if(!state.choiceMenu) return;
+  const opt=state.choiceMenu.options[index];
+  state.choiceMenu=null;
+  if(!opt) return;
+  // Handle incident choices (have effectId)
+  if(opt.effectId && incidentEffects[opt.effectId]){
+    incidentEffects[opt.effectId]();
+    return;
+  }
+  // Handle court choices (have correct property)
+  if(opt.correct){
+    state.quests.court=true; state.reputation+=3; state.gold+=20; awardBadge('court');
+    resultData = { victory: true };
+    showResult = true;
+    saveGame();
+  } else {
+    state.stress+=1;
+    resultData = { victory: false };
+    showResult = true;
+  }
+}
+
+// Nowak Eviction Court Puzzle
+function startNowakCourtChoice(){
+  if(state.choiceMenu) return;
+  playSound('docket');
+  state.choiceMenu = {
+    title: 'NOVAK EVICTION DEFENSE',
+    prompt: 'Ms. Nowak faces eviction for hanging a human rights poster. Choose your legal argument:',
+    options: [
+      { text: 'Human rights defense + Polish lease law: posters are protected expression under ECHR and Polish constitution', correct: true },
+      { text: 'Mr. Swine is skiing in Japan and sends his apologies (and a postcard)', correct: false },
+      { text: 'The printer jammed and ate the lease agreement, so no eviction is valid', correct: false }
+    ]
+  };
+}
+
+function drawNowakCourtChoice(){
+  const menu = state.choiceMenu;
+  if(!menu) return;
+  ctx.save();
+  ctx.fillStyle='rgba(8,10,18,.70)'; ctx.fillRect(0,0,W,H);
+  box(95,120,770,390);
+  ctx.textAlign='left';
+  ctx.fillStyle='#1b1f31'; ctx.font='24px monospace'; ctx.fillText(menu.title, 130,160);
+  ctx.font='17px monospace'; writeWrapped(menu.prompt, 130,195,700,22,'#1b1f31');
+  let y=270;
+  menu.options.forEach((opt, idx)=>{
+    ctx.fillStyle= idx===0 ? '#f1e2bf' : '#f7eed8'; ctx.fillRect(130,y-25,700,62);
+    ctx.strokeStyle='#d7a84f'; ctx.strokeRect(130,y-25,700,62);
+    ctx.fillStyle='#1b1f31'; ctx.font='16px monospace';
+    writeWrapped(`${idx+1}. ${opt.text}`, 150, y-15, 660, 18, '#1b1f31');
+    y += 76;
+  });
+  ctx.fillStyle='#aa3d42'; ctx.font='16px monospace'; ctx.fillText('Press 1, 2, or 3', 130,480);
+  ctx.restore();
+}
+
+function resolveNowakCourt(index){
+  if(!state.choiceMenu) return;
+  const opt=state.choiceMenu.options[index];
+  state.choiceMenu=null;
+  if(!opt) return;
+  if(opt.correct){
+    state.quests.nowakCase=true; state.reputation+=5; state.gold+=30; awardBadge('nowakCase');
+    resultData = { victory: true, caseName: 'Nowak Eviction' };
+    showResult = true;
+    saveGame();
+  } else {
+    state.stress+=2;
+    resultData = { victory: false, caseName: 'Nowak Eviction' };
+    showResult = true;
+  }
+}
+function takeItem(item){ item.taken=true;
+  if(item.id==='lawBinder'){ state.files++; state.quests.law=true; state.reputation++; awardBadge('law'); flashDialog('You found the Polish law binder: civil procedure, constitutional principles, and twelve colored tabs.'); saveGame(); }
+  if(item.id==='rightsMemo'){ state.rightsMemo++; state.quests.rights=true; state.reputation++; awardBadge('rights'); flashDialog('Human rights memo recovered. Dr. A. Kula now has arguments about dignity, fair trial, and proportionality.'); saveGame(); }
+  if(item.id==='ancientCaseFiles'){ state.quests.archive=true; state.reputation++; awardBadge('archive'); flashDialog('You found Ancient Case Files! They contain powerful legal arguments.'); saveGame(); }
+  if(item.id==='courtStamps'){ state.quests.courtHall=true; state.reputation++; awardBadge('courtHall'); flashDialog('You found Court Stamps! The Judge will be impressed.'); saveGame(); }
+  if(item.id==='specialtyCoffee'){ state.quests.coffeeRun=true; state.coffee+=3; awardBadge('coffeeRun'); flashDialog('You found Specialty Coffee Beans! +3 Coffee.'); saveGame(); }
+  // Nowak evidence tracking
+  if(item.id==='leaseAgreement'){ state.nowakEvidence.lease=true; flashDialog('Lease Agreement collected: 2-bedroom apartment, valid through 2025. Rent paid on time.'); saveGame(); }
+  if(item.id==='humanRightsPoster'){ state.nowakEvidence.poster=true; flashDialog('Human Rights Poster: "Housing is a Human Right — ECHR Article 8". Perfect for apartment walls.'); saveGame(); }
+  if(item.id==='landlordNotice'){ state.nowakEvidence.notice=true; flashDialog('Landlord Eviction Notice: "Lease violated due to unauthorized wall decorations (posters)".'); saveGame(); }
+}
+function startCoffeeMiniGame(){
+  coffeeMiniGame = { brewCount:0, brewTimer:300, active:true }; // 5s at 60fps
+  // Add click handler for brew button
+  canvas._coffeeClick = function(e){
+    if(!coffeeMiniGame || !coffeeMiniGame.active) { canvas.removeEventListener('click', canvas._coffeeClick); return; }
+    const rect = canvas.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+    const btnX = W/2 - 60, btnY = 300, btnW = 120, btnH = 50;
+    if(x >= btnX && x <= btnX + btnW && y >= btnY && y <= btnY + btnH){
+      clickBrewButton();
+    }
+  };
+  canvas.addEventListener('click', canvas._coffeeClick);
+}
+function drawCoffeeMiniGame(){
+  if(!coffeeMiniGame || !coffeeMiniGame.active) return;
+  ctx.save();
+  ctx.fillStyle='rgba(8,10,18,.85)';
+  ctx.fillRect(0,0,W,H);
+  box(200,150,560,340);
+  ctx.textAlign='center';
+  ctx.fillStyle='#1b1f31';
+  ctx.font='28px monospace';
+  ctx.fillText('BREW COFFEE', W/2, 200);
+  ctx.font='18px monospace';
+  writeWrapped('Click the brew button 3 times within 5 seconds to brew coffee. Reduces Procedural Anxiety by 10.', 250, 230, 460, 22, '#1b1f31');
+  // Brew button
+  const btnX = W/2 - 60, btnY = 300, btnW = 120, btnH = 50;
+  ctx.fillStyle= Math.floor(frame/10)%2 ? '#d7a84f' : '#c96c78';
+  ctx.fillRect(btnX, btnY, btnW, btnH);
+  ctx.strokeStyle='#ffd76c'; ctx.lineWidth=2; ctx.strokeRect(btnX, btnY, btnW, btnH);
+  ctx.fillStyle='#1b1f31'; ctx.font='20px monospace';
+  ctx.fillText('BREW', W/2, btnY + 32);
+  // Progress
+  ctx.fillStyle='#526f45'; ctx.font='18px monospace';
+  ctx.fillText(`Brewed: ${coffeeMiniGame.brewCount}/3`, W/2, 380);
+  // Timer
+  ctx.fillStyle='#aa3d42';
+  ctx.fillText(`Time left: ${Math.ceil(coffeeMiniGame.brewTimer/60)}s`, W/2, 410);
+  // Update timer
+  coffeeMiniGame.brewTimer--;
+  if(coffeeMiniGame.brewTimer <= 0) resolveCoffeeMiniGame(false);
+  ctx.restore();
+}
+function resolveCoffeeMiniGame(success){
+  if(!coffeeMiniGame) return;
+  coffeeMiniGame.active = false;
+  if(success){
+    state.stress = Math.max(0, state.stress - 10);
+    state.coffee++;
+    state.reputation++;
+    flashDialog('Coffee brewed! Procedural Anxiety reduced by 10. Mr. Pig would be proud — if he weren\'t busy panicking about rent.');
+    saveGame();
+  } else {
+    flashDialog('Coffee spilled! The machine hisses. Mr. Pig shouts: "That was our last filter!"');
+  }
+  coffeeMiniGame = null;
+  if(canvas._coffeeClick) canvas.removeEventListener('click', canvas._coffeeClick);
+}
+function clickBrewButton(){
+  if(!coffeeMiniGame || !coffeeMiniGame.active) return;
+  coffeeMiniGame.brewCount++;
+  if(coffeeMiniGame.brewCount >= 3) resolveCoffeeMiniGame(true);
+}
+function flashDialog(text){ state.activeDialog={ name:'Discovery', lines:[text], idx:0, text}; }
+
+// Random Office Incidents (Pokémon-style encounters)
+const incidents = [
+  {
+    id: 'printer_jam',
+    name: 'Printer Jam!',
+    prompt: 'The office printer is jammed again. Papers are everywhere.',
+    options: [
+      { text: 'Open and unjam it (Quick)', effectId: 'printer_quick' },
+      { text: 'Find Rak to fix it (Strategic)', effectId: 'printer_strategic' }
+    ]
+  },
+  {
+    id: 'invoice_crisis',
+    name: 'Invoice Crisis!',
+    prompt: 'A client sent an invoice with a glaring error. Mr. Pig will panic.',
+    options: [
+      { text: 'Hide it and fix quietly (Sneaky)', effectId: 'invoice_sneaky' },
+      { text: 'Tell Muraś immediately (Honest)', effectId: 'invoice_honest' }
+    ]
+  },
+  {
+    id: 'deadline_surprise',
+    name: 'Deadline Surprise!',
+    prompt: 'You forgot about a filing deadline today. The court clerk is waiting.',
+    options: [
+      { text: 'Rush to court (Panic)', effectId: 'deadline_panic' },
+      { text: 'Call Wymysl for advice (Strategic)', effectId: 'deadline_strategic' }
+    ]
+  }
+];
+
+// Incident effect functions
+const incidentEffects = {
+  printer_quick: function() {
+    state.stress += 1;
+    flashDialog('You unjammed it. Papers scattered. Mr. Pig is relieved, but your stress increased.');
+  },
+  printer_strategic: function() {
+    if (state.quests.friends) {
+      state.stress = Math.max(0, state.stress - 2);
+      flashDialog('Rak fixed it with surgical precision. Stress reduced!');
+    } else {
+      state.stress += 2;
+      flashDialog('Rak is not around. You struggled and made it worse.');
+    }
+  },
+  invoice_sneaky: function() {
+    state.stress += 1;
+    flashDialog('You hid it and fixed the error. Mr. Pig never knew... but your conscience weighs heavy.');
+  },
+  invoice_honest: function() {
+    if (state.quests.guide) {
+      state.reputation += 1;
+      flashDialog('Muraś helped you fix it properly. Mr. Pig was impressed by your honesty!');
+    } else {
+      state.stress += 1;
+      flashDialog('Muraś is not around. You told Mr. Pig and he panicked even more.');
+    }
+  },
+  deadline_panic: function() {
+    state.stress += 2;
+    flashDialog('You rushed to court. The clerk was annoyed but accepted the filing. Stress increased!');
+  },
+  deadline_strategic: function() {
+    if (state.quests.rights) {
+      state.reputation += 1;
+      flashDialog('Wymysl reminded you of a loophole. You filed an extension! Brilliant!');
+    } else {
+      state.stress += 1;
+      flashDialog('Wymysl is not around. You panicked and filed late. Mr. Pig is disappointed.');
+    }
+  }
+};
+
+function checkForRandomIncident() {
+  if (state.activeDialog || state.choiceMenu || showResult || showDaySummary) return;
+  // 10% chance per move
+  if (Math.random() < 0.10) {
+    const incident = incidents[Math.floor(Math.random() * incidents.length)];
+    startIncident(incident);
+  }
+}
+
+function startIncident(incident) {
+  state.choiceMenu = {
+    title: incident.name,
+    prompt: incident.prompt,
+    options: incident.options
+  };
+}
+
+function tryMove(dx,dy,face){
+  if(state.activeDialog || state.mode==='title') return; player.facing=face;
+  const nx=player.x+dx, ny=player.y+dy; if(!blocked(nx,ny)){ player.x=nx; player.y=ny; playSound('move'); }
+  checkForRandomIncident();
+}
+window.addEventListener('keydown', e=>{
+  if(['ArrowUp','ArrowDown','ArrowLeft','ArrowRight',' ','Enter'].includes(e.key)) e.preventDefault();
+  if(e.key===' '||e.key==='Enter') initAudio();
+  if(showResult && (e.key===' '||e.key==='Enter')){ interact(); return; }
+  if(showResult) return;
+  if(showDaySummary && (e.key===' '||e.key==='Enter')){ interact(); return; }
+  if(showDaySummary) return;
+  if(state.activeDialog && (e.key.toLowerCase()==='q' || e.key.toLowerCase()==='i')) return;
+  if(state.choiceMenu && ['1','2','3'].includes(e.key)){ 
+    if(state.choiceMenu.title.includes('NOVAK')) resolveNowakCourt(Number(e.key)-1);
+    else resolveCourtChoice(Number(e.key)-1); 
+    return; 
+  }
+  if(state.choiceMenu) return;
+  if(e.key.toLowerCase()==='q' && state.mode!=='title') { 
+    showDocket=!showDocket; 
+    if(showDocket) { showCaseBag=false; playSound('docket'); } 
+    else playSound('docket'); 
+    return; 
+  }
+  if(e.key.toLowerCase()==='i' && state.mode!=='title') { 
+    showCaseBag=!showCaseBag; 
+    if(showCaseBag) { showDocket=false; playSound('casebag'); } 
+    else playSound('casebag'); 
+    return; 
+  }
+  if(showDocket || (showCaseBag && !['s','l'].includes(e.key.toLowerCase()))) return;
+  if(showCaseBag && e.key.toLowerCase()==='s'){ saveGame(); return; }
+  if(showCaseBag && e.key.toLowerCase()==='l'){ loadGame(); return; }
+  if(e.key===' '||e.key==='Enter') interact();
+  if(e.key.toLowerCase()==='b') { toggleBgMusic(); return; }
+  if(e.key.toLowerCase()==='m' && !e.ctrlKey) showMap=!showMap;
+  if(e.key.toLowerCase()==='m' && e.ctrlKey) { toggleMute(); return; }
+  keys[e.key]=true;
+});
+window.addEventListener('keyup', e=>{ delete keys[e.key]; });
+
+// Touch controls: map button touches to keyboard events
+document.querySelectorAll('#touch-controls button').forEach(btn => {
+  const key = btn.dataset.key;
+  btn.addEventListener('touchstart', e => {
+    e.preventDefault();
+    document.dispatchEvent(new KeyboardEvent('keydown', {key, bubbles:true}));
+    btn.style.background = 'rgba(215,168,79,.9)';
+  });
+  btn.addEventListener('touchend', e => {
+    e.preventDefault();
+    document.dispatchEvent(new KeyboardEvent('keyup', {key, bubbles:true}));
+    btn.style.background = '';
+  });
+  // Also handle mouse events for desktop testing
+  btn.addEventListener('mousedown', e => {
+    document.dispatchEvent(new KeyboardEvent('keydown', {key, bubbles:true}));
+    btn.style.background = 'rgba(215,168,79,.9)';
+  });
+  btn.addEventListener('mouseup', e => {
+    document.dispatchEvent(new KeyboardEvent('keyup', {key, bubbles:true}));
+    btn.style.background = '';
+  });
+});
+
+// Held-key movement tick (smooth walking)
+let moveCooldown=0;
+setInterval(()=>{
+  if(state.activeDialog||state.mode==='title'||showDocket||showCaseBag||state.choiceMenu||showResult||showDaySummary) return;
+  if(moveCooldown>0){ moveCooldown--; return; }
+  if(keys['ArrowUp']||keys['w']||keys['W']){ tryMove(0,-1,'up'); moveCooldown=2; }
+  else if(keys['ArrowDown']||keys['s']||keys['S']){ tryMove(0,1,'down'); moveCooldown=2; }
+  else if(keys['ArrowLeft']||keys['a']||keys['A']){ tryMove(-1,0,'left'); moveCooldown=2; }
+  else if(keys['ArrowRight']||keys['d']||keys['D']){ tryMove(1,0,'right'); moveCooldown=2; }
+}, 60);
+
+window.__pigDebug = { state, player, startCourtArgumentChoice, resolveCourtChoice, questSteps, caseBagItems };
+
+checkLoadOnStart();
+draw();
+})();
+</script>
+</body>
+</html>

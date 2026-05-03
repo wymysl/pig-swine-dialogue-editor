@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>Dr. A. Kula - STEP-BY-STEP DEBUG</title>
+<style>
+  body { margin:0; height:100vh; background:#151827; display:grid; place-items:center; }
+  canvas { border:2px solid #d7a84f; }
+</style>
+</head>
+<body>
+<canvas id="game" width="960" height="640"></canvas>
+
+<script>
+const canvas = document.getElementById('game');
+const ctx = canvas.getContext('2d');
+
+// Clear canvas
+ctx.fillStyle='#151827';
+ctx.fillRect(0,0,960,640);
+ctx.textAlign='center';
+
+let step = 0;
+
+function logToCanvas(msg, y, color='#f5ead2') {
+  step++;
+  ctx.fillStyle = color;
+  ctx.font = '18px monospace';
+  ctx.fillText(`Step ${step}: ${msg}`, 480, y);
+  console.log(`Step ${step}: ${msg}`);
+}
+
+try {
+  logToCanvas('Canvas ready', 50);
+  logToCanvas('Setting up game constants...', 80);
+  
+  const W = 960, H = 640;
+  const TILE_W = 64, TILE_H = 32;
+  const ORIGIN_X = W/2, ORIGIN_Y = 92;
+  
+  logToCanvas('✓ Constants set', 110, '#526f45');
+  
+  logToCanvas('Defining state object...', 140);
+  
+  const state = {
+    mode:'title',
+    gold: 12,
+    reputation: 0,
+    stress: 0,
+    coffee: 0,
+    quests: { orientation:false, guide:false, friends:false, law:false, rights:false, court:false }
+  };
+  
+  logToCanvas('✓ State defined', 170, '#526f45');
+  
+  logToCanvas('Defining player object...', 200);
+  
+  const player = { x: 8, y: 12, facing:'down' };
+  
+  logToCanvas('✓ Player defined', 230, '#526f45');
+  
+  logToCanvas('Defining basic functions...', 260);
+  
+  function iso(x,y,z=0){ return { x: ORIGIN_X + (x-y)*TILE_W/2, y: ORIGIN_Y + (x+y)*TILE_H/2 - z }; }
+  
+  logToCanvas('✓ Functions defined', 290, '#526f45');
+  
+  logToCanvas('Testing titleScreen function...', 320);
+  
+  function titleScreen(){
+    ctx.fillStyle='#151827'; ctx.fillRect(0,0,W,H);
+    ctx.fillStyle='#ffd76c'; ctx.font='48px monospace'; ctx.fillText('PIG & SWINE', W/2, 200);
+    ctx.fillStyle='#f5ead2'; ctx.font='24px monospace'; ctx.fillText('Dr. A. Kula in Warsaw', W/2, 280);
+  }
+  
+  logToCanvas('✓ titleScreen defined', 350, '#526f45');
+  
+  logToCanvas('Testing titleScreen execution...', 380);
+  titleScreen();
+  logToCanvas('✓ Title screen renders!', 410, '#526f45');
+  
+  logToCanvas('Setting up draw loop...', 440);
+  
+  let frame = 0;
+  function draw(){
+    frame++;
+    if(state.mode==='title') { titleScreen(); }
+    ctx.fillStyle='#aa3d42'; ctx.font='16px monospace';
+    ctx.fillText('Draw loop running, frame: ' + frame, W/2, 500);
+    if(frame < 3) requestAnimationFrame(draw);
+    else logToCanvas('✓ Draw loop works!', 530, '#526f45');
+  }
+  
+  logToCanvas('✓ Draw loop defined', 470, '#526f45');
+  
+  logToCanvas('Starting game...', 560);
+  draw();
+  
+} catch(e) {
+  ctx.fillStyle='#aa3d42'; ctx.font='20px monospace';
+  ctx.fillText('ERROR: ' + e.message, 480, 600);
+  ctx.fillText('Line: ' + (e.lineNumber||'unknown'), 480, 630);
+  console.error('Game error:', e);
+}
+</script>
+</body>
+</html>

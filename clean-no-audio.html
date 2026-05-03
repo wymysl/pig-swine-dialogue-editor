@@ -1,0 +1,937 @@
+     1|<!DOCTYPE html>
+     2|<html lang="en">
+     3|<head>
+     4|<meta charset="UTF-8" />
+     5|<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+     6|<title>Dr. A. Kula and the Pig & Swine Crisis</title>
+     7|<meta name="description" content="Pig & Swine: Aplikant in Warsaw - a legal RPG game" />
+     8|<meta name="theme-color" content="#1b1f31" />
+     9|<meta name="apple-mobile-web-app-capable" content="yes" />
+    10|<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    11|<meta name="apple-mobile-web-app-title" content="Pig & Swine" />
+    12|  <style>
+    13|  :root {
+    14|    --ink:#1b1f31; --paper:#f5ead2; --gold:#d7a84f; --red:#aa3d42; --green:#526f45;
+    15|  }
+    16|  html, body { margin:0; height:100%; background:#161827; font-family: system-ui, Segoe UI, sans-serif; color:var(--paper); overflow:hidden; }
+    17|  #wrap { display:grid; place-items:center; height:100%; background: radial-gradient(circle at 50% 20%, #2a2f4a, #131522 65%); }
+    18|  canvas { image-rendering: pixelated; border: 6px solid #0b0d16; box-shadow: 0 25px 70px #0009; background:#27334a; max-width: min(96vw, 1200px); max-height: 82vh; }
+    19|  #panel { width:min(96vw, 1200px); display:flex; gap:14px; justify-content:space-between; align-items:center; margin-top:10px; color:#f8efd8; font-size:14px; }
+    20|  kbd { background:#0b0d16; border:1px solid #59617f; border-radius:5px; padding:2px 7px; box-shadow: inset 0 -2px #0008; }
+    21|  #hint { opacity:.88; }
+    22|  a { color:#ffd76c; }
+    23|
+    24|  /* Touch Controls */
+    25|  #touch-controls { display:none; position:fixed; bottom:20px; left:0; right:0; z-index:1000; pointer-events:none; }
+    26|  #dpad { position:absolute; left:20px; bottom:0; width:150px; height:150px; }
+    27|  #dpad button { position:absolute; width:50px; height:50px; background:rgba(11,13,22,.75); border:2px solid #d7a84f; color:#f5ead2; font-size:24px; border-radius:8px; pointer-events:auto; cursor:pointer; user-select:none; -webkit-user-select:none; }
+    28|  #dpad .up { top:0; left:50px; }
+    29|  #dpad .down { bottom:0; left:50px; }
+    30|  #dpad .left { top:50px; left:0; }
+    31|  #dpad .right { top:50px; right:0; }
+    32|  #action-buttons { position:absolute; right:20px; bottom:0; display:flex; gap:10px; }
+    33|  #action-buttons button { width:60px; height:60px; background:rgba(170,61,66,.75); border:2px solid #ffd76c; color:#f5ead2; font-size:14px; font-weight:bold; border-radius:10px; pointer-events:auto; cursor:pointer; user-select:none; -webkit-user-select:none; }
+    34|  #action-buttons button.qbtn { background:rgba(215,168,79,.75); border-color:#1b1f31; }
+    35|  #action-buttons button.ibtn { background:rgba(82,111,69,.75); border-color:#d7a84f; }
+    36|  @media (hover:none) and (pointer:coarse) {
+    37|    #touch-controls { display:block; }
+    38|    #panel { display:none; }
+    39|  }
+    40|  </style>
+    41|</head>
+    42|<body>
+    43|<div id="wrap">
+    44|  <div>
+    45|    <canvas id="game" width="960" height="640"></canvas>
+    46|    <div id="panel">
+    47|      <div><strong>Dr. A. Kula</strong> — Pig & Swine, Polish law, courts, and human rights</div>
+    48|      <div id="hint"><kbd>Arrows/WASD</kbd> move · <kbd>Space/Enter</kbd> talk/interact · <kbd>Q</kbd> docket · <kbd>I</kbd> case bag · <kbd>M</kbd> map</div>
+    49|    </div>
+    50|  </div>
+    51|</div>
+    52|<div id="touch-controls">
+    53|  <div id="dpad">
+    54|    <button class="up" data-key="ArrowUp">↑</button>
+    55|    <button class="down" data-key="ArrowDown">↓</button>
+    56|    <button class="left" data-key="ArrowLeft">←</button>
+    57|    <button class="right" data-key="ArrowRight">→</button>
+    58|  </div>
+    59|  <div id="action-buttons">
+    60|    <button class="spacebtn" data-key=" ">Space</button>
+    61|    <button class="qbtn" data-key="q">Q</button>
+    62|    <button class="ibtn" data-key="i">I</button>
+    63|  </div>
+    64|</div>
+    65|<script>
+    66|(() => {
+    67|const canvas = document.getElementById('game');
+    68|const ctx = canvas.getContext('2d');
+    69|ctx.imageSmoothingEnabled = false;
+    70|
+    71|// Global error handler - catches errors even during initialization
+    72|window.onerror = function(msg, url, lineNo, columnNo, error) {
+    73|  const c = document.getElementById('game');
+    74|  if (c) {
+    75|    const context = c.getContext('2d');
+    76|    context.fillStyle='#151827';
+    77|    context.fillRect(0,0,c.width,c.height);
+    78|    context.fillStyle='#aa3d42';
+    79|    context.font='16px monospace';
+    80|    context.textAlign='left';
+    81|    context.fillText('JS Error: ' + msg, 20, 40);
+    82|    context.fillText('Line: ' + lineNo + ', Col: ' + (columnNo||'?'), 20, 65);
+    83|    context.fillText('Url: ' + (url?url.split('/').pop():'inline'), 20, 90);
+    84|  }
+    85|  return true;
+    86|
+    87|// Sound system removed for file:// compatibility
+   170|};
+   171|
+   172|const W = canvas.width, H = canvas.height;
+   173|const TILE_W = 64, TILE_H = 32;
+   174|const ORIGIN_X = W/2, ORIGIN_Y = 92;
+   175|const MAP_W = 18, MAP_H = 18;
+   176|const keys = {};
+   177|let showMap = false, showDocket = false, showCaseBag = false, showResult = false, showDaySummary = false, frame = 0;
+   178|let resultData = null;
+   179|let coffeeMiniGame = null; // { brewCount, brewTimer, active }
+   180|
+   181|const state = {
+   182|  mode:'title',
+   183|  gold: 12,
+   184|  reputation: 0,
+   185|  stress: 0,
+   186|  coffee: 0,
+   187|  files: 0,
+   188|  evidence: 0,
+   189|  rightsMemo: 0,
+   190|  activeDialog: null,
+   191|  choiceMenu: null,
+   192|  flashMessage: null,
+   193|  flashTimer: 0,
+   194|  message: 'Press Space to begin Dr. A. Kulas adventure.',
+   195|  quests: {
+   196|    orientation:false, guide:false, friends:false, law:false, rights:false, court:false
+   197|  }
+   198|};
+   199|
+   200|const player = { x: 8, y: 12, facing:'down', moving:false, bob:0, visualX:8, visualY:12, moveTimer:0 };
+   201|const MOVE_SPEED = 0.12; // tiles per frame — smooth walk
+   202|
+   203|function iso(x,y,z=0){ return { x: ORIGIN_X + (x-y)*TILE_W/2, y: ORIGIN_Y + (x+y)*TILE_H/2 - z }; }
+   204|function tileAt(px,py){ return { x: Math.floor(px), y: Math.floor(py) }; }
+   205|function manhattan(a,b){ return Math.abs(a.x-b.x)+Math.abs(a.y-b.y); }
+   206|
+   207|const tiles = Array.from({length:MAP_H}, (_,y)=>Array.from({length:MAP_W}, (_,x)=>{
+   208|  if (x===0||y===0||x===MAP_W-1||y===MAP_H-1) return 'wall';
+   209|  if ((x>1&&x<7&&y>1&&y<6) || (x>10&&x<16&&y>2&&y<7)) return 'building';
+   210|  if (x===8 || y===12 || (y===8&&x>3&&x<14)) return 'street';
+   211|  if ((x+y)%7===0) return 'cobble';
+   212|  return 'park';
+   213|}));
+   214|// Pig & Swine office interior-ish plaza
+   215|for (let y=9;y<13;y++) for (let x=3;x<8;x++) tiles[y][x]='office';
+   216|for (let x=4;x<7;x++) tiles[8][x]='street';
+   217|tiles[11][5]='desk'; tiles[10][6]='books'; tiles[9][4]='files';
+   218|// Court
+   219|for (let y=4;y<8;y++) for (let x=12;x<16;x++) tiles[y][x]='court';
+   220|tiles[7][14]='street';
+   221|// Cafe and tram stop
+   222|for (let y=13;y<16;y++) for (let x=11;x<15;x++) tiles[y][x]='cafe';
+   223|tiles[12][13]='street';
+   224|tiles[15][8]='tram';
+   225|
+   226|function blocked(x,y){
+   227|  if (x<1||y<1||x>=MAP_W-1||y>=MAP_H-1) return true;
+   228|  return ['building','wall','desk','books'].includes(tiles[y][x]);
+   229|}
+   230|
+   231|const npcs = [
+   232|  {id:'pig', name:'Mr. Pig', x:5, y:10, hue:'#c96c78',
+   233|    lines:()=>{
+   234|      if(state.quests.court) return ['Dr. A. Kula! Day One complete. Pig & Swine survives. Mr. Swine is still skiing.', 'The toner budget is safe. Justice, it seems, is billable.'];
+   235|      if(state.quests.rights) return ['You have the rights memo. Now go to court — defective service awaits.', 'Remember: fair hearing, proportionality, and Mr. Swine is still in Japan.'];
+   236|      if(state.quests.law) return ['You found the binder. Heavy, isnt it? Polish law always is.', 'Now find the human rights memo near the court. Dignity is just a filing away.'];
+   237|      if(state.quests.friends) return ['Rak and Wymysl are with you. Good. The firm needs a legal strike team.', 'Now find the Polish law binder in the office.'];
+   238|      if(state.quests.guide) return ['Muraś found. Good. He will guide you through Pig & Swine.', 'Find Rak and Wymysl next. They are your real friends.'];
+   239|      return ['Dr. A. Kula, welcome to Pig & Swine.', 'Our financial situation is very difficult. The firm is held together by coffee, unpaid invoices, and procedural optimism.', 'Mr. Swine is skiing in Japan, so you must help us survive Warsaw courts, Polish law, and human rights cases.', 'Find Muraś. He will guide you through the firm.'];
+   240|    },
+   241|    onTalk:()=>{ if(!state.quests.orientation){ state.quests.orientation=true; state.reputation++; saveGame(); } }},
+   242|  {id:'muras', name:'Muraś', x:4, y:11, hue:'#e0b35b',
+   243|    lines:()=>{
+   244|      // Track progress precisely
+   245|      if(state.quests.court) return ['Day One complete. The firm survives. Mr. Swine still skis.', 'Rest. Tomorrow brings new deadlines, new archives, new anxieties.'];
+   246|      if(state.quests.rights && !state.quests.court) return ['You have the rights memo! Now go to court — the Clerk awaits Dr. A. Kula.', 'Defective service, fair hearing, proportionality. You have all the pieces.'];
+   247|      if(state.quests.law && !state.quests.rights) return ['Excellent. The Polish law binder is heavy because justice requires gravity.', 'Now find the human rights memo near the court building. It explains dignity and proportionality.'];
+   248|      if(state.quests.friends && !state.quests.law) return ['Good. Rak and Wymysl are with you. The firm now has a legal strike team.', 'Next: collect the Polish law binder from the office. It explains why every simple matter has seven attachments.'];
+   249|      if(state.quests.guide && !state.quests.friends) return ['You found me. Now find Rak and Wymysl near the cafe.', 'They are your real friends — they will help with courts, Polish law, and human rights.'];
+   250|      return ['I am Muraś, your guide in Pig & Swine.', 'First rule: never enter the archive without a quest. Second rule: always know who your real friends are.', 'Find me near reception. If lost, follow the smell of binders.'];
+   251|    },
+   252|    onTalk:()=>{ if(!state.quests.guide){ state.quests.guide=true; saveGame(); } }},
+   253|  {id:'rak', name:'Rak', x:12, y:14, hue:'#7fb069',
+   254|    lines:()=>{
+   255|      if(state.quests.court) return ['Rak reporting. Day One complete. The archive grows, the deadlines multiply.', 'See you tomorrow, Dr. A. Kula. Bring coffee.'];
+   256|      if(state.quests.rights) return ['You have the memo! Now for court — defective service awaits.', 'I have spotted three missing annexes already. Classic Pig & Swine.'];
+   257|      if(state.quests.law) return ['Binder acquired. My sharp eyes approve.', 'Now find the human rights memo near the court. Dignity needs evidence.'];
+   258|      if(state.quests.friends) return ['Rak reporting for duty. I can spot a missing annex from across Warsaw.', 'eyes sharp, evidence and coffee ready.'];
+   259|      return ['Dr. A. Kula! We heard Pig & Swine is in trouble.', 'Wymysl and I are your real friends. We will help you sort facts from office folklore.'];
+   260|    }},
+   261|  {id:'wymysl', name:'Wymysl', x:14, y:14, hue:'#d7a84f',
+   262|    lines:()=>{
+   263|      if(state.quests.court) return ['Wymysl here. Day One done. Strategy proved correct.', 'Tomorrow: new cases, new chaos, same Swine in Japan.'];
+   264|      if(state.quests.rights) return ['Memo secured! The court will not know what hit it.', 'Strategy: defective service + human rights = victory.'];
+   265|      if(state.quests.law) return ['Binder found. Good. Now the human rights memo — near the court building.', 'Strategy: read the law, protect rights, avoid printer jams.'];
+   266|      if(state.quests.friends) return ['Wymysl here. Strategy: read the law, protect human rights, avoid printer jams.', 'theory brewing. Chaos to case in three steps.'];
+   267|      return ['A difficult financial situation? Classic Pig & Swine.', 'Gather Rak, me, and the binder. Then we go from chaos to case theory.'];
+   268|    }},
+   269|  {id:'clerk', name:'Court Clerk', x:14, y:6, hue:'#8bb1e0',
+   270|    lines:()=> state.quests.court
+   271|      ? ['The court quest is complete. Pig & Swine survives another docket.']
+   272|      : state.quests.law && state.quests.rights
+   273|      ? ['You have the binder, the rights memo, and a calm face. The court is ready for Dr. A. Kula.']
+   274|      : ['Court corridor rule: bring the right binder, the rights memo, and a calm face.', 'If you understand Polish law and human rights, the hearing may actually go well.']},
+   275|  {id:'tram', name:'Tram 17 Oracle', x:8, y:15, hue:'#e1d156',
+   276|    lines:()=> ['Ding ding. Warsaw wisdom: courts are near, deadlines are nearer.', 'Mr. Swine sends a postcard from Japan: “excellent powder, terrifying exchange rate.”']}
+   277|];
+   278|
+   279|const items = [
+   280|  {id:'lawBinder', x:4, y:9, label:'Polish law binder', kind:'binder', taken:false},
+   281|  {id:'rightsMemo', x:9, y:7, label:'human rights memo', kind:'usb', taken:false}
+   282|];
+   283|const interactables = [
+   284|  {id:'coffeeMachine', name:'Coffee Machine', x:6, y:10, label:'Coffee Machine'}
+   285|];
+   286|
+   287|function titleScreen(){
+   288|  ctx.fillStyle='#151827'; ctx.fillRect(0,0,W,H);
+   289|  drawPixelWarsawSkyline();
+   290|  ctx.textAlign='center';
+   291|  pixelText('PIG & SWINE', W/2, 132, 48, '#ffd76c', '#6d2f45');
+   292|  pixelText('DR. A. KULA IN WARSAW', W/2, 190, 24, '#f5ead2', '#22263a');
+   293|  drawLawyerSprite(W/2-24, 278, 3, '#33415f');
+   294|  drawPigSeal(W/2+88, 318, 2);
+   295|  box(170,410,620,136);
+   296|  writeWrapped('Dr. A. Kula begins at Pig & Swine: Mr. Pig warns of a very difficult financial situation while Mr. Swine skis in Japan. Find Rak, Wymysl, and Muraś to face courts, Polish law, and human rights.', 205,438,550,21,'#1b1f31');
+   297|  ctx.fillStyle = Math.floor(frame/25)%2 ? '#aa3d42' : '#1b1f31';
+   298|  ctx.font='20px monospace'; ctx.fillText('Press Space / Enter', W/2, 580);
+   299|}
+   300|
+   301|function draw(){
+   302|  try {
+   303|  frame++;
+   304|  if (state.mode==='title') { titleScreen(); requestAnimationFrame(draw); return; }
+   305|  // Smooth movement interpolation
+   306|  if(player.visualX!==player.x||player.visualY!==player.y){
+   307|    const dx=player.x-player.visualX, dy=player.y-player.visualY;
+   308|    const step=MOVE_SPEED;
+   309|    player.visualX += Math.abs(dx)<step ? dx : Math.sign(dx)*step;
+   310|    player.visualY += Math.abs(dy)<step ? dy : Math.sign(dy)*step;
+   311|    player.moving=true; player.bob=Math.sin(frame/4)*2;
+   312|  } else { player.moving=false; player.bob=0; }
+   313|  ctx.clearRect(0,0,W,H);
+   314|  drawBackground();
+   315|  const entities = [];
+   316|  for (let y=0;y<MAP_H;y++) for (let x=0;x<MAP_W;x++) entities.push({type:'tile', x,y, sort:x+y, draw:()=>drawTile(x,y,tiles[y][x])});
+   317|  for (const item of items) if(!item.taken) entities.push({type:'item', x:item.x, y:item.y, sort:item.x+item.y+.2, draw:()=>drawItem(item)});
+   318|  for (const inter of interactables) entities.push({type:'interactable', x:inter.x, y:inter.y, sort:inter.x+inter.y+.3, draw:()=>drawInteractable(inter)});
+   319|  for (const n of npcs) entities.push({type:'npc', x:n.x, y:n.y, sort:n.x+n.y+.4, draw:()=>drawNPC(n)});
+   320|  entities.push({type:'player', x:player.visualX, y:player.visualY, sort:player.visualX+player.visualY+.5, draw:drawPlayer});
+   321|  entities.sort((a,b)=>a.sort-b.sort).forEach(e=>e.draw());
+   322|  drawInteractHint();
+   323|  drawHUD();
+   324|  if (state.flashMessage && state.flashTimer > 0){
+   325|    state.flashTimer--;
+   326|    ctx.save();
+   327|    ctx.fillStyle = 'rgba(82,111,69,.85)';
+   328|    ctx.fillRect(W/2-100, 20, 200, 40);
+   329|    ctx.strokeStyle='#d7a84f'; ctx.lineWidth=2; ctx.strokeRect(W/2-100, 20, 200, 40);
+   330|    ctx.fillStyle='#f5ead2'; ctx.font='18px monospace'; ctx.textAlign='center';
+   331|    ctx.fillText(state.flashMessage, W/2, 46);
+   332|    ctx.restore();
+   333|  }
+   334|  if (showMap) drawMiniMap();
+   335|  if (showDocket) drawDocket();
+   336|  if (showCaseBag) drawCaseBag();
+   337|  if (showResult) drawResultScreen();
+   338|  if (showDaySummary) drawDaySummary();
+   339|  if (state.choiceMenu) drawChoiceMenu();
+   340|  if (state.activeDialog) drawDialog();
+   341|  if (coffeeMiniGame && coffeeMiniGame.active) drawCoffeeMiniGame();
+   342|  requestAnimationFrame(draw);
+   343|  } catch(e) {
+   344|    ctx.fillStyle='#151827'; ctx.fillRect(0,0,W,H);
+   345|    ctx.fillStyle='#aa3d42'; ctx.font='16px monospace'; ctx.textAlign='left';
+   346|    ctx.fillText('JS Error: ' + e.message, 20, 40);
+   347|    ctx.fillText('Line: ' + (e.lineNumber||'unknown'), 20, 65);
+   348|    console.error('Draw error:', e);
+   349|    requestAnimationFrame(draw);
+   350|  }
+   351|}
+   352|
+   353|function drawBackground(){
+   354|  const g = ctx.createLinearGradient(0,0,0,H);
+   355|  g.addColorStop(0,'#222943'); g.addColorStop(1,'#1a2134'); ctx.fillStyle=g; ctx.fillRect(0,0,W,H);
+   356|  ctx.globalAlpha=.25; drawPixelWarsawSkyline(); ctx.globalAlpha=1;
+   357|}
+   358|function drawPixelWarsawSkyline(){
+   359|  ctx.fillStyle='#0e1120'; ctx.fillRect(0,360,W,280);
+   360|  const b=[60,90,50,130,70,105,44,160,70,88,55,118,40]; let x=35;
+   361|  b.forEach((h,i)=>{ ctx.fillRect(x,360-h,50,h); for(let yy=360-h+14; yy<348; yy+=18){ for(let xx=x+8; xx<x+44; xx+=16){ ctx.fillStyle=(i+yy+frame)%3?'#242b45':'#d7a84f'; ctx.fillRect(xx,yy,6,8); }} ctx.fillStyle='#0e1120'; x+=62; });
+   362|  ctx.fillStyle='#0e1120'; ctx.fillRect(730,170,56,190); ctx.fillRect(748,122,20,50); ctx.fillRect(755,92,6,36);
+   363|}
+   364|
+   365|function drawTile(x,y,t){
+   366|  const p=iso(x,y);
+   367|  const palette={street:['#536176','#3c475c'], cobble:['#697077','#4e5966'], park:['#57734b','#3f5a38'], office:['#b99562','#7d543c'], cafe:['#8b6d4b','#5b4634'], court:['#c9c3ad','#8f897d'], tram:['#b6a83e','#6e692c'], files:['#b99562','#7d543c'], wall:['#303647','#202536'], building:['#41485f','#272d40'], desk:['#7b4b32','#43291f'], books:['#66563a','#332b26']};
+   368|  const [a,b]=palette[t]||palette.park;
+   369|  diamond(p.x,p.y,TILE_W,TILE_H,a,b);
+   370|  if (t==='building' || t==='court') drawBlock(p.x,p.y,t==='court'?'#d8d1bd':'#4f5872', t==='court'?'#aaa28e':'#303850', 42);
+   371|  if (t==='office') { ctx.fillStyle='#3e2b22'; ctx.fillRect(p.x-14,p.y-20,28,12); ctx.fillStyle='#ffd76c'; ctx.fillRect(p.x-8,p.y-17,16,4); }
+   372|  if (t==='cafe') { ctx.fillStyle='#2e2018'; ctx.fillRect(p.x-16,p.y-18,32,10); ctx.fillStyle='#f5ead2'; ctx.fillRect(p.x-11,p.y-16,22,5); }
+   373|  if (t==='tram') { ctx.fillStyle='#e1d156'; ctx.fillRect(p.x-22,p.y-23,44,16); ctx.fillStyle='#222'; ctx.fillRect(p.x-15,p.y-20,12,7); ctx.fillRect(p.x+4,p.y-20,12,7); }
+   374|}
+   375|function diamond(x,y,w,h,top,edge){
+   376|  ctx.fillStyle=top; ctx.beginPath(); ctx.moveTo(x,y-h/2); ctx.lineTo(x+w/2,y); ctx.lineTo(x,y+h/2); ctx.lineTo(x-w/2,y); ctx.closePath(); ctx.fill();
+   377|  ctx.strokeStyle=edge; ctx.lineWidth=2; ctx.stroke();
+   378|}
+   379|function drawBlock(x,y,front,side,h){
+   380|  ctx.fillStyle=side; ctx.beginPath(); ctx.moveTo(x+32,y); ctx.lineTo(x+32,y-h); ctx.lineTo(x,y+16-h); ctx.lineTo(x,y+16); ctx.closePath(); ctx.fill();
+   381|  ctx.fillStyle=front; ctx.beginPath(); ctx.moveTo(x-32,y); ctx.lineTo(x-32,y-h); ctx.lineTo(x,y+16-h); ctx.lineTo(x,y+16); ctx.closePath(); ctx.fill();
+   382|  ctx.fillStyle=lighten(front,18); ctx.beginPath(); ctx.moveTo(x,y-16-h); ctx.lineTo(x+32,y-h); ctx.lineTo(x,y+16-h); ctx.lineTo(x-32,y-h); ctx.closePath(); ctx.fill();
+   383|  ctx.strokeStyle='#202536'; ctx.stroke();
+   384|}
+   385|function lighten(hex, amt){ let n=parseInt(hex.slice(1),16); let r=Math.min(255,(n>>16)+amt),g=Math.min(255,((n>>8)&255)+amt),b=Math.min(255,(n&255)+amt); return `rgb(${r},${g},${b})`; }
+   386|
+   387|function drawItem(item){
+   388|  const p=iso(item.x+.5,item.y+.5,18+Math.sin(frame/12)*3);
+   389|  ctx.save(); ctx.translate(p.x,p.y);
+   390|  ctx.fillStyle='rgba(255,215,108,.25)'; ctx.beginPath(); ctx.ellipse(0,20,22,8,0,0,Math.PI*2); ctx.fill();
+   391|  if(item.kind==='binder'){ ctx.fillStyle='#aa3d42'; ctx.fillRect(-13,-16,26,28); ctx.fillStyle='#f5ead2'; ctx.fillRect(-8,-10,16,4); ctx.fillRect(-8,-2,16,4); }
+   392|  else { ctx.fillStyle='#d7d8e0'; ctx.fillRect(-5,-14,10,24); ctx.fillStyle='#526f45'; ctx.fillRect(-3,-10,6,10); }
+   393|  ctx.restore();
+   394|}
+   395|function drawInteractable(inter){
+   396|  const p=iso(inter.x+.5,inter.y+.5,20+Math.sin(frame/10)*2);
+   397|  ctx.save(); ctx.translate(p.x,p.y);
+   398|  // Simple coffee machine sprite
+   399|  ctx.fillStyle='#59617f'; ctx.fillRect(-12,-16,24,28); // body
+   400|  ctx.fillStyle='#aa3d42'; ctx.fillRect(-8,-20,16,6); // top
+   401|  ctx.fillStyle='#d7a84f'; ctx.fillRect(-4,-12,8,4); // brew button
+   402|  ctx.fillStyle='#1b1f31'; ctx.fillRect(-6,-6,4,2); // display
+   403|  ctx.fillRect(2,-6,4,2);
+   404|  ctx.restore();
+   405|}
+   406|function drawNPC(n){ const p=iso(n.x+.5,n.y+.5,22); drawLawyerSprite(p.x-16,p.y-40,2,n.hue); }
+   407|function drawPlayer(){ const p=iso(player.visualX+.5,player.visualY+.5,23+Math.sin(frame/8)*2+player.bob); drawLawyerSprite(p.x-16,p.y-42,2.2,'#33415f'); }
+   408|function getNearbyInteractable(){
+   409|  for(const n of npcs) if(manhattan(player,n)<=1) return {type:'npc', name:n.name, x:n.x, y:n.y};
+   410|  for(const item of items) if(!item.taken && manhattan(player,item)<=1) return {type:'item', name:item.label, x:item.x, y:item.y, item};
+   411|  for(const inter of interactables) if(manhattan(player,inter)<=1) return {type:'interactable', name:inter.name, x:inter.x, y:inter.y, inter};
+   412|  return null;
+   413|}
+   414|function drawInteractHint(){
+   415|  const target = getNearbyInteractable();
+   416|  if(!target || state.activeDialog || state.mode==='title') return;
+   417|  const p=iso(target.x+.5,target.y+.5,58+Math.sin(frame/10)*4);
+   418|  ctx.save();
+   419|  ctx.textAlign='center';
+   420|  ctx.fillStyle='rgba(11,13,22,.82)';
+   421|  const label = target.type==='item' ? `Pick up ${target.item.label}` : target.type==='interactable' ? `Use ${target.name}` : `Talk to ${target.name}`;
+   422|  const text = `${label} · Press Space`;
+   423|  const width = Math.min(420, ctx.measureText(text).width + 26);
+   424|  ctx.fillRect(p.x-width/2, p.y-34, width, 28);
+   425|  ctx.strokeStyle='#ffd76c'; ctx.lineWidth=2; ctx.strokeRect(p.x-width/2, p.y-34, width, 28);
+   426|  ctx.fillStyle='#ffd76c'; ctx.font='16px monospace'; ctx.fillText(text, p.x, p.y-14);
+   427|  ctx.fillStyle='#f5ead2'; ctx.beginPath(); ctx.moveTo(p.x, p.y); ctx.lineTo(p.x-8, p.y-10); ctx.lineTo(p.x+8, p.y-10); ctx.closePath(); ctx.fill();
+   428|  ctx.restore();
+   429|}
+   430|function drawLawyerSprite(x,y,s,coat){
+   431|  ctx.save(); ctx.translate(x,y); ctx.scale(s,s);
+   432|  ctx.fillStyle='#f1bd93'; ctx.fillRect(5,1,8,8); ctx.fillStyle='#2b1a12'; ctx.fillRect(4,0,10,3);
+   433|  ctx.fillStyle=coat; ctx.fillRect(3,9,12,14); ctx.fillStyle='#f5ead2'; ctx.fillRect(7,10,4,10); ctx.fillStyle='#aa3d42'; ctx.fillRect(8,13,2,7);
+   434|  ctx.fillStyle='#1b1f31'; ctx.fillRect(4,23,4,7); ctx.fillRect(11,23,4,7); ctx.fillStyle='#0b0d16'; ctx.fillRect(3,30,5,2); ctx.fillRect(11,30,5,2);
+   435|  ctx.restore();
+   436|}
+   437|function drawPigSeal(x,y,s){
+   438|  ctx.save(); ctx.translate(x,y); ctx.scale(s,s); ctx.fillStyle='#d88992'; ctx.fillRect(0,8,30,20); ctx.fillRect(5,2,6,8); ctx.fillRect(20,2,6,8); ctx.fillStyle='#b95f6b'; ctx.fillRect(9,15,12,8); ctx.fillStyle='#1b1f31'; ctx.fillRect(7,12,3,3); ctx.fillRect(21,12,3,3); ctx.restore();
+   439|}
+   440|function drawPortrait(npcId, x, y){
+   441|  ctx.save();
+   442|  ctx.translate(x, y);
+   443|  if(npcId === 'pig'){
+   444|    // Mr. Pig portrait - pink pig face
+   445|    ctx.fillStyle='#c96c78'; ctx.fillRect(4,4,24,24); // face
+   446|    ctx.fillStyle='#1b1f31'; ctx.fillRect(10,10,4,4); ctx.fillRect(20,10,4,4); // eyes
+   447|    ctx.fillStyle='#b95f6b'; ctx.fillRect(12,20,8,4); // nose/mouth
+   448|  } else if(npcId === 'muras'){
+   449|    // Muraś portrait - lawyer with glasses
+   450|    ctx.fillStyle='#e0b35b'; ctx.fillRect(4,8,24,20); // coat
+   451|    ctx.fillStyle='#f1bd93'; ctx.fillRect(10,4,12,12); // face
+   452|    ctx.fillStyle='#1b1f31'; ctx.fillRect(13,8,3,2); ctx.fillRect(20,8,3,2); // eyes
+   453|    ctx.fillStyle='#d7a84f'; ctx.fillRect(15,14,4,2); // glasses bridge
+   454|    ctx.fillStyle='#33415f'; ctx.fillRect(8,4,16,4); // hair
+   455|  } else if(npcId === 'rak'){
+   456|    // Rak portrait - sharp eyes
+   457|    ctx.fillStyle='#7fb069'; ctx.fillRect(4,8,24,20); // coat
+   458|    ctx.fillStyle='#f1bd93'; ctx.fillRect(10,4,12,12); // face
+   459|    ctx.fillStyle='#1b1f31'; ctx.fillRect(12,8,6,3); ctx.fillRect(20,8,6,3); // sharp eyes
+   460|    ctx.fillStyle='#33415f'; ctx.fillRect(8,4,16,4); // hair
+   461|  } else if(npcId === 'wymysl'){
+   462|    // Wymysl portrait - strategic thinker
+   463|    ctx.fillStyle='#d7a84f'; ctx.fillRect(4,8,24,20); // coat
+   464|    ctx.fillStyle='#f1bd93'; ctx.fillRect(10,4,12,12); // face
+   465|    ctx.fillStyle='#1b1f31'; ctx.fillRect(13,8,3,2); ctx.fillRect(20,8,3,2); // eyes
+   466|    ctx.fillStyle='#aa3d42'; ctx.fillRect(14,14,4,2); // serious mouth
+   467|    ctx.fillStyle='#33415f'; ctx.fillRect(8,4,16,4); // hair
+   468|  } else if(npcId === 'clerk'){
+   469|    // Court Clerk portrait - official
+   470|    ctx.fillStyle='#8bb1e0'; ctx.fillRect(4,8,24,20); // uniform
+   471|    ctx.fillStyle='#f1bd93'; ctx.fillRect(10,4,12,12); // face
+   472|    ctx.fillStyle='#1b1f31'; ctx.fillRect(13,8,3,2); ctx.fillRect(20,8,3,2); // eyes
+   473|    ctx.fillStyle='#1b1f31'; ctx.fillRect(14,14,4,2); // serious mouth
+   474|  } else {
+   475|    // Tram Oracle - mystical
+   476|    ctx.fillStyle='#e1d156'; ctx.fillRect(4,8,24,20); // coat
+   477|    ctx.fillStyle='#f1bd93'; ctx.fillRect(10,4,12,12); // face
+   478|    ctx.fillStyle='#1b1f31'; ctx.fillRect(13,8,3,2); ctx.fillRect(20,8,3,2); // eyes
+   479|    ctx.fillStyle='#d7a84f'; ctx.fillRect(14,14,4,2); // mystical smile
+   480|  }
+   481|  ctx.restore();
+   482|}
+   483|function drawBubble(x,y,text){ ctx.fillStyle='#f5ead2'; ctx.fillRect(x-10,y-14,20,16); ctx.fillStyle='#1b1f31'; ctx.font='14px monospace'; ctx.textAlign='center'; ctx.fillText(text,x,y-2); }
+   484|
+   485|function drawHUD(){
+   486|  ctx.fillStyle='rgba(11,13,22,.84)'; ctx.fillRect(18,16,365,78);
+   487|  ctx.strokeStyle='#d7a84f'; ctx.strokeRect(18,16,365,78);
+   488|  ctx.font='16px monospace'; ctx.textAlign='left'; ctx.fillStyle='#f5ead2';
+   489|  ctx.fillText(`zł ${state.gold}   Reputation ${state.reputation}   Coffee ${state.coffee}`, 34,43);
+   490|  const q = nextQuest(); ctx.fillStyle='#ffd76c'; ctx.fillText(`Quest: ${q}`, 34,70);
+   491|}
+   492|function nextQuest(){
+   493|  if(!state.quests.orientation) return 'Speak with Mr. Pig about the financial crisis';
+   494|  if(!state.quests.guide) return 'Find Muraś, your guide through Pig & Swine';
+   495|  if(!state.quests.friends) return 'Find Rak and Wymysl, your real friends';
+   496|  if(!state.quests.law) return 'Collect the Polish law binder';
+   497|  if(!state.quests.rights) return 'Recover the human rights memo';
+   498|  if(!state.quests.court) return 'Go to court and save Pig & Swine';
+   499|  return 'Victory! Dr. A. Kula kept justice billable';
+   500|}
+   501|function box(x,y,w,h){ ctx.fillStyle='#f5ead2'; ctx.fillRect(x,y,w,h); ctx.strokeStyle='#1b1f31'; ctx.lineWidth=4; ctx.strokeRect(x,y,w,h); ctx.strokeStyle='#d7a84f'; ctx.lineWidth=2; ctx.strokeRect(x+7,y+7,w-14,h-14); }
+   502|function drawDialog(){
+   503|  box(70,466,820,138);
+   504|  ctx.fillStyle='#1b1f31'; ctx.font='18px monospace'; ctx.textAlign='left';
+   505|  // Draw portrait if NPC
+   506|  const hasPortrait = !!state.activeDialog.npcId;
+   507|  const textX = hasPortrait ? 120 : 100;
+   508|  const maxWidth = hasPortrait ? 720 : 760;
+   509|  const nextX = hasPortrait ? 650 : 690;
+   510|  if(hasPortrait){
+   511|    drawPortrait(state.activeDialog.npcId, 85, 476);
+   512|  }
+   513|  ctx.fillText(state.activeDialog.name, textX, 498);
+   514|  writeWrapped(state.activeDialog.text, textX, 528, maxWidth, 24, '#1b1f31');
+   515|  ctx.fillStyle='#aa3d42'; ctx.fillText('Space/Enter: next', nextX, 584);
+   516|}
+   517|function drawChoiceMenu(){
+   518|  const menu = state.choiceMenu;
+   519|  if(!menu) return;
+   520|  ctx.save();
+   521|  ctx.fillStyle='rgba(8,10,18,.70)'; ctx.fillRect(0,0,W,H);
+   522|  box(95,120,770,390);
+   523|  ctx.textAlign='left';
+   524|  ctx.fillStyle='#1b1f31'; ctx.font='24px monospace'; ctx.fillText(menu.title, 130,165);
+   525|  ctx.font='17px monospace'; writeWrapped(menu.prompt, 130,198,700,22,'#1b1f31');
+   526|  let y=270;
+   527|  menu.options.forEach((opt, idx)=>{
+   528|    ctx.fillStyle= idx===0 ? '#f1e2bf' : '#f7eed8'; ctx.fillRect(130,y-25,700,62);
+   529|    ctx.strokeStyle='#d7a84f'; ctx.strokeRect(130,y-25,700,62);
+   530|    ctx.fillStyle='#1b1f31'; ctx.font='16px monospace';
+   531|    writeWrapped(`${idx+1}. ${opt.text}`, 150, y, 660, 18, '#1b1f31');
+   532|    y += 76;
+   533|  });
+   534|  ctx.fillStyle='#aa3d42'; ctx.font='16px monospace'; ctx.fillText('Press 1, 2, or 3', 130,480);
+   535|  ctx.restore();
+   536|}
+   537|function writeWrapped(text,x,y,maxWidth,lineHeight,color){
+   538|  ctx.fillStyle=color; ctx.font='18px monospace'; const words=text.split(' '); let line='';
+   539|  for(const w of words){ const test=line+w+' '; if(ctx.measureText(test).width>maxWidth){ ctx.fillText(line,x,y); line=w+' '; y+=lineHeight; } else line=test; }
+   540|  ctx.fillText(line,x,y);
+   541|}
+   542|function pixelText(txt,x,y,size,fill,shadow){ ctx.font=`900 ${size}px monospace`; ctx.textAlign='center'; ctx.fillStyle=shadow; ctx.fillText(txt,x+4,y+4); ctx.fillStyle=fill; ctx.fillText(txt,x,y); }
+   543|function drawMiniMap(){
+   544|  const sx=732, sy=20, sc=7; ctx.fillStyle='rgba(11,13,22,.86)'; ctx.fillRect(sx-12,sy-12,154,154); ctx.strokeStyle='#ffd76c'; ctx.strokeRect(sx-12,sy-12,154,154);
+   545|  for(let y=0;y<MAP_H;y++) for(let x=0;x<MAP_W;x++){ ctx.fillStyle=blocked(x,y)?'#303647': tiles[y][x]==='street'?'#78869b':tiles[y][x]==='park'?'#526f45':'#b99562'; ctx.fillRect(sx+x*sc,sy+y*sc,sc-1,sc-1); }
+   546|  ctx.fillStyle='#ffd76c'; ctx.fillRect(sx+player.x*sc, sy+player.y*sc, sc, sc);
+   547|}
+   548|function questSteps(){
+   549|  return [
+   550|    {flag:'orientation', text:'Speak with Mr. Pig about the firm’s financial crisis'},
+   551|    {flag:'guide', text:'Find Muraś, your guide through Pig & Swine'},
+   552|    {flag:'friends', text:'Find Rak and Wymysl, Dr. A. Kula’s real friends'},
+   553|    {flag:'law', text:'Collect the Polish law binder'},
+   554|    {flag:'rights', text:'Recover the human rights memo'},
+   555|    {flag:'court', text:'Go to court and save Pig & Swine'}
+   556|  ];
+   557|}
+   558|function docketNote(){
+   559|  if(!state.quests.orientation) return 'Muraś note: Start with Mr. Pig. Panic is not a procedural remedy.';
+   560|  if(!state.quests.guide) return 'Muraś note: I am near reception. If lost, follow the smell of binders.';
+   561|  if(!state.quests.friends) return 'Muraś note: Find your friends before the firm mistakes you for office furniture.';
+   562|  if(!state.quests.law) return 'Muraś note: The binder is heavy because Polish law contains gravity.';
+   563|  if(!state.quests.rights) return 'Muraś note: Human rights arguments work best when actually brought to court.';
+   564|  if(!state.quests.court) return 'Muraś note: You have law, rights, and friends. That is almost a litigation strategy.';
+   565|  return 'Muraś note: Pig & Swine survives. For now. Mr. Swine remains in Japan.';
+   566|}
+   567|function drawDocket(){
+   568|  ctx.save();
+   569|  ctx.fillStyle='rgba(8,10,18,.72)'; ctx.fillRect(0,0,W,H);
+   570|  box(160,84,640,470);
+   571|  ctx.textAlign='left';
+   572|  ctx.fillStyle='#1b1f31'; ctx.font='28px monospace'; ctx.fillText('DOCKET: Day One — The Financial Crisis', 195,130);
+   573|  ctx.font='16px monospace'; ctx.fillStyle='#6d2f45'; ctx.fillText('Press Q to close · Pig & Swine internal case file', 195,158);
+   574|  const steps = questSteps();
+   575|  let y=190;
+   576|  for(const step of steps){
+   577|    const done = state.quests[step.flag];
+   578|    const mark = done ? '✓' : '□';
+   579|    ctx.fillStyle = done ? '#526f45' : (step.text===nextQuest() ? '#aa3d42' : '#1b1f31');
+   580|    ctx.font = done ? '18px monospace' : '19px monospace';
+   581|    ctx.fillText(`${mark} ${step.text}`, 205, y);
+   582|    y += 34;
+   583|  }
+   584|  ctx.fillStyle='#f1e2bf'; ctx.fillRect(195,405,570,92);
+   585|  ctx.strokeStyle='#d7a84f'; ctx.lineWidth=2; ctx.strokeRect(195,405,570,92);
+   586|  writeWrapped(docketNote(), 215,435,530,23,'#1b1f31');
+   587|  ctx.fillStyle='#6d2f45'; ctx.font='15px monospace';
+   588|  ctx.fillText(`Firm Liquidity: zł ${state.gold}   Bar Reputation: ${state.reputation}`, 215,520);
+   589|  ctx.restore();
+   590|}
+   591|function caseBagItems(){
+   592|  return [
+   593|    {name:'Polish law binder', owned:state.quests.law, desc:'A sacred red binder. Heavy enough to support legal arguments and unstable furniture.'},
+   594|    {name:'human rights memo', owned:state.quests.rights, desc:'Notes on dignity, fair trial, proportionality, and why bureaucracy should fear Dr. A. Kula.'},
+   595|    {name:'Coffee reserve', owned:state.coffee>0, desc:state.coffee>0 ? 'Procedural fuel. The true source of interim relief.' : 'Empty. Dangerous for both deadlines and morale.'},
+   596|    {name:'Mr. Swine postcard', owned:true, desc:'Greetings from Japan: excellent powder, alarming expenses, unclear comparative-law value.'}
+   597|  ];
+   598|}
+   599|function drawCaseBag(){
+   600|  ctx.save();
+   601|  ctx.fillStyle='rgba(8,10,18,.72)'; ctx.fillRect(0,0,W,H);
+   602|  box(130,70,700,500);
+   603|  ctx.textAlign='left';
+   604|  ctx.fillStyle='#1b1f31'; ctx.font='30px monospace'; ctx.fillText('CASE BAG', 175,120);
+   605|  ctx.font='16px monospace'; ctx.fillStyle='#6d2f45'; ctx.fillText('Press I to close · Evidence, notes, and survival objects', 175,150);
+   606|  ctx.fillStyle='#f1e2bf'; ctx.fillRect(170,178,600,66);
+   607|  ctx.strokeStyle='#d7a84f'; ctx.lineWidth=2; ctx.strokeRect(170,178,600,66);
+   608|  ctx.fillStyle='#1b1f31'; ctx.font='16px monospace';
+   609|  ctx.fillText(`Firm Liquidity: zł ${state.gold}`, 195,205);
+   610|  ctx.fillText(`Bar Reputation: ${state.reputation}`, 430,205);
+   611|  ctx.fillText(`Procedural Anxiety: ${state.stress}`, 195,230);
+   612|  ctx.fillText(`Coffee: ${state.coffee}`, 430,230);
+   613|  let y=285;
+   614|  for(const item of caseBagItems()){
+   615|    ctx.fillStyle = item.owned ? '#526f45' : '#7b7f8e';
+   616|    ctx.font='18px monospace'; ctx.fillText(`${item.owned ? '✓' : '□'} ${item.name}`, 175, y);
+   617|    ctx.fillStyle='#1b1f31'; ctx.font='15px monospace';
+   618|    writeWrapped(item.desc, 205, y+24, 545, 19, item.owned ? '#1b1f31' : '#59617f');
+   619|    y += 60;
+   620|  }
+   621|  writeWrapped('Muraś says: A good case bag contains law, facts, and one snack nobody admits owning.', 175,530,600,18,'#aa3d42');
+   622|  ctx.fillStyle='#1b1f31'; ctx.font='14px monospace'; ctx.textAlign='center';
+   623|  ctx.fillText('S: Save Game   L: Load Game   B: Music   Ctrl+M: Mute', W/2, 555);
+   624|  ctx.restore();
+   625|}
+   626|
+   627|function drawResultScreen(){
+   628|  ctx.save();
+   629|  ctx.fillStyle='rgba(8,10,18,.82)'; ctx.fillRect(0,0,W,H);
+   630|  // Main panel
+   631|  box(120,60,720,520);
+   632|  ctx.textAlign='center';
+   633|  // Victory / Failure header
+   634|  const victory = resultData && resultData.victory;
+   635|  ctx.fillStyle = victory ? '#526f45' : '#aa3d42';
+   636|  ctx.font='900 36px monospace';
+   637|  ctx.fillText(victory ? '⚖️  CASE RESULT  ⚖️' : '⚖️  CASE DISMISSED  ⚖️', W/2, 110);
+   638|
+   639|  ctx.textAlign='left';
+   640|  ctx.font='20px monospace';
+   641|  // Argument quality
+   642|  ctx.fillStyle='#1b1f31';
+   643|  ctx.fillText('Argument Quality:', 175, 160);
+   644|  ctx.fillStyle = victory ? '#526f45' : '#aa3d42';
+   645|  ctx.fillText(victory ? 'Strong — legally grounded' : 'Weak — comedically grounded', 420, 160);
+   646|
+   647|  ctx.fillStyle='#1b1f31';
+   648|  ctx.fillText('Human Rights Angle:', 175, 195);
+   649|  ctx.fillStyle = victory ? '#526f45' : '#7b7f8e';
+   650|  ctx.fillText(victory ? 'Persuasive — proportionality cited' : 'Absent — Mr. Swine cited instead', 420, 195);
+   651|
+   652|  ctx.fillText('Defective Service:', 175, 230);
+   653|  ctx.fillStyle = victory ? '#526f45' : '#7b7f8e';
+   654|  ctx.fillText(victory ? 'Identified — fair hearing affected' : 'Ignored — emotional printers cited', 420, 230);
+   655|
+   656|  // Stat deltas box
+   657|  ctx.fillStyle='#f1e2bf'; ctx.fillRect(165,260,630,100);
+   658|  ctx.strokeStyle='#d7a84f'; ctx.lineWidth=2; ctx.strokeRect(165,260,630,100);
+   659|  ctx.font='22px monospace'; ctx.textAlign='center';
+   660|  if(victory){
+   661|    ctx.fillStyle='#526f45'; ctx.fillText('Firm Liquidity: +20 zł', W/2-150, 300);
+   662|    ctx.fillText('Bar Reputation: +3', W/2+150, 300);
+   663|    ctx.fillStyle='#1b1f31'; ctx.fillText('Procedural Anxiety: 0', W/2, 340);
+   664|  } else {
+   665|    ctx.fillStyle='#aa3d42'; ctx.fillText('Firm Liquidity: +0 zł', W/2-150, 300);
+   666|    ctx.fillText('Bar Reputation: +0', W/2+150, 300);
+   667|    ctx.fillText('Procedural Anxiety: +1', W/2, 340);
+   668|  }
+   669|
+   670|  // Mr. Pig reaction
+   671|  ctx.textAlign='left';
+   672|  ctx.fillStyle='#f1e2bf'; ctx.fillRect(165,385,630,110);
+   673|  ctx.strokeStyle='#c96c78'; ctx.lineWidth=2; ctx.strokeRect(165,385,630,110);
+   674|  drawPigSeal(195,420,1.5);
+   675|  ctx.fillStyle='#1b1f31'; ctx.font='18px monospace';
+   676|  ctx.fillText('Mr. Pig:', 248, 410);
+   677|  ctx.font='17px monospace';
+   678|  if(victory){
+   679|    writeWrapped('"We may yet afford toner. Mr. Swine will receive a fax about this victory — if he ever leaves the slopes."', 248, 435, 520, 21, '#1b1f31');
+   680|  } else {
+   681|    writeWrapped('"That was not a legal argument. That was a holiday postcard. Try again before the court loses all patience."', 248, 435, 520, 21, '#aa3d42');
+   682|  }
+   683|
+   684|  // Footer
+   685|  ctx.textAlign='center';
+   686|  ctx.fillStyle= Math.floor(frame/20)%2 ? '#aa3d42' : '#1b1f31';
+   687|  ctx.font='18px monospace';
+   688|  ctx.fillText(victory ? 'Press Space to continue — Day One complete' : 'Press Space to try again', W/2, 545);
+   689|  ctx.restore();
+   690|}
+   691|
+   692|function drawDaySummary(){
+   693|  ctx.save();
+   694|  ctx.fillStyle='rgba(8,10,18,.92)'; ctx.fillRect(0,0,W,H);
+   695|  // Draw faint skyline
+   696|  ctx.globalAlpha=.15; drawPixelWarsawSkyline(); ctx.globalAlpha=1;
+   697|  // Main panel
+   698|  box(100,40,760,560);
+   699|  ctx.textAlign='center';
+   700|
+   701|  // Header
+   702|  ctx.fillStyle='#d7a84f'; ctx.font='900 32px monospace';
+   703|  ctx.fillText('DAY ONE COMPLETE', W/2, 88);
+   704|  ctx.fillStyle='#aa3d42'; ctx.font='22px monospace';
+   705|  ctx.fillText('Dr. A. Kula — Pig & Swine, Warsaw', W/2, 120);
+   706|
+   707|  // Narrative summary
+   708|  ctx.textAlign='left';
+   709|  const lines = [
+   710|    'Dr. A. Kula arrived at Pig & Swine on the worst possible morning.',
+   711|    'Mr. Pig confirmed the financial crisis. Mr. Swine remained in Japan.',
+   712|    'Muraś guided the way. Rak and Wymysl proved their loyalty.',
+   713|    'A Polish law binder was found. A human rights memo was recovered.',
+   714|    'In court, Dr. A. Kula argued that defective service violated',
+   715|    'the right to a fair hearing — and the court agreed.',
+   716|    '',
+   717|    'Pig & Swine survives. For now.'
+   718|  ];
+   719|  let y = 165;
+   720|  for(const line of lines){
+   721|    ctx.fillStyle = line==='' ? '#1b1f31' : '#1b1f31';
+   722|    ctx.font = line.startsWith('Pig & Swine') ? '900 20px monospace' : '18px monospace';
+   723|    if(line!=='') ctx.fillText(line, 150, y);
+   724|    y += 28;
+   725|  }
+   726|
+   727|  // Final stats box
+   728|  ctx.fillStyle='#f1e2bf'; ctx.fillRect(145,400,670,80);
+   729|  ctx.strokeStyle='#d7a84f'; ctx.lineWidth=2; ctx.strokeRect(145,400,670,80);
+   730|  ctx.font='20px monospace'; ctx.textAlign='center';
+   731|  ctx.fillStyle='#526f45'; ctx.fillText(`Firm Liquidity: zł ${state.gold}`, W/2-180, 435);
+   732|  ctx.fillText(`Bar Reputation: ${state.reputation}`, W/2+180, 435);
+   733|  ctx.fillStyle='#1b1f31'; ctx.fillText(`Quests Completed: ${Object.values(state.quests).filter(v=>v).length}/6`, W/2, 465);
+   734|
+   735|  // Muraś epilogue
+   736|  ctx.textAlign='left';
+   737|  ctx.fillStyle='#aa3d42'; ctx.font='17px monospace';
+   738|  writeWrapped('Muraś note: Day One is done. Tomorrow the deadlines return, the archive grows, and Mr. Swine will still be skiing. Rest while you can.', 150, 510, 660, 21, '#aa3d42');
+   739|
+   740|  // Footer
+   741|  ctx.textAlign='center';
+   742|  ctx.fillStyle= Math.floor(frame/22)%2 ? '#d7a84f' : '#1b1f31';
+   743|  ctx.font='18px monospace';
+   744|  ctx.fillText('Press Space to return to Warsaw', W/2, 580);
+   745|  ctx.restore();
+   746|}
+   747|
+   748|// Save/Load System
+   749|function saveGame(){
+   750|  const saveData = {
+   751|    state: {
+   752|      gold: state.gold,
+   753|      reputation: state.reputation,
+   754|      stress: state.stress,
+   755|      coffee: state.coffee,
+   756|      files: state.files,
+   757|      evidence: state.evidence,
+   758|      rightsMemo: state.rightsMemo,
+   759|      quests: {...state.quests}
+   760|    },
+   761|    player: {
+   762|      x: player.x,
+   763|      y: player.y,
+   764|      facing: player.facing
+   765|    },
+   766|    timestamp: Date.now()
+   767|  };
+   768|  try {
+   769|    localStorage.setItem('pigSwineSave', JSON.stringify(saveData));
+   770|    showSaveFlash();
+   771|    console.log('Game saved');
+   772|  } catch(e) {
+   773|    console.error('Save failed:', e);
+   774|  }
+   775|}
+   776|
+   777|function loadGame(){
+   778|  const saveStr = localStorage.getItem('pigSwineSave');
+   779|  if(!saveStr) return false;
+   780|  try {
+   781|    const saveData = JSON.parse(saveStr);
+   782|    // Restore state
+   783|    Object.assign(state, saveData.state);
+   784|    // Restore player position
+   785|    Object.assign(player, saveData.player);
+   786|    player.visualX = player.x;
+   787|    player.visualY = player.y;
+   788|    player.moving = false;
+   789|    state.mode = 'play';
+   790|    state.activeDialog = null;
+   791|    state.choiceMenu = null;
+   792|    showResult = false;
+   793|    showDaySummary = false;
+   794|    console.log('Game loaded');
+   795|    return true;
+   796|  } catch(e) {
+   797|    console.error('Load failed:', e);
+   798|    return false;
+   799|  }
+   800|}
+   801|
+   802|function showSaveFlash(){
+   803|  state.flashMessage = 'Game Saved!';
+   804|  state.flashTimer = 90; // ~1.5 seconds at 60fps
+   805|}
+   806|
+   807|function checkLoadOnStart(){
+   808|  if(localStorage.getItem('pigSwineSave')){
+   809|    state.mode = 'play';
+   810|    loadGame();
+   811|  }
+   812|}
+   813|
+   814|function interact(){ playSound("interact"); playSound("interact");
+   815|  if(state.mode==='title'){ startOpeningScene(); return; }
+   816|  if(showDaySummary){ showDaySummary=false; return; }
+   817|  if(showResult){
+   818|    const wasVictory = resultData && resultData.victory;
+   819|    showResult=false; resultData=null;
+   820|    if(wasVictory){ showDaySummary=true; }
+   821|    return;
+   822|  }
+   823|  if(state.activeDialog){ advanceDialog(); return; }
+   824|  for(const n of npcs){ if(manhattan(player,n)<=1){ startDialog(n); return; }}
+   825|  for(const item of items){ if(!item.taken && manhattan(player,item)<=1){ takeItem(item); return; }}
+   826|  for(const inter of interactables){ if(manhattan(player,inter)<=1){ startCoffeeMiniGame(); return; }}
+   827|  state.message='Nothing billable here.';
+   828|}
+   829|function startOpeningScene(){
+   830|  state.mode='play';
+   831|  if(!state.quests.orientation){ state.quests.orientation=true; state.reputation++; }
+   832|  const lines=[
+   833|    'Welcome to Pig & Swine, Dr. A. Kula.',
+   834|    'Our financial situation is very difficult. Justice may be priceless, but rent has an invoice number.',
+   835|    'Mr. Swine is skiing in Japan, allegedly studying comparative snow liability.',
+   836|    'Find Muraś near reception. He will guide you through courts, Polish law, human rights, and the printer.'
+   837|  ];
+   838|  state.activeDialog={ name:'Mr. Pig', lines, idx:0, text:lines[0] };
+   839|}
+   840|function startDialog(n){
+   841|  if(n.onTalk) n.onTalk();
+   842|  if((n.id==='rak' || n.id==='wymysl') && !state.quests.friends){
+   843|    const rakClose = manhattan(player, npcs.find(p=>p.id==='rak'))<=2;
+   844|    const wymyslClose = manhattan(player, npcs.find(p=>p.id==='wymysl'))<=2;
+   845|    if(rakClose || wymyslClose){ state.quests.friends=true; state.reputation++; saveGame(); }
+   846|  }
+   847|  if(n.id==='clerk' && state.quests.law && state.quests.rights && !state.quests.court){ startCourtArgumentChoice(); return; }
+   848|  const lines=n.lines(); state.activeDialog={ name:n.name, npcId: n.id, lines, idx:0, text:lines[0] };
+   849|  saveGame();
+   850|}
+   851|function advanceDialog(){ const d=state.activeDialog; d.idx++; if(d.idx>=d.lines.length) state.activeDialog=null; else d.text=d.lines[d.idx]; }
+   852|function startCourtArgumentChoice(){
+   853|  state.choiceMenu={
+   854|    title:'Court Argument — Urgent Filing',
+   855|    prompt:'Court Clerk: Dr. A. Kula, why should the court accept this filing despite the procedural chaos?',
+   856|    options:[
+   857|      {correct:true, text:'Because defective service affected the right to a fair hearing, and the human rights memo supports proportionality.'},
+   858|      {correct:false, text:'Because Pig & Swine has a difficult financial situation and the printer suffered emotionally.'},
+   859|      {correct:false, text:'Because Mr. Swine is skiing in Japan and cannot be expected to process defeat across time zones.'}
+   860|    ]
+   861|  };
+   862|}
+   863|function resolveCourtChoice(index){ playSound("court");
+   864|  if(!state.choiceMenu) return;
+   865|  const opt=state.choiceMenu.options[index];
+   866|  state.choiceMenu=null;
+   867|  if(!opt) return;
+   868|  if(opt.correct){
+   869|    state.quests.court=true; playSound("quest");; state.reputation+=3; state.gold+=20;
+   870|    resultData = { victory: true };
+   871|    showResult = true;
+   872|    saveGame();
+   873|  } else {
+   874|    state.stress+=1;
+   875|    resultData = { victory: false };
+   876|    showResult = true;
+   877|  }
+   878|}
+   879|function takeItem(item){ item.taken=true;
+   880|  if(item.id==='lawBinder'){ state.files++; state.quests.law=true; state.reputation++; flashDialog('You found the Polish law binder: civil procedure, constitutional principles, and twelve colored tabs.'); saveGame(); }
+   881|  if(item.id==='rightsMemo'){ state.rightsMemo++; state.quests.rights=true; state.reputation++; flashDialog('Human rights memo recovered. Dr. A. Kula now has arguments about dignity, fair trial, and proportionality.'); saveGame(); }
+   882|function startCoffeeMiniGame(){ playSound("coffee"); playSound("coffee");
+   883|  coffeeMiniGame = { brewCount:0, brewTimer:300, active:true }; // 5s at 60fps
+   884|  // Add click handler for brew button
+   885|  canvas._coffeeClick = function(e){
+   886|    if(!coffeeMiniGame || !coffeeMiniGame.active) { canvas.removeEventListener('click', canvas._coffeeClick); return; }
+   887|    const rect = canvas.getBoundingClientRect();
+   888|    const x = e.clientX - rect.left;
+   889|    const y = e.clientY - rect.top;
+   890|    const btnX = W/2 - 60, btnY = 300, btnW = 120, btnH = 50;
+   891|    if(x >= btnX && x <= btnX + btnW && y >= btnY && y <= btnY + btnH){
+   892|      clickBrewButton();
+   893|    }
+   894|  };
+   895|  canvas.addEventListener('click', canvas._coffeeClick);
+   896|}
+   897|function drawCoffeeMiniGame(){
+   898|  if(!coffeeMiniGame || !coffeeMiniGame.active) return;
+   899|  ctx.save();
+   900|  ctx.fillStyle='rgba(8,10,18,.85)';
+   901|  ctx.fillRect(0,0,W,H);
+   902|  box(200,150,560,340);
+   903|  ctx.textAlign='center';
+   904|  ctx.fillStyle='#1b1f31';
+   905|  ctx.font='28px monospace';
+   906|  ctx.fillText('BREW COFFEE', W/2, 200);
+   907|  ctx.font='18px monospace';
+   908|  writeWrapped('Click the brew button 3 times within 5 seconds to brew coffee. Reduces Procedural Anxiety by 10.', 250, 230, 460, 22, '#1b1f31');
+   909|  // Brew button
+   910|  const btnX = W/2 - 60, btnY = 300, btnW = 120, btnH = 50;
+   911|  ctx.fillStyle= Math.floor(frame/10)%2 ? '#d7a84f' : '#c96c78';
+   912|  ctx.fillRect(btnX, btnY, btnW, btnH);
+   913|  ctx.strokeStyle='#ffd76c'; ctx.lineWidth=2; ctx.strokeRect(btnX, btnY, btnW, btnH);
+   914|  ctx.fillStyle='#1b1f31'; ctx.font='20px monospace';
+   915|  ctx.fillText('BREW', W/2, btnY + 32);
+   916|  // Progress
+   917|  ctx.fillStyle='#526f45'; ctx.font='18px monospace';
+   918|  ctx.fillText(`Brewed: ${coffeeMiniGame.brewCount}/3`, W/2, 380);
+   919|  // Timer
+   920|  ctx.fillStyle='#aa3d42';
+   921|  ctx.fillText(`Time left: ${Math.ceil(coffeeMiniGame.brewTimer/60)}s`, W/2, 410);
+   922|  // Update timer
+   923|  coffeeMiniGame.brewTimer--;
+   924|  if(coffeeMiniGame.brewTimer <= 0) resolveCoffeeMiniGame(false);
+   925|  ctx.restore();
+   926|}
+   927|function resolveCoffeeMiniGame(success){
+   928|  if(!coffeeMiniGame) return;
+   929|  coffeeMiniGame.active = false;
+   930|  if(success){
+   931|    state.stress = Math.max(0, state.stress - 10);
+   932|    state.coffee++;
+   933|    state.reputation++;
+   934|    flashDialog('Coffee brewed! Procedural Anxiety reduced by 10. Mr. Pig would be proud — if he weren\'t busy panicking about rent.');
+   935|    saveGame();
+   936|  } else {
+   937|    flashDialog('Coffee spilled! The machine hisses. Mr. Pig shouts: "That was our last filter!"');
+   938|  }
+   939|  coffeeMiniGame = null;
+   940|  if(canvas._coffeeClick) canvas.removeEventListener('click', canvas._coffeeClick);
+   941|}
+   942|function clickBrewButton(){
+   943|  if(!coffeeMiniGame || !coffeeMiniGame.active) return;
+   944|  coffeeMiniGame.brewCount++;
+   945|  if(coffeeMiniGame.brewCount >= 3) resolveCoffeeMiniGame(true);
+   946|}
+   947|function flashDialog(text){ state.activeDialog={ name:'Discovery', lines:[text], idx:0, text}; }
+   948|
+   949|function tryMove(dx,dy,face){ playSound("move");
+   950|  if(state.activeDialog || state.mode==='title') return; player.facing=face;
+   951|  const nx=player.x+dx, ny=player.y+dy; if(!blocked(nx,ny)){ player.x=nx; player.y=ny; }
+   952|}
+   953|window.addEventListener('keydown', e=>{
+   954|  if(['ArrowUp','ArrowDown','ArrowLeft','ArrowRight',' ','Enter'].includes(e.key)) e.preventDefault();
+   955|  if(showResult && (e.key===' '||e.key==='Enter')){ interact(); return; }
+   956|  if(showResult) return;
+   957|  if(showDaySummary && (e.key===' '||e.key==='Enter')){ interact(); return; }
+   958|  if(showDaySummary) return;
+   959|  if(state.activeDialog && (e.key.toLowerCase()==='q' || e.key.toLowerCase()==='i')) return;
+   960|  if(state.choiceMenu && ['1','2','3'].includes(e.key)){ resolveCourtChoice(Number(e.key)-1); return; }
+   961|  if(state.choiceMenu) return;
+   962|  if(e.key.toLowerCase()==='q' && state.mode!=='title') { showDocket=!showDocket; if(showDocket) showCaseBag=false; return; }
+   963|  if(e.key.toLowerCase()==='i' && state.mode!=='title') { showCaseBag=!showCaseBag; if(showCaseBag) showDocket=false; return; }
+   964|  if(showDocket || (showCaseBag && !['s','l'].includes(e.key.toLowerCase()))) return;
+   965|  if(showCaseBag && e.key.toLowerCase()==='s'){ saveGame(); return; }
+   966|  if(showCaseBag && e.key.toLowerCase()==='l'){ loadGame(); return; }
+   967|  if(e.key===' '||e.key==='Enter') interact();
+   968|  if(e.key.toLowerCase()==='m' && e.ctrlKey) { toggleMute(); return; }
+   969|  if(e.key.toLowerCase()==='b') toggleBgMusic();
+   970|  if(e.key.toLowerCase()==='m') showMap=!showMap;
+   971|  keys[e.key]=true;
+   972|});
+   973|window.addEventListener('keyup', e=>{ delete keys[e.key]; });
+   974|
+   975|// Touch controls: map button touches to keyboard events
+   976|document.querySelectorAll('#touch-controls button').forEach(btn => {
+   977|  const key = btn.dataset.key;
+   978|  btn.addEventListener('touchstart', e => {
+   979|    e.preventDefault();
+   980|    document.dispatchEvent(new KeyboardEvent('keydown', {key, bubbles:true}));
+   981|    btn.style.background = 'rgba(215,168,79,.9)';
+   982|  });
+   983|  btn.addEventListener('touchend', e => {
+   984|    e.preventDefault();
+   985|    document.dispatchEvent(new KeyboardEvent('keyup', {key, bubbles:true}));
+   986|    btn.style.background = '';
+   987|  });
+   988|  // Also handle mouse events for desktop testing
+   989|  btn.addEventListener('mousedown', e => {
+   990|    document.dispatchEvent(new KeyboardEvent('keydown', {key, bubbles:true}));
+   991|    btn.style.background = 'rgba(215,168,79,.9)';
+   992|  });
+   993|  btn.addEventListener('mouseup', e => {
+   994|    document.dispatchEvent(new KeyboardEvent('keyup', {key, bubbles:true}));
+   995|    btn.style.background = '';
+   996|  });
+   997|});
+   998|
+   999|// Held-key movement tick (smooth walking)
+  1000|let moveCooldown=0;
+  1001|setInterval(()=>{
+  1002|  if(state.activeDialog||state.mode==='title'||showDocket||showCaseBag||state.choiceMenu||showResult||showDaySummary) return;
+  1003|  if(moveCooldown>0){ moveCooldown--; return; }
+  1004|  if(keys['ArrowUp']||keys['w']||keys['W']){ tryMove(0,-1,'up'); moveCooldown=2; }
+  1005|  else if(keys['ArrowDown']||keys['s']||keys['S']){ tryMove(0,1,'down'); moveCooldown=2; }
+  1006|  else if(keys['ArrowLeft']||keys['a']||keys['A']){ tryMove(-1,0,'left'); moveCooldown=2; }
+  1007|  else if(keys['ArrowRight']||keys['d']||keys['D']){ tryMove(1,0,'right'); moveCooldown=2; }
+  1008|}, 60);
+  1009|
+  1010|window.__pigDebug = { state, player, startCourtArgumentChoice, resolveCourtChoice, questSteps, caseBagItems };
+  1011|
+  1012|checkLoadOnStart();
+  1013|draw();
+  1014|}
+  1015|})();
+  1016|</script>
+  1017|</body>
+  1018|</html>
+  1019|

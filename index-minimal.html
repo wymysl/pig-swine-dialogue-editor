@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Dr. A. Kula - Test</title>
+<style>
+  body { margin:0; background:#151827; display:grid; place-items:center; height:100%; }
+  canvas { border:6px solid #0b0d16; image-rendering:pixelated; }
+</style>
+</head>
+<body>
+<canvas id="game" width="960" height="640"></canvas>
+<script>
+(() => {
+  const canvas = document.getElementById('game');
+  const ctx = canvas.getContext('2d');
+  
+  let frame = 0;
+  
+  function drawTitle() {
+    frame++;
+    ctx.fillStyle='#151827'; ctx.fillRect(0,0,960,640);
+    
+    // Simple title
+    ctx.fillStyle='#ffd76c'; ctx.font='900 48px monospace'; ctx.textAlign='center';
+    ctx.fillText('PIG & SWINE', 480, 200);
+    ctx.fillStyle='#f5ead2'; ctx.font='24px monospace';
+    ctx.fillText('Dr. A. Kula in Warsaw', 480, 250);
+    
+    // Blink prompt
+    if(Math.floor(frame/25)%2) {
+      ctx.fillStyle='#aa3d42'; ctx.font='20px monospace';
+      ctx.fillText('Press Space to start', 480, 400);
+    }
+    
+    requestAnimationFrame(drawTitle);
+  }
+  
+  window.addEventListener('keydown', e => {
+    if(e.key===' '||e.key==='Enter') {
+      ctx.fillStyle='#151827'; ctx.fillRect(0,0,960,640);
+      ctx.fillStyle='#526f45'; ctx.font='24px monospace'; ctx.textAlign='center';
+      ctx.fillText('✅ Game Loaded Successfully!', 480, 300);
+      ctx.fillText('Pig & Swine is working!', 480, 340);
+    }
+  });
+  
+  drawTitle();
+})();
+</script>
+</body>
+</html>

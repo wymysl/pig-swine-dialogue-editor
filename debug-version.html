@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>Dr. A. Kula - DEBUG VERSION</title>
+<style>
+  body { margin:0; height:100%; background:#151827; display:grid; place-items:center; }
+  canvas { border: 2px solid #d7a84f; }
+</style>
+</head>
+<body>
+<canvas id="game" width="960" height="640"></canvas>
+
+<script>
+// DEBUG VERSION - Step-by-step logging
+const canvas = document.getElementById('game');
+const ctx = canvas.getContext('2d');
+
+// Draw initial message
+ctx.fillStyle='#151827';
+ctx.fillRect(0,0,960,640);
+ctx.fillStyle='#ffd76c';
+ctx.font='24px monospace';
+ctx.textAlign='center';
+ctx.fillText('DEBUG MODE - Check Console (F12)', 480, 300);
+ctx.fillText('Step 1: Canvas initialized', 480, 340);
+
+console.log('Step 1: Canvas initialized');
+
+// Step 2: Define minimal game state
+try {
+  ctx.fillText('Step 2: Defining state...', 480, 380);
+  console.log('Step 2: Defining state...');
+  
+  const state = {
+    mode: 'title',
+    gold: 12,
+    reputation: 0
+  };
+  
+  ctx.fillText('✓ State defined', 480, 420);
+  console.log('Step 2: State defined', state);
+} catch(e) {
+  ctx.fillStyle='#aa3d42';
+  ctx.fillText('ERROR in step 2: ' + e.message, 480, 420);
+  console.error('Error:', e);
+}
+
+// Step 3: Test title screen function
+try {
+  ctx.fillText('Step 3: Testing titleScreen...', 480, 460);
+  console.log('Step 3: Testing titleScreen...');
+  
+  function titleScreen() {
+    ctx.fillStyle='#151827';
+    ctx.fillRect(0,0,960,640);
+    ctx.fillStyle='#ffd76c';
+    ctx.font='48px monospace';
+    ctx.fillText('PIG & SWINE', 480, 200);
+  }
+  
+  titleScreen();
+  ctx.fillText('✓ Title screen works!', 480, 500);
+  console.log('Step 3: Title screen works!');
+  
+} catch(e) {
+  ctx.fillStyle='#aa3d42';
+  ctx.fillText('ERROR in step 3: ' + e.message, 480, 500);
+  console.error('Error:', e);
+}
+
+// Step 4: Test draw loop
+try {
+  ctx.fillText('Step 4: Starting draw loop...', 480, 540);
+  console.log('Step 4: Starting draw loop...');
+  
+  let frame = 0;
+  function draw() {
+    frame++;
+    ctx.fillStyle='#526f45';
+    ctx.font='16px monospace';
+    ctx.fillText('Draw loop running, frame: ' + frame, 480, 580);
+    
+    if (frame < 3) {
+      requestAnimationFrame(draw);
+    } else {
+      ctx.fillText('✓ Draw loop works! Game should start now.', 480, 610);
+      console.log('Step 4: Draw loop works!');
+    }
+  }
+  
+  draw();
+  
+} catch(e) {
+  ctx.fillStyle='#aa3d42';
+  ctx.fillText('ERROR in step 4: ' + e.message, 480, 580);
+  console.error('Error:', e);
+}
+
+console.log('DEBUG VERSION: All steps completed successfully!');
+</script>
+</body>
+</html>

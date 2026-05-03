@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Pig & Swine Test</title>
+<style>
+  body { margin:0; background:#151827; display:grid; place-items:center; height:100vh; }
+  canvas { border:2px solid #d7a84f; }
+</style>
+</head>
+<body>
+<canvas id="game" width="960" height="640"></canvas>
+<script>
+(() => {
+  const canvas = document.getElementById('game');
+  const ctx = canvas.getContext('2d');
+  
+  // Simple test render
+  function draw() {
+    ctx.fillStyle = '#151827';
+    ctx.fillRect(0, 0, 960, 640);
+    
+    ctx.fillStyle = '#ffd76c';
+    ctx.font = '48px monospace';
+    ctx.textAlign = 'center';
+    ctx.fillText('PIG & SWINE', 480, 200);
+    
+    ctx.fillStyle = '#f5ead2';
+    ctx.font = '24px monospace';
+    ctx.fillText('Test - If you see this, canvas works!', 480, 280);
+    
+    ctx.fillStyle = '#aa3d42';
+    ctx.font = '18px monospace';
+    ctx.fillText('Now loading full game...', 480, 350);
+  }
+  
+  draw();
+  
+  // Load full game after 1 second
+  setTimeout(() => {
+    // Just show that the game loaded
+    ctx.fillStyle = '#526f45';
+    ctx.font = '20px monospace';
+    ctx.fillText('✓ Game logic would start here', 480, 420);
+  }, 1000);
+})();
+</script>
+</body>
+</html>
