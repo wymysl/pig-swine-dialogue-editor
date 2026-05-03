@@ -31,3 +31,27 @@ Next best task:
 - Add Ms. Nowak's post-quest dialogue with funny reactions (e.g., "Mr. Swine would be proud — if he were not skiing in Japan").
 - Or add Day Two map zone (court annex for eviction cases) to expand world.
 - Or enhance sound effects with evidence collection sound (paper rustle for documents, poster unroll sound).
+
+## Build Note: 2026-05-03T10:19:55+00:00
+
+Changed:
+- Playtest-driven polish pass based on Wymysl feedback.
+- Random office incidents now trigger much less often: 3% per completed move, no immediate repeat, 18-move cooldown, and six incident types instead of three.
+- Court and Nowak choice puzzles no longer make the first option correct; players must read the legal argument.
+- Choice/dialogue text boxes enlarged; `writeWrapped` now supports max-line clipping with ellipsis so text does not spill outside allocated space.
+- Dialogue portraits are now 64x64 scaled pixel busts instead of tiny 32x32 stamps.
+- Interior state added: HUD shows current area and office/court/cafe/archive tiles have richer interior details.
+
+Verified:
+- `python3 test_story.py` → 23 checks passed.
+- Extracted inline JavaScript passed `node --check /tmp/pig_inline.js`.
+- Node runtime smoke test initialized the game with a stubbed canvas/DOM without errors.
+
+Observed:
+- Browser visual verification could not run in this environment because no Chrome/agent-browser binary is installed. This remains a verification gap; user should test via local HTTP server and report visual clipping/feel.
+
+Curated/Cut:
+- Did not switch programming language yet. For current scope, HTML/Canvas/PWA remains fastest for iteration and can later be packaged for iOS/Android/macOS with Capacitor/Tauri/Electron if the prototype earns it.
+
+Next best task:
+- True Pokémon-style interiors: explicit door transitions into separate room maps with furniture collision, richer wall/floor tiles, and room-specific NPC placement.

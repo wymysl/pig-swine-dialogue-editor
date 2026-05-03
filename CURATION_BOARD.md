@@ -27,13 +27,14 @@ Day One is complete. Polish the experience. Start planning Day Two.
 
 ## Current Weaknesses
 
-1. **Day Two content missing** — after Day One ends, no new content yet.
-2. **Map still small** — only four zones, need more areas (Warsaw streets, client offices).
-3. ~~NPC dialogue repetition~~ — post-quest dialogue now has varied, character-specific lines.
+1. **True interiors still shallow** — current build has richer interior tiles/area state, but not yet separate door-transition rooms like Pokémon Yellow.
+2. **Portraits improved but not final** — larger 64x64 busts read better, but still need hand-authored character silhouettes and expression poses.
+3. **Random incidents reduced** — less spammy now, but need longer-term balancing after player testing.
+4. **Day Two content missing** — after Day One ends, limited new content beyond Nowak setup.
 
 ## Next Best Task
 
-Add Day Two story arc: new client, new legal puzzle, new court scene, or continue with sound variety for NPC interactions.
+Implement true Pokémon-style door transitions into separate interior room maps: Pig & Swine office, Court Hall, Cafe, Archive. Add furniture collision, decorative wall/floor tiles, and room-specific NPC/item placement.
 Enhance sound effects with more varied tones for UI interactions (Docket/Case Bag open/close), add achievement sound for quest milestones, or continue with character portrait/dialogue polish to make NPCs more distinct and funny.
 
 ## Next Best Task
@@ -67,3 +68,11 @@ Or enhance sound effects with evidence collection sounds (paper rustle for docum
 - Do not expand map before adding save/load.
 - Polish Day One before starting Day Two content.
 - Keep JS in a single index.html until file exceeds 800 lines.
+
+## Playtest Findings Logged — 2026-05-03
+
+- User found random events repetitive and annoying; fixed first pass with lower chance, cooldown, anti-repeat, and expanded incident pool.
+- User found all correct answers were first options; fixed court and Nowak puzzles so correct answers vary.
+- User found text overflow; fixed first pass with larger boxes and clipped wrapping.
+- User found portraits too tiny; upgraded to larger dialogue busts, but more art direction needed.
+- User wants Pokémon Yellow-style interiors and mobile/mac path; next sprint should focus on true separate room maps.

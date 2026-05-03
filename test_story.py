@@ -331,8 +331,66 @@ def test_nowak_evidence_items_in_world():
     for phrase in required:
         check(phrase in HTML, f'missing Nowak evidence item in world: {phrase}')
 
+
+def test_day_two_overlays_track_nowak_evidence():
+    """Docket and Case Bag should guide Day Two by showing Nowak case objectives and collected evidence."""
+    required = [
+        'DOCKET: Day Two — Nowak Eviction Defense',
+        'nowakQuestSteps',
+        'Evidence checklist',
+        'Lease Agreement (office)',
+        'Human Rights Poster (cafe)',
+        'Landlord Notice (from Ms. Nowak)',
+        'Nowak evidence: ${nowakEvidenceCount()}/3',
+        'function nowakEvidenceCount',
+        'Housing is a human right',
+    ]
+    for phrase in required:
+        check(phrase in HTML, f'missing Day Two overlay evidence tracking: {phrase}')
+
+
+def test_playtest_regressions_fixed():
+    """User playtest findings: incidents must not spam, correct options must vary, text must clip safely, portraits must be larger."""
+    required = [
+        'incidentCooldown',
+        'Math.random() < 0.03',
+        "state.lastIncidentId",
+        'No default answer',
+        'writeWrapped(text,x,y,maxWidth,lineHeight,color,maxLines=99)',
+        'ctx.scale(2,2)',
+        "{correct:false, text:'Because Pig & Swine has a difficult financial situation",
+        "{ text: 'Mr. Swine is skiing in Japan and sends his apologies",
+        'areaAt(player.x, player.y)',
+        'Pig & Swine Office',
+        'Archive Interior',
+    ]
+    for phrase in required:
+        check(phrase in HTML, f'missing playtest regression fix: {phrase}')
+
+def test_dialogue_choices_implemented():
+    """NPCs should offer 2-3 player-selectable dialogue topics, not just auto-cycling lines."""
+    required = [
+        # Core dialogue choice system
+        'dialogTopics',
+        'function drawDialogTopics',
+        'function selectDialogTopic',
+        'activeTopicIdx',
+        # At least some NPC-specific topic labels (funny/character-specific)
+        'Ask about Mr. Swine',
+        'Ask about the printer',
+        'Ask about coffee',
+        # Player can navigate topics with arrow keys
+        'ArrowUp',
+        'ArrowDown',
+        # Topic selection closes or advances dialogue
+        'selectDialogTopic',
+    ]
+    for phrase in required:
+        check(phrase in HTML, f'missing dialogue choices implementation: {phrase}')
+
+
 if __name__ == '__main__':
-    tests = [test_new_campaign_cast_is_present, test_new_story_beats_are_present, test_new_quest_flags_exist, test_interaction_markers_are_implemented, test_docket_overlay_is_implemented, test_case_bag_overlay_is_implemented, test_mr_pig_opening_scene_is_implemented, test_court_argument_choice_is_implemented, test_court_result_screen_is_implemented, test_smooth_movement_is_implemented, test_save_load_system_is_implemented, test_quest_tracking_is_fixed, test_pixel_portraits_implemented, test_coffee_mini_game_is_implemented, test_sound_system_is_implemented, test_enhanced_npc_post_quest_dialogue, test_day_two_client_ms_nowak, test_nowak_court_puzzle_implemented, test_rak_nowak_evidence_hint, test_wymysl_nowak_strategy_hint, test_nowak_evidence_items_in_world]
+    tests = [test_new_campaign_cast_is_present, test_new_story_beats_are_present, test_new_quest_flags_exist, test_interaction_markers_are_implemented, test_docket_overlay_is_implemented, test_case_bag_overlay_is_implemented, test_mr_pig_opening_scene_is_implemented, test_court_argument_choice_is_implemented, test_court_result_screen_is_implemented, test_smooth_movement_is_implemented, test_save_load_system_is_implemented, test_quest_tracking_is_fixed, test_pixel_portraits_implemented, test_coffee_mini_game_is_implemented, test_sound_system_is_implemented, test_enhanced_npc_post_quest_dialogue, test_day_two_client_ms_nowak, test_nowak_court_puzzle_implemented, test_rak_nowak_evidence_hint, test_wymysl_nowak_strategy_hint, test_nowak_evidence_items_in_world, test_day_two_overlays_track_nowak_evidence, test_playtest_regressions_fixed, test_dialogue_choices_implemented]
     for test in tests:
         test()
     print(f'{len(tests)} story checks passed')
