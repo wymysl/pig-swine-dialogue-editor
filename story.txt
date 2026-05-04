@@ -1,0 +1,6602 @@
+---
+
+#### Chapter 1: "The Financial Crisis"
+
+Chapter 1 is the starter-town chapter.
+
+It should feel like the player has just arrived in a small, strange legal world where everyone already knows there is a disaster, except **Dr. A. Cula**, who has just walked into it.
+
+The core loop is:
+
+```text
+arrive in Office Street
+→ enter Pig & Swine
+→ meet Asia
+→ learn the firm is broke
+→ find Murrow
+→ collect first evidence
+→ recruit Crab
+→ recruit Whimsy
+→ prepare for court
+→ win first legal battle
+→ return to office
+→ receive Swine postcard
+```
+
+The chapter should teach:
+
+```text
+movement
+interacting with signs and objects
+talking to NPCs
+repeatable hint dialogue
+quest updates
+evidence collection
+NPC recruitment
+court choices
+chapter completion
+```
+
+The legal spine is:
+
+> A defective procedural step prevented the client from being properly heard. The remedy is not total victory, but a fair procedural reset.
+
+The comedy spine is:
+
+> Pig & Swine is on the edge of collapse, but somehow this ridiculous firm is the only thing standing between a client and procedural doom.
+
+The emotional arc is:
+
+```text
+arrival → confusion → panic → investigation → teamwork → court competence → fragile survival
+```
+
+---
+
+### Chapter 1 world structure
+
+Chapter 1 should take place in a tiny starter area, not the full city.
+
+Playable areas:
+
+```text
+Office Street
+Pig & Swine Office
+Café Paragraf Lane
+Archive Room
+District Court Plaza
+District Court Interior
+```
+
+Visible but locked routes:
+
+```text
+Residential District
+Business District
+City Hall
+Airport Road
+Supreme Court stairs
+```
+
+These routes should be blocked by NPCs, signs, or soft gates.
+
+Example blockers: (see dialogue_samples.txt §Sign and notice text samples)
+
+```
+
+This creates a Pokémon-style sense of world expansion: the player can see where the game will go, but Chapter 1 stays focused.
+
+---
+
+### Starter area: Office Street
+
+The game begins outside Pig & Swine.
+
+**Dr. A. Cula** stands on a small street with a crooked office sign, a café route to the west, a court route to the north, and several NPCs blocking other roads.
+
+Suggested objective: (see dialogue_samples.txt §Sign and notice text samples)
+
+The player has immediate control. No long opening cutscene.
+
+Nearby interactables:
+
+```text
+Pig & Swine sign
+office door
+street notice board
+coffee cup on bench
+court direction sign
+blocked residential route
+blocked business route
+```
+
+Example sign text: (see dialogue_samples.txt §Sign and notice text samples)
+
+Example notice board text: (see dialogue_samples.txt §Sign and notice text samples)
+
+This opening should teach movement and interaction before dialogue dumps begin.
+
+---
+
+### Beat 1 — Enter Pig & Swine
+
+When the player enters the office, Godot performs a simple area transition:
+
+```text
+fade out
+load Pig & Swine Office scene
+place player near door
+fade in
+```
+
+Inside, the office should look like a tiny RPG hub: reception desk, legal work tables, case board, files, printer, coffee machine, and NPCs in readable positions.
+
+Asia is at the reception desk near the entrance.
+
+She is cheerful, competent, and visibly drowning in paperwork. She is trying to manage three file piles, a ringing phone, an overflowing calendar, and Mr. Pig's panic at the same time.
+
+She should be the first person the player naturally speaks to.
+
+Sample Asia line on first interaction: (see dialogue_samples.txt §Asia)
+
+Follow-up line: (see dialogue_samples.txt §Mr. Pig)
+
+Asia's role in the opening is to welcome the player, establish the tone of the office, and point the player toward Mr. Pig without feeling like a tutorial pop-up.
+
+Mr. Pig is pacing near his desk.
+
+Murrow is not immediately available or is partly hidden near the file area, forcing the player to look around.
+
+The coffee machine makes a noise that sounds admissible only under seal.
+
+---
+
+### Asia — office helper NPC
+
+Asia should be a permanent office NPC and one of the most useful support characters in the game.
+
+She is not a lawyer and not a recruitable court ally. She is the firm's massively overworked secretary: warm, practical, endlessly helpful, and somehow the only person in the office who still understands where things are.
+
+Her design purpose is:
+
+```text
+make the office feel alive
+provide direction without breaking immersion
+softly reduce player confusion
+add warmth and humor
+give the office a stable front-desk identity
+```
+
+In gameplay terms, the player should always be able to ask Asia what they should do next.
+
+That means she functions as a repeatable hint NPC.
+
+Example hint states: (see dialogue_samples.txt §Mr. Pig)
+
+After speaking to Mr. Pig, before meeting Murrow:
+
+Before finding the binder:
+
+Before recruiting Crab:
+
+Before recruiting Whimsy:
+
+Before going to court:
+```
+
+Asia should also have strong flavor lines.
+
+Sample flavor lines: (see dialogue_samples.txt §Asia)
+
+Asia's presence gives the office a clear social structure:
+
+```text
+Asia = welcome / guidance / practical glue
+Mr. Pig = stakes / panic / emotional chaos
+Murrow = structure / law / progression
+Crab = skeptical factual ally
+Whimsy = flamboyant rhetorical ally
+```
+
+---
+
+### Beat 2 — Mr. Pig reveals the crisis
+
+After Asia points the player toward him, Mr. Pig explains the crisis.
+
+He should be dramatic, panicked, and only partly useful. **Voice tic** (full canon in `style_canon.txt §Mr. Pig`): Mr. Pig reaches for *maritime metaphors* under stress — ship, hull, leaking, ballast, fog, captain, mutiny — used sparingly (~1 in 4 lines, denser in panic states like this one). A line that pairs nautical imagery with a legal-administrative term is the sweet spot. Reserve for emotional escalation, not routine information.
+
+He explains:
+
+```text
+The firm is broke.
+There is a disastrous hearing today.
+The client may leave if they lose.
+The fee is needed to keep the firm alive.
+Mr. Swine is absent.
+Dr. A. Cula must save the day.
+```
+
+Sample Mr. Pig line: (see dialogue_samples.txt §Mr. Pig)
+
+This should introduce the quest box in a very simple form:
+
+```text
+QUEST STARTED:
+Save Pig & Swine.
+Ask Murrow what the case is actually about.
+```
+
+Mr. Pig should not explain the case properly. He should be too panicked. This forces the player to seek out Murrow.
+
+If the player speaks to Asia after this, she gives the next hint: (see dialogue_samples.txt §Asia)
+
+---
+
+### Beat 3 — Find Murrow
+
+Murrow functions as the first legal tutorial mentor.
+
+He should explain the case in practical terms, not legal lecture terms.
+
+He tells Dr. A. Cula:
+
+```text
+The client may have been affected by defective service.
+The file is incomplete.
+The court hearing is today.
+The firm needs two things before court:
+1. the procedural binder;
+2. the rights memo.
+```
+
+**Canonical address-form beat (mandatory; see godot/AGENTS.md §Address forms in dialogue):** during this first conversation, Cula opens with "Mr. Murrow" — he is a new junior and uses the honorific. Mid-conversation, Murrow explicitly invites informality with a line of the shape *"It is Murrow, to friends. The 'Mister' I keep for invoices."* From this beat forward, Cula says "Murrow". Asia is *not* extended the same invitation in the same scene — Murrow hedges, with a line of the shape *"I am still deciding whether reception staff qualify as friends or as workplace constellations."* Asia keeps "Mr. Murrow" thereafter and may reference the unresolved status as a running joke. This beat is required: it bootstraps the Cula↔Murrow first-name terms that the rest of the game depends on, and it seeds an Asia↔Murrow comic dynamic that recurs into Chapter 5.
+
+Sample Murrow line: (see dialogue_samples.txt §Murrow)
+
+```text
+Find the Unreasonably Heavy Procedural Binder.
+Find the Rights Memo with Coffee Ring.
+```
+
+This is the first proper RPG-style fetch objective, but the objects are legally meaningful.
+
+Asia can now give a helper hint: (see dialogue_samples.txt §Asia)
+
+---
+
+### Beat 4 — Get the Procedural Binder
+
+The binder should be in the office archive or archive-adjacent room.
+
+This is the first object pickup tutorial.
+
+Item:
+
+> **Unreasonably Heavy Procedural Binder**
+
+Description:
+
+> A binder so dense it has its own weather system. Contains the law on service, notice, and procedural fairness.
+
+Godot implementation:
+
+```text
+Interactable object
+→ dialogue box
+→ item added to evidence inventory
+→ flag set
+→ court argument unlocked
+```
+
+Flag:
+
+```gdscript
+chapter1.has_law_binder = true
+```
+
+Unlock message:
+
+```text
+New argument unlocked:
+Defective service.
+```
+
+This teaches the key rule: evidence does not just sit in inventory; it unlocks argument options.
+
+Asia's hint after collecting it: (see dialogue_samples.txt §Asia)
+
+---
+
+### Beat 5 — Recruit Crab
+
+Crab should be nearby but not automatically cooperative.
+
+He is the first recruitable ally.
+
+He should initially resist progress, like a classic RPG NPC who only becomes useful once the player has the right item or dialogue flag.
+
+Initial Crab line: (see dialogue_samples.txt §Crab)
+
+Crab joins only after the player has either:
+
+```text
+spoken to Murrow
+or
+collected the binder
+```
+
+Crab's function:
+
+```text
+He checks the address/service issue.
+He confirms that the notice looks wrong.
+He upgrades the defective-service argument.
+```
+
+Sample Crab line: (see dialogue_samples.txt §Sign and notice text samples)
+
+```gdscript
+chapter1.recruited_crab = true
+```
+
+Court effect:
+
+```text
+Without Crab:
+Defective service argument works, but weakly.
+
+With Crab:
+Defective service argument gets stronger judicial reaction.
+```
+
+This introduces the idea that allies matter mechanically.
+
+Asia's hint before Crab is recruited: (see dialogue_samples.txt §Crab)
+
+Asia's hint after Crab joins: (see dialogue_samples.txt §Crab)
+
+---
+
+### Beat 6 — Go to Café Paragraf Lane
+
+After the binder/Crab sequence, the route to Café Paragraf becomes relevant.
+
+Murrow or Asia points the player west.
+
+Asia line: (see dialogue_samples.txt §Asia)
+
+The player exits to Office Street and walks to the café lane.
+
+This is the first small outdoor navigation objective.
+
+The route should be short and clear:
+
+```text
+Office → west street → café door
+```
+
+Along the way, NPCs can deliver tiny worldbuilding lines: (see dialogue_samples.txt §Mr. Pig)
+
+```
+
+---
+
+### Beat 7 — Recruit Whimsy
+
+Whimsy is in Café Paragraf.
+
+He provides the rights-based and rhetorical angle.
+
+He does not join immediately. He asks whether Dr. A. Cula has anything more than "procedural vibes."
+
+The player needs the rights memo or must be sent to find it.
+
+Item:
+
+> **Rights Memo with Coffee Ring**
+
+Description:
+
+> A concise memo on fair hearing, equality of arms, and why courts should not treat people like misplaced envelopes.
+
+Possible locations:
+
+```text
+Café table
+Archive shelf
+Murrow's misplaced file pile
+```
+
+Best version: the memo is in the café, half-buried under Whimsy's notes.
+
+When collected:
+
+```gdscript
+chapter1.has_rights_memo = true
+```
+
+Unlock message:
+
+```text
+New argument unlocked:
+Fair hearing.
+```
+
+Whimsy joins after the memo is found.
+
+Sample Whimsy line: (see dialogue_samples.txt §Court line samples)
+
+```gdscript
+chapter1.recruited_whimsy = true
+```
+
+Court effect:
+
+```text
+Without Whimsy:
+Fair-hearing argument is legally correct but plain.
+
+With Whimsy:
+Argument gains rhetorical force and unlocks a stronger line.
+```
+
+Asia's hint after Whimsy joins: (see dialogue_samples.txt §Whimsy)
+
+---
+
+### Optional Beat — Coffee Tutorial
+
+The café is also where the coffee mini-game should appear.
+
+But in a Pokémon-style Chapter 1, it should be optional, short, and clearly framed as a buff.
+
+NPC prompt: (see dialogue_samples.txt §Court line samples)
+
+```text
+Win:
+Status gained: Procedurally Alert.
+
+Lose:
+Status gained: Over-Caffeinated.
+```
+
+Effects:
+
+```text
+Procedurally Alert:
+one extra hint in court.
+
+Over-Caffeinated:
+funny dialogue variation, no hard penalty.
+```
+
+Do not block story progression behind the mini-game.
+
+Asia can comment on the buff if the player returns to the office: (see dialogue_samples.txt §Asia)
+
+```
+
+---
+
+### Beat 8 — Court readiness check
+
+When the player returns to Pig & Swine, Murrow performs the readiness check.
+
+Required for court:
+
+```text
+Law Binder
+Rights Memo
+Crab recruited or service clue obtained
+Whimsy recruited or fair-hearing clue obtained
+```
+
+If something is missing, Murrow gives exact guidance.
+
+Examples: (see dialogue_samples.txt §Court line samples)
+
+```
+
+Asia should reinforce the readiness state with simpler practical hints.
+
+Before ready: (see dialogue_samples.txt §Court line samples)
+
+After ready: (see dialogue_samples.txt §Court line samples)
+
+```text
+QUEST UPDATED:
+Go to the District Court.
+```
+
+Flag:
+
+```gdscript
+chapter1.court_ready = true
+chapter1.court_unlocked = true
+```
+
+A route north from Office Street is now active. An NPC blocker moves.
+
+NPC blocker before readiness: (see dialogue_samples.txt §Sign and notice text samples)
+
+After readiness: (see dialogue_samples.txt §Court line samples)
+
+---
+
+### Beat 9 — Walk to District Court
+
+The court should not be selected from a menu. The player should walk there.
+
+This matters for the Pokémon-style feel: the world is spatial, not purely UI-driven.
+
+Route:
+
+```text
+Office Street
+→ Court Avenue
+→ District Court Plaza
+→ District Court Interior
+```
+
+District Court Plaza should contain:
+
+```text
+court steps
+docket board
+nervous clients
+judgmental pigeons
+court door
+```
+
+Docket board text: (see dialogue_samples.txt §Sign and notice text samples)
+
+Entering the court triggers the first court battle.
+
+---
+
+### Beat 10 — First court battle
+
+The court sequence should feel like a legal version of a turn-based RPG battle.
+
+Not literally Pokémon combat. Structurally:
+
+```text
+Judge poses issue.
+Opponent or situation creates pressure.
+Player chooses argument.
+Player presents evidence.
+Court reacts.
+Next round begins.
+```
+
+Use a special court UI:
+
+```text
+Top: Judge / opponent portrait
+Middle: dialogue box
+Bottom: choices
+Side: evidence menu
+```
+
+The first court has three rounds.
+
+---
+
+#### Court Round 1 — Defective service
+
+Judge asks: (see dialogue_samples.txt §Court line samples)
+
+```text
+The service was defective.
+```
+
+Best evidence:
+
+```text
+Unreasonably Heavy Procedural Binder
+Crab's service observation
+```
+
+Bad options should be funny but not random: (see dialogue_samples.txt §Court line samples)
+
+Correct reaction: (see dialogue_samples.txt §Court line samples)
+
+```gdscript
+chapter1.argued_defective_service = true
+```
+
+---
+
+#### Court Round 2 — Fair hearing
+
+Judge asks: (see dialogue_samples.txt §Court line samples)
+
+```text
+It undermined the client's right to be heard.
+```
+
+Best evidence:
+
+```text
+Rights Memo with Coffee Ring
+Whimsy's fair-hearing framing
+```
+
+Good Dr. A. Cula line: (see dialogue_samples.txt §Court line samples)
+
+```gdscript
+chapter1.argued_fair_hearing = true
+```
+
+---
+
+#### Court Round 3 — Remedy
+
+Judge asks: (see dialogue_samples.txt §Court line samples)
+
+```text
+Adjourn or reopen the matter so the client can properly participate.
+```
+
+The remedy must be modest. The player should not win everything. They should win a procedural reprieve.
+
+Good Dr. A. Cula line: (see dialogue_samples.txt §Court line samples)
+
+```gdscript
+chapter1.argued_remedy = true
+```
+
+Court result:
+
+```text
+The hearing is reset.
+The client remains.
+Pig & Swine receives enough money to survive.
+```
+
+Judge final line: (see dialogue_samples.txt §Court line samples)
+
+```gdscript
+chapter1.won_court = true
+```
+
+---
+
+### Beat 11 — Return to Pig & Swine
+
+After court, the player returns automatically or walks back.
+
+For Chapter 1, a short transition is better:
+
+```text
+fade out from court
+fade in outside Pig & Swine
+```
+
+Then the player enters the office for the payoff scene.
+
+Everyone reacts:
+
+```text
+Asia congratulates the player while still sorting impossible paperwork.
+Mr. Pig celebrates too early.
+Murrow quietly updates the ledger.
+Crab pretends not to be impressed.
+Whimsy proposes turning the judgment into a musical.
+The coffee machine makes an ominous sound.
+```
+
+Sample Asia line: (see dialogue_samples.txt §Court line samples)
+
+Sample Mr. Pig line: (see dialogue_samples.txt §Court line samples)
+
+```text
+Badge earned:
+Day-One Survivor
+```
+
+Flag:
+
+```gdscript
+chapter1.complete = true
+current_chapter = 2
+```
+
+---
+
+### Final stinger — Swine postcard
+
+A postcard arrives from Mr. Swine.
+
+Text: (see dialogue_samples.txt §Sign and notice text samples)
+
+Asia reads the address label and says: (see dialogue_samples.txt §Sign and notice text samples)
+
+This foreshadows Chapter 4 while closing Chapter 1 cleanly.
+
+After the postcard, the game should briefly show new route hints:
+
+```text
+Residential District route: still blocked, but now someone mentions Ms. Nowak.
+Business District route: still blocked, but a rival-firm NPC appears in the distance.
+Court Plaza: now accessible for flavor.
+Office: becomes the permanent hub.
+```
+
+---
+
+### Pig & Swine Office layout
+
+The office is the main hub. It should be the most authored interior in the game.
+
+Recommended size:
+
+```text
+24×18
+```
+
+Functional zones:
+
+```text
+reception / Asia desk
+main legal work area
+Mr. Pig's desk
+Murrow's file area
+printer corner
+coffee corner
+case board / meeting table
+archive-side access
+```
+
+Key interactables:
+
+```text
+office_door
+asia_reception_desk
+murrow_desk
+pig_desk
+case_board
+printer
+coffee_machine
+filing_cabinet
+swine_postcard_board
+archive_door
+```
+
+NPC positions:
+
+```text
+Asia:
+near reception desk, close to entrance
+
+Mr. Pig:
+near his desk in panic orbit
+
+Murrow:
+near files / work desk
+
+Crab:
+near case board or side desk
+
+Whimsy:
+appears later or remains in Café Paragraf until recruited
+
+Mr. Swine:
+chapter 4 onward
+```
+
+Asia's location should be stable. The player should always know where to find her.
+
+That matters because she is the natural "help desk" NPC.
+
+---
+
+### Chapter 1 NPC roles
+
+| NPC         | Pokémon-style function      | Story function                                       |
+| ----------- | --------------------------- | ---------------------------------------------------- |
+| Dr. A. Cula | Player character            | New lawyer learning the world                        |
+| Asia        | Starter-town helper NPC     | Friendly office secretary, hint giver, office anchor |
+| Mr. Pig     | Professor/panic quest-giver | Establishes stakes and firm identity                 |
+| Murrow  | Tutorial mentor             | Explains legal structure and readiness               |
+| Crab        | First recruitable ally      | Adds factual/service analysis                        |
+| Whimsy      | Second recruitable ally     | Adds rights/rhetorical argument                      |
+| Barista     | Optional mini-game NPC      | Introduces coffee buff                               |
+| Judge       | First "battle" authority    | Tests the player's legal loop                        |
+| Mr. Swine   | Off-screen mystery          | Provides postcard foreshadowing                      |
+
+---
+
+### Chapter 1 quest flags
+
+Use Godot-friendly snake_case flags.
+
+```gdscript
+var chapter1 := {
+	"started": false,
+	"entered_office": false,
+
+"met_asia": false,
+	"asia_explained_office": false,
+
+"pig_revealed_crisis": false,
+
+"met_murrow": false,
+	"received_case_summary": false,
+
+"has_law_binder": false,
+	"has_rights_memo": false,
+
+"met_crab": false,
+	"recruited_crab": false,
+
+"met_whimsy": false,
+	"recruited_whimsy": false,
+
+"coffee_tutorial_seen": false,
+	"coffee_buff": "",
+
+"court_ready": false,
+	"court_unlocked": false,
+	"court_started": false,
+
+"argued_defective_service": false,
+	"argued_fair_hearing": false,
+	"argued_remedy": false,
+
+"court_outcome": "",  # "" | "victory" | "weak_win"
+	"received_swine_postcard": false,
+
+"complete": false
+}
+```
+
+Strictly speaking, `asia_explained_office` is optional, but it is useful because it gives Asia a clean first-conversation state and repeatable hint-state afterwards.
+
+Evidence should live separately:
+
+```gdscript
+var evidence := {
+	"law_binder": {
+		"collected": false,
+		"chapter": 1,
+		"display_name": "Unreasonably Heavy Procedural Binder"
+	},
+	"rights_memo": {
+		"collected": false,
+		"chapter": 1,
+		"display_name": "Rights Memo with Coffee Ring"
+	},
+	"crab_service_observation": {
+		"collected": false,
+		"chapter": 1,
+		"display_name": "Crab's Service Observation"
+	},
+	"whimsy_fair_hearing_framing": {
+		"collected": false,
+		"chapter": 1,
+		"display_name": "Whimsy's Fair-Hearing Framing"
+	}
+}
+```
+
+---
+
+### Asia hint-state logic
+
+Asia should choose her repeatable hint based on quest state.
+
+Pseudo-logic:
+
+```gdscript
+func get_asia_hint() -> String:
+	if !chapter1.pig_revealed_crisis:
+		return "<see dialogue_samples.txt §Sign and notice text samples>"
+
+if !chapter1.met_murrow:
+		return "<see dialogue_samples.txt §Sign and notice text samples>"
+
+if !chapter1.has_law_binder:
+		return "<see dialogue_samples.txt §Sign and notice text samples>"
+
+if !chapter1.recruited_crab:
+		return "<see dialogue_samples.txt §Sign and notice text samples>"
+
+if !chapter1.has_rights_memo:
+		return "<see dialogue_samples.txt §Sign and notice text samples>"
+
+if !chapter1.recruited_whimsy:
+		return "<see dialogue_samples.txt §Sign and notice text samples>"
+
+if !chapter1.court_ready:
+		return "<see dialogue_samples.txt §Sign and notice text samples>"
+
+if !chapter1.won_court:
+		return "<see dialogue_samples.txt §Sign and notice text samples>"
+
+if !chapter1.received_swine_postcard:
+		return "<see dialogue_samples.txt §Sign and notice text samples>"
+
+return "<see dialogue_samples.txt §Sign and notice text samples>"
+```
+
+This lets Asia reduce player confusion without adding intrusive UI.
+
+---
+
+### Chapter 1 Godot scene list
+
+Minimum scenes:
+
+```text
+res://world/areas/office_street.tscn
+res://world/areas/cafe_lane.tscn
+res://world/areas/court_plaza.tscn
+
+res://interiors/pig_swine_office.tscn
+res://interiors/cafe_paragraf.tscn
+res://interiors/archive.tscn
+res://interiors/district_court.tscn
+
+res://ui/dialogue_box.tscn
+res://ui/quest_popup.tscn
+res://ui/evidence_menu.tscn
+res://ui/court_choice_menu.tscn
+res://ui/badge_popup.tscn
+```
+
+Chapter 1 should not require the full city map. It needs a strong first corridor.
+
+---
+
+### Chapter 1 route gates
+
+Use NPCs and signs, not invisible walls.
+
+Business blocker:
+
+City Hall blocker:
+
+Airport blocker:
+
+Supreme Court blocker:
+```
+
+These blockers make the city feel larger from minute one.
+
+---
+
+### Chapter 1 design rules
+
+Chapter 1 should be short, readable, and polished.
+
+Target length:
+
+```text
+First playthrough: 25–35 minutes
+Replay: 12–18 minutes
+```
+
+No random encounters. No grinding. No maze.
+
+The Pokémon-Yellow influence should appear in:
+
+```text
+top-down tile movement
+small starter area
+NPC blockers
+signs with jokes
+short interiors
+clear routes
+quest-gated NPC movement
+simple item/evidence pickups
+repeatable hint NPC
+battle-like court sequence
+badge reward
+new routes opening after victory
+```
+
+But the game should not copy monster-catching or combat. The equivalent of "battles" is legal argument. The equivalent of "badges" is professional/legal achievement. The equivalent of "party members" is recruited colleagues and witnesses.
+
+---
+
+### Chapter 1 acceptance criteria
+
+Chapter 1 is done when the player can:
+
+```text
+start outside Pig & Swine
+enter the office
+meet Asia
+talk to Mr. Pig
+receive the financial crisis quest
+ask Asia for guidance
+find Murrow
+collect the Procedural Binder
+recruit Crab
+go to Café Paragraf
+collect the Rights Memo
+recruit Whimsy
+optionally play the coffee tutorial
+return for Murrow's readiness check
+walk to District Court
+complete three court rounds
+win a procedural reprieve
+return to Pig & Swine
+receive the Day-One Survivor badge
+read Swine's postcard
+unlock Chapter 2 setup
+```
+
+No step should require guessing. Every blocker should either point to the next step or deliver a useful joke. Asia should always provide a practical next-step hint from the office.
+
+---
+
+### First implementation slice
+
+Build this first:
+
+```text
+Chapter 1 vertical slice:
+Office Street → Pig & Swine Office → Café/Archive → Court Plaza → District Court
+```
+
+Implementation order:
+
+```text
+1. Create player movement and camera in Godot.
+2. Create Office Street with route blockers.
+3. Create Pig & Swine Office interior.
+4. Add dialogue box and quest popup.
+5. Add Asia as office helper NPC with hint-state dialogue.
+6. Add Mr. Pig and Murrow dialogue.
+7. Add evidence pickup system.
+8. Add Crab and Whimsy recruitment flags.
+9. Add Café/Archive route.
+10. Add District Court route.
+11. Add simple court-choice UI.
+12. Add three-round Chapter 1 court sequence.
+13. Add badge, postcard, and Chapter 1 completion flag.
+```
+
+Do not start with the full city. Do not start with mini-games. Do not start with art polish.
+
+Start with the tiny legal starter town and make it feel complete.
+
+# Chapter 2: "The Eviction Defense"
+
+Chapter 2 is the first proper case chapter.
+
+Chapter 1 was about saving Pig & Swine. Chapter 2 is about saving someone's home.
+
+It should feel like the world has opened up: the player is no longer just walking between the office, café, archive, and court. They now leave the starter-town corridor and enter **Tenants' Row / the Residential District**.
+
+The core loop is:
+
+```text
+start in Pig & Swine Office
+→ Waldek arrives with eviction papers
+→ Asia points player toward next step
+→ Murrow frames the legal issues
+→ visit Waldek's Apartment
+→ inspect poster and eviction notice
+→ interview Kowalski
+→ interview Zielińska
+→ visit Landlord's Office
+→ obtain Building Rules Extract
+→ play or survive Document Chase
+→ return to office
+→ prepare case on Evidence Board
+→ walk to Housing Court
+→ defeat Attorney Grzyb
+→ save Waldek's home
+→ return to office / apartment payoff
+→ Chapter 3 hook appears
+```
+
+The chapter should teach:
+
+```text
+field investigation
+client intake
+witness interviews
+multi-location quest progression
+evidence classification
+Evidence Board preparation
+soft-fail mini-game outcomes
+adversarial court argument
+proportionality reasoning
+victory grades
+persistent world changes
+```
+
+The legal spine is:
+
+> Eviction is not a mechanical response to a rule breach. Where someone's home, expression, notice rights, and individual circumstances are at stake, the decision must be procedurally fair and proportionate.
+
+The comedy spine is:
+
+> The landlord believes a poster is the first stage of constitutional collapse.
+
+The emotional arc is:
+
+```text
+office recovery → client panic → home vulnerability → factual doubt → targeted enforcement → structured preparation → courtroom pressure → relief → public ripple
+```
+
+Chapter 2 should be longer than Chapter 1 but still clean.
+
+Target length:
+
+```text
+First playthrough: 40–55 minutes
+Replay: 22–30 minutes
+```
+
+No grinding. No random encounters. No hidden-pixel evidence. Every required clue should be signposted by Asia, Murrow, the quest log, or an NPC.
+
+---
+
+# Chapter 2 world structure
+
+Chapter 2 unlocks the **Residential District / Tenants' Row** and **Housing Court**.
+
+Playable areas:
+
+```text
+Pig & Swine Office
+Office Street
+Tenants' Row
+Waldek's Apartment Building
+Waldek's Apartment
+Neighbors' Landing
+Landlord's Office
+Housing Court Plaza
+Housing Court Interior
+Café Paragraf, optional flavor return
+```
+
+Still visible but locked or mostly inactive:
+
+```text
+Business District
+City Hall
+Airport Road
+Supreme Court stairs
+Rival Firm
+Print Shop
+```
+
+Chapter 1's Residential blocker should now move.
+
+Before Chapter 2: (see dialogue_samples.txt §Sign and notice text samples)
+
+After Chapter 2 starts: (see dialogue_samples.txt §Court line samples)
+
+New route objective: (see dialogue_samples.txt §Sign and notice text samples)
+
+The world should immediately communicate that the city is bigger now, but not dump the full overworld on the player. Chapter 2 should unlock one major new district, not everything.
+
+---
+
+# Beat 0 — Post-Chapter 1 office state
+
+Chapter 2 begins in Pig & Swine Office after the Day-One Survivor badge and Swine postcard.
+
+Trigger:
+
+```gdscript
+chapter1.complete == true and chapter2.started == false
+```
+
+The office has changed slightly: (see dialogue_samples.txt §Sign and notice text samples)
+
+The player gets short free movement in the office. This gives them time to realise Chapter 1 is over and the office is now the home base.
+
+Asia's idle line: (see dialogue_samples.txt §Court line samples)
+
+Mr. Pig's idle line: (see dialogue_samples.txt §Court line samples)
+
+Murrow's idle line: (see dialogue_samples.txt §Court line samples)
+
+Then Waldek enters.
+
+Godot event:
+
+```gdscript
+func maybe_start_chapter2():
+	if chapter1.complete and !chapter2.started:
+		start_cutscene("chapter2_waldek_arrival")
+```
+
+---
+
+# Beat 1 — Waldek arrives
+
+Waldek enters Pig & Swine holding:
+
+```text
+eviction papers
+a rolled-up poster
+a cracked folder of warning letters
+an apartment key
+```
+
+He is worried but not helpless. He should not be written as a passive victim. He is angry, frightened, and trying to stay composed.
+
+Opening line: (see dialogue_samples.txt §Sign and notice text samples)
+
+```text
+He lives in a rented apartment.
+He placed a poster in his window.
+The landlord says it breached building rules.
+He received eviction papers.
+The papers accuse him of repeated disturbance.
+He was never clearly told what exactly he did wrong.
+Other tenants have decorations, flags, signs, and window displays.
+Only he is being threatened.
+```
+
+Mr. Pig initially misunderstands: (see dialogue_samples.txt §Court line samples)
+
+Murrow cuts through it: (see dialogue_samples.txt §Sign and notice text samples)
+
+Crab: (see dialogue_samples.txt §Court line samples)
+
+Whimsy: (see dialogue_samples.txt §Court line samples)
+
+Asia: (see dialogue_samples.txt §Court line samples)
+
+```text
+QUEST STARTED:
+Defend Waldek from eviction.
+Review the eviction papers and visit his apartment.
+```
+
+Flags:
+
+```gdscript
+chapter2.started = true
+chapter2.met_waldek = true
+chapter2.client_intake_started = true
+```
+
+Evidence obtained immediately or after dialogue:
+
+```gdscript
+evidence.eviction_notice.collected = true
+evidence.waldek_apartment_key.collected = true
+```
+
+---
+
+# Beat 2 — Murrow frames the case
+
+After Waldek's first explanation, Murrow gives the first Chapter 2 legal structure.
+
+He should not lecture. He should translate the mess into playable objectives.
+
+He identifies four legal questions:
+
+```text
+1. What exactly did the eviction notice allege?
+2. What rule did Waldek supposedly breach?
+3. Was there any real disturbance or harm?
+4. Was eviction proportionate to the poster?
+```
+
+Murrow line: (see dialogue_samples.txt §Court line samples)
+
+```text
+Review the apartment.
+Inspect the poster.
+Find out whether anyone was actually disturbed.
+```
+
+Asia becomes Chapter 2's guidance NPC. She continues the Chapter 1 design: she is not a lawyer, not a court ally, but always useful.
+
+Asia line after intake: (see dialogue_samples.txt §Court line samples)
+
+---
+
+# Beat 3 — Route to Tenants' Row
+
+The player leaves Pig & Swine and walks to Tenants' Row.
+
+This should be the first real expansion of the overworld.
+
+Route:
+
+```text
+Pig & Swine Office
+→ Office Street
+→ Due Process Bridge / small transition lane
+→ Tenants' Row
+→ Waldek's Apartment Building
+```
+
+Visual changes:
+
+```text
+The old Chapter 1 blocker has moved.
+A tenant is arguing with a notice board.
+Laundry lines and apartment balconies appear.
+A poster is visible in one window.
+A public bin is full of crumpled warning letters.
+```
+
+Street NPCs:
+
+Junior clerk: (see dialogue_samples.txt §Court line samples)
+
+Tenant NPC: (see dialogue_samples.txt §Sign and notice text samples)
+
+Child with toy gavel: (see dialogue_samples.txt §Court line samples)
+
+This route should feel warmer and more human than the Legal Quarter. It is not a dangerous zone. It is a community zone under legal pressure.
+
+---
+
+# Beat 4 — Waldek's Apartment Building
+
+The building exterior introduces the case visually.
+
+Exterior features:
+
+```text
+medium apartment block
+visible poster in Waldek's window
+balconies with different decorations
+one football flag
+one flower wreath
+one ugly neon sign
+landlord notice on entrance door
+Kowalski's curtain twitching
+```
+
+Interactables:
+
+```text
+building_notice_board
+mailboxes
+Waldek window
+Kowalski window
+Zielińska balcony
+entrance door
+```
+
+Building notice board text: (see dialogue_samples.txt §Sign and notice text samples)
+
+Dr. A. Cula observation: (see dialogue_samples.txt §Court line samples)
+
+The entrance requires the apartment key.
+
+Godot door:
+
+```gdscript
+{
+	"id": "door_waldek_apartment_building",
+	"from": "tenants_row",
+	"to": "waldek_apartment",
+	"requires": "chapter2.received_apartment_key",
+	"locked_text": "You should speak to Waldek before entering his building."
+}
+```
+
+---
+
+# Beat 5 — Waldek's Apartment
+
+Purpose: emotional anchor.
+
+This should be the first truly personal interior in the game. Chapter 1 interiors are functional and funny; this one should be warm, vulnerable, and specific.
+
+Recommended size:
+
+```text
+16×12
+```
+
+Zones:
+
+```text
+entry area
+small kitchen table
+window/poster area
+letter stack corner
+plant/books/sleeping area
+balcony/window edge
+```
+
+Key interactables:
+
+```text
+poster
+eviction_notice_copy
+letter_stack
+window
+kitchen_table
+plant
+bookshelf
+balcony
+```
+
+Required interactions:
+
+```text
+inspect poster
+inspect letter stack
+inspect eviction notice
+speak to Waldek
+```
+
+Evidence / clues:
+
+## Poster Photo
+
+```gdscript
+evidence.poster_photo.collected = true
+chapter2.inspected_poster = true
+```
+
+Description:
+
+> A photo of Waldek's window poster. It is expressive, harmless, and considerably less dangerous than the landlord's punctuation.
+
+Unlocks:
+
+```text
+proportionality_problem
+expression_angle
+```
+
+## Eviction Notice, if not already collected
+
+Description:
+
+> Formal, severe, and suspiciously enthusiastic. Alleges repeated disturbance but gives no concrete dates.
+
+Unlocks:
+
+```text
+notice_problem
+home_interference
+```
+
+## Letter Stack
+
+Description:
+
+> A stack of warnings that grow sterner while becoming less specific.
+
+Unlocks:
+
+```text
+procedural_fairness_problem
+```
+
+Waldek line: (see dialogue_samples.txt §Court line samples)
+
+Dr. A. Cula line after inspecting the poster: (see dialogue_samples.txt §Court line samples)
+
+```text
+Find out whether the poster caused any real disturbance.
+Interview the neighbors.
+```
+
+Flags:
+
+```gdscript
+chapter2.visited_waldek_apartment = true
+chapter2.inspected_poster = true
+chapter2.inspected_letter_stack = true
+```
+
+---
+
+# Beat 6 — Interview Neighbor Kowalski
+
+Kowalski should be the comic witness who seems useless until he becomes crucial.
+
+Location:
+
+```text
+Neighbors' Landing / same apartment building
+```
+
+Personality:
+
+```text
+suspicious
+curtain-watching
+proud of his civic observations
+dramatically attentive to tiny noises
+```
+
+First line: (see dialogue_samples.txt §Court line samples)
+
+Dialogue structure: (see dialogue_samples.txt §Court line samples)
+
+Dr. A. Cula: (see dialogue_samples.txt §Court line samples)
+
+Kowalski: (see dialogue_samples.txt §Court line samples)
+
+```gdscript
+evidence.neighbor_statement_no_disturbance.collected = true
+chapter2.kowalski_statement_obtained = true
+```
+
+Description:
+
+> Kowalski confirms that the poster caused no real disturbance, despite his professional-level sensitivity to apartment noise.
+
+Quest update:
+
+```text
+Kowalski confirms there was no real disturbance.
+Find out whether Waldek was singled out.
+```
+
+---
+
+# Beat 7 — Interview Neighbor Zielińska
+
+Zielińska should be the warm, practical witness who gives the fairness and targeting angle.
+
+Location:
+
+```text
+Neighbors' Landing / courtyard / balcony
+```
+
+Personality:
+
+```text
+practical
+observant
+sympathetic
+not intimidated by authority
+```
+
+First line: (see dialogue_samples.txt §Court line samples)
+
+She explains: (see dialogue_samples.txt §Court line samples)
+
+```gdscript
+evidence.neighbor_statement_targeted_enforcement.collected = true
+chapter2.zielinska_statement_obtained = true
+```
+
+Description:
+
+> Zielińska says the rule woke up only when management disliked Waldek's poster.
+
+Quest update:
+
+```text
+Inspect the landlord's rules and complaint record.
+Go to the Landlord's Office.
+```
+
+Zielińska hint toward Document Chase: (see dialogue_samples.txt §Court line samples)
+
+---
+
+# Beat 8 — Landlord's Office
+
+Purpose: adversarial investigation.
+
+The Landlord's Office should contrast with Waldek's Apartment.
+
+Recommended size:
+
+```text
+18×12
+```
+
+Visual identity:
+
+```text
+cold
+bureaucratic
+overly tidy
+framed rules
+large desk
+filing cabinets
+NO POSTERS sign
+complaint file near window
+```
+
+Key interactables:
+
+```text
+building_rules
+complaint_log
+no_posters_sign
+landlord_desk
+locked_cabinet
+window
+filing_cabinet
+```
+
+Optional landlord name:
+
+```text
+Administrator Beton
+```
+
+Administrator Beton line: (see dialogue_samples.txt §Court line samples)
+
+## Evidence: Building Rules Extract
+
+```gdscript
+evidence.building_rules_extract.collected = true
+chapter2.obtained_building_rules = true
+```
+
+Description: (see dialogue_samples.txt §Court line samples)
+
+```text
+rule_problem
+arbitrary_rule
+```
+
+Important ethical note: Dr. A. Cula should not steal documents. The player obtains the rules because they were served on Waldek, accidentally handed over, or visible as part of the landlord's own file. Keep the lawyer fantasy silly but not criminal.
+
+Attorney Grzyb can appear briefly here for the first time.
+
+Attorney Grzyb line: (see dialogue_samples.txt §Court line samples)
+
+Crab line after inspecting the rules: (see dialogue_samples.txt §Court line samples)
+
+Whimsy: (see dialogue_samples.txt §Court line samples)
+
+---
+
+# Beat 9 — Document Chase: Stampede of Evidence
+
+The Chapter 2 paper-stamping mini-game recovers missing complaint pages, strengthens the factual case, and never blocks progression.
+
+Trigger:
+
+```gdscript
+chapter2.visited_landlord_office == true
+chapter2.obtained_building_rules == true
+chapter2.document_chase_started == false
+```
+
+Interaction:
+
+```text
+interact with complaint_log near open window
+```
+
+Cutscene:
+
+```text
+Dr. A. Cula opens complaint file.
+A window slams open.
+Complaint pages fly into the air.
+Administrator Beton says this proves the building is hostile.
+Whimsy, if present, shouts about bureaucratic wildlife.
+```
+
+If Crab is present: (see dialogue_samples.txt §Court line samples)
+
+If Whimsy is present: (see dialogue_samples.txt §Court line samples)
+
+```text
+Move stamp/crosshair.
+Stamp relevant complaint pages.
+Avoid junk pages.
+Recover enough relevant pages before time expires.
+```
+
+Godot implementation concept:
+
+```gdscript
+start_document_chase({
+	"context": "chapter2_landlord_complaint_log",
+	"difficulty": "normal",
+	"time_limit": 30,
+	"relevant_pages": 15,
+	"target_score": 10
+})
+```
+
+Outcomes:
+
+## Strong recovery
+
+Condition:
+
+```text
+10+ relevant pages stamped
+few junk pages stamped
+```
+
+Evidence:
+
+```gdscript
+chapter2.document_chase_result = "recovered_full"
+evidence.recovered_complaint_page.collected = true
+```
+
+Description:
+
+> The complaint record is mostly duplicated, vague, and dated after the eviction notice. The landlord's chronology has tripped over its own shoelaces.
+
+Court effect:
+
+```text
+Strong support for factual_problem and proportionality_problem.
+Attorney Grzyb loses force in Round 2.
+```
+
+## Partial recovery
+
+Condition:
+
+```text
+5–9 relevant pages stamped
+or too many junk pages stamped
+```
+
+Evidence:
+
+```gdscript
+chapter2.document_chase_result = "recovered_damaged"
+evidence.damaged_complaint_page.collected = true
+```
+
+Description:
+
+> Torn and coffee-stained, but enough remains to show the complaint record is unreliable.
+
+Court effect:
+
+```text
+Medium support for factual_problem.
+Round 2 still winnable.
+```
+
+## Failed recovery
+
+Condition:
+
+```text
+fewer than 5 relevant pages stamped
+```
+
+Evidence:
+
+```gdscript
+chapter2.document_chase_result = "failed"
+evidence.witness_supported_complaint_gap.collected = true
+```
+
+Description:
+
+> The complaint pages escaped into procedural legend, but the witnesses still undermine the alleged disturbance.
+
+Court effect:
+
+```text
+Weak support.
+Court gives warning, but chapter remains completable through witness evidence.
+```
+
+Failure line: (see dialogue_samples.txt §Court line samples)
+
+---
+
+# Beat 10 — Return to Pig & Swine
+
+After Landlord's Office and Document Chase, the quest sends the player back to Pig & Swine.
+
+Quest update:
+
+```text
+Return to Pig & Swine and prepare the eviction defense.
+```
+
+The office now functions as the preparation hub.
+
+Asia reacts based on the player's progress.
+
+With full recovered page: (see dialogue_samples.txt §Court line samples)
+
+With damaged page: (see dialogue_samples.txt §Court line samples)
+
+With failed chase: (see dialogue_samples.txt §Court line samples)
+
+Mr. Pig: (see dialogue_samples.txt §Court line samples)
+
+Murrow: (see dialogue_samples.txt §Court line samples)
+
+Crab: (see dialogue_samples.txt §Court line samples)
+
+Whimsy: (see dialogue_samples.txt §Court line samples)
+
+---
+
+# Beat 11 — Evidence Board tutorial
+
+Chapter 2's main new system is the Evidence Board.
+
+Chapter 1 taught that evidence unlocks court arguments. Chapter 2 teaches that evidence must be organised before court.
+
+The Evidence Board should appear in the Pig & Swine meeting area / case board.
+
+Godot scene:
+
+```text
+res://ui/evidence_board.tscn
+```
+
+Physical trigger:
+
+```text
+interact with case_board in Pig & Swine Office
+```
+
+Murrow introduces it: (see dialogue_samples.txt §Court line samples)
+
+Asia, from reception: (see dialogue_samples.txt §Court line samples)
+
+```gdscript
+var chapter2_argument_slots := {
+	"notice_problem": null,
+	"rule_problem": null,
+	"factual_problem": null,
+	"proportionality_problem": null
+}
+```
+
+Available evidence cards:
+
+```gdscript
+eviction_notice
+poster_photo
+building_rules_extract
+neighbor_statement_no_disturbance
+neighbor_statement_targeted_enforcement
+recovered_complaint_page
+damaged_complaint_page
+witness_supported_complaint_gap
+letter_stack
+```
+
+Best mappings:
+
+```gdscript
+notice_problem -> eviction_notice
+rule_problem -> building_rules_extract
+factual_problem -> neighbor_statement_no_disturbance / recovered_complaint_page
+proportionality_problem -> poster_photo / neighbor_statement_targeted_enforcement
+```
+
+Scoring:
+
+```gdscript
+0-1 correct slots:
+	"shaky_case"
+
+2-3 correct slots:
+	"standard_case"
+
+4 correct slots:
+	"strong_case"
+```
+
+Design rule:
+
+The Evidence Board should not be drag-and-drop only. Use a controller-friendly flow:
+
+```text
+select slot
+→ select evidence card
+→ confirm
+→ get short comment
+```
+
+Example comments:
+
+Correct notice mapping: (see dialogue_samples.txt §Sign and notice text samples)
+
+Wrong notice mapping with poster photo: (see dialogue_samples.txt §Sign and notice text samples)
+
+Correct proportionality mapping with poster photo: (see dialogue_samples.txt §Court line samples)
+
+Correct factual mapping with recovered complaint page: (see dialogue_samples.txt §Sign and notice text samples)
+
+Once at least three slots are filled:
+
+```gdscript
+chapter2.evidence_board_completed = true
+chapter2.evidence_board_score = calculated_score
+```
+
+---
+
+# Beat 12 — Court readiness check
+
+Murrow performs the readiness check.
+
+Required for court:
+
+```text
+eviction_notice
+building_rules_extract
+one factual item:
+	neighbor_statement_no_disturbance
+	or recovered/damaged complaint page
+	or witness_supported_complaint_gap
+Evidence Board completed with at least three filled slots
+```
+
+Optional but beneficial:
+
+```text
+poster_photo
+neighbor_statement_targeted_enforcement
+full recovered complaint page
+high Evidence Board score
+```
+
+Readiness dialogue if missing evidence:
+
+Missing eviction notice: (see dialogue_samples.txt §Sign and notice text samples)
+
+Missing building rules: (see dialogue_samples.txt §Court line samples)
+
+Missing factual evidence: (see dialogue_samples.txt §Court line samples)
+
+Missing Evidence Board: (see dialogue_samples.txt §Court line samples)
+
+Asia simple hint: (see dialogue_samples.txt §Court line samples)
+
+```gdscript
+chapter2.court_ready = true
+chapter2.court_unlocked = true
+```
+
+Quest update:
+
+```text
+Go to Housing Court.
+```
+
+Asia: (see dialogue_samples.txt §Court line samples)
+
+---
+
+# Beat 13 — Walk to Housing Court
+
+The player should walk to court, not select it from a menu.
+
+Route:
+
+```text
+Pig & Swine Office
+→ Grand Court Avenue
+→ Housing Court Plaza
+→ Housing Court Interior
+```
+
+Housing Court Plaza features:
+
+```text
+smaller courthouse building
+queue of tenants
+landlord representative pacing
+notice board
+rolled-up poster under Waldek's arm
+Attorney Grzyb with excessive folders
+```
+
+Docket board:
+
+> **Today: Waldek v. Façade Dignity**
+
+Court door before readiness: (see dialogue_samples.txt §Court line samples)
+
+Court door after readiness: (see dialogue_samples.txt §Court line samples)
+
+---
+
+# Beat 14 — Housing Court sequence
+
+The Housing Court should feel different from Chapter 1's court.
+
+Chapter 1 court tested basic argument selection. Chapter 2 tests prepared evidence. The player should feel that the Evidence Board mattered.
+
+Court UI:
+
+```text
+Top: Judge / Attorney Grzyb portraits
+Middle: dialogue box
+Side: prepared evidence slots
+Bottom: argument choices
+Optional: Evidence Board score indicator hidden or reflected in dialogue
+```
+
+Parties:
+
+```text
+Dr. A. Cula for Waldek
+Attorney Grzyb for landlord / management
+Housing Judge
+Waldek present
+Crab and Whimsy may provide support lines if recruited from Chapter 1
+Murrow may appear as preparation voice, not main advocate
+```
+
+Attorney Grzyb opening: (see dialogue_samples.txt §Court line samples)
+
+Judge: (see dialogue_samples.txt §Court line samples)
+
+The court has three rounds.
+
+---
+
+## Court Round 1 — Was there a clear legal basis for eviction?
+
+Attorney Grzyb argues: (see dialogue_samples.txt §Court line samples)
+
+```text
+The rule was vague, overbroad, and arbitrarily applied.
+```
+
+Best evidence:
+
+```text
+Building Rules Extract
+Eviction Notice
+```
+
+Good Dr. A. Cula line: (see dialogue_samples.txt §Court line samples)
+
+If Evidence Board slot `rule_problem` was correctly mapped:
+
+Judge: (see dialogue_samples.txt §Court line samples)
+
+Judge: (see dialogue_samples.txt §Court line samples)
+
+```gdscript
+chapter2.round1_rule_argument_won = true
+```
+
+Bad options: (see dialogue_samples.txt §Court line samples)
+
+---
+
+## Court Round 2 — Was there actual disturbance or harm?
+
+Attorney Grzyb argues: (see dialogue_samples.txt §Court line samples)
+
+```text
+The factual basis is weak, inconsistent, or contradicted by witnesses.
+```
+
+Best evidence:
+
+```text
+Neighbor Statement: No Disturbance
+Recovered Complaint Page
+Damaged Complaint Page
+Witness-supported Complaint Gap
+```
+
+Good Dr. A. Cula line: (see dialogue_samples.txt §Court line samples)
+
+Crab support line: (see dialogue_samples.txt §Sign and notice text samples)
+
+Crab: (see dialogue_samples.txt §Court line samples)
+
+Kowalski line: (see dialogue_samples.txt §Court line samples)
+
+```gdscript
+chapter2.round2_factual_argument_won = true
+```
+
+Bad options: (see dialogue_samples.txt §Court line samples)
+
+---
+
+## Court Round 3 — Was eviction proportionate?
+
+Attorney Grzyb argues: (see dialogue_samples.txt §Court line samples)
+
+```text
+Eviction was disproportionate given the minor conduct, expressive element, home impact, weak factual basis, and lesser available measures.
+```
+
+Best evidence:
+
+```text
+Poster Photo
+Eviction Notice
+Neighbor Statement: Targeted Enforcement
+Letter Stack
+```
+
+Good Dr. A. Cula line: (see dialogue_samples.txt §Court line samples)
+
+Whimsy support line if proportionality slot prepared well: (see dialogue_samples.txt §Sign and notice text samples)
+
+Judge reaction on strong preparation: (see dialogue_samples.txt §Court line samples)
+
+```gdscript
+chapter2.round3_proportionality_argument_won = true
+```
+
+Correct remedy options:
+
+```text
+Suspend eviction
+Set aside the eviction notice
+Require lawful reconsideration with proper individual assessment
+```
+
+Too broad and wrong: (see dialogue_samples.txt §Court line samples)
+
+Correct remedy line: (see dialogue_samples.txt §Court line samples)
+
+---
+
+# Victory states
+
+Chapter 2 should not have a hard "perfect or fail" structure.
+
+## Strong victory
+
+Requirements:
+
+```text
+Evidence Board score: strong_case
+Recovered Complaint Page obtained
+all three court rounds won
+poster_photo and targeted_enforcement evidence collected
+```
+
+Outcome:
+
+```text
+Eviction notice set aside.
+Judge criticises vague rules and disproportionate enforcement.
+Attorney Grzyb becomes a recurring rival.
+Waldek's poster becomes locally famous.
+```
+
+Badge:
+
+> **Badge earned: Home Defender**
+
+Optional variant badge:
+
+> **Badge earned: Proportionality Goblin**
+
+Judge line: (see dialogue_samples.txt §Court line samples)
+
+## Standard victory
+
+Requirements:
+
+```text
+2–3 correct Evidence Board slots
+at least two court rounds won
+core evidence collected
+```
+
+Outcome:
+
+```text
+Eviction suspended.
+Landlord must reconsider lawfully.
+Waldek keeps his home.
+```
+
+Badge:
+
+> **Badge earned: Home Defender**
+
+Murrow: (see dialogue_samples.txt §Court line samples)
+
+## Weak-but-successful victory
+
+Requirements:
+
+```text
+poor Evidence Board score
+but correct final proportionality or notice argument
+```
+
+Outcome:
+
+```text
+Temporary suspension.
+Further review ordered.
+Waldek is safe for now.
+```
+
+Murrow: (see dialogue_samples.txt §Court line samples)
+
+Asia: (see dialogue_samples.txt §Court line samples)
+
+Failure / retry should be possible only if the player makes too many wrong court choices and lacks evidence. Even then, the game should rewind to preparation, not punish with a dead end.
+
+---
+
+# Beat 15 — Payoff scene
+
+The payoff should happen partly at Waldek's Apartment and partly at Pig & Swine.
+
+## Apartment payoff
+
+Camera shows Waldek's window.
+
+The original poster is still there.
+
+Then another appears.
+
+Then a small supportive sign appears in a neighboring window.
+
+Kowalski opens his curtain: (see dialogue_samples.txt §Court line samples)
+
+Zielińska: (see dialogue_samples.txt §Court line samples)
+
+Waldek: (see dialogue_samples.txt §Court line samples)
+
+Dr. A. Cula: (see dialogue_samples.txt §Sign and notice text samples)
+
+## Office payoff
+
+Back at Pig & Swine:
+
+```text
+Asia updates the case board.
+Mr. Pig tries to act dignified.
+Murrow quietly files the order.
+Crab pretends not to be pleased.
+Whimsy unveils a commemorative poster.
+The coffee machine makes a noise that may be solidarity.
+```
+
+Asia: (see dialogue_samples.txt §Court line samples)
+
+Mr. Pig: (see dialogue_samples.txt §Court line samples)
+
+Crab: (see dialogue_samples.txt §Court line samples)
+
+Whimsy: (see dialogue_samples.txt §Sign and notice text samples)
+
+Murrow: (see dialogue_samples.txt §Court line samples)
+
+---
+
+# Chapter 3 hook
+
+After the victory scene, the office printer produces one page by itself.
+
+Printed page:
+
+> NOTICE OF FAILED FILING
+
+Then another:
+
+> OUT OF MAGENTA
+
+Mr. Pig freezes.
+
+Crab: (see dialogue_samples.txt §Court line samples)
+
+Murrow: (see dialogue_samples.txt §Court line samples)
+
+```text
+Something is wrong with the office printer.
+```
+
+Flag:
+
+```gdscript
+chapter2.complete = true
+current_chapter = 3
+```
+
+---
+
+# Chapter 2 NPC roles
+
+| NPC                 | Function                        | Chapter 2 role                                                     |
+| ------------------- | ------------------------------- | ------------------------------------------------------------------ |
+| Dr. A. Cula         | Player advocate                 | Conducts investigation, prepares evidence, argues in Housing Court |
+| Asia                | Office helper / hint NPC        | Keeps player oriented, updates route hints, adds warmth            |
+| Waldek              | Client                          | Emotional anchor, home-impact witness                              |
+| Mr. Pig             | Comic stakes                    | Panics about money and reputation, celebrates survival             |
+| Murrow          | Legal structure                 | Frames issues, teaches Evidence Board, readiness check             |
+| Crab                | Factual analysis                | Identifies weak chronology, supports factual-dispute argument      |
+| Whimsy              | Rhetorical/proportionality ally | Turns poster dispute into memorable rights argument                |
+| Kowalski            | Comic witness                   | Confirms no real disturbance                                       |
+| Zielińska           | Practical witness               | Confirms targeted enforcement and fairness problem                 |
+| Administrator Beton | Landlord-side source            | Bureaucratic antagonist in investigation                           |
+| Attorney Grzyb      | Court opponent                  | Makes plausible landlord arguments                                 |
+| Housing Judge       | Authority                       | Tests rule clarity, factual basis, proportionality                 |
+
+---
+
+# Chapter 2 evidence
+
+Use shared evidence state, not chapter-only inventory.
+
+```gdscript
+var evidence := {
+	"eviction_notice": {
+		"collected": false,
+		"chapter": 2,
+		"display_name": "Eviction Notice",
+		"argument_tags": ["notice_problem", "home_interference"]
+	},
+
+"waldek_apartment_key": {
+		"collected": false,
+		"chapter": 2,
+		"display_name": "Waldek's Apartment Key",
+		"argument_tags": []
+	},
+
+"poster_photo": {
+		"collected": false,
+		"chapter": 2,
+		"display_name": "Poster Photo",
+		"argument_tags": ["proportionality_problem", "expression_angle"]
+	},
+
+"letter_stack": {
+		"collected": false,
+		"chapter": 2,
+		"display_name": "Warning Letter Stack",
+		"argument_tags": ["notice_problem", "procedural_fairness"]
+	},
+
+"building_rules_extract": {
+		"collected": false,
+		"chapter": 2,
+		"display_name": "Building Rules Extract",
+		"argument_tags": ["rule_problem", "arbitrary_rule"]
+	},
+
+"neighbor_statement_no_disturbance": {
+		"collected": false,
+		"chapter": 2,
+		"display_name": "Kowalski Statement: No Disturbance",
+		"argument_tags": ["factual_problem"]
+	},
+
+"neighbor_statement_targeted_enforcement": {
+		"collected": false,
+		"chapter": 2,
+		"display_name": "Zielińska Statement: Targeted Enforcement",
+		"argument_tags": ["proportionality_problem", "arbitrary_enforcement"]
+	},
+
+"recovered_complaint_page": {
+		"collected": false,
+		"chapter": 2,
+		"display_name": "Recovered Complaint Page",
+		"argument_tags": ["factual_problem", "proportionality_problem"]
+	},
+
+"damaged_complaint_page": {
+		"collected": false,
+		"chapter": 2,
+		"display_name": "Damaged Complaint Page",
+		"argument_tags": ["factual_problem"]
+	},
+
+"witness_supported_complaint_gap": {
+		"collected": false,
+		"chapter": 2,
+		"display_name": "Witness-supported Complaint Gap",
+		"argument_tags": ["factual_problem"]
+	}
+}
+```
+
+Core required evidence:
+
+```text
+Eviction Notice
+Building Rules Extract
+one factual item:
+	Kowalski Statement
+	Recovered Complaint Page
+	Damaged Complaint Page
+	Witness-supported Complaint Gap
+```
+
+Strong-case evidence:
+
+```text
+Poster Photo
+Zielińska Statement
+Recovered Complaint Page
+Letter Stack
+```
+
+---
+
+# Chapter 2 quest flags
+
+Use Godot-friendly snake_case.
+
+```gdscript
+var chapter2 := {
+	"started": false,
+	"client_intake_started": false,
+	"client_intake_complete": false,
+
+"met_waldek": false,
+	"received_eviction_notice": false,
+	"received_apartment_key": false,
+
+"residential_route_unlocked": false,
+	"visited_tenants_row": false,
+
+"visited_waldek_apartment": false,
+	"inspected_poster": false,
+	"inspected_letter_stack": false,
+	"has_poster_photo": false,
+
+"met_kowalski": false,
+	"kowalski_statement_obtained": false,
+
+"met_zielinska": false,
+	"zielinska_statement_obtained": false,
+
+"landlord_office_unlocked": false,
+	"visited_landlord_office": false,
+	"met_administrator_beton": false,
+	"obtained_building_rules": false,
+
+"met_grzyb": false,
+
+"document_chase_started": false,
+	"document_chase_completed": false,
+	"document_chase_result": "",
+	# "recovered_full" | "recovered_damaged" | "failed"
+
+"evidence_board_unlocked": false,
+	"evidence_board_completed": false,
+	"evidence_board_score": 0,
+	"case_strength": "",
+	# "shaky_case" | "standard_case" | "strong_case"
+
+"court_ready": false,
+	"court_unlocked": false,
+	"court_started": false,
+
+"round1_rule_argument_won": false,
+	"round2_factual_argument_won": false,
+	"round3_proportionality_argument_won": false,
+
+"judgment_result": "",
+	# "strong_victory" | "standard_victory" | "weak_victory" | "loss_retry"
+
+"poster_multiplied": false,
+	"chapter3_hook_seen": false,
+
+"complete": false
+}
+```
+
+Evidence Board state:
+
+```gdscript
+var chapter2_evidence_board := {
+	"notice_problem": "",
+	"rule_problem": "",
+	"factual_problem": "",
+	"proportionality_problem": "",
+	"score": 0,
+	"completed": false
+}
+```
+
+---
+
+# Asia hint-state logic for Chapter 2
+
+Asia should remain the office's practical guidance layer.
+
+```gdscript
+func get_asia_chapter2_hint() -> String:
+	if !chapter2.client_intake_complete:
+		return "<see dialogue_samples.txt §Court line samples>"
+
+if !chapter2.visited_waldek_apartment:
+		return "<see dialogue_samples.txt §Court line samples>"
+
+if !chapter2.inspected_poster:
+		return "<see dialogue_samples.txt §Court line samples>"
+
+if !chapter2.kowalski_statement_obtained:
+		return "<see dialogue_samples.txt §Court line samples>"
+
+if !chapter2.zielinska_statement_obtained:
+		return "<see dialogue_samples.txt §Court line samples>"
+
+if !chapter2.obtained_building_rules:
+		return "<see dialogue_samples.txt §Court line samples>"
+
+if !chapter2.document_chase_completed:
+		return "<see dialogue_samples.txt §Court line samples>"
+
+if !chapter2.evidence_board_completed:
+		return "<see dialogue_samples.txt §Court line samples>"
+
+if !chapter2.court_ready:
+		return "<see dialogue_samples.txt §Court line samples>"
+
+if !chapter2.judgment_result:
+		return "<see dialogue_samples.txt §Court line samples>"
+
+if !chapter2.chapter3_hook_seen:
+		return "<see dialogue_samples.txt §Court line samples>"
+
+return "<see dialogue_samples.txt §Court line samples>"
+```
+
+---
+
+# Godot scene list
+
+Minimum scenes:
+
+```text
+res://world/areas/office_street.tscn
+res://world/areas/tenants_row.tscn
+res://world/areas/housing_court_plaza.tscn
+
+res://interiors/pig_swine_office.tscn
+res://interiors/waldek_apartment.tscn
+res://interiors/neighbors_landing.tscn
+res://interiors/landlord_office.tscn
+res://interiors/housing_court.tscn
+
+res://ui/dialogue_box.tscn
+res://ui/quest_popup.tscn
+res://ui/evidence_menu.tscn
+res://ui/evidence_board.tscn
+res://ui/court_choice_menu.tscn
+res://ui/badge_popup.tscn
+
+res://minigames/document_chase.tscn
+```
+
+Chapter 2 should not require the full 128×128 overworld to be finished. It needs the Chapter 1 corridor plus one meaningful residential branch.
+
+---
+
+# Chapter 2 implementation slice
+
+Build the legal spine first. Do not start with Document Chase.
+
+Implementation order:
+
+```text
+1. Add Chapter 2 state flags and save/load support.
+2. Add Waldek intake cutscene in Pig & Swine Office.
+3. Add Asia Chapter 2 hint-state dialogue.
+4. Unlock Tenants' Row route after intake.
+5. Add Waldek's Apartment placeholder map.
+6. Add poster, eviction notice, letter stack interactions.
+7. Add Kowalski and Zielińska witness dialogues.
+8. Add Landlord's Office placeholder map.
+9. Add Building Rules Extract interaction.
+10. Add Chapter 2 evidence definitions.
+11. Add Evidence Board v1.
+12. Add Murrow readiness check.
+13. Add Housing Court route and interior.
+14. Add 3-round Housing Court sequence.
+15. Add victory states and payoff scene.
+16. Add Chapter 3 printer hook.
+17. Add Document Chase after the chapter works without it.
+18. Add visual/audio polish.
+```
+
+This preserves the same discipline as the updated Chapter 1 implementation plan: build the playable quest spine first, then polish.
+
+---
+
+# Acceptance criteria
+
+Chapter 2 is done when the player can:
+
+```text
+start in Pig & Swine after Chapter 1
+see Waldek arrive
+receive the eviction case
+ask Asia what to do next
+unlock Residential District
+walk to Waldek's Apartment
+inspect poster, eviction notice, and letter stack
+interview Kowalski
+interview Zielińska
+visit Landlord's Office
+obtain Building Rules Extract
+complete, partially complete, or fail Document Chase without blocking progression
+return to Pig & Swine
+prepare the case on the Evidence Board
+receive Murrow's readiness check
+walk to Housing Court
+face Attorney Grzyb
+win or partially win three court rounds:
+	rule clarity
+	factual basis
+	proportionality/remedy
+save Waldek from eviction
+see the poster payoff
+earn Home Defender badge
+trigger the Chapter 3 printer hook
+set chapter2.complete = true
+```
+
+No required step should depend on guessing. If the player is stuck, Asia should give the practical next step, and Murrow should identify the missing legal/evidential component.
+
+The key design move for Chapter 3: it should not just be "printer funny." It should be the first chapter where the game becomes procedural-combat: testimony, contradiction spotting, technical evidence, urgency, and a proper antagonist. The old plan already frames Chapter 3 as the systems chapter introducing contradiction spotting, cross-examination, urgency, scooter racing, Sysadmin Bajtek, and Advocate Szpon.  The updated Chapter 2 ends cleanly with the printer producing "NOTICE OF FAILED FILING" and "OUT OF MAGENTA," then setting `chapter2.complete = true` and `current_chapter = 3`, so Chapter 3 should begin exactly from that stinger.
+
+# Chapter 3: "The Printer Conspiracy"
+
+Chapter 3 is the systems chapter.
+
+Chapter 1 taught investigation and basic court argument.
+
+Chapter 2 taught evidence preparation, witness interviews, proportionality, and soft-fail mini-game outcomes.
+
+Chapter 3 should teach contradiction spotting, technical investigation, deadline pressure, and adversarial cross-examination.
+
+The core loop is: (see dialogue_samples.txt §Sign and notice text samples)
+
+The chapter should teach: (see dialogue_samples.txt §Court line samples)
+
+The emotional arc is: (see dialogue_samples.txt §Court line samples)
+
+Target length: (see dialogue_samples.txt §Court line samples)
+
+No random failure. No hard fail for the scooter race. No contradiction should require guessing. Every contradiction must be preceded by a clearly collected evidence item.
+
+---
+
+# Chapter 3 world structure
+
+Chapter 3 unlocks the **Business District**, **Print Shop**, **Pig & Swine Basement**, and a technical route inside the office.
+
+Playable areas: (see dialogue_samples.txt §Court line samples)
+
+Still visible but locked or mostly inactive: (see dialogue_samples.txt §Court line samples)
+
+Chapter 1 and Chapter 2 made the city expand toward people and homes. Chapter 3 expands east, toward business, glass, machinery, and rival firms.
+
+Business District blocker before Chapter 3: (see dialogue_samples.txt §Sign and notice text samples)
+
+After Chapter 3 starts: (see dialogue_samples.txt §Court line samples)
+
+New route objective: (see dialogue_samples.txt §Sign and notice text samples)
+
+---
+
+# Beat 0 — Immediate continuation from Chapter 2
+
+Chapter 3 should begin from the exact Chapter 2 hook.
+
+The printer has just produced: (see dialogue_samples.txt §Sign and notice text samples)
+
+Mr. Pig freezes.
+
+Crab: (see dialogue_samples.txt §Court line samples)
+
+Murrow: (see dialogue_samples.txt §Court line samples)
+
+```gdscript id="wmpkp8"
+chapter2.complete == true and chapter3.started == false
+```
+
+Godot event:
+
+```gdscript id="g78zcu"
+func maybe_start_chapter3():
+	if chapter2.complete and !chapter3.started:
+		start_cutscene("chapter3_printer_incident")
+```
+
+Initial flags:
+
+```gdscript id="dkxj9r"
+chapter3.started = true
+chapter3.printer_incident_seen = true
+```
+
+Quest starts: (see dialogue_samples.txt §Court line samples)
+
+The office state should reflect the victory from Chapter 2: (see dialogue_samples.txt §Court line samples)
+
+Asia line: (see dialogue_samples.txt §Court line samples)
+
+---
+
+# Beat 1 — The printer screams
+
+The player begins in Pig & Swine Office.
+
+Required interactions: (see dialogue_samples.txt §Sign and notice text samples)
+
+The printer should not literally speak, except through printed pages.
+
+Printed pages: (see dialogue_samples.txt §Sign and notice text samples)
+
+Mr. Pig: (see dialogue_samples.txt §Court line samples)
+
+Murrow: (see dialogue_samples.txt §Court line samples)
+
+Crab: (see dialogue_samples.txt §Court line samples)
+
+Whimsy: (see dialogue_samples.txt §Court line samples)
+
+Asia: (see dialogue_samples.txt §Court line samples)
+
+```gdscript id="qs10rb"
+evidence.deadline_notice.collected = true
+evidence.misprinted_filing.collected = true
+chapter3.received_deadline_notice = true
+chapter3.found_misprinted_filing = true
+chapter3.inspected_printer = true
+```
+
+Evidence descriptions:
+
+### Deadline Notice
+
+> A court notice confirming an urgent filing deadline. The kind of paper that looks harmless until it destroys your week.
+
+### Misprinted Filing
+
+Quest update: (see dialogue_samples.txt §Court line samples)
+
+Murrow points toward Bajtek: (see dialogue_samples.txt §Court line samples)
+
+---
+
+# Beat 2 — Call Sysadmin Bajtek
+
+Bajtek is Chapter 3's technical guide.
+
+He can either arrive at the office after Asia calls him, or be found in a small IT corner / server access room. For Godot, the simplest version is: (see dialogue_samples.txt §Court line samples)
+
+Asia line: (see dialogue_samples.txt §Court line samples)
+
+Bajtek enters.
+
+Bajtek's role: (see dialogue_samples.txt §Court line samples)
+
+Personality: (see dialogue_samples.txt §Court line samples)
+
+Bajtek first line: (see dialogue_samples.txt §Court line samples)
+
+Mr. Pig: (see dialogue_samples.txt §Court line samples)
+
+Bajtek: (see dialogue_samples.txt §Court line samples)
+
+Bajtek explains: (see dialogue_samples.txt §Court line samples)
+
+```gdscript id="3th0rv"
+chapter3.met_bajtek = true
+chapter3.server_room_unlocked = true
+```
+
+Quest update: (see dialogue_samples.txt §Court line samples)
+
+Asia hint: (see dialogue_samples.txt §Court line samples)
+
+---
+
+# Beat 3 — Pig & Swine Server Room
+
+Purpose: technical investigation and first contradiction tutorial.
+
+Recommended size: (see dialogue_samples.txt §Court line samples)
+
+Visual identity: (see dialogue_samples.txt §Court line samples)
+
+Key interactables: (see dialogue_samples.txt §Court line samples)
+
+### Printer Log Fragment
+
+```gdscript id="3vys2u"
+evidence.printer_log_fragment.collected = true
+chapter3.has_printer_log_fragment = true
+chapter3.visited_server_room = true
+```
+
+Description:
+
+> Shows print jobs being redirected at impossible hours. The printer may be innocent, which is devastating for office morale.
+
+Optional evidence:
+
+### Backup Drive
+
+```gdscript id="3sq8ld"
+evidence.backup_drive.collected = true
+chapter3.has_backup_drive = true
+```
+
+Description:
+
+> A backup of the print logs. It contains fewer screams than expected and more timestamps than anyone wanted.
+
+Bajtek line after finding log: (see dialogue_samples.txt §Court line samples)
+
+Crab: (see dialogue_samples.txt §Court line samples)
+
+Whimsy: (see dialogue_samples.txt §Court line samples)
+
+---
+
+# Beat 4 — Contradiction Spotting tutorial
+
+This is Chapter 3's main new system.
+
+It should start cooperatively with Bajtek before being used against Szpon.
+
+Design principle: (see dialogue_samples.txt §Sign and notice text samples)
+
+Bajtek initially says: (see dialogue_samples.txt §Court line samples)
+
+The game opens a testimony screen.
+
+UI structure: (see dialogue_samples.txt §Court line samples)
+
+```gdscript id="4qk0h7"
+var contradiction_scene_bajtek_random_failure := {
+	"speaker": "bajtek",
+	"statements": [
+		{
+			"id": "random_failure",
+			"text": "The printer may have failed randomly.",
+			"contradiction_evidence": "printer_log_fragment",
+			"success_flag": "completed_bajtek_contradiction_tutorial"
+		},
+		{
+			"id": "printers_are_bad",
+			"text": "Printers are bad machines with excellent timing.",
+			"contradiction_evidence": ""
+		},
+		{
+			"id": "logs_matter",
+			"text": "The logs are the least emotional witness in the room.",
+			"contradiction_evidence": ""
+		}
+	]
+}
+```
+
+Correct action: (see dialogue_samples.txt §Court line samples)
+
+Bajtek: (see dialogue_samples.txt §Court line samples)
+
+Tutorial pop-up: (see dialogue_samples.txt §Court line samples)
+
+Bajtek: (see dialogue_samples.txt §Court line samples)
+
+```gdscript id="qh7682"
+chapter3.completed_bajtek_contradiction_tutorial = true
+chapter3.contradiction_score += 1
+```
+
+Quest update: (see dialogue_samples.txt §Court line samples)
+
+---
+
+# Beat 5 — Business District unlocks
+
+After the Server Room, the Business District becomes active.
+
+Route: (see dialogue_samples.txt §Court line samples)
+
+World changes: (see dialogue_samples.txt §Sign and notice text samples)
+
+Business District blocker after unlock: (see dialogue_samples.txt §Sign and notice text samples)
+
+Asia hint before leaving: (see dialogue_samples.txt §Court line samples)
+
+Corporate lawyer: (see dialogue_samples.txt §Court line samples)
+
+Courier: (see dialogue_samples.txt §Court line samples)
+
+Print-shop worker outside: (see dialogue_samples.txt §Court line samples)
+
+---
+
+# Beat 6 — Print Shop investigation
+
+Purpose: external confirmation and first hostile contradiction.
+
+Recommended size: (see dialogue_samples.txt §Court line samples)
+
+Visual identity: (see dialogue_samples.txt §Court line samples)
+
+Key interactables: (see dialogue_samples.txt §Sign and notice text samples)
+
+### Repair Invoice
+
+```gdscript id="1yg7qj"
+evidence.repair_invoice.collected = true
+chapter3.has_repair_invoice = true
+chapter3.visited_print_shop = true
+```
+
+Description: (see dialogue_samples.txt §Court line samples)
+
+### Ink Batch Label
+
+```gdscript id="oh0575"
+evidence.ink_batch_label.collected = true
+chapter3.has_ink_batch_label = true
+```
+
+Description:
+
+> The same ink batch appears on Pig & Swine's suspicious replacement paper. Not conclusive, but the paper trail is starting to sweat.
+
+Print-shop worker line: (see dialogue_samples.txt §Court line samples)
+
+Then Advocate Szpon appears.
+
+---
+
+# Beat 7 — Advocate Szpon appears
+
+Advocate Szpon is the Chapter 3 antagonist and later recurring rival.
+
+Personality: (see dialogue_samples.txt §Court line samples)
+
+Visual identity: (see dialogue_samples.txt §Court line samples)
+
+First appearance: (see dialogue_samples.txt §Court line samples)
+
+Dr. A. Cula: (see dialogue_samples.txt §Court line samples)
+
+Szpon: (see dialogue_samples.txt §Court line samples)
+
+Szpon claims: (see dialogue_samples.txt §Court line samples)
+
+Crab: (see dialogue_samples.txt §Court line samples)
+
+Whimsy: (see dialogue_samples.txt §Court line samples)
+
+---
+
+# Beat 8 — First hostile contradiction: Szpon at the Print Shop
+
+Contradiction scene:
+
+```gdscript id="el7f8x"
+var contradiction_scene_szpon_print_shop := {
+	"speaker": "szpon",
+	"statements": [
+		{
+			"id": "no_connection",
+			"text": "My firm has no connection with your charming equipment tragedy.",
+			"contradiction_evidence": "repair_invoice",
+			"success_flag": "caught_szpon_invoice_lie"
+		},
+		{
+			"id": "printers_fail",
+			"text": "Printers fail. That is their natural habitat.",
+			"contradiction_evidence": ""
+		},
+		{
+			"id": "deadlines_neutral",
+			"text": "Deadlines are neutral. They simply happen to favor the prepared.",
+			"contradiction_evidence": ""
+		},
+		{
+			"id": "no_melodrama",
+			"text": "There is no need to turn office incompetence into melodrama.",
+			"contradiction_evidence": ""
+		}
+	]
+}
+```
+
+Correct action: (see dialogue_samples.txt §Court line samples)
+
+Dr. A. Cula: (see dialogue_samples.txt §Court line samples)
+
+Szpon: (see dialogue_samples.txt §Court line samples)
+
+Crab: (see dialogue_samples.txt §Court line samples)
+
+```gdscript id="admejr"
+chapter3.met_szpon = true
+chapter3.caught_szpon_invoice_lie = true
+chapter3.contradiction_score += 1
+```
+
+Wrong evidence response:
+
+Szpon: (see dialogue_samples.txt §Court line samples)
+
+After success, Szpon leaves.
+
+Quest update: (see dialogue_samples.txt §Court line samples)
+
+Asia hint after returning: (see dialogue_samples.txt §Court line samples)
+
+---
+
+# Beat 9 — Return to Pig & Swine / unlock Basement
+
+Back in the office, Bajtek and Murrow combine the evidence.
+
+Required evidence: (see dialogue_samples.txt §Court line samples)
+
+Bajtek: (see dialogue_samples.txt §Court line samples)
+
+Murrow: (see dialogue_samples.txt §Court line samples)
+
+Crab: (see dialogue_samples.txt §Court line samples)
+
+Mr. Pig: (see dialogue_samples.txt §Court line samples)
+
+Asia: (see dialogue_samples.txt §Court line samples)
+
+Whimsy: (see dialogue_samples.txt §Court line samples)
+
+```gdscript id="zezrk2"
+chapter3.basement_unlocked = true
+```
+
+Quest update: (see dialogue_samples.txt §Court line samples)
+
+Basement door before unlock: (see dialogue_samples.txt §Court line samples)
+
+After unlock: (see dialogue_samples.txt §Court line samples)
+
+---
+
+# Beat 10 — Pig & Swine Basement
+
+Purpose: investigation climax.
+
+Recommended size: (see dialogue_samples.txt §Court line samples)
+
+Visual identity: (see dialogue_samples.txt §Court line samples)
+
+Key interactables: (see dialogue_samples.txt §Court line samples)
+
+Environmental jokes: (see dialogue_samples.txt §Court line samples)
+
+### Hidden Reroute Device
+
+```gdscript id="3jrfsf"
+evidence.hidden_reroute_device.collected = true
+chapter3.has_hidden_reroute_device = true
+chapter3.visited_basement = true
+```
+
+Description:
+
+> A small device redirecting print jobs. It has one blinking light and the moral character of a tax haven.
+
+Optional evidence:
+
+### Rival Firm Leaflet
+
+```gdscript id="xadm0a"
+evidence.rival_firm_leaflet.collected = true
+chapter3.has_rival_firm_leaflet = true
+```
+
+Description: (see dialogue_samples.txt §Court line samples)
+
+### Backup Printer Photo
+
+```gdscript id="fajoh4"
+evidence.backup_printer_photo.collected = true
+chapter3.has_backup_printer_photo = true
+```
+
+Description:
+
+> The old backup printer has been disconnected for months, meaning the suspicious print activity could not have come from normal office fallback systems.
+
+Basement reveal scene:
+
+Bajtek: (see dialogue_samples.txt §Court line samples)
+
+Mr. Pig: (see dialogue_samples.txt §Court line samples)
+
+Bajtek: (see dialogue_samples.txt §Court line samples)
+
+Murrow: (see dialogue_samples.txt §Court line samples)
+
+Crab: (see dialogue_samples.txt §Court line samples)
+
+Whimsy: (see dialogue_samples.txt §Court line samples)
+
+Quest update: (see dialogue_samples.txt §Court line samples)
+
+```gdscript id="dizatz"
+chapter3.urgent_filing_ready = true
+```
+
+---
+
+# Beat 11 — Urgent filing preparation
+
+Back upstairs in Pig & Swine Office, the team prepares the filing.
+
+This should be short, tense, and funny.
+
+Murrow: (see voice references)
+
+Mr. Pig: (see voice references)
+
+Dr. A. Cula: (see voice references)
+
+Asia: (see voice references)
+
+Bajtek: (see voice references)
+
+Crab: (see voice references)
+
+Whimsy: (see voice references)
+
+Murrow: (see voice references)
+
+Quest update: (see voice references)
+
+## Beat 11.5 — STUB is founded (canonical mini-beat)
+
+During a brief lull in the filing prep — Murrow has stepped out to find a stamp, Asia is on the phone, Mr. Pig is in the corner having a maritime crisis about toner costs — Dr. A. Cula, Crab, and Whimsy share a look. The cause: they are doing all the actual lawyering, on no sleep, with the firm's printer literally being sabotaged by a rival, and the only payment so far this month has been a postcard from Mr. Swine.
+
+In a single short scene at the office coffee corner, the three of them found **STUB** — the **S**olidarity **T**rade **U**nion of **B**arristers. The acronym is deliberate: the union is tiny, like a stub, and the name nods to *Solidarność* in the way the entire game's Polish-legal flavor nods to real institutions. Murrow is not invited; he is the institutional spine and would file for management if asked. Asia is offered membership and declines on grounds that "front-desk staff have negotiating power that lawyers cannot match — I have the password to the photocopier."
+
+The scene is brief — two or three exchanges, a handshake, possibly a hand-drawn STUB logo on a coffee napkin that gets pinned to the office cork board. No mechanical effect this chapter; STUB is a comic-canonical fact from this point on. Murrow finds the napkin in Beat 15 and files it under "personal effects, see also: morale" without comment.
+
+Polish translation note: in the Polish-language version, STUB is rendered as **PUTKA** — *Pakt Uboczny Trzech Krytycznych Adwokatów*. "Putka" in Polish is a small box / kennel; the diminutive joke survives the translation.
+
+Easter-egg callbacks (see Chapter 5):
+- Faded "PROUD MEMBER — STUB" sticker on the office printer.
+- Crab passing reference to "grievance #4 still unresolved".
+- A formal STUB notice pinned to the office cork board with typo-ridden expansion of the acronym.
+
+Do not over-mine the joke. Two or three callbacks across the rest of the game; not a recurring punchline.
+
+This triggers the Deadline Filing Dash narrative beat (per `PLAN.md §Out of scope permanently`, this is no longer a mini-game; it is a brief urgency cutscene).
+
+---
+
+# Beat 12 — Scooter Racing: Deadline Dash
+
+The old plan defines Scooter Racing as Chapter 3's urgency set piece: the printer/network cannot be trusted, the deadline is real, and Dr. A. Cula must physically deliver the filing to court while dodging trams, pigeons, construction barriers, and puddles; the result affects the strength of the legal position but must not block the story.
+
+Mini-game title:
+
+> **Deadline Dash**
+
+Type: (see dialogue_samples.txt §Court line samples)
+
+```gdscript id="0pppp8"
+chapter3.has_printer_log_fragment == true
+chapter3.has_repair_invoice == true
+chapter3.has_hidden_reroute_device == true
+chapter3.urgent_filing_ready == true
+chapter3.scooter_race_started == false
+```
+
+Godot scene: (see dialogue_samples.txt §Court line samples)
+
+Core mechanic: (see dialogue_samples.txt §Court line samples)
+
+Controls: (see dialogue_samples.txt §Court line samples)
+
+Obstacles: (see dialogue_samples.txt §Court line samples)
+
+Collectibles: (see dialogue_samples.txt §Sign and notice text samples)
+
+### Clean delivery
+
+Condition: (see dialogue_samples.txt §Court line samples)
+
+```gdscript id="9tn9j9"
+chapter3.scooter_race_result = "clean_delivery"
+chapter3.urgent_filing_delivered_clean = true
+```
+
+Evidence / status:
+
+> **Urgent Filing — Clean Delivery**
+
+Court effect: (see dialogue_samples.txt §Court line samples)
+
+Finish line text: (see dialogue_samples.txt §Court line samples)
+
+### Messy delivery
+
+Condition: (see dialogue_samples.txt §Court line samples)
+
+```gdscript id="8nxmx8"
+chapter3.scooter_race_result = "messy_delivery"
+chapter3.urgent_filing_delivered_messy = true
+```
+
+Evidence / status:
+
+> **Urgent Filing — Messy Delivery**
+
+Court effect: (see dialogue_samples.txt §Court line samples)
+
+Finish line text: (see dialogue_samples.txt §Court line samples)
+
+### Failed but recovered
+
+Condition: (see dialogue_samples.txt §Court line samples)
+
+```gdscript id="rn7w7o"
+chapter3.scooter_race_result = "failed_recovered"
+chapter3.urgent_filing_delivered_recovered = true
+```
+
+Evidence / status:
+
+> **Urgent Filing — Barely Recovered**
+
+Court effect: (see dialogue_samples.txt §Court line samples)
+
+Asia arrives with a backup copy from the office: (see dialogue_samples.txt §Court line samples)
+
+Murrow: (see dialogue_samples.txt §Court line samples)
+
+Design rule: (see dialogue_samples.txt §Sign and notice text samples)
+
+---
+
+# Beat 13 — District Court arrival
+
+The player arrives at District Court Plaza.
+
+Visual state: (see dialogue_samples.txt §Court line samples)
+
+Clerk line, clean delivery: (see dialogue_samples.txt §Court line samples)
+
+Clerk line, messy delivery: (see dialogue_samples.txt §Court line samples)
+
+Clerk line, failed recovered: (see dialogue_samples.txt §Court line samples)
+
+```gdscript id="6tqta4"
+chapter3.court_unlocked = true
+```
+
+Entering District Court starts the cross-examination sequence.
+
+---
+
+# Beat 14 — Chapter 3 court sequence
+
+The Chapter 3 court should be more dynamic than Chapters 1 and 2.
+
+Chapter 1: choose correct argument.
+
+Chapter 2: prepare evidence, then argue.
+
+Chapter 3: cross-examine testimony, catch contradictions, then argue remedy.
+
+Court structure: (see dialogue_samples.txt §Court line samples)
+
+Court UI additions: (see dialogue_samples.txt §Court line samples)
+
+Parties: (see dialogue_samples.txt §Court line samples)
+
+---
+
+## Court Round 1 — Technical irregularity
+
+Judge asks: (see dialogue_samples.txt §Court line samples)
+
+Correct argument: (see dialogue_samples.txt §Court line samples)
+
+Best evidence: (see dialogue_samples.txt §Court line samples)
+
+Good Dr. A. Cula line: (see dialogue_samples.txt §Court line samples)
+
+Bajtek support line: (see dialogue_samples.txt §Court line samples)
+
+Judge: (see dialogue_samples.txt §Court line samples)
+
+Judge: (see dialogue_samples.txt §Court line samples)
+
+```gdscript id="e08pnf"
+chapter3.round1_technical_irregularity_won = true
+```
+
+Bad options: (see dialogue_samples.txt §Court line samples)
+
+---
+
+## Court Round 2 — Link to rival interference
+
+Szpon testifies or submits: (see dialogue_samples.txt §Court line samples)
+
+This should trigger the main court contradiction scene.
+
+Contradiction scene:
+
+```gdscript id="omd0gc"
+var contradiction_scene_szpon_court := {
+	"speaker": "szpon",
+	"statements": [
+		{
+			"id": "no_connection",
+			"text": "There is no evidence connecting my firm to this melodrama.",
+			"contradiction_evidence": "repair_invoice",
+			"success_flag": "round2_rival_link_invoice"
+		},
+		{
+			"id": "no_access",
+			"text": "My firm had no access to Pig & Swine's internal equipment.",
+			"contradiction_evidence": "hidden_reroute_device",
+			"success_flag": "round2_rival_link_device"
+		},
+		{
+			"id": "printer_failures_common",
+			"text": "Printer failures are regrettably common.",
+			"contradiction_evidence": ""
+		},
+		{
+			"id": "deadlines_matter",
+			"text": "Deadlines matter precisely because courts cannot indulge every accident.",
+			"contradiction_evidence": ""
+		}
+	]
+}
+```
+
+Correct options: (see dialogue_samples.txt §Court line samples)
+
+Best path: both contradictions caught.
+
+Good Dr. A. Cula line after invoice: (see dialogue_samples.txt §Court line samples)
+
+Good Dr. A. Cula line after device: (see dialogue_samples.txt §Court line samples)
+
+Szpon response after first contradiction: (see dialogue_samples.txt §Court line samples)
+
+Crab: (see dialogue_samples.txt §Court line samples)
+
+Szpon response after second contradiction: (see dialogue_samples.txt §Court line samples)
+
+Whimsy: (see dialogue_samples.txt §Court line samples)
+
+```gdscript id="nxztbh"
+if caught_invoice or caught_device:
+	chapter3.round2_rival_link_won = true
+
+if caught_invoice and caught_device:
+	chapter3.round2_rival_link_strong = true
+	chapter3.contradiction_score += 2
+else:
+	chapter3.contradiction_score += 1
+```
+
+Wrong evidence response:
+
+Judge: (see dialogue_samples.txt §Court line samples)
+
+---
+
+## Court Round 3 — Procedural prejudice and remedy
+
+Judge asks: (see dialogue_samples.txt §Court line samples)
+
+Correct argument: (see dialogue_samples.txt §Court line samples)
+
+Best evidence: (see dialogue_samples.txt §Sign and notice text samples)
+
+Good Dr. A. Cula line: (see dialogue_samples.txt §Court line samples)
+
+Murrow support: (see dialogue_samples.txt §Court line samples)
+
+Bajtek: (see dialogue_samples.txt §Court line samples)
+
+Clean delivery + strong contradictions: (see dialogue_samples.txt §Court line samples)
+
+Messy delivery + adequate evidence: (see dialogue_samples.txt §Court line samples)
+
+Failed recovered + weak contradictions: (see dialogue_samples.txt §Court line samples)
+
+```gdscript id="nwg5hx"
+chapter3.round3_remedy_won = true
+```
+
+Correct remedy options: (see dialogue_samples.txt §Court line samples)
+
+Wrong remedy options: (see dialogue_samples.txt §Court line samples)
+
+---
+
+# Victory states
+
+Chapter 3 should support three success grades.
+
+## Strong victory
+
+Requirements: (see dialogue_samples.txt §Court line samples)
+
+Outcome: (see dialogue_samples.txt §Court line samples)
+
+Judge line: (see dialogue_samples.txt §Court line samples)
+
+## Standard victory
+
+Requirements: (see dialogue_samples.txt §Court line samples)
+
+Outcome: (see dialogue_samples.txt §Court line samples)
+
+Murrow: (see dialogue_samples.txt §Court line samples)
+
+## Weak-but-successful victory
+
+Requirements: (see dialogue_samples.txt §Court line samples)
+
+Outcome: (see dialogue_samples.txt §Court line samples)
+
+Murrow: (see dialogue_samples.txt §Court line samples)
+
+Asia: (see dialogue_samples.txt §Court line samples)
+
+If the player collapses in court with too many wrong answers and too little evidence, restart from the court preparation point, not from the whole chapter.
+
+---
+
+# Beat 15 — Payoff scene: apology to the printer
+
+Back at Pig & Swine Office.
+
+Everyone gathers around the printer.
+
+Scene state: (see dialogue_samples.txt §Court line samples)
+
+Mr. Pig: (see dialogue_samples.txt §Court line samples)
+
+Mr. Pig cries.
+
+Printer prints again:
+
+> OUT OF CYAN
+
+Mr. Pig: (see dialogue_samples.txt §Court line samples)
+
+Bajtek: (see dialogue_samples.txt §Court line samples)
+
+Whimsy: (see dialogue_samples.txt §Court line samples)
+
+Crab: (see dialogue_samples.txt §Court line samples)
+
+Murrow: (see dialogue_samples.txt §Court line samples)
+
+Asia: (see dialogue_samples.txt §Court line samples)
+
+Optional printer nickname: (see dialogue_samples.txt §Court line samples)
+
+I would avoid giving the printer a permanent spoken personality. The joke is strongest if it remains ambiguous: maybe it is just printing status messages, maybe not.
+
+Flag:
+
+```gdscript id="u3tnlh"
+chapter3.printer_apologised_to = true
+```
+
+---
+
+# Chapter 4 hook — Swine postcard with bill
+
+After the printer apology, Asia receives another postcard.
+
+This one is attached to a bill.
+
+Postcard text: (see dialogue_samples.txt §Sign and notice text samples)
+
+Asia: (see dialogue_samples.txt §Court line samples)
+
+Mr. Pig: (see dialogue_samples.txt §Court line samples)
+
+Murrow: (see dialogue_samples.txt §Sign and notice text samples)
+
+Quest teaser: (see dialogue_samples.txt §Court line samples)
+
+```gdscript id="1f0bck"
+chapter3.swine_postcard_received = true
+chapter3.complete = true
+current_chapter = 4
+```
+
+---
+
+# Chapter 3 NPC roles
+
+| NPC               | Function                               | Chapter 3 role                                                               |
+| ----------------- | -------------------------------------- | ---------------------------------------------------------------------------- |
+| Dr. A. Cula       | Player advocate                        | Investigates sabotage, catches contradictions, argues remedy                 |
+| Asia              | Office helper / hint NPC               | Calls Bajtek, guides next steps, tracks printer crisis                       |
+| Mr. Pig           | Comic stakes                           | Believes printer is sentient, fears deadline default, apologises emotionally |
+| Murrow        | Legal structure                        | Frames access-to-court issue, readiness check, remedy discipline             |
+| Crab              | Factual analysis                       | Connects logs, invoice, device, deadline                                     |
+| Whimsy            | Rhetorical chaos                       | Printer metaphors, court flourishes, comic support                           |
+| Bajtek            | Technical guide / witness              | Explains logs, teaches contradiction spotting, testifies                     |
+| Advocate Szpon    | Antagonist                             | Denies connection, lies carefully, returns later                             |
+| Printer           | Object gag / falsely accused colleague | Produces ominous pages, gets exonerated                                      |
+| Judge             | Procedural authority                   | Tests irregularity, causation, remedy                                        |
+| Print-shop worker | Evidence source                        | Provides context for repair invoice                                          |
+
+---
+
+# Chapter 3 evidence
+
+Use shared evidence state.
+
+```gdscript id="vwrrzs"
+var evidence := {
+	"deadline_notice": {
+		"collected": false,
+		"chapter": 3,
+		"display_name": "Deadline Notice",
+		"argument_tags": ["procedural_prejudice", "urgency"]
+	},
+
+"misprinted_filing": {
+		"collected": false,
+		"chapter": 3,
+		"display_name": "Misprinted Filing",
+		"argument_tags": ["actual_harm", "filing_failure"]
+	},
+
+"printer_log_fragment": {
+		"collected": false,
+		"chapter": 3,
+		"display_name": "Printer Log Fragment",
+		"argument_tags": ["technical_irregularity", "redirection_pattern"]
+	},
+
+"backup_drive": {
+		"collected": false,
+		"chapter": 3,
+		"display_name": "Backup Drive",
+		"argument_tags": ["technical_irregularity", "strong_log_support"]
+	},
+
+"repair_invoice": {
+		"collected": false,
+		"chapter": 3,
+		"display_name": "Repair Invoice",
+		"argument_tags": ["rival_link", "external_access"]
+	},
+
+"ink_batch_label": {
+		"collected": false,
+		"chapter": 3,
+		"display_name": "Ink Batch Label",
+		"argument_tags": ["rival_link", "paper_trail"]
+	},
+
+"hidden_reroute_device": {
+		"collected": false,
+		"chapter": 3,
+		"display_name": "Hidden Reroute Device",
+		"argument_tags": ["sabotage_mechanism", "rival_link"]
+	},
+
+"rival_firm_leaflet": {
+		"collected": false,
+		"chapter": 3,
+		"display_name": "Rival Firm Leaflet",
+		"argument_tags": ["weak_suspicion", "worldbuilding"]
+	},
+
+"backup_printer_photo": {
+		"collected": false,
+		"chapter": 3,
+		"display_name": "Backup Printer Photo",
+		"argument_tags": ["alternative_explanation_excluded"]
+	},
+
+"bajtek_technical_statement": {
+		"collected": false,
+		"chapter": 3,
+		"display_name": "Bajtek's Technical Statement",
+		"argument_tags": ["technical_irregularity", "expert_explanation"]
+	},
+
+"urgent_filing_clean": {
+		"collected": false,
+		"chapter": 3,
+		"display_name": "Urgent Filing — Clean Delivery",
+		"argument_tags": ["remedy", "best_efforts"]
+	},
+
+"urgent_filing_messy": {
+		"collected": false,
+		"chapter": 3,
+		"display_name": "Urgent Filing — Messy Delivery",
+		"argument_tags": ["remedy", "best_efforts"]
+	},
+
+"urgent_filing_recovered": {
+		"collected": false,
+		"chapter": 3,
+		"display_name": "Urgent Filing — Barely Recovered",
+		"argument_tags": ["remedy", "prejudice"]
+	}
+}
+```
+
+Core required evidence: (see dialogue_samples.txt §Sign and notice text samples)
+
+Strong-case evidence: (see dialogue_samples.txt §Court line samples)
+
+---
+
+# Chapter 3 quest flags
+
+Use Godot-friendly snake_case.
+
+```gdscript id="zw9daq"
+var chapter3 := {
+	"started": false,
+
+"printer_incident_seen": false,
+	"inspected_printer": false,
+	"received_deadline_notice": false,
+	"found_misprinted_filing": false,
+	"inspected_paper_tray": false,
+	"inspected_network_cable": false,
+
+"met_bajtek": false,
+	"server_room_unlocked": false,
+	"visited_server_room": false,
+
+"has_printer_log_fragment": false,
+	"has_backup_drive": false,
+	"completed_bajtek_contradiction_tutorial": false,
+
+"business_district_unlocked": false,
+	"print_shop_unlocked": false,
+	"visited_print_shop": false,
+	"has_repair_invoice": false,
+	"has_ink_batch_label": false,
+
+"met_szpon": false,
+	"caught_szpon_invoice_lie": false,
+
+"basement_unlocked": false,
+	"visited_basement": false,
+	"has_hidden_reroute_device": false,
+	"has_rival_firm_leaflet": false,
+	"has_backup_printer_photo": false,
+
+"bajtek_statement_obtained": false,
+
+"urgent_filing_ready": false,
+
+"scooter_race_started": false,
+	"scooter_race_completed": false,
+	"scooter_race_result": "",
+	# "clean_delivery" | "messy_delivery" | "failed_recovered"
+
+"urgent_filing_delivered_clean": false,
+	"urgent_filing_delivered_messy": false,
+	"urgent_filing_delivered_recovered": false,
+
+"court_ready": false,
+	"court_unlocked": false,
+	"court_started": false,
+
+"round1_technical_irregularity_won": false,
+	"round2_rival_link_won": false,
+	"round2_rival_link_strong": false,
+	"round3_remedy_won": false,
+
+"contradiction_score": 0,
+
+"judgment_result": "",
+	# "strong_victory" | "standard_victory" | "weak_victory" | "loss_retry"
+
+"printer_apologised_to": false,
+	"swine_postcard_received": false,
+
+"complete": false
+}
+```
+
+Contradiction state:
+
+```gdscript id="n5wow7"
+var contradictions := {
+	"bajtek_random_failure": {
+		"resolved": false,
+		"correct_evidence": "printer_log_fragment"
+	},
+
+"szpon_printshop_no_connection": {
+		"resolved": false,
+		"correct_evidence": "repair_invoice"
+	},
+
+"szpon_court_no_connection": {
+		"resolved": false,
+		"correct_evidence": "repair_invoice"
+	},
+
+"szpon_court_no_access": {
+		"resolved": false,
+		"correct_evidence": "hidden_reroute_device"
+	}
+}
+```
+
+---
+
+# Asia hint-state logic for Chapter 3
+
+Asia should continue as the practical guidance layer.
+
+```gdscript id="lbeu4d"
+func get_asia_chapter3_hint() -> String:
+	if !chapter3.inspected_printer:
+		return "<see dialogue_samples.txt §Court line samples>"
+
+if !chapter3.met_bajtek:
+		return "<see dialogue_samples.txt §Court line samples>"
+
+if !chapter3.visited_server_room:
+		return "<see dialogue_samples.txt §Court line samples>"
+
+if !chapter3.has_printer_log_fragment:
+		return "<see dialogue_samples.txt §Court line samples>"
+
+if !chapter3.completed_bajtek_contradiction_tutorial:
+		return "<see dialogue_samples.txt §Court line samples>"
+
+if !chapter3.has_repair_invoice:
+		return "<see dialogue_samples.txt §Court line samples>"
+
+if !chapter3.caught_szpon_invoice_lie:
+		return "<see dialogue_samples.txt §Court line samples>"
+
+if !chapter3.has_hidden_reroute_device:
+		return "<see dialogue_samples.txt §Court line samples>"
+
+if !chapter3.urgent_filing_ready:
+		return "<see dialogue_samples.txt §Court line samples>"
+
+if !chapter3.scooter_race_completed:
+		return "<see dialogue_samples.txt §Court line samples>"
+
+if !chapter3.judgment_result:
+		return "<see dialogue_samples.txt §Court line samples>"
+
+if !chapter3.printer_apologised_to:
+		return "<see dialogue_samples.txt §Court line samples>"
+
+if !chapter3.swine_postcard_received:
+		return "<see dialogue_samples.txt §Court line samples>"
+
+return "<see dialogue_samples.txt §Court line samples>"
+```
+
+---
+
+# Godot scene list
+
+Minimum scenes: (see dialogue_samples.txt §Court line samples)
+
+res://interiors/pig_swine_office.tscn
+res://interiors/server_room.tscn
+res://interiors/pig_swine_basement.tscn
+res://interiors/print_shop.tscn
+res://interiors/district_court.tscn
+
+res://ui/dialogue_box.tscn
+res://ui/quest_popup.tscn
+res://ui/evidence_menu.tscn
+res://ui/contradiction_screen.tscn
+res://ui/court_choice_menu.tscn
+res://ui/badge_popup.tscn
+
+res://minigames/scooter_race.tscn
+```
+
+Chapter 3 should not require City Hall, Airport Road, Embassy, Swine Penthouse, or Supreme Court. It should make the Business District feel newly alive and dangerous.
+
+---
+
+# New system: Contradiction Spotting v1
+
+Minimum viable implementation:
+
+```gdscript id="6dkwwg"
+func start_contradiction_scene(scene_id: String) -> void
+func select_statement(statement_id: String) -> void
+func present_evidence(evidence_id: String) -> void
+func resolve_contradiction() -> void
+func is_contradiction_scene_active() -> bool
+```
+
+Data structure:
+
+```gdscript id="gbv1el"
+var contradiction_scenes := {
+	"bajtek_random_failure": {
+		"speaker": "bajtek",
+		"success_flag": "chapter3.completed_bajtek_contradiction_tutorial",
+		"statements": [
+			{
+				"id": "random_failure",
+				"text": "The printer may have failed randomly.",
+				"contradiction_evidence": "printer_log_fragment"
+			},
+			{
+				"id": "printers_bad",
+				"text": "Printers are bad machines with excellent timing.",
+				"contradiction_evidence": ""
+			}
+		]
+	},
+
+"szpon_print_shop": {
+		"speaker": "szpon",
+		"success_flag": "chapter3.caught_szpon_invoice_lie",
+		"statements": [
+			{
+				"id": "no_connection",
+				"text": "My firm has no connection with your charming equipment tragedy.",
+				"contradiction_evidence": "repair_invoice"
+			},
+			{
+				"id": "printers_fail",
+				"text": "Printers fail. That is their natural habitat.",
+				"contradiction_evidence": ""
+			}
+		]
+	}
+}
+```
+
+Wrong-answer rule: (see dialogue_samples.txt §Court line samples)
+
+Design rule: (see dialogue_samples.txt §Sign and notice text samples)
+
+---
+
+# Chapter 3 implementation slice
+
+Build the legal-sabotage spine first. Do not start with Scooter Racing.
+
+Implementation order: (see dialogue_samples.txt §Sign and notice text samples)
+
+This matches the old sprint logic: Chapter 3's P0 work is Server Room, Print Shop, Basement, Bajtek, Szpon, contradiction spotting, scooter racing, the Chapter 3 quest chain, and cross-examination.
+
+---
+
+# Acceptance criteria
+
+Chapter 3 is done when the player can: (see dialogue_samples.txt §Sign and notice text samples)
+
+No required progress should depend on perfect scooter performance. No contradiction should depend on guessing. If the player is stuck, Asia should give the next practical step, Murrow should identify the missing legal component, Bajtek should identify the missing technical component, and Crab should identify the missing factual link.
+
+The key design move for Chapter 4: Mr. Swine should not return as the saviour. He should return as the problem. The old plan frames Chapter 4 as the character-reversal chapter: airport, Japanese Embassy, penthouse, expense reports, real contract, Ski Slalom flashback, Dual Attorney arbitration, and Swine's partial secret reveal.  Chapter 3 already sets this up with the postcard-plus-bill hook: Swine says there is a "small misunderstanding with a ski resort," and the paperwork arrives in triplicate. Chapter 4 should cash that joke in as a full arbitration case.
+
+# Chapter 4: "Mr. Swine Returns"
+
+Chapter 4 is the character-reversal chapter.
+
+Chapter 1 made Pig & Swine lovable.
+
+Chapter 2 proved the firm could save someone's home.
+
+Chapter 3 proved the firm could survive sabotage.
+
+Chapter 4 asks: (see dialogue_samples.txt §Court line samples)
+
+The core loop is: (see dialogue_samples.txt §Court line samples)
+
+The chapter should teach: (see dialogue_samples.txt §Court line samples)
+
+The emotional arc is: (see dialogue_samples.txt §Court line samples)
+
+Target length: (see dialogue_samples.txt §Court line samples)
+
+This should feel like the most complex chapter so far, but not the final boss. Chapter 4 is personal, international, and mechanically new. Chapter 5 is the full-city convergence.
+
+---
+
+# Chapter 4 world structure
+
+Chapter 4 unlocks: (see dialogue_samples.txt §Court line samples)
+
+Previously active areas remain available: (see dialogue_samples.txt §Court line samples)
+
+Still locked or mostly inactive: (see dialogue_samples.txt §Court line samples)
+
+Chapter 4 should make the city feel wider, not just bigger. The player now learns that Pig & Swine's absurdity reaches beyond the immediate legal district.
+
+Airport Road blocker before Chapter 4: (see dialogue_samples.txt §Sign and notice text samples)
+
+After Chapter 4 starts: (see dialogue_samples.txt §Court line samples)
+
+Asia hint: (see dialogue_samples.txt §Court line samples)
+
+---
+
+# Beat 0 — Post-Chapter 3 office state
+
+Chapter 4 begins in Pig & Swine Office, immediately after Chapter 3's printer apology and Swine postcard.
+
+Trigger:
+
+```gdscript id="ygk7em"
+chapter3.complete == true and chapter4.started == false
+```
+
+Godot event:
+
+```gdscript id="n6x8h3"
+func maybe_start_chapter4():
+	if chapter3.complete and !chapter4.started:
+		start_cutscene("chapter4_swine_returns")
+```
+
+Office state: (see dialogue_samples.txt §Court line samples)
+
+Asia idle line: (see dialogue_samples.txt §Court line samples)
+
+Mr. Pig: (see dialogue_samples.txt §Court line samples)
+
+Murrow: (see dialogue_samples.txt §Court line samples)
+
+Then arbitration papers arrive.
+
+---
+
+# Beat 1 — Arbitration papers arrive
+
+A courier enters holding a thick international arbitration package.
+
+Courier: (see dialogue_samples.txt §Sign and notice text samples)
+
+Documents received: (see dialogue_samples.txt §Sign and notice text samples)
+
+```gdscript id="oefhw9"
+evidence.arbitration_notice.collected = true
+evidence.ski_resort_invoice.collected = true
+
+chapter4.arbitration_notice_received = true
+chapter4.ski_resort_invoice_received = true
+```
+
+Evidence descriptions:
+
+### Arbitration Notice
+
+> A formal claim alleging that Mr. Swine bound Pig & Swine to an exclusive ski-law partnership. The amount claimed is large enough to make Mr. Pig sit down without being asked.
+
+### Ski Resort Invoice
+
+> Charges for conference rooms, hospitality services, legal-wellness branding, translation costs, and seventeen restorative puddings.
+
+Mr. Pig: (see dialogue_samples.txt §Court line samples)
+
+Murrow reads the claim and identifies four missing questions: (see dialogue_samples.txt §Court line samples)
+
+Quest starts: (see dialogue_samples.txt §Court line samples)
+
+Asia: (see dialogue_samples.txt §Court line samples)
+
+---
+
+# Beat 2 — Mr. Swine returns
+
+Immediately after the papers arrive, Mr. Swine enters.
+
+Visual: (see dialogue_samples.txt §Court line samples)
+
+Swine opening line: (see dialogue_samples.txt §Court line samples)
+
+Mr. Pig: (see dialogue_samples.txt §Court line samples)
+
+Swine: (see dialogue_samples.txt §Court line samples)
+
+Murrow: (see dialogue_samples.txt §Court line samples)
+
+Crab: (see dialogue_samples.txt §Court line samples)
+
+Whimsy: (see dialogue_samples.txt §Court line samples)
+
+Asia: (see dialogue_samples.txt §Court line samples)
+
+Swine's role: (see dialogue_samples.txt §Court line samples)
+
+```gdscript id="jgbwv9"
+chapter4.started = true
+chapter4.swine_returned = true
+chapter4.questioned_swine_initial = false
+```
+
+---
+
+# Beat 3 — Initial questioning of Swine
+
+The player must question Swine before leaving the office.
+
+Dialogue topics: (see dialogue_samples.txt §Sign and notice text samples)
+
+Swine answers evasively but not maliciously.
+
+Sample answers:
+
+### Why were you in Japan?
+
+### What did you sign?
+
+### Did you bind Pig & Swine?
+
+### Why seventeen puddings?
+
+### Where are the original documents?
+
+Murrow frames the legal theory: (see dialogue_samples.txt §Court line samples)
+
+Quest update: (see dialogue_samples.txt §Court line samples)
+
+```gdscript id="shjbq6"
+chapter4.questioned_swine_initial = true
+chapter4.airport_unlocked = true
+```
+
+Asia hint: (see dialogue_samples.txt §Court line samples)
+
+---
+
+# Beat 4 — Route to Airport Road
+
+The player leaves the office and travels toward Transit Edge / Airport Road.
+
+This should feel like a new category of place: not a neighborhood, not a court, but the edge of the world.
+
+Route: (see dialogue_samples.txt §Court line samples)
+
+Transit NPC: (see dialogue_samples.txt §Court line samples)
+
+Dr. A. Cula: (see dialogue_samples.txt §Court line samples)
+
+Airport Road flavor: (see dialogue_samples.txt §Sign and notice text samples)
+
+### Crumpled Resort Brochure
+
+Description: (see dialogue_samples.txt §Court line samples)
+
+---
+
+# Beat 5 — Warsaw Airport
+
+Purpose: chaotic re-entry and first evidence trail.
+
+Recommended size: (see dialogue_samples.txt §Court line samples)
+
+Visual identity: (see dialogue_samples.txt §Sign and notice text samples)
+
+Key interactables: (see dialogue_samples.txt §Sign and notice text samples)
+
+NPCs: (see dialogue_samples.txt §Court line samples)
+
+### Airport Customs Form
+
+```gdscript id="qflnuz"
+evidence.airport_customs_form.collected = true
+chapter4.has_customs_form = true
+```
+
+Description: (see dialogue_samples.txt §Court line samples)
+
+Legal use: (see dialogue_samples.txt §Court line samples)
+
+### Arrival Board Screenshot
+
+```gdscript id="suxn6f"
+evidence.arrival_board_photo.collected = true
+chapter4.has_arrival_board_photo = true
+```
+
+Description:
+
+> Confirms Swine's return date. Unfortunately, the resort invoice charges him for three services after he had already left.
+
+### Lost Luggage Tag
+
+```gdscript id="fa4u4y"
+evidence.lost_luggage_tag.collected = true
+chapter4.has_lost_luggage_tag = true
+```
+
+Description: (see dialogue_samples.txt §Court line samples)
+
+Airport Clerk line: (see dialogue_samples.txt §Court line samples)
+
+Dr. A. Cula: (see dialogue_samples.txt §Court line samples)
+
+Airport Clerk: (see dialogue_samples.txt §Court line samples)
+
+Swine memory fragment: (see dialogue_samples.txt §Court line samples)
+
+Quest update: (see dialogue_samples.txt §Court line samples)
+
+```gdscript id="f3c21a"
+chapter4.visited_airport = true
+chapter4.embassy_unlocked = true
+```
+
+Asia hint after airport: (see dialogue_samples.txt §Court line samples)
+
+---
+
+# Beat 6 — Japanese Embassy
+
+Purpose: translation, context, and respectful international legal ambiguity.
+
+This must not become "Japan joke room." The comedy target is Swine's chaos, translation ambiguity, and legal overreach, not Japan.
+
+Recommended size: (see dialogue_samples.txt §Court line samples)
+
+Visual identity: (see dialogue_samples.txt §Sign and notice text samples)
+
+Key interactables: (see dialogue_samples.txt §Sign and notice text samples)
+
+NPC: (see dialogue_samples.txt §Court line samples)
+
+Personality: (see dialogue_samples.txt §Court line samples)
+
+Ms. Tanaka first line: (see dialogue_samples.txt §Court line samples)
+
+Swine: (see dialogue_samples.txt §Court line samples)
+
+Ms. Tanaka: (see dialogue_samples.txt §Court line samples)
+
+### Translation Note
+
+```gdscript id="u9rx5o"
+evidence.translation_note.collected = true
+chapter4.has_translation_note = true
+chapter4.met_translation_officer = true
+```
+
+Description: (see dialogue_samples.txt §Court line samples)
+
+Legal use: (see dialogue_samples.txt §Court line samples)
+
+### Embassy Appointment Log
+
+```gdscript id="c14863"
+evidence.embassy_appointment_log.collected = true
+chapter4.has_embassy_appointment_log = true
+```
+
+Description:
+
+> Shows Swine requested document clarification before the dispute arose, which is not what people do when calmly entering massive commercial obligations.
+
+Ms. Tanaka line: (see dialogue_samples.txt §Court line samples)
+
+Murrow, if present: (see dialogue_samples.txt §Court line samples)
+
+Quest update: (see dialogue_samples.txt §Court line samples)
+
+```gdscript id="1rxl63"
+chapter4.penthouse_unlocked = true
+```
+
+Asia hint: (see dialogue_samples.txt §Court line samples)
+
+---
+
+# Beat 7 — Route to Swine's Penthouse
+
+Swine's Penthouse should feel suspiciously close to the Business District and uncomfortably nicer than Pig & Swine.
+
+Route: (see dialogue_samples.txt §Court line samples)
+
+Penthouse Doorman: (see dialogue_samples.txt §Court line samples)
+
+Mr. Pig, if present: (see dialogue_samples.txt §Court line samples)
+
+Asia via phone: (see dialogue_samples.txt §Court line samples)
+
+---
+
+# Beat 8 — Mr. Swine's Penthouse
+
+Purpose: character reveal.
+
+Recommended size: (see dialogue_samples.txt §Court line samples)
+
+Visual identity: (see dialogue_samples.txt §Court line samples)
+
+Zones: (see dialogue_samples.txt §Court line samples)
+
+Key interactables: (see dialogue_samples.txt §Court line samples)
+
+This location should initially make the player suspicious of Swine. It should then complicate him.
+
+Main evidence:
+
+### Expense Report Bundle
+
+```gdscript id="mson7h"
+evidence.expense_report_bundle.collected = true
+chapter4.has_expense_reports = true
+```
+
+Description:
+
+> A financial document so chaotic it appears to have been assembled during turbulence.
+
+Legal use: (see dialogue_samples.txt §Court line samples)
+
+### Real Contract Draft
+
+```gdscript id="hka1eg"
+evidence.real_contract_draft.collected = true
+chapter4.has_real_contract_draft = true
+```
+
+Description:
+
+> The draft contains no binding payment clause. Someone added the scary parts later, possibly with a different font and worse morals.
+
+Legal use: (see dialogue_samples.txt §Court line samples)
+
+### Pro-Bono Transfer Stub
+
+```gdscript id="8r403r"
+evidence.pro_bono_transfer_stub.collected = true
+chapter4.has_pro_bono_transfer_stub = true
+```
+
+Description: (see dialogue_samples.txt §Court line samples)
+
+This should not fully reveal Swine's secret. It should create the first serious crack in the "Swine is just irresponsible" reading.
+
+Crab line after finding transfer stub: (see dialogue_samples.txt §Court line samples)
+
+Whimsy: (see dialogue_samples.txt §Court line samples)
+
+Mr. Pig: (see dialogue_samples.txt §Court line samples)
+
+Murrow: (see dialogue_samples.txt §Court line samples)
+
+Swine, evasive: (see dialogue_samples.txt §Court line samples)
+
+Murrow should not fully confront him yet.
+
+Quest update: (see dialogue_samples.txt §Sign and notice text samples)
+
+```gdscript id="9mj5hz"
+chapter4.ski_slalom_unlocked = true
+```
+
+---
+
+# Beat 9 — Ski Slalom: Memory on Ice
+
+The old plan defines Ski Slalom as Chapter 4's memory/evidence set piece, not the main mechanic. The main mechanic is Dual Attorney; the mini-game supplies Swine's memory evidence and makes his unreliable testimony playable.
+
+Mini-game title:
+
+> **Swine Slalom: Memory on Ice**
+
+Type: (see dialogue_samples.txt §Court line samples)
+
+Narrative function: (see dialogue_samples.txt §Sign and notice text samples)
+
+```gdscript id="vfh6ah"
+chapter4.has_expense_reports == true
+chapter4.has_real_contract_draft == true
+chapter4.ski_slalom_unlocked == true
+chapter4.ski_slalom_started == false
+```
+
+Godot scene: (see dialogue_samples.txt §Court line samples)
+
+Visual style: (see dialogue_samples.txt §Court line samples)
+
+Controls: (see dialogue_samples.txt §Court line samples)
+
+Collectibles: (see dialogue_samples.txt §Court line samples)
+
+Obstacles: (see dialogue_samples.txt §Sign and notice text samples)
+
+## Clear memory
+
+Condition: (see dialogue_samples.txt §Court line samples)
+
+```gdscript id="nozs8f"
+chapter4.ski_slalom_result = "clear_memory"
+chapter4.has_swine_flashback_memory = true
+evidence.swine_flashback_memory.collected = true
+```
+
+Evidence:
+
+### Swine Flashback Memory
+
+> Swine remembers signing a welcome memorandum after being told it was ceremonial, not a binding commercial agreement.
+
+Court effect: (see dialogue_samples.txt §Court line samples)
+
+Finish line: (see dialogue_samples.txt §Court line samples)
+
+## Partial memory
+
+Condition: (see dialogue_samples.txt §Court line samples)
+
+```gdscript id="f5m1d9"
+chapter4.ski_slalom_result = "partial_memory"
+chapter4.has_partial_swine_memory = true
+evidence.partial_swine_memory.collected = true
+```
+
+Evidence:
+
+### Partial Swine Memory
+
+> Swine remembers a clipboard, a toast, and fear. Useful, but not elegant.
+
+Court effect: (see dialogue_samples.txt §Court line samples)
+
+Finish line: (see dialogue_samples.txt §Sign and notice text samples)
+
+## Failed but recovered
+
+Condition: (see dialogue_samples.txt §Court line samples)
+
+```gdscript id="4xoe99"
+chapter4.ski_slalom_result = "failed_recovered"
+chapter4.has_partial_swine_memory = true
+evidence.partial_swine_memory.collected = true
+```
+
+Court effect: (see dialogue_samples.txt §Court line samples)
+
+Swine: (see dialogue_samples.txt §Court line samples)
+
+Design rule: (see dialogue_samples.txt §Sign and notice text samples)
+
+---
+
+# Beat 10 — Return to Pig & Swine / arbitration preparation
+
+Back at Pig & Swine, Murrow introduces the new preparation mechanic.
+
+Chapter 2 used Evidence Board.
+
+Chapter 4 evolves that into **Dual Attorney Preparation**.
+
+Murrow: (see dialogue_samples.txt §Court line samples)
+
+Asia: (see dialogue_samples.txt §Court line samples)
+
+Mr. Pig: (see dialogue_samples.txt §Sign and notice text samples)
+
+Murrow: (see dialogue_samples.txt §Court line samples)
+
+Quest update: (see dialogue_samples.txt §Sign and notice text samples)
+
+Godot scene: (see dialogue_samples.txt §Court line samples)
+
+```gdscript id="j5boyt"
+var chapter4_prep_slots := {
+	"contract_formation": {
+		"speaker": "",
+		"evidence": ""
+	},
+	"authority_to_bind_firm": {
+		"speaker": "",
+		"evidence": ""
+	},
+	"invoice_reliability": {
+		"speaker": "",
+		"evidence": ""
+	},
+	"remedy": {
+		"speaker": "",
+		"evidence": ""
+	}
+}
+```
+
+Available speakers: (see dialogue_samples.txt §Court line samples)
+
+Visible role descriptions: (see dialogue_samples.txt §Court line samples)
+
+facts, memory, conduct, expenses, what happened at the resort
+```
+
+Available evidence: (see dialogue_samples.txt §Sign and notice text samples)
+
+```gdscript id="el0sgj"
+contract_formation -> Dr. A. Cula + real_contract_draft / translation_note
+authority_to_bind_firm -> Dr. A. Cula + real_contract_draft / airport_customs_form
+invoice_reliability -> Mr. Swine + expense_report_bundle / ski_resort_invoice / swine_flashback_memory
+remedy -> Dr. A. Cula + real_contract_draft / translation_note / expense_report_bundle
+```
+
+Scoring: (see dialogue_samples.txt §Court line samples)
+
+	standard arbitration
+
+4 correct:
+	strong arbitration
+```
+
+Once at least three slots are filled:
+
+```gdscript id="hl3djj"
+chapter4.arbitration_prep_completed = true
+chapter4.arbitration_prep_score = calculated_score
+chapter4.arbitration_unlocked = true
+```
+
+Asia hint: (see dialogue_samples.txt §Court line samples)
+
+---
+
+# New mechanic — Dual Attorney v1
+
+Dual Attorney is Chapter 4's main system.
+
+Minimum rule: (see dialogue_samples.txt §Court line samples)
+
+Wrong speaker should not instantly fail, but should weaken the round.
+
+Examples:
+
+Wrong speaker: Swine on contract interpretation.
+
+Swine: (see dialogue_samples.txt §Court line samples)
+
+Arbitrator: (see dialogue_samples.txt §Sign and notice text samples)
+
+Wrong speaker: Dr. A. Cula on pudding quantities.
+
+Dr. A. Cula: (see dialogue_samples.txt §Court line samples)
+
+Arbitrator: (see dialogue_samples.txt §Court line samples)
+
+Dr. A. Cula: (see dialogue_samples.txt §Court line samples)
+
+Swine: (see dialogue_samples.txt §Court line samples)
+
+```gdscript id="hgfkl6"
+func start_dual_attorney_round(round_id: String) -> void
+func select_attorney(attorney_id: String) -> void
+func select_evidence(evidence_id: String) -> void
+func resolve_dual_attorney_round() -> void
+func is_dual_attorney_active() -> bool
+```
+
+Data structure:
+
+```gdscript id="85a4x4"
+var dual_attorney_rounds := {
+	"chapter4_contract_formation": {
+		"issue": "Was there a binding contract?",
+		"correct_speaker": "cula",
+		"acceptable_evidence": ["translation_note", "real_contract_draft"],
+		"best_evidence": "real_contract_draft",
+		"success_flag": "chapter4.round1_contract_formation_won"
+	},
+
+"chapter4_authority": {
+		"issue": "Did Mr. Swine bind Pig & Swine?",
+		"correct_speaker": "cula",
+		"acceptable_evidence": ["real_contract_draft", "airport_customs_form", "embassy_appointment_log"],
+		"best_evidence": "real_contract_draft",
+		"success_flag": "chapter4.round2_authority_won"
+	},
+
+"chapter4_invoice_reliability": {
+		"issue": "Are the claimed resort charges reliable?",
+		"correct_speaker": "swine",
+		"acceptable_evidence": ["expense_report_bundle", "ski_resort_invoice", "swine_flashback_memory", "partial_swine_memory"],
+		"best_evidence": "swine_flashback_memory",
+		"success_flag": "chapter4.round3_invoice_reliability_won"
+	},
+
+"chapter4_remedy": {
+		"issue": "What order should the tribunal make?",
+		"correct_speaker": "cula",
+		"acceptable_evidence": ["real_contract_draft", "translation_note", "expense_report_bundle"],
+		"best_evidence": "real_contract_draft",
+		"success_flag": "chapter4.round4_remedy_won"
+	}
+}
+```
+
+Design rule: (see dialogue_samples.txt §Sign and notice text samples)
+
+---
+
+# Beat 11 — Arbitration Hearing Room
+
+The arbitration should not feel like the normal District Court.
+
+Recommended size: (see dialogue_samples.txt §Court line samples)
+
+Visual identity: (see dialogue_samples.txt §Court line samples)
+
+Key interactables before hearing: (see dialogue_samples.txt §Court line samples)
+
+Parties: (see dialogue_samples.txt §Court line samples)
+
+Resort Counsel should not be cartoonishly evil. He is polished, commercial, and opportunistic.
+
+Resort Counsel opening: (see dialogue_samples.txt §Sign and notice text samples)
+
+Arbitrator: (see dialogue_samples.txt §Court line samples)
+
+Whimsy, quietly: (see dialogue_samples.txt §Court line samples)
+
+---
+
+# Beat 12 — Arbitration Round 1: Contract formation
+
+Issue: (see dialogue_samples.txt §Court line samples)
+
+Claimant argument: (see dialogue_samples.txt §Sign and notice text samples)
+
+Correct speaker: (see dialogue_samples.txt §Court line samples)
+
+Best evidence: (see dialogue_samples.txt §Court line samples)
+
+Correct argument: (see dialogue_samples.txt §Court line samples)
+
+Good Dr. A. Cula line: (see dialogue_samples.txt §Court line samples)
+
+Arbitrator reaction: (see dialogue_samples.txt §Court line samples)
+
+Ms. Tanaka's note appears: (see dialogue_samples.txt §Court line samples)
+
+Dr. A. Cula: (see dialogue_samples.txt §Court line samples)
+
+```gdscript id="cfq7sz"
+chapter4.round1_contract_formation_won = true
+```
+
+Wrong speaker joke:
+
+Swine: (see dialogue_samples.txt §Court line samples)
+
+Arbitrator: (see dialogue_samples.txt §Sign and notice text samples)
+
+---
+
+# Beat 13 — Arbitration Round 2: Authority to bind Pig & Swine
+
+Issue: (see dialogue_samples.txt §Court line samples)
+
+Claimant argument: (see dialogue_samples.txt §Court line samples)
+
+Correct speaker: (see dialogue_samples.txt §Court line samples)
+
+Best evidence: (see dialogue_samples.txt §Court line samples)
+
+Correct argument: (see dialogue_samples.txt §Court line samples)
+
+Good Dr. A. Cula line: (see dialogue_samples.txt §Court line samples)
+
+If Airport Customs Form used: (see dialogue_samples.txt §Court line samples)
+
+If Embassy Appointment Log used: (see dialogue_samples.txt §Court line samples)
+
+```gdscript id="cx20hf"
+chapter4.round2_authority_won = true
+```
+
+Wrong speaker joke:
+
+Swine: (see dialogue_samples.txt §Court line samples)
+
+Arbitrator: (see dialogue_samples.txt §Court line samples)
+
+---
+
+# Beat 14 — Arbitration Round 3: Invoice reliability
+
+Issue: (see dialogue_samples.txt §Court line samples)
+
+Claimant argument: (see dialogue_samples.txt §Court line samples)
+
+Correct speaker: (see dialogue_samples.txt §Court line samples)
+
+Best evidence: (see dialogue_samples.txt §Court line samples)
+
+Correct argument: (see dialogue_samples.txt §Court line samples)
+
+Good Swine line: (see dialogue_samples.txt §Court line samples)
+
+Swine: (see dialogue_samples.txt §Court line samples)
+
+Swine: (see dialogue_samples.txt §Court line samples)
+
+Crab: (see dialogue_samples.txt §Court line samples)
+
+```gdscript id="ldyw4l"
+chapter4.round3_invoice_reliability_won = true
+```
+
+Wrong speaker joke:
+
+Dr. A. Cula: (see dialogue_samples.txt §Court line samples)
+
+Arbitrator: (see dialogue_samples.txt §Court line samples)
+
+Swine: (see dialogue_samples.txt §Court line samples)
+
+---
+
+# Beat 15 — Arbitration Round 4: Remedy
+
+Issue: (see dialogue_samples.txt §Court line samples)
+
+Claimant asks for: (see dialogue_samples.txt §Court line samples)
+
+Correct speaker: (see dialogue_samples.txt §Court line samples)
+
+Best evidence: (see dialogue_samples.txt §Court line samples)
+
+Correct remedy options: (see dialogue_samples.txt §Court line samples)
+
+Good Dr. A. Cula line: (see dialogue_samples.txt §Court line samples)
+
+This line matters. It distinguishes legal victory from moral acquittal.
+
+Murrow support: (see dialogue_samples.txt §Court line samples)
+
+Swine, quieter than usual: (see dialogue_samples.txt §Court line samples)
+
+```gdscript id="ij1914"
+chapter4.round4_remedy_won = true
+```
+
+Wrong remedy options: (see dialogue_samples.txt §Court line samples)
+
+---
+
+# Victory states
+
+Chapter 4 should have meaningful victory grades.
+
+## Strong victory
+
+Requirements: (see dialogue_samples.txt §Court line samples)
+
+Outcome: (see dialogue_samples.txt §Court line samples)
+
+Arbitrator line: (see dialogue_samples.txt §Court line samples)
+
+## Standard victory
+
+Requirements: (see dialogue_samples.txt §Court line samples)
+
+Outcome: (see dialogue_samples.txt §Court line samples)
+
+Murrow: (see dialogue_samples.txt §Court line samples)
+
+## Weak-but-successful victory
+
+Requirements: (see dialogue_samples.txt §Court line samples)
+
+Outcome: (see dialogue_samples.txt §Court line samples)
+
+Mr. Pig: (see dialogue_samples.txt §Court line samples)
+
+Murrow: (see dialogue_samples.txt §Court line samples)
+
+Asia: (see dialogue_samples.txt §Court line samples)
+
+If the player loses too many rounds, restart from arbitration preparation, not from the whole chapter.
+
+---
+
+# Beat 16 — Payoff scene: Swine partly explains himself
+
+Back at Pig & Swine Office.
+
+The mood should be mixed: (see dialogue_samples.txt §Court line samples)
+
+Mr. Pig: (see dialogue_samples.txt §Court line samples)
+
+Swine: (see dialogue_samples.txt §Court line samples)
+
+Crab: (see dialogue_samples.txt §Court line samples)
+
+Whimsy: (see dialogue_samples.txt §Court line samples)
+
+Murrow: (see dialogue_samples.txt §Court line samples)
+
+Swine tries to avoid it, then gives a partial truth.
+
+Swine: (see dialogue_samples.txt §Court line samples)
+
+Mr. Pig: (see dialogue_samples.txt §Court line samples)
+
+Swine: (see dialogue_samples.txt §Court line samples)
+
+Asia: (see dialogue_samples.txt §Court line samples)
+
+Swine should not be fully redeemed yet.
+
+The player should end Chapter 4 thinking: (see dialogue_samples.txt §Court line samples)
+
+```gdscript id="nbb68n"
+chapter4.swine_partial_secret_revealed = true
+```
+
+---
+
+# Chapter 5 hook — mass claim notice
+
+After the Swine scene, a newspaper, public notice, or urgent courier interrupts.
+
+Best hook:
+
+A citywide legal notice arrives, with a headline: (see dialogue_samples.txt §Sign and notice text samples)
+
+or: (see dialogue_samples.txt §Court line samples)
+
+The office receives its own notice:
+
+> Pig & Swine must demonstrate continuing legal-social utility or vacate under the district consolidation scheme.
+
+Mr. Pig: (see dialogue_samples.txt §Court line samples)
+
+Murrow: (see dialogue_samples.txt §Court line samples)
+
+Crab: (see dialogue_samples.txt §Court line samples)
+
+Whimsy: (see dialogue_samples.txt §Court line samples)
+
+Swine, quietly: (see dialogue_samples.txt §Court line samples)
+
+Asia: (see dialogue_samples.txt §Court line samples)
+
+Quest teaser: (see dialogue_samples.txt §Court line samples)
+
+```gdscript id="g9ph9a"
+chapter4.chapter5_hook_seen = true
+chapter4.complete = true
+current_chapter = 5
+```
+
+---
+
+# Chapter 4 NPC roles
+
+| NPC                         | Function                     | Chapter 4 role                                                          |
+| --------------------------- | ---------------------------- | ----------------------------------------------------------------------- |
+| Dr. A. Cula                 | Legal advocate               | Handles contract formation, authority, remedy                           |
+| Mr. Swine                   | Client / co-attorney         | Provides facts, memory, invoice explanation, partial secret             |
+| Asia                        | Office helper / hint NPC     | Tracks documents, routes, preparation, and Swine chaos                  |
+| Mr. Pig                     | Emotional / financial stakes | Furious, panicked, then conflicted after partial reveal                 |
+| Murrow                  | Legal structure              | Frames contract issues, teaches Dual Attorney, keeps remedy disciplined |
+| Crab                        | Fact / timeline analysis     | Spots invoice inconsistencies and suspicious payments                   |
+| Whimsy                      | Rhetorical chaos             | Ski-law jokes, arbitration flourishes, Swine subplot commentary         |
+| Ms. Tanaka                  | Translation expert           | Explains contract ambiguity respectfully and precisely                  |
+| Resort Counsel / Mr. Yamada | Opponent                     | Claims binding agreement, authority, invoice reliability                |
+| Arbitrator                  | Procedural authority         | Controls four-round arbitration                                         |
+| Airport Clerk               | Evidence source              | Provides customs/travel evidence                                        |
+| Penthouse Doorman           | Flavor NPC                   | Highlights Swine's suspicious lifestyle                                 |
+| Printer                     | Running object gag           | Quiet after Chapter 3, occasionally prints ominous practicalities       |
+
+---
+
+# Chapter 4 evidence
+
+Use shared evidence state.
+
+```gdscript id="eu3f6j"
+var evidence := {
+	"arbitration_notice": {
+		"collected": false,
+		"chapter": 4,
+		"display_name": "Arbitration Notice",
+		"argument_tags": ["claim_scope", "remedy", "firm_liability"]
+	},
+
+"ski_resort_invoice": {
+		"collected": false,
+		"chapter": 4,
+		"display_name": "Ski Resort Invoice",
+		"argument_tags": ["invoice_reliability", "claimed_charges"]
+	},
+
+"airport_customs_form": {
+		"collected": false,
+		"chapter": 4,
+		"display_name": "Airport Customs Form",
+		"argument_tags": ["non_commercial_intent", "authority"]
+	},
+
+"arrival_board_photo": {
+		"collected": false,
+		"chapter": 4,
+		"display_name": "Arrival Board Photo",
+		"argument_tags": ["timeline", "invoice_reliability"]
+	},
+
+"lost_luggage_tag": {
+		"collected": false,
+		"chapter": 4,
+		"display_name": "Lost Luggage Tag",
+		"argument_tags": ["timeline", "travel_context"]
+	},
+
+"translation_note": {
+		"collected": false,
+		"chapter": 4,
+		"display_name": "Translation Note",
+		"argument_tags": ["contract_formation", "translation_ambiguity"]
+	},
+
+"embassy_appointment_log": {
+		"collected": false,
+		"chapter": 4,
+		"display_name": "Embassy Appointment Log",
+		"argument_tags": ["authority", "clarification_attempt"]
+	},
+
+"expense_report_bundle": {
+		"collected": false,
+		"chapter": 4,
+		"display_name": "Expense Report Bundle",
+		"argument_tags": ["invoice_reliability", "timeline"]
+	},
+
+"real_contract_draft": {
+		"collected": false,
+		"chapter": 4,
+		"display_name": "Real Contract Draft",
+		"argument_tags": ["contract_formation", "authority", "remedy"]
+	},
+
+"swine_flashback_memory": {
+		"collected": false,
+		"chapter": 4,
+		"display_name": "Swine Flashback Memory",
+		"argument_tags": ["facts", "invoice_reliability", "contract_context"]
+	},
+
+"partial_swine_memory": {
+		"collected": false,
+		"chapter": 4,
+		"display_name": "Partial Swine Memory",
+		"argument_tags": ["facts", "contract_context"]
+	},
+
+"pro_bono_transfer_stub": {
+		"collected": false,
+		"chapter": 4,
+		"display_name": "Pro-Bono Transfer Stub",
+		"argument_tags": ["swine_secret", "chapter5_foreshadowing"]
+	}
+}
+```
+
+Core required evidence: (see dialogue_samples.txt §Sign and notice text samples)
+
+Strong-case evidence: (see dialogue_samples.txt §Court line samples)
+
+---
+
+# Chapter 4 quest flags
+
+Use Godot-friendly snake_case.
+
+```gdscript id="x91q0q"
+var chapter4 := {
+	"started": false,
+
+"swine_returned": false,
+	"arbitration_notice_received": false,
+	"ski_resort_invoice_received": false,
+
+"questioned_swine_initial": false,
+
+"airport_unlocked": false,
+	"visited_airport": false,
+	"has_customs_form": false,
+	"has_arrival_board_photo": false,
+	"has_lost_luggage_tag": false,
+
+"embassy_unlocked": false,
+	"visited_embassy": false,
+	"met_translation_officer": false,
+	"has_translation_note": false,
+	"has_embassy_appointment_log": false,
+
+"penthouse_unlocked": false,
+	"visited_penthouse": false,
+	"has_expense_reports": false,
+	"has_real_contract_draft": false,
+	"has_pro_bono_transfer_stub": false,
+
+"ski_slalom_unlocked": false,
+	"ski_slalom_started": false,
+	"ski_slalom_completed": false,
+	"ski_slalom_result": "",
+	# "clear_memory" | "partial_memory" | "failed_recovered"
+
+"has_swine_flashback_memory": false,
+	"has_partial_swine_memory": false,
+
+"dual_attorney_tutorial_seen": false,
+	"arbitration_prep_completed": false,
+	"arbitration_prep_score": 0,
+	"arbitration_case_strength": "",
+	# "shaky_arbitration" | "standard_arbitration" | "strong_arbitration"
+
+"arbitration_unlocked": false,
+	"arbitration_started": false,
+
+"round1_contract_formation_won": false,
+	"round2_authority_won": false,
+	"round3_invoice_reliability_won": false,
+	"round4_remedy_won": false,
+
+"speaker_choice_score": 0,
+	"evidence_score": 0,
+
+"arbitration_result": "",
+	# "strong_victory" | "standard_victory" | "weak_victory" | "loss_retry"
+
+"swine_partial_secret_revealed": false,
+	"chapter5_hook_seen": false,
+
+"complete": false
+}
+```
+
+Dual Attorney state:
+
+```gdscript id="4ep5og"
+var dual_attorney := {
+	"active": false,
+	"current_round": "",
+	"selected_speaker": "",
+	"selected_evidence": "",
+	"speaker_choice_score": 0,
+	"evidence_score": 0
+}
+```
+
+---
+
+# Asia hint-state logic for Chapter 4
+
+Asia remains the practical guidance layer.
+
+```gdscript id="7iog3c"
+func get_asia_chapter4_hint() -> String:
+	if !chapter4.swine_returned:
+		return "<see dialogue_samples.txt §Court line samples>"
+
+if !chapter4.questioned_swine_initial:
+		return "<see dialogue_samples.txt §Court line samples>"
+
+if !chapter4.visited_airport:
+		return "<see dialogue_samples.txt §Court line samples>"
+
+if !chapter4.has_customs_form:
+		return "<see dialogue_samples.txt §Court line samples>"
+
+if !chapter4.visited_embassy:
+		return "<see dialogue_samples.txt §Court line samples>"
+
+if !chapter4.has_translation_note:
+		return "<see dialogue_samples.txt §Court line samples>"
+
+if !chapter4.visited_penthouse:
+		return "<see dialogue_samples.txt §Court line samples>"
+
+if !chapter4.has_real_contract_draft:
+		return "<see dialogue_samples.txt §Court line samples>"
+
+if !chapter4.ski_slalom_completed:
+		return "<see dialogue_samples.txt §Court line samples>"
+
+if !chapter4.arbitration_prep_completed:
+		return "<see dialogue_samples.txt §Court line samples>"
+
+if !chapter4.arbitration_result:
+		return "<see dialogue_samples.txt §Court line samples>"
+
+if !chapter4.swine_partial_secret_revealed:
+		return "<see dialogue_samples.txt §Court line samples>"
+
+if !chapter4.chapter5_hook_seen:
+		return "<see dialogue_samples.txt §Court line samples>"
+
+return "<see dialogue_samples.txt §Court line samples>"
+```
+
+---
+
+# Godot scene list
+
+Minimum scenes: (see dialogue_samples.txt §Court line samples)
+
+res://interiors/pig_swine_office.tscn
+res://interiors/warsaw_airport.tscn
+res://interiors/japanese_embassy.tscn
+res://interiors/swine_penthouse.tscn
+res://interiors/arbitration_room.tscn
+
+res://ui/dialogue_box.tscn
+res://ui/quest_popup.tscn
+res://ui/evidence_menu.tscn
+res://ui/dual_attorney_prep.tscn
+res://ui/dual_attorney_round.tscn
+res://ui/court_choice_menu.tscn
+res://ui/badge_popup.tscn
+
+res://minigames/ski_slalom.tscn
+```
+
+Chapter 4 should not require City Hall, Protest Square, Supreme Court, or the Final Printer system. It should unlock the airport/embassy/penthouse layer and make Swine central.
+
+---
+
+# Chapter 4 implementation slice
+
+Build the arbitration spine first. Do not start with Ski Slalom.
+
+Implementation order: (see dialogue_samples.txt §Sign and notice text samples)
+
+This mirrors the old plan's priority: Dual Attorney is the structural mechanic; Ski Slalom is the comic evidence set piece.
+
+---
+
+# Acceptance criteria
+
+Chapter 4 is done when the player can: (see dialogue_samples.txt §Sign and notice text samples)
+
+No required step should depend on perfect Ski Slalom performance. No arbitration issue should require guessing whether Dr. A. Cula or Mr. Swine should speak; the UI and Murrow should teach the distinction before testing it.
+
+The key design move for Chapter 5: it should not introduce a bigger random apocalypse. It should make Chapters 1–4 matter. The old plan frames Chapter 5 as the final systems-and-story convergence chapter: Team Assembly, returning NPCs, City Hall, Protest Square, Industrial Printer Room, Supreme Court, Final Printer boss battle, and the reveal that Swine's Japan money was secretly supporting pro-bono rights cases.  It should also reuse Chapter 2's Waldek/home-impact material, especially the poster case, proportionality, individual assessment, and community witnesses.
+
+# Chapter 5: "The Final Brief"
+
+Chapter 5 is the closing argument of the game.
+
+Chapter 1 taught the basic legal RPG loop.
+
+Chapter 2 taught evidence preparation and proportionality.
+
+Chapter 3 taught contradiction spotting and procedural sabotage.
+
+Chapter 4 taught dual-attorney advocacy, fact/law separation, and Swine's hidden pro-bono thread.
+
+Chapter 5 should combine everything.
+
+The core loop is: (see dialogue_samples.txt §Sign and notice text samples)
+
+The chapter should teach: (see dialogue_samples.txt §Sign and notice text samples)
+
+Target length: (see dialogue_samples.txt §Court line samples)
+
+This is the longest chapter. It should feel like the finale, but not become shapeless. The player should always know the current legal problem and the next investigation target.
+
+---
+
+# Chapter 5 world structure
+
+Chapter 5 unlocks the final city layer: (see dialogue_samples.txt §Court line samples)
+
+Previously unlocked areas remain available: (see dialogue_samples.txt §Court line samples)
+
+Chapter 5 should make the whole overworld feel alive. Not every building needs new content, but each major district should show consequences: (see dialogue_samples.txt §Sign and notice text samples)
+
+Waldek's poster is visible; closure notices appear on doors
+
+Business District:
+security guards and rival-firm couriers move around
+
+Civic Core:
+public notice wall, queues, reporters, protest banners
+
+Legal Quarter:
+Supreme Court stairs finally unlock
+
+Old Town:
+Café Paragraf becomes protest supply point
+```
+
+Supreme Court route blocker before Chapter 5: (see dialogue_samples.txt §Sign and notice text samples)
+
+After Chapter 5 final brief is ready: (see dialogue_samples.txt §Court line samples)
+
+New route objective: (see dialogue_samples.txt §Sign and notice text samples)
+
+---
+
+# Beat 0 — Opening office state
+
+Chapter 5 begins after Chapter 4's mass-claim hook.
+
+Trigger:
+
+```gdscript id="nml0hj"
+chapter4.complete == true and chapter5.started == false
+```
+
+Godot event:
+
+```gdscript id="69do8o"
+func maybe_start_chapter5():
+	if chapter4.complete and !chapter5.started:
+		start_cutscene("chapter5_district_served")
+```
+
+Office state: (see voice references)
+
+Asia idle line: (see voice references)
+
+Mr. Pig: (see voice references)
+
+Murrow: (see voice references)
+
+**STUB easter-egg dressing (Chapter 5 office decoration — canonical):** the office cork board now carries a faded **PROUD MEMBER — STUB** sticker on the printer (curling at the corners, two years of neglect), a typo-ridden formal notice pinned at eye level with the union name spelled out as *Solidarity Trade Unon of Barrister* (sic), and an unread Grievance #4 marked "Still unresolved — re: ergonomic chair distribution." Crab may make a single dry passing reference to grievance #4 during a later beat in this chapter; Murrow has, conspicuously, never acknowledged the union's existence in writing. Two callbacks total across Chapter 5; no more.
+
+---
+
+# Beat 1 — The district is served
+
+A courier, city official, or automated notice drone arrives with a stack of closure notices.
+
+Best version: a delivery cart dumps notices outside Pig & Swine and across Office Street.
+
+Documents received: (see dialogue_samples.txt §Sign and notice text samples)
+
+```gdscript id="lv5fnt"
+evidence.district_closure_notice.collected = true
+chapter5.district_notice_received = true
+chapter5.started = true
+```
+
+Evidence description:
+
+### District Closure Notice
+
+Mr. Pig: (see dialogue_samples.txt §Sign and notice text samples)
+
+Murrow: (see dialogue_samples.txt §Sign and notice text samples)
+
+Crab: (see dialogue_samples.txt §Sign and notice text samples)
+
+Whimsy: (see dialogue_samples.txt §Sign and notice text samples)
+
+Swine, quietly: (see dialogue_samples.txt §Sign and notice text samples)
+
+Asia: (see dialogue_samples.txt §Sign and notice text samples)
+
+Quest starts: (see dialogue_samples.txt §Sign and notice text samples)
+
+Legal issue framing by Murrow: (see dialogue_samples.txt §Sign and notice text samples)
+
+Quest update: (see dialogue_samples.txt §Sign and notice text samples)
+
+```gdscript id="n6i19f"
+chapter5.mass_crisis_explained = true
+chapter5.protest_square_unlocked = true
+```
+
+---
+
+# Beat 2 — Protest Square unlocks
+
+The player leaves Pig & Swine and walks toward the Civic Core.
+
+Route: (see dialogue_samples.txt §Sign and notice text samples)
+
+World changes: (see dialogue_samples.txt §Sign and notice text samples)
+
+Street NPC: (see dialogue_samples.txt §Sign and notice text samples)
+
+Another NPC: (see dialogue_samples.txt §Sign and notice text samples)
+
+Asia hint: (see dialogue_samples.txt §Sign and notice text samples)
+
+---
+
+# Beat 3 — Protest Square
+
+Purpose: human stakes and returning NPC payoff.
+
+Recommended size: (see dialogue_samples.txt §Sign and notice text samples)
+
+Visual identity: (see dialogue_samples.txt §Sign and notice text samples)
+
+Key interactables: (see dialogue_samples.txt §Sign and notice text samples)
+
+Returning NPCs: (see dialogue_samples.txt §Sign and notice text samples)
+
+### Impact Statements
+
+```gdscript id="fvqy4x"
+evidence.impact_statements.collected = true
+chapter5.has_impact_statements = true
+```
+
+Description:
+
+> Tenants, clients, workers, and small firms explain what the closure notices actually do. The file is thick because consequences are rarely efficient.
+
+### Notice Wall Photos
+
+```gdscript id="f2ywd9"
+evidence.notice_wall_photos.collected = true
+chapter5.has_notice_wall_photos = true
+```
+
+Description:
+
+> Identical notices sent to people in different legal situations. Administrative efficiency has eaten individual assessment.
+
+Waldek line: (see dialogue_samples.txt §Sign and notice text samples)
+
+Kowalski: (see dialogue_samples.txt §Sign and notice text samples)
+
+Zielińska: (see dialogue_samples.txt §Sign and notice text samples)
+
+Barista: (see dialogue_samples.txt §Sign and notice text samples)
+
+Archivist: (see dialogue_samples.txt §Sign and notice text samples)
+
+Grzyb should be a reluctant ally, not comic relief only.
+
+Attorney Grzyb: (see dialogue_samples.txt §Sign and notice text samples)
+
+Dr. A. Cula: (see dialogue_samples.txt §Sign and notice text samples)
+
+Grzyb: (see dialogue_samples.txt §Sign and notice text samples)
+
+```gdscript id="s19g8l"
+chapter5.grzyb_recruited = true
+```
+
+Quest update: (see dialogue_samples.txt §Sign and notice text samples)
+
+```gdscript id="bt2nuw"
+chapter5.visited_protest_square = true
+chapter5.city_hall_unlocked = true
+```
+
+---
+
+# Beat 4 — City Hall
+
+Purpose: administrative evidence.
+
+City Hall should feel polished, cold, and evasive.
+
+Recommended size: (see dialogue_samples.txt §Sign and notice text samples)
+
+Visual identity: (see dialogue_samples.txt §Sign and notice text samples)
+
+Key interactables: (see dialogue_samples.txt §Sign and notice text samples)
+
+NPCs: (see dialogue_samples.txt §Sign and notice text samples)
+
+### Redevelopment Plan
+
+```gdscript id="ytla4n"
+evidence.redevelopment_plan.collected = true
+chapter5.has_redevelopment_plan = true
+```
+
+Description: (see dialogue_samples.txt §Court line samples)
+
+### Notice Template Batch
+
+```gdscript id="ocgrhi"
+evidence.notice_template_batch.collected = true
+chapter5.has_notice_template_batch = true
+```
+
+Description:
+
+> Identical notices sent to different people with different legal situations. The printer understood equality as copy-paste.
+
+### Procurement Link
+
+```gdscript id="ofy82z"
+evidence.procurement_link.collected = true
+chapter5.has_procurement_link = true
+```
+
+Description:
+
+> Shows that a rival-linked technology contractor stands to profit from the district consolidation scheme.
+
+Optional evidence:
+
+### Committee Minutes
+
+```gdscript id="3yf2k8"
+evidence.committee_minutes.collected = true
+chapter5.has_committee_minutes = true
+```
+
+Description: (see dialogue_samples.txt §Court line samples)
+
+### Portal Error Screenshot
+
+```gdscript id="e1ormw"
+evidence.portal_error_screenshot.collected = true
+chapter5.has_portal_error_screenshot = true
+```
+
+Description:
+
+> The appeal portal was unavailable during part of the objection period. The deadline, naturally, remained emotionally available.
+
+---
+
+# Beat 5 — City Hall contradiction
+
+This is the Chapter 3 mechanic returning at higher stakes.
+
+City Official says: (see dialogue_samples.txt §Court line samples)
+
+```gdscript id="pq5jjx"
+var contradiction_scene_city_individual_assessment := {
+	"speaker": "city_official",
+	"statements": [
+		{
+			"id": "individual_assessment",
+			"text": "Each affected person and entity was individually assessed.",
+			"contradiction_evidence": "notice_template_batch",
+			"success_flag": "chapter5.caught_city_official_notice_lie"
+		},
+		{
+			"id": "public_interest",
+			"text": "The plan serves administrative efficiency and the public interest.",
+			"contradiction_evidence": ""
+		},
+		{
+			"id": "appeals_available",
+			"text": "Anyone dissatisfied could use the online appeal portal.",
+			"contradiction_evidence": "portal_error_screenshot",
+			"success_flag": "chapter5.caught_portal_access_lie"
+		}
+	]
+}
+```
+
+Correct actions: (see dialogue_samples.txt §Sign and notice text samples)
+
+Dr. A. Cula: (see dialogue_samples.txt §Court line samples)
+
+City Official: (see dialogue_samples.txt §Court line samples)
+
+Crab: (see dialogue_samples.txt §Court line samples)
+
+```gdscript id="27s6bd"
+chapter5.caught_city_official_notice_lie = true
+chapter5.contradiction_score += 1
+```
+
+Quest update: (see dialogue_samples.txt §Court line samples)
+
+```gdscript id="a6lr4t"
+chapter5.industrial_printer_room_unlocked = true
+```
+
+---
+
+# Beat 6 — Route to Industrial Printer Room
+
+The player travels to the Business District / Glass Street.
+
+Route: (see dialogue_samples.txt §Court line samples)
+
+World changes: (see dialogue_samples.txt §Sign and notice text samples)
+
+Security guard: (see dialogue_samples.txt §Court line samples)
+
+Bajtek: (see dialogue_samples.txt §Court line samples)
+
+Crab: (see dialogue_samples.txt §Court line samples)
+
+Whimsy: (see dialogue_samples.txt §Court line samples)
+
+---
+
+# Beat 7 — Industrial Printer Room
+
+Purpose: technical scheme reveal and final mini-game setup.
+
+Recommended size: (see dialogue_samples.txt §Court line samples)
+
+Visual identity: (see dialogue_samples.txt §Sign and notice text samples)
+
+Key interactables: (see dialogue_samples.txt §Sign and notice text samples)
+
+### Master Notice Run
+
+```gdscript id="fofmu4"
+evidence.master_notice_run.collected = true
+chapter5.has_master_notice_run = true
+```
+
+Description:
+
+> The print command that launched the mass closure scheme. One button, hundreds of legal consequences.
+
+### Contractor Badge
+
+```gdscript id="7wb36y"
+evidence.contractor_badge.collected = true
+chapter5.has_contractor_badge = true
+```
+
+Description:
+
+> Badge for the rival-linked contractor. It grants access to the printer room and, apparently, to other people's futures.
+
+Bajtek begins extracting logs.
+
+Bajtek: (see dialogue_samples.txt §Court line samples)
+
+Murrow: (see dialogue_samples.txt §Court line samples)
+
+Bajtek: (see dialogue_samples.txt §Court line samples)
+
+Whimsy: (see dialogue_samples.txt §Court line samples)
+
+Suddenly the printer starts the final notice run.
+
+Quest update: (see dialogue_samples.txt §Court line samples)
+
+This triggers the Final Printer boss battle.
+
+---
+
+# Beat 8 — Final Printer Boss Battle
+
+Title:
+
+> **The Final Printer**
+
+Type: (see dialogue_samples.txt §Court line samples)
+
+Narrative function: (see dialogue_samples.txt §Sign and notice text samples)
+
+Godot scene: (see dialogue_samples.txt §Court line samples)
+
+Controls: (see dialogue_samples.txt §Court line samples)
+
+Arena elements: (see dialogue_samples.txt §Sign and notice text samples)
+
+Projectile patterns: (see dialogue_samples.txt §Sign and notice text samples)
+
+	mirrored paper waves
+
+red_tape:
+	horizontal beams
+
+toner_cloud:
+	temporary area denial
+
+deadline_spiral:
+	rotating late-notice burst
+
+appeal_portal_error:
+	safe zones briefly disappear
+```
+
+Win condition: (see dialogue_samples.txt §Court line samples)
+
+## Clean shutdown
+
+Condition: (see dialogue_samples.txt §Court line samples)
+
+```gdscript id="0ynt23"
+chapter5.final_printer_result = "clean_shutdown"
+chapter5.final_printer_battle_completed = true
+evidence.objection_filter_log.collected = true
+evidence.recovered_objections.collected = true
+```
+
+Evidence strength: (see dialogue_samples.txt §Court line samples)
+
+Finish text: (see dialogue_samples.txt §Court line samples)
+
+## Messy shutdown
+
+Condition: (see dialogue_samples.txt §Court line samples)
+
+```gdscript id="7s0aem"
+chapter5.final_printer_result = "messy_shutdown"
+chapter5.final_printer_battle_completed = true
+evidence.objection_filter_log.collected = true
+```
+
+Evidence strength: (see dialogue_samples.txt §Court line samples)
+
+Finish text: (see dialogue_samples.txt §Sign and notice text samples)
+
+## Emergency shutdown
+
+Condition: (see dialogue_samples.txt §Court line samples)
+
+```gdscript id="6rrqrp"
+chapter5.final_printer_result = "emergency_shutdown"
+chapter5.final_printer_battle_completed = true
+evidence.objection_filter_log_damaged.collected = true
+```
+
+Evidence strength: (see dialogue_samples.txt §Court line samples)
+
+Bajtek: (see dialogue_samples.txt §Court line samples)
+
+Crab: (see dialogue_samples.txt §Court line samples)
+
+Design rule: (see dialogue_samples.txt §Sign and notice text samples)
+
+### Objection Filter Log
+
+### Recovered Objections
+
+> Suppressed objections from tenants, clients, small firms, and public-interest groups. The file is messy because the people are real.
+
+Optional original printer callback:
+
+The Pig & Swine printer, back at the office, prints remotely:
+
+> I WARNED YOU
+
+Then:
+
+> LOW PAPER
+
+---
+
+# Beat 9 — Szpon confrontation
+
+After the printer room, Advocate Szpon appears.
+
+Szpon: (see dialogue_samples.txt §Court line samples)
+
+Dr. A. Cula: (see dialogue_samples.txt §Court line samples)
+
+Szpon: (see dialogue_samples.txt §Court line samples)
+
+Bajtek: (see dialogue_samples.txt §Court line samples)
+
+Crab: (see dialogue_samples.txt §Court line samples)
+
+This is not the final hearing yet. It is the villain pre-hearing confrontation.
+
+Szpon's legal position: (see dialogue_samples.txt §Court line samples)
+
+Crucial: Szpon should be wrong but not stupid. His arguments should be plausible enough to make the Supreme Court sequence meaningful.
+
+Quest update: (see dialogue_samples.txt §Court line samples)
+
+---
+
+# Beat 10 — Swine's full secret
+
+Back at Pig & Swine, the recovered records connect to Swine's hidden pro-bono funding.
+
+Trigger conditions:
+
+```gdscript id="z5fm4i"
+chapter5.has_objection_filter_log == true
+chapter4.swine_partial_secret_revealed == true
+```
+
+If the player did not find the Chapter 4 Pro-Bono Transfer Stub, the reveal still happens, but with less optional dialogue.
+
+Evidence obtained:
+
+### Swine Pro-Bono Ledger
+
+```gdscript id="sdr7p5"
+evidence.swine_pro_bono_ledger.collected = true
+chapter5.has_swine_pro_bono_ledger = true
+```
+
+Description: (see dialogue_samples.txt §Court line samples)
+
+Crab places the ledger on the table.
+
+Crab: (see dialogue_samples.txt §Court line samples)
+
+Mr. Pig: (see dialogue_samples.txt §Court line samples)
+
+Murrow: (see dialogue_samples.txt §Court line samples)
+
+Asia: (see dialogue_samples.txt §Court line samples)
+
+Whimsy: (see dialogue_samples.txt §Court line samples)
+
+Swine finally admits it.
+
+Swine: (see dialogue_samples.txt §Court line samples)
+
+Mr. Pig: (see dialogue_samples.txt §Court line samples)
+
+Swine: (see dialogue_samples.txt §Court line samples)
+
+Dr. A. Cula: (see dialogue_samples.txt §Court line samples)
+
+Swine: (see dialogue_samples.txt §Court line samples)
+
+Murrow: (see dialogue_samples.txt §Court line samples)
+
+```gdscript id="q1f54k"
+chapter5.swine_secret_revealed = true
+```
+
+Quest update: (see dialogue_samples.txt §Court line samples)
+
+```gdscript id="ofstrb"
+chapter5.team_assembly_unlocked = true
+```
+
+---
+
+# Beat 11 — Team Assembly
+
+Team Assembly is Chapter 5's main new system.
+
+It evolves: (see dialogue_samples.txt §Court line samples)
+
+into: (see dialogue_samples.txt §Court line samples)
+
+Godot scene: (see dialogue_samples.txt §Court line samples)
+
+Murrow introduces it: (see dialogue_samples.txt §Court line samples)
+
+Asia: (see dialogue_samples.txt §Sign and notice text samples)
+
+```gdscript id="h06lmw"
+var team_assembly_slots := {
+	"defective_notice": null,
+	"individual_impact": null,
+	"technical_suppression": null,
+	"conflict_of_interest": null,
+	"proportionality": null,
+	"social_utility": null,
+	"closing_argument": null
+}
+```
+
+Available allies: (see dialogue_samples.txt §Court line samples)
+
+```gdscript id="ei2z9b"
+defective_notice -> Murrow / Kowalski
+individual_impact -> Waldek / Zielińska
+technical_suppression -> Bajtek / Crab
+conflict_of_interest -> Crab / Attorney Grzyb
+proportionality -> Whimsy / Waldek / Murrow
+social_utility -> Mr. Swine / Mr. Pig
+closing_argument -> Dr. A. Cula / Whimsy
+```
+
+Asia should not be a courtroom witness unless you want an emotional office-function argument. Better: Asia generates the final logistical support bonus if the player speaks to her before court.
+
+Asia support bonus:
+
+```gdscript id="dlw52m"
+chapter5.asia_final_brief_index_ready = true
+```
+
+Asia line: (see dialogue_samples.txt §Court line samples)
+
+Bad mappings should be funny but recoverable:
+
+Assign Whimsy to technical suppression: (see dialogue_samples.txt §Sign and notice text samples)
+
+Judge preview: (see dialogue_samples.txt §Court line samples)
+
+Assign Mr. Pig to conflict of interest: (see dialogue_samples.txt §Sign and notice text samples)
+
+Murrow: (see dialogue_samples.txt §Court line samples)
+
+Assign Bajtek to proportionality: (see dialogue_samples.txt §Sign and notice text samples)
+
+Scoring: (see dialogue_samples.txt §Court line samples)
+
+	viable_final_brief
+
+6-7 correct:
+	strong_final_brief
+```
+
+Completion:
+
+```gdscript id="4x7au5"
+chapter5.team_assembly_completed = true
+chapter5.team_assembly_score = calculated_score
+chapter5.has_final_brief = true
+evidence.final_brief.collected = true
+```
+
+Evidence generated:
+
+### Final Brief
+
+> The team's complete challenge to the district consolidation scheme. It contains law, facts, witnesses, printer trauma, and a surprisingly disciplined remedy.
+
+Quest update: (see dialogue_samples.txt §Court line samples)
+
+```gdscript id="cm1b8z"
+chapter5.supreme_court_unlocked = true
+```
+
+---
+
+# Beat 12 — Walk to Supreme Court
+
+The player should walk to the Supreme Court. Do not select it from a menu.
+
+Route: (see dialogue_samples.txt §Court line samples)
+
+World state: (see dialogue_samples.txt §Court line samples)
+
+Supreme Court Plaza features: (see dialogue_samples.txt §Court line samples)
+
+Court door before readiness: (see dialogue_samples.txt §Court line samples)
+
+Court door after readiness: (see dialogue_samples.txt §Court line samples)
+
+---
+
+# Beat 13 — Supreme Court final hearing
+
+The Supreme Court should feel grander than every previous court.
+
+Recommended size: (see dialogue_samples.txt §Court line samples)
+
+Visual identity: (see dialogue_samples.txt §Court line samples)
+
+This is the final battle, but it should be legal, not purely cinematic.
+
+Parties: (see dialogue_samples.txt §Court line samples)
+
+Szpon opening: (see dialogue_samples.txt §Court line samples)
+
+Dr. A. Cula: (see dialogue_samples.txt §Sign and notice text samples)
+
+Judge: (see dialogue_samples.txt §Sign and notice text samples)
+
+The final hearing has five rounds. Each round calls back to an earlier chapter.
+
+---
+
+## Supreme Court Round 1 — Defective notice and procedural access
+
+Chapter callback: (see dialogue_samples.txt §Sign and notice text samples)
+
+Opponent argument: (see dialogue_samples.txt §Sign and notice text samples)
+
+Correct response: (see dialogue_samples.txt §Sign and notice text samples)
+
+Best evidence: (see dialogue_samples.txt §Sign and notice text samples)
+
+Best ally: (see dialogue_samples.txt §Sign and notice text samples)
+
+Good Dr. A. Cula line: (see dialogue_samples.txt §Sign and notice text samples)
+
+Kowalski: (see dialogue_samples.txt §Sign and notice text samples)
+
+Judge: (see dialogue_samples.txt §Sign and notice text samples)
+
+If Murrow assigned: (see dialogue_samples.txt §Sign and notice text samples)
+
+```gdscript id="s3i2zu"
+chapter5.round1_notice_won = true
+```
+
+Bad options: (see dialogue_samples.txt §Sign and notice text samples)
+
+---
+
+## Supreme Court Round 2 — Individual impact and proportionality
+
+Chapter callback: (see dialogue_samples.txt §Court line samples)
+
+Opponent argument: (see dialogue_samples.txt §Court line samples)
+
+Correct response: (see dialogue_samples.txt §Court line samples)
+
+Best evidence: (see dialogue_samples.txt §Sign and notice text samples)
+
+Best ally: (see dialogue_samples.txt §Court line samples)
+
+Good Dr. A. Cula line: (see dialogue_samples.txt §Court line samples)
+
+Waldek: (see dialogue_samples.txt §Court line samples)
+
+If Zielińska assigned: (see dialogue_samples.txt §Sign and notice text samples)
+
+If Whimsy assigned: (see dialogue_samples.txt §Sign and notice text samples)
+
+Judge: (see dialogue_samples.txt §Court line samples)
+
+```gdscript id="qajohc"
+chapter5.round2_proportionality_won = true
+```
+
+Wrong response: (see dialogue_samples.txt §Court line samples)
+
+Murrow correction: (see dialogue_samples.txt §Court line samples)
+
+---
+
+## Supreme Court Round 3 — Technical suppression and bad faith
+
+Chapter callback: (see dialogue_samples.txt §Court line samples)
+
+Opponent argument: (see dialogue_samples.txt §Court line samples)
+
+Correct response: (see dialogue_samples.txt §Court line samples)
+
+Best evidence: (see dialogue_samples.txt §Sign and notice text samples)
+
+Best ally: (see dialogue_samples.txt §Court line samples)
+
+This round should include contradiction spotting.
+
+Szpon statement: (see dialogue_samples.txt §Court line samples)
+
+```gdscript id="3tlkml"
+var contradiction_scene_szpon_filter := {
+	"speaker": "szpon",
+	"statements": [
+		{
+			"id": "classified_not_rejected",
+			"text": "The system did not reject objections. It merely classified them.",
+			"contradiction_evidence": "objection_filter_log",
+			"success_flag": "chapter5.caught_szpon_filter_lie"
+		},
+		{
+			"id": "neutral_automation",
+			"text": "Automation is neutral by design.",
+			"contradiction_evidence": "master_notice_run",
+			"success_flag": "chapter5.caught_szpon_automation_lie"
+		},
+		{
+			"id": "efficiency",
+			"text": "Efficiency is necessary in large public processes.",
+			"contradiction_evidence": ""
+		}
+	]
+}
+```
+
+Correct action: (see dialogue_samples.txt §Sign and notice text samples)
+
+Good Bajtek line: (see dialogue_samples.txt §Court line samples)
+
+Good Dr. A. Cula line: (see dialogue_samples.txt §Court line samples)
+
+Crab: (see dialogue_samples.txt §Court line samples)
+
+```gdscript id="n6ptxu"
+chapter5.round3_suppression_won = true
+```
+
+---
+
+## Supreme Court Round 4 — Conflict of interest and private benefit
+
+Chapter callback: (see dialogue_samples.txt §Court line samples)
+
+Opponent argument: (see dialogue_samples.txt §Court line samples)
+
+Correct response: (see dialogue_samples.txt §Court line samples)
+
+Best evidence: (see dialogue_samples.txt §Sign and notice text samples)
+
+Best ally: (see dialogue_samples.txt §Court line samples)
+
+Good Crab line: (see dialogue_samples.txt §Sign and notice text samples)
+
+Grzyb: (see dialogue_samples.txt §Court line samples)
+
+Judge: (see dialogue_samples.txt §Court line samples)
+
+Szpon response: (see dialogue_samples.txt §Court line samples)
+
+Dr. A. Cula: (see dialogue_samples.txt §Sign and notice text samples)
+
+```gdscript id="xxrnhe"
+chapter5.round4_conflict_won = true
+```
+
+Wrong response: (see dialogue_samples.txt §Court line samples)
+
+Crab correction: (see dialogue_samples.txt §Court line samples)
+
+---
+
+## Supreme Court Round 5 — Remedy and social utility
+
+Chapter callback: (see dialogue_samples.txt §Court line samples)
+
+Opponent argument: (see dialogue_samples.txt §Court line samples)
+
+Correct response: (see dialogue_samples.txt §Court line samples)
+
+Best evidence: (see dialogue_samples.txt §Sign and notice text samples)
+
+Best allies: (see dialogue_samples.txt §Court line samples)
+
+Good Dr. A. Cula line: (see dialogue_samples.txt §Court line samples)
+
+Swine final witness line: (see dialogue_samples.txt §Court line samples)
+
+Mr. Pig line: (see dialogue_samples.txt §Court line samples)
+
+Whimsy closing support: (see dialogue_samples.txt §Court line samples)
+
+Judge should not deliver magical total victory. The remedy should be serious but procedurally grounded.
+
+Correct remedy: (see dialogue_samples.txt §Court line samples)
+
+```gdscript id="c9ll0x"
+chapter5.round5_remedy_won = true
+```
+
+---
+
+# Victory states
+
+Chapter 5 should have three successful endings, not one binary result.
+
+## Strong victory
+
+Requirements: (see dialogue_samples.txt §Sign and notice text samples)
+
+Outcome: (see dialogue_samples.txt §Court line samples)
+
+Judge line: (see dialogue_samples.txt §Sign and notice text samples)
+
+## Standard victory
+
+Requirements: (see dialogue_samples.txt §Court line samples)
+
+Outcome: (see dialogue_samples.txt §Court line samples)
+
+Murrow: (see dialogue_samples.txt §Court line samples)
+
+## Weak-but-successful victory
+
+Requirements: (see dialogue_samples.txt §Court line samples)
+
+Outcome: (see dialogue_samples.txt §Court line samples)
+
+Murrow: (see dialogue_samples.txt §Court line samples)
+
+Asia: (see dialogue_samples.txt §Court line samples)
+
+If the player fails too many final hearing rounds, the game should return to Team Assembly, not force a full chapter replay.
+
+---
+
+# Beat 14 — Ending sequence
+
+The ending returns to Pig & Swine Office.
+
+The office should not become rich or polished. It should remain shabby, alive, and open.
+
+Post-victory state: (see dialogue_samples.txt §Sign and notice text samples)
+
+Waldek: (see dialogue_samples.txt §Court line samples)
+
+Kowalski: (see dialogue_samples.txt §Court line samples)
+
+Zielińska: (see dialogue_samples.txt §Sign and notice text samples)
+
+Bajtek: (see dialogue_samples.txt §Court line samples)
+
+Grzyb, if recruited, sends a beige card: (see dialogue_samples.txt §Court line samples)
+
+Szpon appears in newspaper headline: (see dialogue_samples.txt §Court line samples)
+
+Do not vaporise Szpon cartoonishly. Let him retreat under investigation. That keeps the world legally plausible.
+
+Printer final message: (see dialogue_samples.txt §Court line samples)
+
+Mr. Pig begins a speech.
+
+Mr. Swine interrupts with a postcard despite being physically present.
+
+Swine: (see dialogue_samples.txt §Court line samples)
+
+Postcard text: (see dialogue_samples.txt §Sign and notice text samples)
+
+Credits cards: (see dialogue_samples.txt §Court line samples)
+
+disclosed three accounts, hid two pastries.
+
+Asia:
+created the office's first filing system that survived contact with reality.
+
+Murrow:
+finally labelled the archive, then trusted no one with it.
+
+Crab:
+still following the paper trail.
+
+Whimsy:
+banned from calling pleadings "legal thunder."
+
+Waldek:
+his poster multiplied again.
+
+Kowalski:
+formed a neighbourhood notice-reading group and objected to its minutes.
+
+Zielińska:
+became the person everyone asks before signing anything.
+
+Bajtek:
+refuses all printer-related emotional labour.
+
+Attorney Grzyb:
+remains beige, but slightly less wrong.
+
+The Printer:
+low paper, high dignity.
+```
+
+Final flags:
+
+```gdscript id="zyhe9r"
+chapter5.ending_seen = true
+chapter5.complete = true
+game_complete = true
+```
+
+---
+
+# Chapter 5 NPC roles
+
+| NPC                 | Function                  | Chapter 5 role                                                     |
+| ------------------- | ------------------------- | ------------------------------------------------------------------ |
+| Dr. A. Cula         | Final advocate            | Synthesises notice, proportionality, suppression, conflict, remedy |
+| Asia                | Office anchor / logistics | Final hints, indexing, emotional continuity                        |
+| Mr. Pig             | Moral heart               | Shows why the firm matters despite chaos                           |
+| Mr. Swine           | Secret benefactor         | Reveals pro-bono ledger and social utility                         |
+| Murrow          | Final case architect      | Frames the legal theory and Team Assembly                          |
+| Crab                | Causation investigator    | Links procurement, profit, suppression, and paper trail            |
+| Whimsy              | Proportionality / closing | Gives memorable final rights language                              |
+| Waldek              | Human impact witness      | Connects Chapter 2 home impact to mass scheme                      |
+| Kowalski            | Notice confusion witness  | Shows ordinary-person unreadability of notices                     |
+| Zielińska           | Community impact witness  | Explains why identical treatment can be unfair                     |
+| Bajtek              | Technical witness         | Explains objection filtering and automation                        |
+| Attorney Grzyb      | Optional reluctant ally   | Adds procedural credibility from the "rule-lover" side             |
+| Advocate Szpon      | Final opponent            | Defends efficiency, automation, default, public interest           |
+| Supreme Court Judge | Final authority           | Tests the complete legal case                                      |
+| Printer             | Running object gag        | Pays off Chapter 3 and final boss callback                         |
+
+---
+
+# Chapter 5 evidence
+
+Use shared evidence state.
+
+```gdscript id="0j3xx5"
+var evidence := {
+	"district_closure_notice": {
+		"collected": false,
+		"chapter": 5,
+		"display_name": "District Closure Notice",
+		"argument_tags": ["defective_notice", "procedural_access"]
+	},
+
+"redevelopment_plan": {
+		"collected": false,
+		"chapter": 5,
+		"display_name": "Redevelopment Plan",
+		"argument_tags": ["public_interest", "proportionality", "scheme_scope"]
+	},
+
+"notice_template_batch": {
+		"collected": false,
+		"chapter": 5,
+		"display_name": "Notice Template Batch",
+		"argument_tags": ["defective_notice", "lack_of_individual_assessment"]
+	},
+
+"procurement_link": {
+		"collected": false,
+		"chapter": 5,
+		"display_name": "Procurement Link",
+		"argument_tags": ["conflict_of_interest", "private_benefit"]
+	},
+
+"committee_minutes": {
+		"collected": false,
+		"chapter": 5,
+		"display_name": "Committee Minutes",
+		"argument_tags": ["scheme_design", "foreseeable_impact"]
+	},
+
+"portal_error_screenshot": {
+		"collected": false,
+		"chapter": 5,
+		"display_name": "Portal Error Screenshot",
+		"argument_tags": ["access_to_remedy", "procedural_access"]
+	},
+
+"impact_statements": {
+		"collected": false,
+		"chapter": 5,
+		"display_name": "Impact Statements",
+		"argument_tags": ["individual_impact", "proportionality"]
+	},
+
+"notice_wall_photos": {
+		"collected": false,
+		"chapter": 5,
+		"display_name": "Notice Wall Photos",
+		"argument_tags": ["defective_notice", "lack_of_individual_assessment"]
+	},
+
+"master_notice_run": {
+		"collected": false,
+		"chapter": 5,
+		"display_name": "Master Notice Run",
+		"argument_tags": ["technical_suppression", "automation", "scheme_scope"]
+	},
+
+"contractor_badge": {
+		"collected": false,
+		"chapter": 5,
+		"display_name": "Contractor Badge",
+		"argument_tags": ["conflict_of_interest", "access"]
+	},
+
+"objection_filter_log": {
+		"collected": false,
+		"chapter": 5,
+		"display_name": "Objection Filter Log",
+		"argument_tags": ["technical_suppression", "access_to_remedy"]
+	},
+
+"objection_filter_log_damaged": {
+		"collected": false,
+		"chapter": 5,
+		"display_name": "Damaged Objection Filter Log",
+		"argument_tags": ["technical_suppression", "access_to_remedy"]
+	},
+
+"recovered_objections": {
+		"collected": false,
+		"chapter": 5,
+		"display_name": "Recovered Objections",
+		"argument_tags": ["access_to_remedy", "individual_impact"]
+	},
+
+"swine_pro_bono_ledger": {
+		"collected": false,
+		"chapter": 5,
+		"display_name": "Swine Pro-Bono Ledger",
+		"argument_tags": ["social_utility", "access_to_justice"]
+	},
+
+"final_brief": {
+		"collected": false,
+		"chapter": 5,
+		"display_name": "Final Brief",
+		"argument_tags": ["remedy", "case_synthesis"]
+	}
+}
+```
+
+Returning evidence that can add bonuses: (see dialogue_samples.txt §Court line samples)
+
+Eviction Notice
+Poster Photo
+Building Rules Extract
+Waldek / Kowalski / Zielińska statements
+
+Chapter 3:
+Printer Log Fragment
+Repair Invoice
+Hidden Reroute Device
+Bajtek Technical Statement
+
+Chapter 4:
+Translation Note
+Real Contract Draft
+Pro-Bono Transfer Stub
+```
+
+Core required Chapter 5 evidence: (see dialogue_samples.txt §Sign and notice text samples)
+
+Strong-case evidence: (see dialogue_samples.txt §Sign and notice text samples)
+
+---
+
+# Chapter 5 quest flags
+
+Use Godot-friendly snake_case.
+
+```gdscript id="iro82u"
+var chapter5 := {
+	"started": false,
+
+"district_notice_received": false,
+	"mass_crisis_explained": false,
+
+"protest_square_unlocked": false,
+	"visited_protest_square": false,
+	"has_impact_statements": false,
+	"has_notice_wall_photos": false,
+
+"grzyb_recruited": false,
+
+"city_hall_unlocked": false,
+	"visited_city_hall": false,
+	"has_redevelopment_plan": false,
+	"has_notice_template_batch": false,
+	"has_procurement_link": false,
+	"has_committee_minutes": false,
+	"has_portal_error_screenshot": false,
+
+"caught_city_official_notice_lie": false,
+	"caught_portal_access_lie": false,
+
+"industrial_printer_room_unlocked": false,
+	"visited_industrial_printer_room": false,
+	"has_master_notice_run": false,
+	"has_contractor_badge": false,
+
+"final_printer_battle_started": false,
+	"final_printer_battle_completed": false,
+	"final_printer_result": "",
+	# "clean_shutdown" | "messy_shutdown" | "emergency_shutdown"
+
+"has_objection_filter_log": false,
+	"has_objection_filter_log_damaged": false,
+	"has_recovered_objections": false,
+
+"has_swine_pro_bono_ledger": false,
+	"swine_secret_revealed": false,
+
+"team_assembly_unlocked": false,
+	"team_assembly_completed": false,
+	"team_assembly_score": 0,
+	"final_brief_strength": "",
+	# "weak_final_brief" | "viable_final_brief" | "strong_final_brief"
+
+"asia_final_brief_index_ready": false,
+	"has_final_brief": false,
+
+"supreme_court_unlocked": false,
+	"supreme_court_started": false,
+
+"round1_notice_won": false,
+	"round2_proportionality_won": false,
+	"round3_suppression_won": false,
+	"round4_conflict_won": false,
+	"round5_remedy_won": false,
+
+"caught_szpon_filter_lie": false,
+	"caught_szpon_automation_lie": false,
+
+"contradiction_score": 0,
+
+"final_judgment_result": "",
+	# "strong_victory" | "standard_victory" | "weak_victory" | "loss_retry"
+
+"ending_seen": false,
+	"complete": false
+}
+```
+
+Team Assembly state:
+
+```gdscript id="jfh4fh"
+var team_assembly := {
+	"active": false,
+	"assignments": {
+		"defective_notice": "",
+		"individual_impact": "",
+		"technical_suppression": "",
+		"conflict_of_interest": "",
+		"proportionality": "",
+		"social_utility": "",
+		"closing_argument": ""
+	},
+	"score": 0
+}
+```
+
+Contradiction state:
+
+```gdscript id="7tmdo7"
+var chapter5_contradictions := {
+	"city_individual_assessment": {
+		"resolved": false,
+		"correct_evidence": "notice_template_batch"
+	},
+
+"city_portal_available": {
+		"resolved": false,
+		"correct_evidence": "portal_error_screenshot"
+	},
+
+"szpon_filter_not_rejection": {
+		"resolved": false,
+		"correct_evidence": "objection_filter_log"
+	},
+
+"szpon_neutral_automation": {
+		"resolved": false,
+		"correct_evidence": "master_notice_run"
+	}
+}
+```
+
+---
+
+# Asia hint-state logic for Chapter 5
+
+Asia should remain the practical guidance layer until the end.
+
+```gdscript id="d9j6jo"
+func get_asia_chapter5_hint() -> String:
+	if !chapter5.mass_crisis_explained:
+		return "<see dialogue_samples.txt §Sign and notice text samples>"
+
+if !chapter5.visited_protest_square:
+		return "<see dialogue_samples.txt §Sign and notice text samples>"
+
+if !chapter5.has_impact_statements:
+		return "<see dialogue_samples.txt §Sign and notice text samples>"
+
+if !chapter5.visited_city_hall:
+		return "<see dialogue_samples.txt §Sign and notice text samples>"
+
+if !chapter5.has_notice_template_batch:
+		return "<see dialogue_samples.txt §Sign and notice text samples>"
+
+if !chapter5.has_procurement_link:
+		return "<see dialogue_samples.txt §Sign and notice text samples>"
+
+if !chapter5.caught_city_official_notice_lie:
+		return "<see dialogue_samples.txt §Sign and notice text samples>"
+
+if !chapter5.visited_industrial_printer_room:
+		return "<see dialogue_samples.txt §Sign and notice text samples>"
+
+if !chapter5.final_printer_battle_completed:
+		return "<see dialogue_samples.txt §Sign and notice text samples>"
+
+if !chapter5.swine_secret_revealed:
+		return "<see dialogue_samples.txt §Sign and notice text samples>"
+
+if !chapter5.team_assembly_completed:
+		return "<see dialogue_samples.txt §Sign and notice text samples>"
+
+if !chapter5.asia_final_brief_index_ready:
+		return "<see dialogue_samples.txt §Sign and notice text samples>"
+
+if !chapter5.final_judgment_result:
+		return "<see dialogue_samples.txt §Sign and notice text samples>"
+
+if !chapter5.ending_seen:
+		return "<see dialogue_samples.txt §Sign and notice text samples>"
+
+return "<see dialogue_samples.txt §Sign and notice text samples>"
+```
+
+---
+
+# Godot scene list
+
+Minimum scenes: (see dialogue_samples.txt §Court line samples)
+
+res://interiors/pig_swine_office.tscn
+res://interiors/city_hall.tscn
+res://interiors/industrial_printer_room.tscn
+res://interiors/supreme_court.tscn
+
+res://ui/dialogue_box.tscn
+res://ui/quest_popup.tscn
+res://ui/evidence_menu.tscn
+res://ui/contradiction_screen.tscn
+res://ui/team_assembly.tscn
+res://ui/final_hearing_round.tscn
+res://ui/badge_popup.tscn
+res://ui/ending_cards.tscn
+
+res://minigames/final_printer_boss.tscn
+```
+
+Chapter 5 should not require new systems after Team Assembly and Final Printer. It should reuse and combine existing systems.
+
+---
+
+# New system — Team Assembly v1
+
+Minimum viable implementation:
+
+```gdscript id="f1kgc4"
+func start_team_assembly() -> void
+func assign_ally(slot_id: String, npc_id: String) -> void
+func score_team_assembly() -> int
+func generate_final_brief() -> void
+func is_team_assembly_active() -> bool
+```
+
+Data structure:
+
+```gdscript id="jo1zli"
+var team_assembly_slots := {
+	"defective_notice": {
+		"label": "Defective notice",
+		"best_allies": ["murrow"],
+		"good_allies": ["kowalski"],
+		"bad_allies": ["pig", "whimsy"]
+	},
+
+"individual_impact": {
+		"label": "Individual impact",
+		"best_allies": ["waldek", "zielinska"],
+		"good_allies": ["pig"],
+		"bad_allies": ["bajtek"]
+	},
+
+"technical_suppression": {
+		"label": "Technical suppression",
+		"best_allies": ["bajtek"],
+		"good_allies": ["crab"],
+		"bad_allies": ["whimsy", "pig"]
+	},
+
+"conflict_of_interest": {
+		"label": "Conflict of interest",
+		"best_allies": ["crab"],
+		"good_allies": ["grzyb", "murrow"],
+		"bad_allies": ["kowalski"]
+	},
+
+"proportionality": {
+		"label": "Proportionality",
+		"best_allies": ["whimsy", "waldek"],
+		"good_allies": ["murrow", "zielinska"],
+		"bad_allies": ["bajtek"]
+	},
+
+"social_utility": {
+		"label": "Social utility of Pig & Swine",
+		"best_allies": ["swine", "pig"],
+		"good_allies": ["asia", "murrow"],
+		"bad_allies": ["szpon"]
+	},
+
+"closing_argument": {
+		"label": "Closing argument",
+		"best_allies": ["cula"],
+		"good_allies": ["whimsy"],
+		"bad_allies": ["pig"]
+	}
+}
+```
+
+Scoring:
+
+```gdscript id="k64yhc"
+func score_assignment(slot_id: String, npc_id: String) -> int:
+	if npc_id in team_assembly_slots[slot_id]["best_allies"]:
+		return 2
+	if npc_id in team_assembly_slots[slot_id]["good_allies"]:
+		return 1
+	return 0
+```
+
+Brief strength:
+
+```gdscript id="dsuxgl"
+if score >= 11:
+	final_brief_strength = "strong_final_brief"
+elif score >= 6:
+	final_brief_strength = "viable_final_brief"
+else:
+	final_brief_strength = "weak_final_brief"
+```
+
+Design rule: (see dialogue_samples.txt §Sign and notice text samples)
+
+---
+
+# New mini-game — Final Printer Boss v1
+
+Minimum viable implementation:
+
+```gdscript id="st48k6"
+func start_final_printer_battle(difficulty: String) -> void
+func update_final_printer_battle(delta: float) -> void
+func draw_final_printer_battle() -> void
+func end_final_printer_battle(result: String) -> void
+func is_final_printer_battle_active() -> bool
+```
+
+State:
+
+```gdscript id="kr9v6u"
+var final_printer_battle := {
+	"active": false,
+	"player_x": 0,
+	"player_y": 0,
+	"printer_hp": 5,
+	"stamps_landed": 0,
+	"hits_taken": 0,
+	"objections_recovered": 0,
+	"time_remaining": 90,
+	"projectile_pattern": "notices",
+	"result": ""
+}
+```
+
+Grading:
+
+```gdscript id="g66dyp"
+if stamps_landed >= 5 and objections_recovered >= 12 and hits_taken <= 2:
+	result = "clean_shutdown"
+elif stamps_landed >= 5:
+	result = "messy_shutdown"
+else:
+	result = "emergency_shutdown"
+```
+
+No total story failure.
+
+---
+
+# Chapter 5 implementation slice
+
+Build the final legal arc first. Do not start with the boss battle.
+
+Implementation order: (see dialogue_samples.txt §Sign and notice text samples)
+
+This follows the old plan's own priority logic: the final legal arc, Team Assembly, and Supreme Court sequence are the actual finale; the Final Printer is the spectacle layer.
+
+---
+
+# Acceptance criteria
+
+Chapter 5 is done when the player can: (see dialogue_samples.txt §Sign and notice text samples)
+
+No ending-critical step should require perfect boss-battle performance. Team Assembly should affect quality of outcome, not block completion. The final case should feel like the natural consequence of Chapters 1–4, not a separate apocalypse.

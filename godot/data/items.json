@@ -1,0 +1,5 @@
+{
+  "version": 1,
+  "_doc": "Items, evidence, Casebook collectibles. Schema: { item_id: { name (Design), description (Design), effect, slot, prereq } }.",
+  "items": {}
+}

@@ -1,0 +1,2620 @@
+## Part 5 — Mini-Game Specifications
+
+> **Governance note:** Per godot/PLAN.md §Out of scope
+> permanently, Scooter Racing and Ski Slalom are dropped.
+> Chapter 4 ships with brief travel-narrative cutscenes
+> instead. The Final Printer is reframed as a Casebook battle
+> (see godot/AGENTS.md §Forbidden patterns and
+> battle_mechanics.txt). Coffee Brewing and Document Chase
+> remain as committed mini-games.
+
+### Mini-Game 1: Coffee Brewing
+
+The old "click 3 times in 5 seconds" version should be replaced entirely. It is too flat because it tests only frantic clicking, has no personality, and does not feel connected to the legal RPG loop. The old implementation plan already points in the right direction: Coffee Brewing should become a short rhythm-timing sequence where the player hits prompts as they reach a timing line, with better timing producing better focus, brew quality, and lower bitterness.
+
+The new version should be:
+
+> **A tiny rhythm-and-precision ritual where Dr. A. Cula prepares court coffee under absurd procedural pressure.**
+
+It should feel like the first playable mini-game ritual of Pig & Swine: legally unnecessary, emotionally mandatory.
+
+The updated Chapter 1 outline already frames coffee as optional, short, and buff-based: success gives **Procedurally Alert**, failure gives **Over-Caffeinated**, and neither outcome blocks progress. That rule should remain absolute.
+
+---
+
+## Design role
+
+Coffee Brewing is the tutorial mini-game.
+
+It teaches:
+
+```text
+timed input
+mini-game result grades
+soft failure
+temporary buffs
+character reaction lines
+Godot scene transition into/out of a mini-game
+```
+
+It should not teach:
+
+```text
+complex evidence mechanics
+court reasoning
+resource management
+punitive failure
+long-term optimisation
+```
+
+The player should come away thinking:
+
+> "Mini-games in this game are quick, funny, readable, and they affect the case lightly without becoming annoying."
+
+That matters because the later committed mini-game — Document Chase — will be more intense, and the Chapter 5 climax (Final Printer) is a Casebook battle rather than a mini-game. Coffee Brewing is the gentle one.
+
+---
+
+## Narrative placement
+
+### First appearance — Café Paragraf, Chapter 1
+
+The first proper coffee tutorial should happen at **Café Paragraf**, shortly before court. The Chapter 1 outline already places the optional coffee beat in the café and frames it as a buff rather than a required step.
+
+Suggested trigger NPC:
+
+> **Barista**
+
+Prompt:
+
+> "Court coffee? It will not make you wiser, but it may make your mistakes faster."
+
+Options:
+
+```text
+Brew coffee
+Remain procedurally uncaffeinated
+Ask what this machine does
+```
+
+If the player asks what the machine does:
+
+> "You press the right buttons at the right time, and the coffee becomes less legally alarming."
+
+### Later availability — Pig & Swine Office
+
+After the tutorial, the office coffee machine becomes available as a repeatable interactable in the office coffee corner. The Pig & Swine Office is already planned as the hub, with a coffee corner among its functional zones.
+
+Interaction text:
+
+> "The coffee machine gurgles with institutional authority. Brew coffee?"
+
+Possible uses:
+
+```text
+Chapter 1:
+optional pre-court buff
+
+Chapter 2:
+small focus buff before Evidence Board / Housing Court
+
+Chapter 3:
+emergency printer-crisis coffee variant
+
+Chapter 5:
+final brief preparation coffee, mostly for comedy
+```
+
+The café version should feel warmer and more controlled. The office version should feel older, louder, and more likely to object.
+
+---
+
+## Core fantasy
+
+The joke is not simply "make coffee."
+
+The joke is:
+
+> Pig & Swine treats coffee brewing like procedural compliance.
+
+So the UI language should sound half-barista, half-court clerk.
+
+Examples:
+
+```text
+Brew Quality
+Bitterness
+Procedural Aroma
+Admissibility
+Caffeine Stability
+```
+
+Result messages:
+
+```text
+"Coffee admitted into evidence."
+"Brew served out of time but accepted in the interests of justice."
+"Machine objects."
+"Caffeine level disproportionate but not fatal."
+```
+
+The coffee machine should be a minor character, like the printer's less dangerous cousin.
+
+---
+
+## Gameplay concept
+
+Coffee Brewing should be a **20–30 second rhythm-timing mini-game** with a tiny precision layer.
+
+The player does not mash. They time actions.
+
+Core loop:
+
+```text
+watch incoming coffee prompts
+press the matching input at the timing line
+good timing increases Brew Quality
+late/wrong/missed inputs increase Bitterness
+finish the sequence
+receive coffee grade and temporary status
+```
+
+The mini-game should have three short phases:
+
+```text
+1. Grind
+2. Pour
+3. Serve
+```
+
+Each phase uses the same basic timing system, but with a slightly different visual metaphor.
+
+---
+
+## Phase 1 — Grind
+
+Purpose:
+
+```text
+teach basic timed input
+```
+
+Visual:
+
+Coffee beans slide toward a grinder line.
+
+Input:
+
+```text
+Left / Right
+or A / D
+or gamepad left / right
+```
+
+Mechanic:
+
+The player presses the matching lane when the bean reaches the grinder.
+
+Timing judgments:
+
+```text
+Perfect
+Good
+Okay
+Miss
+```
+
+Effects:
+
+```text
+Perfect / Good:
+Brew Quality increases
+
+Okay:
+small Brew Quality increase
+
+Miss:
+Bitterness increases
+```
+
+Flavor text during phase:
+
+> "Grinding beans. Please avoid creating procedural dust."
+
+This phase should be easy in Chapter 1: two lanes only.
+
+---
+
+## Phase 2 — Pour
+
+Purpose:
+
+```text
+add variety without adding complexity
+```
+
+Visual:
+
+A small coffee stream fills a cup. A moving indicator passes through a target zone.
+
+Input:
+
+```text
+Hold Space / Enter
+Release inside the target zone
+```
+
+Mechanic:
+
+The player holds to pour, releases when the marker is inside the "golden pour" band.
+
+Results:
+
+```text
+release inside center:
+large Brew Quality gain
+
+release inside outer band:
+small Brew Quality gain
+
+release too early:
+Weak Coffee
+
+release too late:
+Bitterness gain
+```
+
+Flavor text:
+
+> "Pour steadily. The court dislikes surprises, and so does milk."
+
+This should happen only two or three times, not become a separate hard mini-game.
+
+---
+
+## Phase 3 — Serve
+
+Purpose:
+
+```text
+finish with quick rhythm energy
+```
+
+Visual:
+
+Small legal-coffee icons approach the timing line.
+
+Do not use generic music notes. Use themed icons:
+
+```text
+coffee bean
+milk drop
+sugar cube
+rubber stamp
+tiny file
+court mug
+```
+
+Input:
+
+```text
+Left / Right / Up / Down in normal mode
+Left / Right only in tutorial mode
+```
+
+The last prompt should always be a stamp icon. If the player hits it correctly:
+
+> **STAMPED: CAFFEINATED**
+
+If missed:
+
+> **STAMPED: QUESTIONABLE**
+
+This gives the mini-game a satisfying legal-comedy button press.
+
+---
+
+## Controls
+
+### Keyboard
+
+Tutorial mode:
+
+```text
+A / D
+or Left / Right
+Space / Enter for pour and confirm
+Esc to quit
+```
+
+Normal mode:
+
+```text
+W / A / S / D
+or Arrow Keys
+Space / Enter for pour and confirm
+Esc to quit
+```
+
+### Gamepad
+
+```text
+D-pad / left stick directions
+A / Cross for pour and confirm
+B / Circle to quit
+```
+
+### Mouse fallback
+
+Optional but useful:
+
+```text
+click timing zone
+hold/release for pour
+```
+
+### Accessibility mode
+
+Coffee Brewing must have an assist option from the mini-game pause/settings panel.
+
+Assist options:
+
+```text
+slower notes
+larger timing window
+single-button mode
+auto-pour mode
+```
+
+Single-button mode:
+
+```text
+all prompts use Space / Enter
+lane matching is disabled
+timing still matters
+```
+
+This preserves the mini-game while removing coordination friction.
+
+---
+
+## UI layout
+
+Godot scene:
+
+```text
+res://minigames/coffee_brewing/coffee_brewing.tscn
+```
+
+Suggested node structure:
+
+```text
+CoffeeBrewingRoot
+├── BackgroundPanel
+├── CoffeeMachineSprite
+├── CupSprite
+├── TimingTrackRoot
+│   ├── Lane0
+│   ├── Lane1
+│   ├── Lane2
+│   └── Lane3
+├── TimingLine
+├── PromptSpawner
+├── BrewQualityMeter
+├── BitternessMeter
+├── ComboLabel
+├── PhaseLabel
+├── ResultPanel
+├── CharacterReactionPortrait
+├── AnimationPlayer
+└── AudioStreamPlayer / ProceduralAudioBridge
+```
+
+The screen should look like a small arcade overlay, not a full separate game world.
+
+Visual arrangement:
+
+```text
+left side:
+coffee machine, cup, steam, character reaction
+
+center:
+timing lanes and prompts
+
+right side:
+Brew Quality and Bitterness meters
+
+bottom:
+phase text and short instruction
+```
+
+The UI should be readable at small scale. Pixel-art icons should be clear and chunky.
+
+---
+
+## Meters
+
+### Brew Quality
+
+Represents how good the coffee is.
+
+Increases from:
+
+```text
+Perfect hits
+Good hits
+successful pour releases
+combo streaks
+```
+
+Displayed as:
+
+```text
+cup filling with warm coffee
+or horizontal bar labelled Brew Quality
+```
+
+### Bitterness
+
+Represents mistakes, burnt coffee, panic, and machine resentment.
+
+Increases from:
+
+```text
+missed notes
+wrong keys
+late pour releases
+overfilling
+```
+
+Displayed as:
+
+```text
+dark foam creeping over cup
+or small warning meter labelled Bitterness
+```
+
+The player should understand the outcome without reading exact numbers.
+
+---
+
+## Timing judgments
+
+Use four judgments.
+
+```text
+Perfect
+Good
+Okay
+Miss
+```
+
+Suggested timing windows for Chapter 1 tutorial:
+
+```gdscript
+const PERFECT_WINDOW := 0.075
+const GOOD_WINDOW := 0.140
+const OKAY_WINDOW := 0.220
+```
+
+For normal mode:
+
+```gdscript
+const PERFECT_WINDOW := 0.060
+const GOOD_WINDOW := 0.120
+const OKAY_WINDOW := 0.190
+```
+
+Scoring:
+
+```gdscript
+Perfect: +100 brew_quality, +1 combo
+Good:    +70 brew_quality, +1 combo
+Okay:    +35 brew_quality, combo continues only in tutorial mode
+Miss:    +25 bitterness, combo reset
+Wrong:   +35 bitterness, combo reset
+```
+
+Pour phase scoring:
+
+```gdscript
+center release: +150 brew_quality
+outer release:  +75 brew_quality
+early release:  +20 brew_quality
+late release:   +35 bitterness
+```
+
+Keep the math simple. The player should feel the result, not optimise spreadsheets.
+
+---
+
+## Result grades
+
+At the end, calculate:
+
+```gdscript
+final_score = brew_quality - bitterness
+```
+
+Suggested results:
+
+| Grade | Internal result   |                          Condition | Status                    |
+| ----- | ----------------- | ---------------------------------: | ------------------------- |
+| S     | `perfect_brew`    |  high quality, very low bitterness | `procedurally_alert_plus` |
+| A/B   | `good_brew`       |                      solid quality | `procedurally_alert`      |
+| C     | `drinkable_brew`  |                       mixed result | `caffeinated`             |
+| D     | `procedural_mud`  |                        low quality | `over_caffeinated`        |
+| F     | `machine_objects` | very low quality / high bitterness | `over_caffeinated`        |
+
+Do not create a hard fail state.
+
+Even the worst result should continue the story.
+
+---
+
+## Buff effects
+
+Buffs should be light and chapter-safe.
+
+### Procedurally Alert+
+
+Only for very strong performance.
+
+Effect:
+
+```text
+one extra court hint
+one slightly clearer wrong-answer warning
+special Asia/Murrow praise line
+```
+
+No major mechanical advantage.
+
+Example:
+
+> "Your coffee has achieved procedural clarity. This is rare and possibly regulated."
+
+### Procedurally Alert
+
+Normal success.
+
+Effect:
+
+```text
+one extra hint in the next court sequence
+or one Evidence Board nudge in Chapter 2
+```
+
+Chapter 1 court example:
+
+If the player hesitates or chooses a wrong argument once, Murrow can whisper:
+
+> "Coffee or not, remember the doorway: service first, hearing second, remedy last."
+
+### Caffeinated
+
+Neutral result.
+
+Effect:
+
+```text
+no mechanical bonus
+minor positive flavor line
+```
+
+Example:
+
+> "You are awake enough to recognise documents. A professional baseline."
+
+### Over-Caffeinated
+
+Comic "failure" result.
+
+Effect:
+
+```text
+funny dialogue variations
+minor portrait shake in one later line
+no hard penalty
+```
+
+Court flavor:
+
+> Dr. A. Cula grips the lectern with alarming commitment.
+
+Asia reaction:
+
+> "You are vibrating near the case board. I'll mark that as readiness-adjacent."
+
+This matches the updated Chapter 1 rule: losing gives comic variation, not punishment.
+
+---
+
+## Chapter integration
+
+### Chapter 1
+
+Trigger:
+
+```gdscript
+chapter1.has_rights_memo == true
+and chapter1.recruited_whimsy == true
+and chapter1.coffee_tutorial_seen == false
+```
+
+Recommended placement:
+
+```text
+Café Paragraf, after recruiting Whimsy, before returning for court readiness.
+```
+
+Barista line:
+
+> "Court coffee? It will not make you wiser, but it may make your mistakes faster."
+
+Win:
+
+```gdscript
+chapter1.coffee_tutorial_seen = true
+chapter1.coffee_buff = "procedurally_alert"
+```
+
+Lose / weak result:
+
+```gdscript
+chapter1.coffee_tutorial_seen = true
+chapter1.coffee_buff = "over_caffeinated"
+```
+
+No buff if skipped:
+
+```gdscript
+chapter1.coffee_buff = ""
+```
+
+Asia return comments:
+
+```text
+Procedurally Alert:
+"You look prepared. Or at least caffeinated in a legally promising way."
+
+Over-Caffeinated:
+"You are vibrating near the case board. I'll mark that as readiness-adjacent."
+
+Skipped:
+"No coffee? Brave. Not wise, necessarily, but brave."
+```
+
+### Chapter 2
+
+Coffee can be available in the office before Evidence Board or Housing Court, but should not be required.
+
+Possible effect:
+
+```text
+Procedurally Alert:
+Murrow gives one clearer Evidence Board comment.
+
+Over-Caffeinated:
+Whimsy says one extra absurd proportionality line.
+```
+
+Chapter 2 already teaches soft-fail mini-game outcomes through Document Chase, so Coffee Brewing should remain lighter and optional.
+
+### Chapter 3
+
+Emergency variant:
+
+> **Printer Crisis Coffee**
+
+The rhythm pattern becomes slightly faster, the coffee machine shakes, and the result line references printer panic.
+
+No new mechanics needed.
+
+### Chapter 5
+
+Final variant:
+
+> **Final Brief Coffee**
+
+This should be mostly ceremonial. It can give a small Team Assembly hint or final-hearing flavor line, but by Chapter 5 the player should be relying on evidence and allies, not espresso.
+
+---
+
+## Character reactions
+
+Use character portraits for result reactions where available. The portrait plan already makes dialogue performance central and gives Asia, Mr. Pig, Murrow, Crab, Whimsy, and Judge Chapter 1 portrait states.
+
+### Barista
+
+Perfect:
+
+> "That cup has structure, balance, and suspicious appellate energy."
+
+Good:
+
+> "Solid. The court may now tolerate you."
+
+Okay:
+
+> "Drinkable. Not beautiful. Many pleadings are similar."
+
+Bad:
+
+> "This coffee has filed a complaint against itself."
+
+Machine Objects:
+
+> "The machine refuses service. I respect the clarity."
+
+### Asia
+
+Perfect:
+
+> "Oh! You made the machine sound less haunted. That's new."
+
+Good:
+
+> "You look prepared. Or at least caffeinated in a legally promising way."
+
+Bad:
+
+> "I'll keep you away from the stapler until the shaking stops."
+
+### Mr. Pig
+
+Perfect:
+
+> "Can we sell this? No, wait, can we bill it?"
+
+Bad:
+
+> "That coffee smells like our accounts."
+
+### Murrow
+
+Perfect:
+
+> "Acceptable."
+
+This should be treated as immense praise.
+
+Bad:
+
+> "You have created a beverage with procedural defects."
+
+### Crab
+
+Perfect:
+
+> "No obvious flaws. Disturbing."
+
+Bad:
+
+> "That is not coffee. That is witness intimidation."
+
+### Whimsy
+
+Perfect:
+
+> "Behold! A black-robed liquid of justice!"
+
+Bad:
+
+> "A tragic brew, but tragedy has rights."
+
+---
+
+## Visual style
+
+The mini-game should use crisp pixel art and simple squash/stretch animation.
+
+Assets:
+
+```text
+coffee_machine_idle.png
+coffee_machine_angry.png
+coffee_machine_steam.png
+coffee_cup_empty.png
+coffee_cup_fill_01.png
+coffee_cup_fill_02.png
+coffee_cup_fill_03.png
+prompt_bean.png
+prompt_milk.png
+prompt_sugar.png
+prompt_stamp.png
+prompt_file.png
+timing_line.png
+result_stamp_admitted.png
+result_stamp_objected.png
+```
+
+Animation states:
+
+```text
+machine_idle
+machine_gurgle
+machine_happy
+machine_angry
+cup_fill
+steam_loop
+stamp_impact
+result_reveal
+```
+
+Visual feedback:
+
+```text
+Perfect:
+small sparkle / crisp stamp flash
+
+Good:
+soft pulse
+
+Okay:
+small wobble
+
+Miss:
+prompt splats into bitter foam
+
+Wrong input:
+machine shakes and produces one offended puff
+```
+
+Avoid visual clutter. Coffee Brewing is short and should feel tactile, not chaotic.
+
+---
+
+## Sound design
+
+Coffee Brewing needs a small dedicated sound set, consistent with the broader sound plan. The Sound Effects Expansion already identifies required coffee sounds: hit, miss, pour, espresso hiss, success, and failure.
+
+Required sounds:
+
+```text
+coffee_note_hit
+coffee_note_perfect
+coffee_note_miss
+coffee_pour_start
+coffee_pour_loop
+coffee_pour_release_good
+espresso_hiss
+coffee_success
+coffee_failure
+coffee_machine_objects
+stamp_caffeinated
+```
+
+Sound identity:
+
+```text
+soft rhythm taps
+espresso hiss
+ceramic cup clicks
+rubber stamp thud
+machine sputter
+tiny success chime
+```
+
+Success sound:
+
+```text
+pleasant pour + tiny chime + stamp thud
+```
+
+Failure sound:
+
+```text
+sad sputter + offended beep
+```
+
+The old broader sound plan also says mini-games should have dedicated action sounds and that sound must never carry required information without visual support. Keep that rule here: every hit, miss, and result must have visual feedback too.
+
+---
+
+## Godot implementation
+
+### Scene
+
+```text
+res://minigames/coffee_brewing/coffee_brewing.tscn
+res://minigames/coffee_brewing/coffee_brewing.gd
+res://minigames/coffee_brewing/coffee_pattern.gd
+res://minigames/coffee_brewing/patterns/
+```
+
+### Coffee pattern resource
+
+Use a custom Resource once stable.
+
+```gdscript
+# res://minigames/coffee_brewing/coffee_pattern.gd
+extends Resource
+class_name CoffeePattern
+
+@export var id: String
+@export var display_name: String
+@export var difficulty: String = "tutorial"
+@export var bpm: int = 90
+@export var duration: float = 24.0
+@export var lanes: int = 2
+@export var notes: Array[Dictionary] = []
+@export var pour_events: Array[Dictionary] = []
+```
+
+Example pattern:
+
+```gdscript
+var chapter1_tutorial_pattern := {
+	"id": "chapter1_court_coffee",
+	"display_name": "Court Coffee",
+	"difficulty": "tutorial",
+	"bpm": 86,
+	"duration": 24.0,
+	"lanes": 2,
+	"notes": [
+		{"time": 1.0, "lane": 0, "icon": "bean"},
+		{"time": 1.8, "lane": 1, "icon": "bean"},
+		{"time": 2.6, "lane": 0, "icon": "bean"},
+		{"time": 4.0, "lane": 1, "icon": "sugar"},
+		{"time": 5.0, "lane": 0, "icon": "milk"},
+		{"time": 7.0, "lane": 1, "icon": "file"},
+		{"time": 8.0, "lane": 0, "icon": "stamp"}
+	],
+	"pour_events": [
+		{"start_time": 10.0, "target_start": 11.2, "target_end": 11.8},
+		{"start_time": 15.0, "target_start": 16.1, "target_end": 16.7}
+	]
+}
+```
+
+### Minigame router
+
+Coffee Brewing should be started by a general mini-game router, not hardwired into the café.
+
+```gdscript
+MinigameRouter.start("coffee_brewing", {
+	"context": "chapter1_cafe_tutorial",
+	"pattern_id": "chapter1_court_coffee",
+	"difficulty": "tutorial",
+	"on_complete_signal": "coffee_brewing_completed"
+})
+```
+
+### Result object
+
+Return a compact result dictionary.
+
+```gdscript
+{
+	"minigame": "coffee_brewing",
+	"context": "chapter1_cafe_tutorial",
+	"grade": "A",
+	"result": "good_brew",
+	"buff": "procedurally_alert",
+	"brew_quality": 840,
+	"bitterness": 120,
+	"perfect_hits": 7,
+	"good_hits": 5,
+	"okay_hits": 2,
+	"misses": 1,
+	"assist_used": false
+}
+```
+
+### Completion handling
+
+```gdscript
+func _on_coffee_brewing_completed(result: Dictionary) -> void:
+	GameState.set_flag("chapter1.coffee_tutorial_seen", true)
+	GameState.set_value("chapter1.coffee_buff", result.get("buff", ""))
+	GameState.set_value("chapter1.coffee_brew_grade", result.get("grade", ""))
+
+	match result.get("buff", ""):
+		"procedurally_alert_plus":
+			Dialogue.show_line("asia_coffee_alert_plus")
+		"procedurally_alert":
+			Dialogue.show_line("asia_coffee_alert")
+		"over_caffeinated":
+			Dialogue.show_line("asia_coffee_overcaffeinated")
+		_:
+			Dialogue.show_line("asia_coffee_neutral")
+```
+
+---
+
+## Game state
+
+Add shared coffee state, because coffee can return in later chapters.
+
+```gdscript
+var coffee := {
+	"tutorial_seen": false,
+	"last_result": "",
+	"last_grade": "",
+	"last_buff": "",
+	"assist_used": false,
+	"times_brewed": 0,
+	"best_grade": ""
+}
+```
+
+Chapter-specific state:
+
+```gdscript
+var chapter1 := {
+	"coffee_tutorial_seen": false,
+	"coffee_buff": "",
+	"coffee_brew_grade": ""
+}
+```
+
+Possible buff enum:
+
+```gdscript
+enum CoffeeBuff {
+	NONE,
+	CAFFEINATED,
+	PROCEDURALLY_ALERT,
+	PROCEDURALLY_ALERT_PLUS,
+	OVER_CAFFEINATED
+}
+```
+
+Use strings in save data if easier:
+
+```gdscript
+"none"
+"caffeinated"
+"procedurally_alert"
+"procedurally_alert_plus"
+"over_caffeinated"
+```
+
+---
+
+## Difficulty modes
+
+### Tutorial mode
+
+Used in Chapter 1.
+
+```text
+2 lanes
+slow notes
+wide timing windows
+no simultaneous notes
+short pattern
+friendly reaction lines
+```
+
+Duration:
+
+```text
+20–24 seconds
+```
+
+### Normal mode
+
+Used after Chapter 1.
+
+```text
+4 lanes
+moderate speed
+slightly tighter windows
+longer pattern
+one or two optional quick sequences
+```
+
+Duration:
+
+```text
+25–30 seconds
+```
+
+### Crisis mode
+
+Used only later, if wanted.
+
+```text
+4 lanes
+machine shakes
+more visual noise
+same forgiving fail rules
+```
+
+Duration:
+
+```text
+20–25 seconds
+```
+
+Crisis mode should be funny, not punishing.
+
+---
+
+## Pattern design
+
+Do not generate the first version randomly. Author three or four patterns by hand.
+
+P0 patterns:
+
+```text
+chapter1_court_coffee
+office_standard_coffee
+cafe_smooth_coffee
+office_panic_coffee
+```
+
+Each pattern should have:
+
+```text
+a readable opening
+a tiny difficulty rise
+a satisfying final stamp
+```
+
+Avoid:
+
+```text
+random note spam
+long rests
+simultaneous notes in Chapter 1
+visual clutter
+difficulty spikes
+```
+
+Later, patterns can be semi-randomised by selecting from authored chunks.
+
+---
+
+## Failure philosophy
+
+Coffee failure should be funny and useful, never frustrating.
+
+Do not:
+
+```text
+block court access
+remove evidence
+damage case score
+force replay
+make the player drink bad coffee as punishment
+```
+
+Do:
+
+```text
+give a comic status
+play a machine objection animation
+add one later joke line
+allow immediate retry if the player wants
+```
+
+Retry prompt:
+
+> "Try again?"
+
+Options:
+
+```text
+Yes — appeal the coffee
+No — accept the beverage
+```
+
+Do not push retry too aggressively. Bad coffee is valid content.
+
+---
+
+## P0 implementation tasks
+
+```text
+Create CoffeeBrewing Godot scene.
+Create timing lane UI.
+Implement falling prompt objects.
+Implement two-lane tutorial pattern.
+Implement input judgment: Perfect / Good / Okay / Miss.
+Implement Brew Quality meter.
+Implement Bitterness meter.
+Implement simple pour phase.
+Implement final stamp prompt.
+Implement result grading.
+Return result dictionary to MinigameRouter.
+Set chapter1 coffee flags.
+Add Café Paragraf Barista trigger.
+Add office coffee machine trigger after tutorial.
+Add visual feedback for hits/misses.
+Add minimal SFX hooks.
+Add Asia/Barista result dialogue.
+Add accessibility slower-note option.
+```
+
+---
+
+## P1 polish tasks
+
+```text
+Add 4-lane normal mode.
+Add more coffee patterns.
+Add machine expression sprites.
+Add result stamps.
+Add character portrait reactions.
+Add combo label.
+Add steam and cup-fill animations.
+Add procedural audio variations.
+Add Chapter 2 Evidence Board coffee hint integration.
+Add Chapter 3 panic coffee variant.
+Add single-button accessibility mode.
+```
+
+---
+
+## P2 later ideas
+
+```text
+Coffee recipes:
+espresso, office mud, café latte, final brief blend
+
+Small collectible recipe cards:
+mostly jokes, not progression-critical
+
+Character preferences:
+Murrow likes "legally adequate black coffee"
+Whimsy likes "dramatic foam"
+Crab likes "coffee that does not lie"
+
+Different buffs:
+do this only if mini-games become a bigger pillar
+```
+
+Do not build recipe systems early. The first version needs to be satisfying, short, and integrated.
+
+---
+
+## Acceptance criteria
+
+Coffee Brewing is done when:
+
+```text
+the old click-3-times mechanic is gone
+Chapter 1 introduces the mini-game optionally
+the tutorial version uses 2 lanes
+the normal version supports 4 lanes
+the mini-game lasts no more than 30 seconds
+the player can skip it without penalty
+failure never blocks story progress
+success gives a small Procedurally Alert / Focused-style buff
+weak performance gives funny Over-Caffeinated-style dialogue
+Brew Quality and Bitterness are visible and readable
+timing feedback clearly distinguishes Perfect / Good / Okay / Miss
+the final stamp moment feels satisfying
+coffee result can lightly affect court or hint dialogue
+the café and office versions both work through the same Godot scene
+keyboard and gamepad controls work
+an accessibility fallback exists
+sound and visual feedback both communicate hits and misses
+```
+
+The final design target:
+
+> Coffee Brewing should feel like a tiny legal rhythm ritual: quick to play, funny to fail, pleasant to master, and useful enough that players want to do it before court even though the game never forces them.
+
+
+### Mini-Game 2: Document Shooter — Chapter 2
+
+The better title in-universe should be:
+
+> **Document Chase: Stampede of Evidence**
+
+But the system/module can still be called `document_shooter` internally if we like. The important correction is that the player is not literally shooting documents. They are **stamping runaway complaint pages into admissibility**.
+
+This fits Chapter 2 because the updated outline makes the chapter about field investigation, evidence classification, Evidence Board preparation, soft-fail mini-game outcomes, and proportionality reasoning in Waldek's eviction case.  The old plan already had the right arcade concept — papers flying from a window, a stamp/crosshair, relevant and junk pages, a 30-second timer, and non-blocking failure — but in Godot we can make it feel much more tactile, authored, and legally connected.
+
+---
+
+## Design role
+
+Document Shooter is Chapter 2's first proper arcade set piece.
+
+Coffee Brewing teaches: "mini-games are short and funny."
+
+Document Shooter teaches: "mini-games can change evidence quality without blocking the story."
+
+Its function:
+
+```text
+recover missing complaint pages
+prove the landlord's factual record is unreliable
+give the player a short dexterity challenge
+feed the Evidence Board
+affect Housing Court Round 2
+preserve progression even on failure
+```
+
+The design principle:
+
+> Reflex skill should improve the case, not decide whether Waldek gets to continue existing in the story.
+
+Chapter 2 is about saving Waldek's home, not punishing the player for missing flying paper.
+
+---
+
+## Narrative placement
+
+Location:
+
+```text
+Landlord's Office
+```
+
+Trigger object:
+
+```text
+Complaint Log near open window
+```
+
+Required prior state:
+
+```gdscript
+chapter2.visited_landlord_office == true
+chapter2.obtained_building_rules == true
+chapter2.document_chase_started == false
+```
+
+The updated Chapter 2 outline already places this after the player obtains the **Building Rules Extract** and interacts with the complaint log near an open window. The cutscene has Dr. A. Cula opening the file, a window slamming open, complaint pages flying into the air, and Whimsy shouting that documents need to be stamped.
+
+Suggested cutscene:
+
+```text
+Dr. A. Cula opens the complaint log.
+The file is suspiciously thin.
+A window bangs open.
+Complaint pages fly everywhere.
+Administrator Beton says this proves the building is hostile.
+Crab notices that some dates are wrong.
+Whimsy declares a state of bureaucratic wildlife emergency.
+The mini-game begins.
+```
+
+Dialogue:
+
+Crab, if present:
+
+> "Those dates are wrong. Catch the pages with dates."
+
+Whimsy, if present:
+
+> "Stamp them! A document is not truly alive until bureaucracy has marked it."
+
+Administrator Beton:
+
+> "This office has never had wind before your client became expressive."
+
+Dr. A. Cula:
+
+> "The complaint record is attempting escape. That feels relevant."
+
+---
+
+## Core fantasy
+
+The player controls a large rubber stamp/crosshair.
+
+Relevant documents fly across the screen.
+
+The player must stamp the useful pages before they leave the room.
+
+The fantasy is:
+
+> "I am turning chaotic paperwork into evidence under absurd pressure."
+
+The joke is:
+
+> The landlord's case is so weak that even the documents are trying to flee.
+
+The legal point is:
+
+> The alleged disturbance record is unreliable, duplicated, vague, or post-dated.
+
+---
+
+## Gameplay type
+
+Genre:
+
+```text
+short top-down arcade shooter
+but with a stamp instead of a weapon
+```
+
+Duration:
+
+```text
+30 seconds
+```
+
+Basic loop:
+
+```text
+move stamp/crosshair
+identify relevant pages
+press stamp button
+avoid stamping junk
+recover enough complaint evidence
+receive evidence outcome
+return to Landlord's Office / Pig & Swine
+```
+
+The mini-game should be frantic but readable. It should feel like a controlled burst of chaos, not a bullet hell.
+
+---
+
+## Controls
+
+### Keyboard
+
+```text
+WASD / Arrow Keys: move stamp
+Space / Enter: stamp
+Shift: quick dash, optional polish
+Esc: pause / accessibility options
+```
+
+### Gamepad
+
+```text
+Left stick / D-pad: move stamp
+A / Cross: stamp
+B / Circle: cancel / pause
+Right trigger: stamp, optional alternate
+```
+
+### Mouse
+
+Useful later, not P0:
+
+```text
+Mouse movement: aim stamp
+Left click: stamp
+```
+
+Mouse support would make the game feel more like a shooter, but keyboard/gamepad should come first because the overall RPG needs consistent controls.
+
+---
+
+## Screen layout
+
+Godot scene:
+
+```text
+res://minigames/document_shooter/document_shooter.tscn
+```
+
+Suggested node tree:
+
+```text
+DocumentShooterRoot
+├── BackgroundPanel
+├── LandlordOfficeBackdrop
+├── OpenWindow
+├── WindParticles
+├── PaperSpawnRoot
+├── StampCursor
+│   ├── StampSprite
+│   ├── HitRadius
+│   └── StampImpactSprite
+├── HUD
+│   ├── TimerLabel
+│   ├── RelevantStampedCounter
+│   ├── JunkStampedCounter
+│   ├── EvidenceQualityMeter
+│   └── HintCaption
+├── ResultPanel
+├── CharacterCaptionPanel
+├── AnimationPlayer
+└── AudioStreamPlayers
+```
+
+Visual composition:
+
+```text
+background:
+Landlord's Office desk, open window, flying curtains, complaint file
+
+center:
+active play area with flying papers
+
+bottom-left:
+Crab/Whimsy/Murrow caption popups
+
+top:
+timer and stamped-page count
+
+right:
+evidence quality meter
+```
+
+Do not make it full-screen abstract. Keep the office visible so the mini-game feels like a chaotic event inside the investigation scene.
+
+---
+
+## Paper types
+
+The player must distinguish legally useful pages from junk.
+
+### Relevant complaint pages
+
+These should be visually marked but not too obvious.
+
+Examples:
+
+```text
+dated complaint page
+duplicate complaint form
+post-dated complaint page
+blank complaint entry with signature
+complaint page with crossed-out date
+photograph index page
+landlord chronology page
+```
+
+Visual cues:
+
+```text
+cream paper
+red date stamp
+small complaint-log icon
+thin blue legal lines
+corner label: "COMPLAINT"
+```
+
+### Strong evidence pages
+
+Rare pages worth more.
+
+Examples:
+
+```text
+complaint dated after eviction notice
+duplicate complaint with different date
+page marked "template"
+page showing no named complainant
+```
+
+Visual cues:
+
+```text
+gold paperclip
+red exclamation mark
+Crab caption: "That one. Date problem."
+```
+
+These should not appear too often. Maybe 3–4 per run.
+
+### Junk pages
+
+These punish careless stamping lightly.
+
+Examples:
+
+```text
+blank form
+coffee receipt
+beige office memo
+NO POSTERS flyer
+takeaway menu
+old printer invoice
+decorative landlord certificate
+```
+
+Visual cues:
+
+```text
+gray or dull paper
+no red date stamp
+comic icon
+slightly wobblier movement
+```
+
+### Trap pages
+
+Use sparingly.
+
+These are not "bad evidence"; they are obviously irrelevant or ethically wrong to stamp.
+
+Examples:
+
+```text
+private unrelated tenant letter
+Administrator Beton's lunch receipt
+page labelled "NOT THE FILE"
+Whimsy's doodle of a constitutional balcony
+```
+
+Effect:
+
+```text
+small chaos penalty
+funny caption
+no hard failure
+```
+
+Example caption:
+
+> Murrow: "That is a soup receipt. Its probative value is limited."
+
+---
+
+## Movement and stamping
+
+The stamp should feel heavy and satisfying.
+
+Movement:
+
+```gdscript
+stamp_speed = 520.0
+stamp_acceleration = 16.0
+stamp_friction = 18.0
+```
+
+Stamping:
+
+```text
+press Space / A
+stamp slams down
+small freeze-frame
+ink circle appears
+papers inside hit radius are checked
+stamp has short cooldown
+```
+
+Recommended cooldown:
+
+```gdscript
+stamp_cooldown = 0.28
+```
+
+This prevents pure button mashing while keeping the pace fast.
+
+Hit radius:
+
+```gdscript
+hit_radius = 42.0
+```
+
+Assist mode can increase it:
+
+```gdscript
+assist_hit_radius = 58.0
+```
+
+Stamp feedback:
+
+```text
+relevant page stamped:
+red ADMITTED stamp
+
+strong page stamped:
+red KEY PAGE stamp
+
+junk page stamped:
+gray IRRELEVANT stamp
+
+trap page stamped:
+purple OBJECTIONABLE stamp
+```
+
+The stamp should leave a visible mark for half a second before the paper disappears.
+
+---
+
+## Paper movement
+
+Papers should not all fly in straight lines. They should swirl like office weather.
+
+Spawner behavior:
+
+```text
+papers enter from open window, desk, floor, side edges
+papers drift with wind
+some rotate slowly
+some pause briefly
+some accelerate near the window
+```
+
+Godot movement model:
+
+```gdscript
+velocity: Vector2
+wind_force: Vector2
+sine_drift: float
+rotation_speed: float
+lifetime: float
+paper_type: String
+evidence_value: int
+```
+
+Example paper data:
+
+```gdscript
+{
+	"id": "post_dated_complaint",
+	"type": "relevant_strong",
+	"evidence_value": 2,
+	"junk_penalty": 0,
+	"sprite": "paper_complaint_red_date",
+	"speed": 180.0,
+	"rotation_speed": 1.2,
+	"caption_hint": "date_problem"
+}
+```
+
+The important thing is readability. A player should be able to tell within half a second whether a page is likely useful.
+
+---
+
+## Scoring
+
+The old plan's core threshold is strong: stamp at least **10 of 15 relevant pages within 30 seconds**. Keep that as the standard result target.
+
+Track:
+
+```gdscript
+relevant_stamped
+strong_pages_stamped
+junk_stamped
+trap_stamped
+relevant_missed
+time_remaining
+```
+
+Base scoring:
+
+```gdscript
+relevant page: +1
+strong relevant page: +2
+junk page: -1
+trap page: -2
+missed relevant page: no immediate penalty, but lowers max result
+```
+
+Result score:
+
+```gdscript
+document_score = relevant_stamped + strong_pages_stamped - junk_stamped - (trap_stamped * 2)
+```
+
+But use thresholds that are easy to understand:
+
+```text
+Strong recovery:
+10+ relevant pages stamped
+and not too much junk
+
+Partial recovery:
+5–9 relevant pages stamped
+or 10+ relevant with too much junk
+
+Failed recovery:
+fewer than 5 relevant pages stamped
+```
+
+The updated Chapter 2 outline already uses these three outcomes: full recovery gives Recovered Complaint Page, partial gives Damaged Complaint Page, and failure gives Witness-supported Complaint Gap while preserving progress.
+
+---
+
+## Outcomes
+
+### Strong recovery
+
+Condition:
+
+```text
+10+ relevant pages stamped
+few junk/trap pages stamped
+```
+
+State:
+
+```gdscript
+chapter2.document_chase_completed = true
+chapter2.document_chase_result = "recovered_full"
+evidence.recovered_complaint_page.collected = true
+```
+
+Evidence:
+
+> **Recovered Complaint Page**
+
+Description:
+
+> The complaint record is mostly duplicated, vague, and dated after the eviction notice. The landlord's chronology has tripped over its own shoelaces.
+
+Evidence Board effect:
+
+```text
+strong evidence for factual_problem
+secondary support for proportionality_problem
+```
+
+Court effect:
+
+```text
+Attorney Grzyb loses force in Round 2.
+Housing Judge reacts strongly to the complaint chronology problem.
+```
+
+Suggested court line:
+
+> "Counsel for the landlord, this complaint page appears to have been born after the eviction notice it supposedly justified."
+
+### Partial recovery
+
+Condition:
+
+```text
+5–9 relevant pages stamped
+or too many junk pages stamped
+```
+
+State:
+
+```gdscript
+chapter2.document_chase_completed = true
+chapter2.document_chase_result = "recovered_damaged"
+evidence.damaged_complaint_page.collected = true
+```
+
+Evidence:
+
+> **Damaged Complaint Page**
+
+Description:
+
+> Torn and coffee-stained, but enough remains to show the complaint record is unreliable.
+
+Evidence Board effect:
+
+```text
+medium evidence for factual_problem
+```
+
+Court effect:
+
+```text
+Round 2 remains winnable.
+Attorney Grzyb can argue the document is incomplete.
+Waldek can still rely on witnesses.
+```
+
+Suggested court line:
+
+> "The page is damaged, yes. But the surviving dates are not improved by the coffee."
+
+### Failed recovery
+
+Condition:
+
+```text
+fewer than 5 relevant pages stamped
+```
+
+State:
+
+```gdscript
+chapter2.document_chase_completed = true
+chapter2.document_chase_result = "failed"
+evidence.witness_supported_complaint_gap.collected = true
+```
+
+Evidence:
+
+> **Witness-supported Complaint Gap**
+
+Description:
+
+> The complaint pages escaped into procedural legend, but Kowalski and Zielińska's statements still undermine the alleged disturbance.
+
+Evidence Board effect:
+
+```text
+weak factual_problem support
+```
+
+Court effect:
+
+```text
+Court gives warning.
+Round 2 is harder.
+Chapter remains completable through Kowalski and Zielińska.
+```
+
+Failure line:
+
+> "The complaint record has become weather. Fortunately, we still have witnesses."
+
+This must never produce a dead end. The chapter's own acceptance criteria say the player should be able to complete, partially complete, or fail Document Chase without blocking progression.
+
+---
+
+## Evidence Board integration
+
+The result becomes one of the available cards for Chapter 2's Evidence Board.
+
+Available factual slot cards:
+
+```text
+neighbor_statement_no_disturbance
+recovered_complaint_page
+damaged_complaint_page
+witness_supported_complaint_gap
+```
+
+Best mappings:
+
+```gdscript
+factual_problem -> recovered_complaint_page
+factual_problem -> neighbor_statement_no_disturbance
+```
+
+Acceptable mappings:
+
+```gdscript
+factual_problem -> damaged_complaint_page
+factual_problem -> witness_supported_complaint_gap
+```
+
+Wrong mapping example:
+
+```gdscript
+rule_problem -> recovered_complaint_page
+```
+
+Murrow comment:
+
+> "This page helps with the facts. The rule problem still belongs to the Building Rules Extract."
+
+Crab comment on full recovery:
+
+> "Dates after the notice. That is not a complaint history. That is retroactive theatre."
+
+Whimsy comment on failure:
+
+> "Even escaped documents leave an evidential silhouette."
+
+---
+
+## Housing Court integration
+
+Document Shooter feeds **Round 2 — factual basis**.
+
+Attorney Grzyb's argument:
+
+> "The landlord acted on repeated complaints from residents."
+
+Player response:
+
+```text
+The complaint record is unreliable.
+```
+
+Best evidence:
+
+```text
+Recovered Complaint Page
+Neighbor Statement: No Disturbance
+Zielińska Statement
+```
+
+With full recovery:
+
+> Dr. A. Cula: "The alleged complaint history appears to have been completed after the decision it supposedly justified."
+
+Judge:
+
+> "That is a chronology problem of some enthusiasm."
+
+With damaged page:
+
+> Dr. A. Cula: "Even in damaged form, the page contradicts the landlord's account."
+
+Judge:
+
+> "Incomplete, but not irrelevant."
+
+With failed recovery:
+
+> Dr. A. Cula: "The complaint file was not produced, but the witnesses undermine the alleged disturbance."
+
+Judge:
+
+> "The Court would have preferred the file. It will hear the witnesses."
+
+This is the right level of consequence: better mini-game performance creates stronger advocacy, but the legal case remains alive.
+
+---
+
+## Difficulty
+
+### Tutorial / assisted
+
+For accessibility or first-time players:
+
+```text
+slower papers
+larger hit radius
+fewer junk pages
+clearer visual markings
+target reduced to 8 relevant pages
+```
+
+### Normal
+
+Default Chapter 2 version:
+
+```text
+30 seconds
+15 relevant pages
+target 10
+moderate junk pages
+3–4 strong pages
+```
+
+### Replay / hard
+
+Optional later:
+
+```text
+faster papers
+more junk
+smaller hit radius
+bonus badge possible
+```
+
+Do not use hard mode for main progression.
+
+---
+
+## Accessibility
+
+Add a small pre-start prompt:
+
+> "Stamp the complaint pages. Avoid junk. You can adjust difficulty from the pause menu."
+
+Assist options:
+
+```text
+slow paper speed
+larger stamp radius
+high-contrast relevant pages
+reduced junk papers
+auto-success story mode
+single-button mode
+```
+
+Story mode result:
+
+```gdscript
+chapter2.document_chase_result = "recovered_damaged"
+evidence.damaged_complaint_page.collected = true
+```
+
+Why partial result rather than full? It keeps accessibility from feeling punitive while preserving strong recovery as an active skill reward.
+
+---
+
+## Visual design
+
+Style:
+
+```text
+128×128-adjacent pixel-art UI assets
+chunky readable paper sprites
+bold red stamp effects
+visible wind lines
+Landlord's Office backdrop
+flying curtains
+overly formal complaint-folder labels
+```
+
+Paper sprites:
+
+```text
+paper_complaint_plain.png
+paper_complaint_dated.png
+paper_complaint_duplicate.png
+paper_complaint_postdated.png
+paper_junk_receipt.png
+paper_junk_no_posters.png
+paper_junk_menu.png
+paper_trap_private_letter.png
+```
+
+Stamp sprites:
+
+```text
+stamp_cursor_idle.png
+stamp_cursor_down.png
+stamp_mark_admitted.png
+stamp_mark_key_page.png
+stamp_mark_irrelevant.png
+stamp_mark_objectionable.png
+```
+
+Background:
+
+```text
+landlord_office_backdrop.png
+open_window_loop.png
+complaint_file_open.png
+flying_curtain_loop.png
+paper_swirl_particles.png
+```
+
+The Landlord's Office should already be a gameplay-heavy interior: large desk, framed rules, filing cabinets, NO POSTERS sign, complaint log, and open window. The decoration system supports this cleanly through interactable evidence decorations and mini-game triggers.
+
+---
+
+## Sound design
+
+Required SFX:
+
+```text
+paper_whoosh_light
+paper_whoosh_fast
+stamp_hit_relevant
+stamp_hit_strong
+stamp_hit_junk
+stamp_hit_trap
+stamp_cooldown_click
+window_slam
+folder_burst
+success_recovered
+success_damaged
+failure_weather
+```
+
+Sound character:
+
+```text
+rubber stamp thuds
+paper flutters
+wind gusts
+office drawer rattles
+tiny legal chime for useful pages
+dull thonk for junk
+```
+
+The stamp should feel physically satisfying. Every correct hit should make the player want to stamp again.
+
+Avoid annoying loops. Thirty seconds of paper flutter is fine; thirty seconds of loud wind is not.
+
+---
+
+## Character captions during play
+
+Short captions can appear at the bottom without stopping gameplay.
+
+Use them sparingly.
+
+Examples:
+
+Crab:
+
+```text
+"Dates. Aim for dates."
+"That one contradicts the chronology."
+"Not the lunch receipt."
+```
+
+Whimsy:
+
+```text
+"Stamp the fleeing bureaucracy!"
+"The papers have formed a union!"
+"Admissibility descends!"
+```
+
+Murrow:
+
+```text
+"Complaint pages, not decorative outrage."
+"Relevance first. Drama second."
+```
+
+Administrator Beton:
+
+```text
+"This proves nothing except your aggressive stamping culture."
+```
+
+Asia should not be present in the Landlord's Office, but she can react later at Pig & Swine.
+
+---
+
+## Return-to-office reactions
+
+After the mini-game, the player returns to Pig & Swine for Evidence Board preparation.
+
+Asia reactions from the updated Chapter 2 outline are already good and should be kept.
+
+Full recovery:
+
+> "You came back with evidence and only a little paper in your hair. I'm calling that professional growth."
+
+Damaged page:
+
+> "That document has suffered, but so have most of our files."
+
+Failed chase:
+
+> "The papers escaped? I'll add 'document weather event' to the risk register."
+
+Mr. Pig:
+
+> "Can we invoice for chasing documents?"
+
+Murrow:
+
+> "No. But we can use them."
+
+Crab:
+
+> "The facts are now uglier for the landlord. Good."
+
+Whimsy:
+
+> "I have prepared three proportionality metaphors. Murrow has confiscated two."
+
+---
+
+## Godot implementation
+
+### Scene files
+
+```text
+res://minigames/document_shooter/document_shooter.tscn
+res://minigames/document_shooter/document_shooter.gd
+res://minigames/document_shooter/document_paper.gd
+res://minigames/document_shooter/document_pattern.gd
+res://minigames/document_shooter/paper_spawn_table.gd
+```
+
+### Start call
+
+Use the shared mini-game router.
+
+```gdscript
+MinigameRouter.start("document_shooter", {
+	"context": "chapter2_landlord_complaint_log",
+	"difficulty": "normal",
+	"time_limit": 30,
+	"relevant_pages": 15,
+	"target_score": 10
+})
+```
+
+This aligns with the Chapter 2 outline's Godot concept for starting Document Chase with context, difficulty, time limit, relevant pages, and target score.
+
+### Result dictionary
+
+```gdscript
+{
+	"minigame": "document_shooter",
+	"context": "chapter2_landlord_complaint_log",
+	"result": "recovered_full",
+	"relevant_stamped": 11,
+	"strong_pages_stamped": 3,
+	"junk_stamped": 2,
+	"trap_stamped": 0,
+	"time_remaining": 1.8,
+	"assist_used": false
+}
+```
+
+Possible results:
+
+```text
+recovered_full
+recovered_damaged
+failed
+```
+
+### Completion handler
+
+```gdscript
+func _on_document_shooter_completed(result: Dictionary) -> void:
+	GameState.set_flag("chapter2.document_chase_completed", true)
+	GameState.set_value("chapter2.document_chase_result", result["result"])
+
+	match result["result"]:
+		"recovered_full":
+			EvidenceManager.collect("recovered_complaint_page")
+			Dialogue.show_line("document_chase_full_recovery")
+
+		"recovered_damaged":
+			EvidenceManager.collect("damaged_complaint_page")
+			Dialogue.show_line("document_chase_damaged_recovery")
+
+		"failed":
+			EvidenceManager.collect("witness_supported_complaint_gap")
+			Dialogue.show_line("document_chase_failed_but_continues")
+
+	QuestManager.set_objective("chapter2_return_to_office")
+```
+
+### Paper object
+
+```gdscript
+# res://minigames/document_shooter/document_paper.gd
+extends Area2D
+class_name DocumentPaper
+
+@export var paper_id: String
+@export var paper_type: String # relevant, relevant_strong, junk, trap
+@export var evidence_value: int = 1
+@export var velocity: Vector2
+@export var rotation_speed: float = 0.0
+@export var lifetime: float = 6.0
+
+var stamped := false
+
+func _process(delta: float) -> void:
+	if stamped:
+		return
+
+	position += velocity * delta
+	rotation += rotation_speed * delta
+	lifetime -= delta
+
+	if lifetime <= 0.0:
+		queue_free()
+
+func stamp() -> Dictionary:
+	if stamped:
+		return {}
+
+	stamped = true
+	$AnimationPlayer.play("stamped")
+	return {
+		"paper_id": paper_id,
+		"paper_type": paper_type,
+		"evidence_value": evidence_value
+	}
+```
+
+### Stamp detection
+
+```gdscript
+func perform_stamp() -> void:
+	if stamp_cooldown_remaining > 0.0:
+		return
+
+	stamp_cooldown_remaining = STAMP_COOLDOWN
+	$StampCursor.play_stamp_animation()
+
+	var stamped_any := false
+
+	for paper in get_papers_inside_stamp_radius():
+		var result := paper.stamp()
+		if result.is_empty():
+			continue
+
+		stamped_any = true
+		_apply_paper_result(result)
+
+	if !stamped_any:
+		Audio.play("stamp_miss_empty")
+```
+
+### Result thresholds
+
+```gdscript
+func resolve_result() -> String:
+	if relevant_stamped >= 10 and junk_stamped <= 4 and trap_stamped == 0:
+		return "recovered_full"
+
+	if relevant_stamped >= 5:
+		return "recovered_damaged"
+
+	return "failed"
+```
+
+Optional nuance:
+
+```gdscript
+if relevant_stamped >= 10 and trap_stamped > 0:
+	return "recovered_damaged"
+```
+
+This makes trap pages matter without being cruel.
+
+---
+
+## State flags
+
+Chapter 2 flags:
+
+```gdscript
+chapter2.document_chase_started = true
+chapter2.document_chase_completed = false
+chapter2.document_chase_result = ""
+```
+
+On completion:
+
+```gdscript
+chapter2.document_chase_completed = true
+chapter2.document_chase_result = "recovered_full"
+```
+
+Evidence flags:
+
+```gdscript
+evidence.recovered_complaint_page.collected = true
+```
+
+or:
+
+```gdscript
+evidence.damaged_complaint_page.collected = true
+```
+
+or:
+
+```gdscript
+evidence.witness_supported_complaint_gap.collected = true
+```
+
+The updated Chapter 2 state model already includes `document_chase_started`, `document_chase_completed`, and `document_chase_result`, with results `"recovered_full"`, `"recovered_damaged"`, and `"failed"`.
+
+---
+
+## P0 implementation tasks
+
+```text
+Create document_shooter.tscn.
+Create stamp cursor movement.
+Create stamp input and cooldown.
+Create flying paper object.
+Create paper spawner.
+Add relevant and junk paper types.
+Add 30-second timer.
+Add hit-radius detection.
+Add scoring counters.
+Add result thresholds.
+Return result dictionary.
+Trigger from Landlord's Office complaint_log.
+Set Chapter 2 flags.
+Collect correct evidence outcome.
+Add result dialogue.
+Make failure non-blocking.
+Add basic SFX hooks.
+```
+
+Do not start with mouse aiming, combo medals, ink management, or procedural spawn complexity. The old plan correctly makes those P1/P2 polish, not the first build.
+
+---
+
+## P1 polish tasks
+
+```text
+Add strong-page special documents.
+Add character captions during play.
+Add open-window animation.
+Add paper swirl particles.
+Add stamp impact animations.
+Add high-contrast accessibility mode.
+Add mouse aiming.
+Add one optional retry prompt.
+Add evidence-quality meter.
+Add result-specific Asia reactions.
+Add Evidence Board comments for each result.
+```
+
+Retry prompt:
+
+> "Appeal the paper weather?"
+
+Options:
+
+```text
+Retry once
+Accept result
+```
+
+Limit the retry to one immediate retry, or the moment loses its comic finality.
+
+---
+
+## P2 later polish
+
+```text
+Add ink meter to prevent spam.
+Add combo scoring.
+Add badge variant for perfect recovery.
+Add rare joke documents.
+Add alternate paper patterns.
+Add difficulty variants.
+Add animated Administrator Beton in background.
+Add local best result display.
+```
+
+Possible badge:
+
+> **Badge earned: Stamp Act**
+
+Only award it for a near-perfect result, and do not make it required for anything.
+
+---
+
+## Acceptance criteria
+
+Document Shooter is done when:
+
+```text
+it triggers naturally from the Landlord's Office complaint log
+the player controls a stamp/crosshair
+relevant and junk papers fly across the screen
+Space/Enter stamps pages within a clear hit radius
+the mini-game lasts about 30 seconds
+stamping enough relevant pages gives Recovered Complaint Page
+partial success gives Damaged Complaint Page
+poor performance gives Witness-supported Complaint Gap
+failure never blocks Chapter 2 progression
+the result feeds Evidence Board preparation
+the result affects Housing Court Round 2
+relevant documents are visually distinguishable from junk
+stamp hits feel tactile through animation and sound
+keyboard and gamepad controls work
+accessibility settings can reduce difficulty or bypass the reflex challenge
+```
+
+Final design target:
+
+> The player should laugh, panic-stamp a miniature storm of landlord paperwork, recover just enough bureaucratic nonsense to hurt Attorney Grzyb's case, and return to the legal story within half a minute.
+
+
+### Mini-Game 3: Scooter Racing — Chapter 3
+
+Scooter Racing is dropped from the committed mini-game roster.
+In Chapter 4, Mr. Swine's chaotic return is conveyed via brief
+travel-narrative cutscenes (luggage piles, customs forms with
+suspicious annotations, an arbitration envelope). If after
+Chapter 4 ships and the cutscenes there feel weak, Scooter
+Racing may be revisited as a one-screen interactable. Until
+then, this section is a placeholder.
+
+
+### Mini-Game 4: Ski Slalom — Chapter 4
+
+Ski Slalom is dropped from the committed mini-game roster.
+Mr. Swine's ski-resort arbitration backstory is conveyed through
+postcards (Chapters 1–3), dialogue (Chapter 4 return scene), and
+documentary evidence (the suspicious laminated menu). If a
+playable ski beat is later wanted, it may be revisited. Until
+then, this section is a placeholder.
+
+
+### Mini-Game 5: Final Printer Boss Battle — Chapter 5
+
+**Final Printer is a Casebook battle, not a mini-game.** It is
+the Chapter 5 climax encounter: Dr. A. Cula faces an Industrial
+Printer opponent argument with absurdly high argument-strength
+values. The battle uses the standard Casebook system
+(battle_mechanics.txt) with one Chapter-5-only flag: the player
+can deploy any judgment accumulated across all four prior
+chapters, and a small set of judgments specifically tuned by
+the printer-arc running joke have super_effective resolution
+against this opponent.
+
+The narrative payoff is that the firm's office printer (which
+has been making sad noises for four chapters) is *not* the
+antagonist. The Industrial Printer in the Chapter 5 facility
+is. The office printer prints one final, dignified message at
+the moment of victory.
+
+Implementation: a regular Casebook battle scene at
+scenes/ui/battle_screen.tscn with a chapter-5 opponent
+configuration in data/argument_opponents.json. No bespoke
+mini-game scene. No new mini-game system.

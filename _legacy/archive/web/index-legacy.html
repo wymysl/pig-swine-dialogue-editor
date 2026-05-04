@@ -75,6 +75,32 @@ let resultData = null;
 let coffeeMiniGame = null; // { brewCount, brewTimer, active }
 let showDialogTopics = false, activeTopicIdx = 0, activeTopicResponse = null;
 
+// Typewriter text system
+let twText = '', twRevealed = 0, twDone = true, twTimer = 0;
+const TW_SPEED = 2; // frames per character
+function startTypewriter(text){ twText = text; twRevealed = 0; twDone = false; twTimer = 0; }
+function updateTypewriter(){
+  if(twDone) return;
+  twTimer++;
+  if(twTimer >= TW_SPEED){
+    twTimer = 0; twRevealed++;
+    if(twRevealed >= twText.length){ twDone = true; }
+    else if(twText[twRevealed] !== ' '){
+      // typing sound — vary pitch per character
+      if(!isMuted && audioCtx){
+        const o=audioCtx.createOscillator(), g=audioCtx.createGain();
+        o.type='square'; o.connect(g); g.connect(audioCtx.destination);
+        o.frequency.setValueAtTime(600+(twText.charCodeAt(twRevealed)%20)*30, audioCtx.currentTime);
+        g.gain.setValueAtTime(0.04, audioCtx.currentTime);
+        g.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime+0.025);
+        o.start(); o.stop(audioCtx.currentTime+0.025);
+      }
+    }
+  }
+}
+function skipTypewriter(){ if(!twDone){ twRevealed=twText.length; twDone=true; return true; } return false; }
+function getRevealedText(){ return twText.slice(0, twRevealed); }
+
 const state = {
   mode:'title',
   gold: 12,
@@ -101,7 +127,11 @@ const state = {
   badges: [] // Progression badges (Pokémon-style)
 };
 
-const player = { x: 8, y: 12, facing:'down', moving:false, bob:0, visualX:8, visualY:12, moveTimer:0 };
+const player = { x: 8, y: 12, facing:'down', moving:false, bob:0, visualX:8, visualY:12, moveTimer:0, walkFrame:0 };
+
+// Screen shake
+let shakeTimer = 0, shakeIntensity = 0;
+function triggerShake(frames=8, intensity=6){ shakeTimer=frames; shakeIntensity=intensity; }
 const BADGES = [
   { id:'orientation', name:'First Day', desc:'Completed orientation with Mr. Pig', color:'#FFD700' },
   { id:'guide', name:'Mentor', desc:'Found Muraś the guide', color:'#FFA500' },
@@ -158,9 +188,13 @@ function playSound(type) {
       osc.start(); osc.stop(audioCtx.currentTime + 0.1);
       break;
     case 'badge':
-      osc.frequency.setValueAtTime(659.25, audioCtx.currentTime); // E5
-      gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.2);
-      osc.start(); osc.stop(audioCtx.currentTime + 0.2);
+      // 3-note fanfare
+      osc.frequency.setValueAtTime(523.25, audioCtx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.15);
+      osc.start(); osc.stop(audioCtx.currentTime + 0.15);
+      setTimeout(()=>{ if(isMuted||!audioCtx)return; const o2=audioCtx.createOscillator(),g2=audioCtx.createGain(); o2.connect(g2);g2.connect(audioCtx.destination); o2.frequency.setValueAtTime(659.25,audioCtx.currentTime);g2.gain.setValueAtTime(0.25,audioCtx.currentTime);g2.gain.exponentialRampToValueAtTime(0.01,audioCtx.currentTime+0.15);o2.start();o2.stop(audioCtx.currentTime+0.15); }, 120);
+      setTimeout(()=>{ if(isMuted||!audioCtx)return; const o3=audioCtx.createOscillator(),g3=audioCtx.createGain(); o3.connect(g3);g3.connect(audioCtx.destination); o3.frequency.setValueAtTime(783.99,audioCtx.currentTime);g3.gain.setValueAtTime(0.3,audioCtx.currentTime);g3.gain.exponentialRampToValueAtTime(0.01,audioCtx.currentTime+0.3);o3.start();o3.stop(audioCtx.currentTime+0.3); }, 240);
+      triggerShake(10, 4);
       break;
     case 'move':
       osc.frequency.setValueAtTime(220, audioCtx.currentTime); // A3
@@ -360,6 +394,12 @@ function draw(){
     player.visualY += Math.abs(dy)<step ? dy : Math.sign(dy)*step;
     player.moving=true; player.bob=Math.sin(frame/4)*2;
   } else { player.moving=false; player.bob=0; }
+  ctx.save();
+  if(shakeTimer > 0){
+    const si = shakeIntensity * (shakeTimer / 10);
+    ctx.translate((Math.random()-.5)*si, (Math.random()-.5)*si);
+    shakeTimer--;
+  }
   ctx.clearRect(0,0,W,H);
   state.currentArea = areaAt(player.x, player.y);
   drawBackground();
@@ -391,6 +431,7 @@ function draw(){
   if (state.activeDialog && !showDialogTopics) drawDialog();
   if (state.activeDialog && showDialogTopics) drawDialogTopics();
   if (coffeeMiniGame && coffeeMiniGame.active) drawCoffeeMiniGame();
+  ctx.restore(); // end shake transform
   requestAnimationFrame(draw);
   } catch(e) {
     ctx.fillStyle='#151827'; ctx.fillRect(0,0,W,H);
@@ -493,7 +534,11 @@ function drawInteractable(inter){
   ctx.restore();
 }
 function drawNPC(n){ const p=iso(n.x+.5,n.y+.5,22); drawLawyerSprite(p.x-16,p.y-40,2,n.hue); }
-function drawPlayer(){ const p=iso(player.visualX+.5,player.visualY+.5,23+Math.sin(frame/8)*2+player.bob); drawLawyerSprite(p.x-16,p.y-42,2.2,'#33415f'); }
+function drawPlayer(){
+  const p=iso(player.visualX+.5,player.visualY+.5,23+Math.sin(frame/8)*2+player.bob);
+  if(player.moving) player.walkFrame++; else player.walkFrame=0;
+  drawLawyerSprite(p.x-16,p.y-42,2.2,'#33415f',player.walkFrame);
+}
 function getNearbyInteractable(){
   for(const n of npcs) if(manhattan(player,n)<=1) return {type:'npc', name:n.name, x:n.x, y:n.y};
   for(const item of items) if(!item.taken && manhattan(player,item)<=1) return {type:'item', name:item.label, x:item.x, y:item.y, item};
@@ -516,11 +561,18 @@ function drawInteractHint(){
   ctx.fillStyle='#f5ead2'; ctx.beginPath(); ctx.moveTo(p.x, p.y); ctx.lineTo(p.x-8, p.y-10); ctx.lineTo(p.x+8, p.y-10); ctx.closePath(); ctx.fill();
   ctx.restore();
 }
-function drawLawyerSprite(x,y,s,coat){
+function drawLawyerSprite(x,y,s,coat,walkFrame=0){
   ctx.save(); ctx.translate(x,y); ctx.scale(s,s);
   ctx.fillStyle='#f1bd93'; ctx.fillRect(5,1,8,8); ctx.fillStyle='#2b1a12'; ctx.fillRect(4,0,10,3);
   ctx.fillStyle=coat; ctx.fillRect(3,9,12,14); ctx.fillStyle='#f5ead2'; ctx.fillRect(7,10,4,10); ctx.fillStyle='#aa3d42'; ctx.fillRect(8,13,2,7);
-  ctx.fillStyle='#1b1f31'; ctx.fillRect(4,23,4,7); ctx.fillRect(11,23,4,7); ctx.fillStyle='#0b0d16'; ctx.fillRect(3,30,5,2); ctx.fillRect(11,30,5,2);
+  // Legs — animate walk cycle
+  const legOff = walkFrame > 0 ? Math.sin(walkFrame * 0.4) * 2 : 0;
+  ctx.fillStyle='#1b1f31';
+  ctx.fillRect(4, 23 + (legOff > 0 ? legOff : 0), 4, 7);
+  ctx.fillRect(11, 23 + (legOff < 0 ? -legOff : 0), 4, 7);
+  ctx.fillStyle='#0b0d16';
+  ctx.fillRect(3, 30 + (legOff > 0 ? legOff : 0), 5, 2);
+  ctx.fillRect(11, 30 + (legOff < 0 ? -legOff : 0), 5, 2);
   ctx.restore();
 }
 function drawPigSeal(x,y,s){
@@ -658,8 +710,10 @@ function drawDialog(){
     drawPortrait(state.activeDialog.npcId, 90, 480);
   }
   ctx.fillText(state.activeDialog.name, textX, 466);
-  writeWrapped(state.activeDialog.text, textX, 494, maxWidth, 22, '#1b1f31', 4);
-  ctx.fillStyle='#aa3d42'; ctx.font='16px monospace'; ctx.fillText('Space/Enter: next', nextX, 586);
+  updateTypewriter();
+  writeWrapped(getRevealedText(), textX, 494, maxWidth, 22, '#1b1f31', 4);
+  ctx.fillStyle='#aa3d42'; ctx.font='16px monospace';
+  ctx.fillText(twDone ? 'Space/Enter: next ▶' : '▼▼▼', nextX, 586);
 }
 
 // === Dialogue Topics (branching NPC questions) ===
@@ -945,7 +999,7 @@ function caseBagItems(){
 function drawCaseBag(){
   ctx.save();
   ctx.fillStyle='rgba(8,10,18,.72)'; ctx.fillRect(0,0,W,H);
-  box(130,70,700,500);
+  box(130,40,700,580);
   ctx.textAlign='left';
   ctx.fillStyle='#1b1f31'; ctx.font='30px monospace'; ctx.fillText('CASE BAG', 175,120);
   ctx.font='16px monospace'; ctx.fillStyle='#6d2f45'; ctx.fillText('Press I to close · Evidence, notes, and survival objects', 175,150);
@@ -958,27 +1012,29 @@ function drawCaseBag(){
   ctx.fillText(`Coffee: ${state.coffee}`, 430,230);
   // Draw badges
   ctx.fillStyle='#1b1f31'; ctx.font='18px monospace'; ctx.fillText('BADGES:', 175, 260);
-  let bx = 175, by = 275;
+  let bx = 175, by = 270;
   if(state.badges.length === 0) {
-    ctx.fillStyle='#7b7f8e'; ctx.font='15px monospace'; ctx.fillText('No badges yet. Complete quests to earn them!', bx, by+20);
+    ctx.fillStyle='#7b7f8e'; ctx.font='14px monospace'; ctx.fillText('No badges yet.', bx, by+12);
   } else {
     state.badges.forEach((badge, i) => {
       ctx.fillStyle = badge.color;
-      ctx.fillRect(bx + i*60, by, 40, 40);
-      ctx.fillStyle='#1b1f31'; ctx.font='10px monospace'; ctx.fillText(badge.name, bx + i*60, by+52);
+      ctx.fillRect(bx + i*52, by, 36, 30);
+      ctx.fillStyle='#1b1f31'; ctx.font='9px monospace'; ctx.fillText(badge.name, bx + i*52, by+42);
     });
   }
-  let y=340;
+  let y=320;
   for(const item of caseBagItems()){
+    if(y > 540) break; // clip to panel
     ctx.fillStyle = item.owned ? '#526f45' : '#7b7f8e';
-    ctx.font='18px monospace'; ctx.fillText(`${item.owned ? '✓' : '□'} ${item.name}`, 175, y);
-    ctx.fillStyle='#1b1f31'; ctx.font='15px monospace';
-    writeWrapped(item.desc, 205, y+24, 545, 19, item.owned ? '#1b1f31' : '#59617f');
-    y += 60;
+    ctx.font='16px monospace'; ctx.fillText(`${item.owned ? '✓' : '□'} ${item.name}`, 175, y);
+    ctx.fillStyle='#1b1f31'; ctx.font='13px monospace';
+    writeWrapped(item.desc, 200, y+18, 560, 16, item.owned ? '#1b1f31' : '#59617f', 1);
+    y += 42;
   }
-  writeWrapped('Muraś says: A good case bag contains law, facts, and one snack nobody admits owning.', 175,530,600,18,'#aa3d42');
-  ctx.fillStyle='#1b1f31'; ctx.font='14px monospace'; ctx.textAlign='center';
-  ctx.fillText('S: Save Game   L: Load Game   B: Music   Ctrl+M: Mute', W/2, 555);
+  ctx.fillStyle='#aa3d42'; ctx.font='13px monospace'; ctx.textAlign='left';
+  ctx.fillText('Muraś: A good case bag has law, facts, and one snack nobody admits owning.', 175, 558);
+  ctx.fillStyle='#1b1f31'; ctx.font='13px monospace'; ctx.textAlign='center';
+  ctx.fillText('S: Save   L: Load   B: Music   Ctrl+M: Mute', W/2, 575);
   ctx.restore();
 }
 
@@ -1106,9 +1162,10 @@ function drawDaySummary(){
   ctx.restore();
 }
 
-// Save/Load System
+// Save/Load System — v2: persists ALL state
 function saveGame(){
   const saveData = {
+    version: 2,
     state: {
       gold: state.gold,
       reputation: state.reputation,
@@ -1117,13 +1174,18 @@ function saveGame(){
       files: state.files,
       evidence: state.evidence,
       rightsMemo: state.rightsMemo,
-      quests: {...state.quests}
+      nowakEvidence: {...state.nowakEvidence},
+      quests: {...state.quests},
+      badges: state.badges.map(b=>({...b})),
+      incidentCooldown: state.incidentCooldown,
+      lastIncidentId: state.lastIncidentId,
     },
     player: {
       x: player.x,
       y: player.y,
       facing: player.facing
     },
+    itemsTaken: items.filter(i=>i.taken).map(i=>i.id),
     timestamp: Date.now()
   };
   try {
@@ -1140,10 +1202,27 @@ function loadGame(){
   if(!saveStr) return false;
   try {
     const saveData = JSON.parse(saveStr);
-    // Restore state
-    Object.assign(state, saveData.state);
+    // Restore core state
+    state.gold = saveData.state.gold;
+    state.reputation = saveData.state.reputation;
+    state.stress = saveData.state.stress;
+    state.coffee = saveData.state.coffee;
+    state.files = saveData.state.files;
+    state.evidence = saveData.state.evidence;
+    state.rightsMemo = saveData.state.rightsMemo;
+    // Restore nowakEvidence (was missing in v1!)
+    if(saveData.state.nowakEvidence) Object.assign(state.nowakEvidence, saveData.state.nowakEvidence);
+    // Restore quests
+    Object.assign(state.quests, saveData.state.quests);
+    // Restore badges (was missing in v1!)
+    if(saveData.state.badges) state.badges = saveData.state.badges.map(b=>({...b}));
+    // Restore incident state
+    state.incidentCooldown = saveData.state.incidentCooldown || 0;
+    state.lastIncidentId = saveData.state.lastIncidentId || null;
+    // Restore item taken flags (was missing in v1!)
+    if(saveData.itemsTaken) saveData.itemsTaken.forEach(id=>{ const it=items.find(i=>i.id===id); if(it) it.taken=true; });
     // Restore player position
-    Object.assign(player, saveData.player);
+    player.x = saveData.player.x; player.y = saveData.player.y; player.facing = saveData.player.facing;
     player.visualX = player.x;
     player.visualY = player.y;
     player.moving = false;
@@ -1152,7 +1231,7 @@ function loadGame(){
     state.choiceMenu = null;
     showResult = false;
     showDaySummary = false;
-    console.log('Game loaded');
+    console.log('Game loaded (v'+(saveData.version||1)+')');
     return true;
   } catch(e) {
     console.error('Load failed:', e);
@@ -1162,7 +1241,7 @@ function loadGame(){
 
 function showSaveFlash(){
   state.flashMessage = 'Game Saved!';
-  state.flashTimer = 90; // ~1.5 seconds at 60fps
+  state.flashTimer = 90;
 }
 
 function checkLoadOnStart(){
@@ -1182,7 +1261,7 @@ function interact(){
     return;
   }
   if(state.activeDialog && showDialogTopics){ selectDialogTopic(); return; }
-  if(state.activeDialog){ advanceDialog(); return; }
+  if(state.activeDialog){ if(skipTypewriter()) return; advanceDialog(); return; }
   for(const n of npcs){ if(manhattan(player,n)<=1){ startDialog(n); return; }}
   for(const item of items){ if(!item.taken && manhattan(player,item)<=1){ takeItem(item); return; }}
   for(const inter of interactables){ if(manhattan(player,inter)<=1){ startCoffeeMiniGame(); return; }}
@@ -1208,13 +1287,14 @@ function startDialog(n){
   }
   if(n.id==='clerk' && state.quests.law && state.quests.rights && !state.quests.court){ startCourtArgumentChoice(); return; }
   const lines=n.lines(); state.activeDialog={ name:n.name, npcId: n.id, lines, idx:0, text:lines[0] };
+  startTypewriter(lines[0]);
   showDialogTopics=false; activeTopicIdx=0; activeTopicResponse=null;
   saveGame();
 }
-function advanceDialog(){ 
-  const d=state.activeDialog; 
-  d.idx++; 
-  if(d.idx>=d.lines.length){ 
+function advanceDialog(){
+  const d=state.activeDialog;
+  d.idx++;
+  if(d.idx>=d.lines.length){
     // Lines exhausted — show topics if NPC has topics
     if(d.npcId && dialogTopics[d.npcId]){
       showDialogTopics=true;
@@ -1224,9 +1304,10 @@ function advanceDialog(){
       state.activeDialog=null; 
       showDialogTopics=false;
     }
-  } else { 
-    d.text=d.lines[d.idx]; 
-  } 
+  } else {
+    d.text=d.lines[d.idx];
+    startTypewriter(d.text);
+  }
 }
 function startCourtArgumentChoice(){
   state.choiceMenu={
@@ -1234,6 +1315,7 @@ function startCourtArgumentChoice(){
     prompt:'Court Clerk: Dr. A. Kula, why should the court accept this filing despite the procedural chaos?',
     options:[
       {correct:false, text:'Because Pig & Swine has a difficult financial situation and the printer suffered emotionally.'},
+      {correct:false, text:'Because the filing deadline was unreasonable and courts should be more understanding of small firms.'},
       {correct:true, text:'Because defective service affected the right to a fair hearing, and the human rights memo supports proportionality.'},
       {correct:false, text:'Because Mr. Swine is skiing in Japan and cannot be expected to process defeat across time zones.'}
     ]
@@ -1270,9 +1352,10 @@ function startNowakCourtChoice(){
     title: 'NOVAK EVICTION DEFENSE',
     prompt: 'Ms. Nowak faces eviction for hanging a human rights poster. Choose your legal argument:',
     options: [
-      { text: 'Mr. Swine is skiing in Japan and sends his apologies (and a postcard)', correct: false },
       { text: 'The printer jammed and ate the lease agreement, so no eviction is valid', correct: false },
-      { text: 'Human rights defense + Polish lease law: posters are protected expression under ECHR and Polish constitution', correct: true }
+      { text: 'Human rights defense + Polish lease law: posters are protected expression under ECHR and Polish constitution', correct: true },
+      { text: 'The landlord failed to provide proper notice under civil procedure, making the eviction procedurally void', correct: false },
+      { text: 'Mr. Swine is skiing in Japan and sends his apologies (and a postcard)', correct: false }
     ]
   };
 }
@@ -1390,7 +1473,7 @@ function clickBrewButton(){
   coffeeMiniGame.brewCount++;
   if(coffeeMiniGame.brewCount >= 3) resolveCoffeeMiniGame(true);
 }
-function flashDialog(text){ state.activeDialog={ name:'Discovery', lines:[text], idx:0, text}; }
+function flashDialog(text){ state.activeDialog={ name:'Discovery', lines:[text], idx:0, text}; startTypewriter(text); }
 
 // Random Office Incidents (Pokémon-style encounters)
 const incidents = [

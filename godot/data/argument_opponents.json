@@ -1,0 +1,5 @@
+{
+  "version": 1,
+  "_doc": "Opposing arguments encountered in court. Schema: { id, weakness_tags, strength_tags, base_strength (Code), display_name (Design), opening_statement (Design), taunts (Design), defeat_lines (Design) }.",
+  "opponents": []
+}

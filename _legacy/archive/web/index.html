@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+<title>Dr. A. Kula and the Pig &amp; Swine Crisis</title>
+<meta name="description" content="Pig &amp; Swine: Aplikant in Warsaw - a legal RPG game" />
+<meta name="theme-color" content="#1b1f31" />
+<style>
+  :root {
+    --ink:#1b1f31; --paper:#f5ead2; --gold:#d7a84f; --red:#aa3d42; --green:#526f45;
+  }
+  html, body { margin:0; height:100%; background:#161827; font-family: system-ui, Segoe UI, sans-serif; color:var(--paper); overflow:hidden; }
+  #wrap { display:grid; place-items:center; height:100%; background: radial-gradient(circle at 50% 20%, #2a2f4a, #131522 65%); }
+  canvas { image-rendering: pixelated; border: 6px solid #0b0d16; box-shadow: 0 25px 70px #0009; background:#27334a; max-width: min(96vw, 1200px); max-height: 82vh; }
+  #panel { width:min(96vw, 1200px); display:flex; gap:14px; justify-content:space-between; align-items:center; margin-top:10px; color:#f8efd8; font-size:14px; }
+  kbd { background:#0b0d16; border:1px solid #59617f; border-radius:5px; padding:2px 7px; box-shadow: inset 0 -2px #0008; }
+  #hint { opacity:.88; }
+  a { color:#ffd76c; }
+
+  /* Touch Controls */
+  #touch-controls { display:none; position:fixed; bottom:20px; left:0; right:0; z-index:1000; pointer-events:none; }
+  #dpad { position:absolute; left:20px; bottom:0; width:150px; height:150px; }
+  #dpad button { position:absolute; width:50px; height:50px; background:rgba(11,13,22,.75); border:2px solid #d7a84f; color:#f5ead2; font-size:24px; border-radius:8px; pointer-events:auto; cursor:pointer; user-select:none; -webkit-user-select:none; }
+  #dpad .up { top:0; left:50px; }
+  #dpad .down { bottom:0; left:50px; }
+  #dpad .left { top:50px; left:0; }
+  #dpad .right { top:50px; right:0; }
+  #action-buttons { position:absolute; right:20px; bottom:0; display:flex; gap:10px; }
+  #action-buttons button { width:60px; height:60px; background:rgba(170,61,66,.75); border:2px solid #ffd76c; color:#f5ead2; font-size:14px; font-weight:bold; border-radius:10px; pointer-events:auto; cursor:pointer; user-select:none; -webkit-user-select:none; }
+  #action-buttons button.qbtn { background:rgba(215,168,79,.75); border-color:#1b1f31; }
+  #action-buttons button.ibtn { background:rgba(82,111,69,.75); border-color:#d7a84f; }
+  @media (hover:none) and (pointer:coarse) {
+    #touch-controls { display:block; }
+    #panel { display:none; }
+  }
+</style>
+</head>
+<body>
+<div id="wrap">
+  <div>
+    <canvas id="game" width="960" height="640"></canvas>
+    <div id="panel">
+      <div><strong>Dr. A. Kula</strong> — Pig &amp; Swine, Polish law, courts, and human rights</div>
+      <div id="hint"><kbd>Arrows/WASD</kbd> move · <kbd>Space/Enter</kbd> talk/interact · <kbd>Q</kbd> docket · <kbd>I</kbd> case bag · <kbd>M</kbd> map</div>
+    </div>
+  </div>
+</div>
+<div id="touch-controls">
+  <div id="dpad">
+    <button class="up" data-key="ArrowUp">↑</button>
+    <button class="down" data-key="ArrowDown">↓</button>
+    <button class="left" data-key="ArrowLeft">←</button>
+    <button class="right" data-key="ArrowRight">→</button>
+  </div>
+  <div id="action-buttons">
+    <button class="spacebtn" data-key=" ">Space</button>
+    <button class="qbtn" data-key="q">Q</button>
+    <button class="ibtn" data-key="i">I</button>
+  </div>
+</div>
+<script type="module" src="/src/main.js"></script>
+</body>
+</html>

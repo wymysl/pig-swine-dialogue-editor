@@ -1,0 +1,5 @@
+{
+  "version": 1,
+  "_doc": "Door/transition definitions. Schema per entry: { id, map_pos, target_scene, target_spawn_id, required_flag (Code), locked_text (Design) }.",
+  "doors": []
+}

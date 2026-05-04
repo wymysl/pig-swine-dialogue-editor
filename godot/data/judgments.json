@@ -1,0 +1,5 @@
+{
+  "version": 1,
+  "_doc": "Casebook judgments. Two-pass authoring per AGENTS.md §Casebook authoring. Schema: { id, tags: { article, principle, context }, principle_moves[]: { id, effectiveness_modifiers, cost, name (Design), flavor_line (Design) }, judgment_name (Design), case_summary (Design), draft }.",
+  "judgments": []
+}

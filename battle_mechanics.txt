@@ -1,0 +1,2586 @@
+Yes. This should become a proper core system. The clean implementation name should be:
+
+> **Casebook Battle System**
+
+Not "ECHR Pokémon" in code, not "monster battle," not "case-catching." The design goal is to borrow the **readability and rhythm** of Pokémon-style turn-based battles while making the substance legal: judgments, principles, evidence, objections, factual context, and remedies.
+
+The existing design already supports this direction: Chapter 1 is meant to teach movement, evidence collection, NPC recruitment, court choices, and chapter completion; its court sequence is already structurally battle-like — judge poses issue, opponent creates pressure, player chooses argument, presents evidence, court reacts, next round begins.  Chapter 2 then expands this into evidence classification, Evidence Board preparation, adversarial litigation, proportionality reasoning, soft-fail outcomes, and victory grades.  So the Casebook Battle System should not replace the current design; it should become the reusable engine underneath court battles, wild argument encounters, training encounters, and later Supreme Court rounds.
+
+---
+
+# Part 6 — Casebook Battle System
+
+## Core concept
+
+The player does not collect monsters.
+
+The player collects **judgments**.
+
+The player does not fight creatures.
+
+The player fights **legal arguments**.
+
+The player does not use elemental attacks.
+
+The player invokes **short legal principles** from judgments.
+
+The battle fantasy is:
+
+> Dr. A. Cula faces a hostile argument. He opens the Casebook, invokes a judgment, and uses one of its legal principles to weaken, defeat, distinguish, or reframe the opposing submission.
+
+The system should feel like this:
+
+```text
+Wild Argument appeared:
+"PROCEDURE IS ONLY A TECHNICALITY"
+
+Type:
+Article 6 / fair hearing / access to court
+
+Player opens Casebook.
+
+Player selects:
+Golder v. UK
+
+Moves:
+Access to Court
+Practical Rights
+Procedural Doorway
+Distinguish Facts
+
+Player uses:
+Access to Court
+
+Result:
+SUPER EFFECTIVE.
+The formalistic argument loses 42 strength.
+Judge: "Counsel, surprisingly, that is a point."
+```
+
+The legal-comedy version of Pokémon effectiveness becomes:
+
+```text
+Super effective = directly responsive legal authority
+Effective = relevant authority but not perfect fit
+Not very effective = broadly legal but wrong principle / wrong Article
+No effect = legally irrelevant or factually misplaced
+Backfires = absurdly bad argument in court context
+```
+
+---
+
+# Design rule
+
+Do not make Article number alone determine effectiveness.
+
+That would be legally stupid.
+
+An Article 8 home case should not automatically crush every Article 8 family-life, data-protection, contact-rights, privacy, reputation, or environmental nuisance issue. The system needs **three layers of tags**:
+
+```text
+Article tag
+Principle tag
+Context tag
+```
+
+Example:
+
+```text
+Opponent:
+AUTOMATIC EVICTION
+
+Tags:
+article_8
+home
+proportionality
+individual_assessment
+procedural_fairness
+```
+
+A judgment/move with:
+
+```text
+article_8 + home + proportionality
+```
+
+is super effective.
+
+A judgment/move with:
+
+```text
+article_8 + family_life + positive_obligations
+```
+
+is only weakly effective unless the move also carries `proportionality` or `procedural_fairness`.
+
+A judgment/move with:
+
+```text
+article_11 + assembly
+```
+
+is not very effective.
+
+This gives the game legal nuance without making the mechanic too complex.
+
+---
+
+# Player-facing terminology
+
+Avoid Pokémon terminology in the UI.
+
+Use:
+
+```text
+Casebook
+Judgment
+Authority
+Principle
+Submission
+Argument Strength
+Coherence
+Credibility
+Judicial Patience
+Legal Fit
+Authority Match
+```
+
+Avoid:
+
+```text
+monster
+creature
+attack
+HP
+element
+type advantage
+catch
+evolution
+trainer
+gym
+```
+
+Internally, code can use generic terms like `battle`, `move`, and `effectiveness`, but UI text should stay legal.
+
+Preferred UI terms:
+
+```text
+Battle = Legal Encounter
+Enemy = Opposing Argument
+Move = Principle
+Damage = Persuasive Force
+HP = Argument Strength
+Mana = Focus / Courtroom Composure
+Party = Active Authorities
+Pokédex = Casebook
+Trainer battle = Advocate Challenge
+Wild encounter = Wild Argument
+Boss battle = Court Round / Final Hearing Round
+```
+
+---
+
+# System summary
+
+The Casebook Battle System has six core objects:
+
+```text
+Judgment
+Principle Move
+Argument Opponent
+Encounter
+Battle State
+Effectiveness Resolver
+```
+
+Optional later objects:
+
+```text
+Casebook Collection
+Authority Unlock
+Judgment Mastery
+Combo Principle
+Court Mood
+Ally Intervention
+```
+
+The minimum viable version needs only the first six.
+
+---
+
+# Core battle loop
+
+The battle loop should be deliberately simple.
+
+```text
+1. Encounter starts.
+2. Opposing Argument appears.
+3. Opposing Argument presents a submission.
+4. Player chooses one active judgment from Casebook.
+5. Player chooses one principle move from that judgment.
+6. System calculates legal fit.
+7. Result text plays.
+8. Argument Strength decreases.
+9. Opponent may respond.
+10. Repeat until opponent argument is defeated or court patience runs out.
+```
+
+In court battles, the loop is embedded in a structured court round:
+
+```text
+Judge frames issue.
+Opponent presents hostile argument.
+Player invokes judgment.
+Player uses principle.
+Player optionally supports with evidence.
+Court reacts.
+Round result is stored.
+```
+
+This fits the current Chapter 1 court structure, where the judge frames defective service, fair hearing, and remedy questions in sequence.
+
+---
+
+# Encounter types
+
+## 1. Wild Argument
+
+Visible map encounter, not random grass.
+
+The player sees animated speech bubbles or floating hostile propositions on the overworld.
+
+Examples:
+
+```text
+"TECHNICALITY!"
+"PUBLIC INTEREST!"
+"DEADLINE!"
+"CONSENT!"
+"NO STANDING!"
+"FILE SAYS SERVED!"
+```
+
+The player may touch one to trigger a short battle.
+
+Use these for:
+
+```text
+tutorial practice
+optional training
+unlocking new judgment fragments
+earning small rewards
+testing new Casebook authorities
+```
+
+Do not use random encounters. The project's current design already repeatedly rejects grinding, random wandering, and hidden-pixel mechanics; Chapter 2 expressly requires no grinding, no random encounters, and clear signposting by Asia, Murrow, the quest log, or NPCs.
+
+Wild Arguments should be:
+
+```text
+visible
+optional unless tutorial-required
+short
+thematically linked to the area
+rewarding but not grindy
+```
+
+Example in Chapter 2, Tenants' Row:
+
+```text
+Wild Argument:
+"THE RULE IS THE RULE"
+
+Tags:
+article_8
+home
+proportionality
+arbitrary_rule
+
+Reward:
+small Casebook XP / unlocks "Individual Assessment" glossary note
+```
+
+## 2. Advocate Challenge
+
+NPC battle.
+
+Examples:
+
+```text
+Attorney Grzyb challenges:
+"BEIGE PROCEDURALISM"
+
+Advocate Szpon challenges:
+"DEADLINE ABSOLUTISM"
+
+City Official challenges:
+"ADMINISTRATIVE EFFICIENCY"
+```
+
+These are scripted and usually tied to story progression.
+
+## 3. Court Round
+
+Main story battle.
+
+This is not optional. It happens inside court.
+
+The opponent is not necessarily a lawyer; it can be the legal problem itself.
+
+Example Chapter 1:
+
+```text
+Round 1:
+Opponent Argument = "FILE SAYS SERVED"
+
+Round 2:
+Opponent Argument = "TECHNICAL PROCEDURE DOES NOT MATTER"
+
+Round 3:
+Opponent Argument = "ASK FOR EVERYTHING"
+```
+
+The player must defeat each by invoking appropriate authorities/principles.
+
+## 4. Training Battle
+
+Optional archive/café/office practice encounter.
+
+Murrow, Crab, or Whimsy can offer training.
+
+Example:
+
+> Murrow: "Let us test whether you can distinguish a principle from decorative confidence."
+
+Training battles should not punish the player.
+
+## 5. Final Hearing Phase
+
+Chapter 5's Supreme Court rounds become advanced Casebook battles with evidence and ally assignments added.
+
+Chapter 5 is already designed as the convergence chapter where prior mechanics return: investigation, evidence, contradiction spotting, dual-attorney advocacy, team strategy, and final case synthesis.  The Casebook Battle System should provide the legal combat skeleton underneath those rounds.
+
+---
+
+# Battle stats
+
+## Opponent Argument stats
+
+Each opposing argument has:
+
+```text
+Argument Strength
+Pressure
+Article tags
+Principle tags
+Context tags
+Resistance tags
+Weakness tags
+Possible counters
+Defeat text
+Partial defeat text
+```
+
+Recommended P0 stats:
+
+```gdscript
+{
+	"id": "file_says_served",
+	"display_name": "File Says Served",
+	"argument_strength": 100,
+	"pressure": 10,
+
+	"article_tags": ["article_6"],
+	"principle_tags": ["fair_hearing", "access_to_court", "procedural_fairness"],
+	"context_tags": ["service", "notice", "right_to_be_heard"],
+
+	"weak_to": ["access_to_court", "fair_hearing", "proper_notice", "right_to_be_heard"],
+	"resists": ["expression", "assembly", "property"],
+	"immune_to": ["pure_rhetoric"],
+
+	"on_intro": "The opposing file insists the client was served because a box was ticked.",
+	"on_defeat": "The formal service argument collapses under the weight of basic procedural fairness.",
+	"on_partial": "The argument weakens, but the court wants a cleaner link to notice."
+}
+```
+
+## Player stats
+
+Do not create a complex RPG stat sheet early.
+
+P0 player stats:
+
+```text
+Courtroom Composure
+Casebook
+Active Authority Slots
+Known Evidence
+Ally Support Flags
+```
+
+Courtroom Composure is the player-side health equivalent.
+
+Starts at:
+
+```gdscript
+courtroom_composure = 100
+```
+
+Wrong or weak moves reduce it lightly.
+
+Opponent pressure reduces it at end of each turn.
+
+If it reaches 0:
+
+```text
+In training/wild argument:
+player loses encounter, can retry.
+
+In story court:
+court gives warning or weak-result branch, not hard game over unless specifically designed.
+
+In final court:
+victory grade may drop.
+```
+
+The game should avoid hard failure except in optional challenge battles.
+
+---
+
+# Judgment data model
+
+Each judgment is a collectible authority.
+
+A judgment has:
+
+```text
+id
+display name
+short citation / year
+article tags
+principle tags
+context tags
+rarity / chapter unlock
+moves
+short case note
+memory hook
+source verification status
+```
+
+Godot dictionary version:
+
+```gdscript
+const JUDGMENTS := {
+	"golder_v_uk": {
+		"display_name": "Golder v. UK",
+		"short_name": "Golder",
+		"year": 1975,
+		"article_tags": ["article_6"],
+		"principle_tags": ["access_to_court", "practical_effective_rights"],
+		"context_tags": ["court_access", "procedural_barrier"],
+		"chapter_unlock": 1,
+		"rarity": "starter",
+		"default_move": "access_to_court",
+
+		"moves": [
+			"access_to_court",
+			"practical_effective",
+			"procedural_doorway"
+		],
+
+		"case_note": "A foundational authority for access to court under Article 6.",
+		"memory_hook": "The locked courthouse door becomes the legal issue.",
+		"verified": false
+	}
+}
+```
+
+Later, switch to `Resource` files.
+
+Godot Resource version:
+
+```gdscript
+# res://systems/casebook/judgment_definition.gd
+extends Resource
+class_name JudgmentDefinition
+
+@export var id: String
+@export var display_name: String
+@export var short_name: String
+@export var year: int
+
+@export var article_tags: Array[String] = []
+@export var principle_tags: Array[String] = []
+@export var context_tags: Array[String] = []
+
+@export var chapter_unlock: int = 1
+@export_enum("starter", "common", "rare", "landmark", "boss_reward") var rarity: String = "common"
+
+@export var move_ids: Array[String] = []
+@export_multiline var case_note: String = ""
+@export_multiline var memory_hook: String = ""
+
+@export var verified_against_hudoc: bool = false
+@export var hudoc_url: String = ""
+```
+
+Use dictionaries first. Resources later.
+
+---
+
+# Principle Move data model
+
+A principle move is the legal equivalent of a Pokémon move.
+
+It must be short enough to fit the battle UI.
+
+Move name length target:
+
+```text
+2–4 words
+```
+
+Examples:
+
+```text
+Access to Court
+Practical Rights
+Proper Notice
+Fair Hearing
+Home Interference
+Individual Assessment
+Proportionality Review
+Positive Obligations
+Chilling Effect
+Public Interest Fog
+Margin Discipline
+```
+
+Each move has:
+
+```text
+id
+display name
+description
+article tags
+principle tags
+context tags
+base force
+accuracy / clarity
+composure cost
+effect type
+flavour text
+wrong-context text
+```
+
+Godot dictionary:
+
+```gdscript
+const PRINCIPLE_MOVES := {
+	"access_to_court": {
+		"display_name": "Access to Court",
+		"article_tags": ["article_6"],
+		"principle_tags": ["access_to_court"],
+		"context_tags": ["procedural_barrier", "court_access"],
+		"base_force": 38,
+		"clarity": 95,
+		"composure_cost": 0,
+		"effect_type": "damage_argument",
+
+		"success_text": "A party must be able to enter the process before being judged by it.",
+		"weak_text": "Access matters, but the court needs a tighter link to this issue.",
+		"wrong_context_text": "The principle is important, but this is not an access-to-court problem."
+	},
+
+	"individual_assessment": {
+		"display_name": "Individual Assessment",
+		"article_tags": ["article_8"],
+		"principle_tags": ["proportionality", "individual_assessment"],
+		"context_tags": ["home", "eviction", "administrative_decision"],
+		"base_force": 42,
+		"clarity": 90,
+		"composure_cost": 0,
+		"effect_type": "damage_argument",
+
+		"success_text": "A measure affecting a home cannot be imposed by template reasoning.",
+		"weak_text": "Individual assessment helps, but the factual basis still needs evidence.",
+		"wrong_context_text": "This is not the moment for home-life proportionality."
+	}
+}
+```
+
+Do not overload moves with long doctrinal text. The detailed explanation can live in the Casebook entry. The battle move should be short and legible.
+
+---
+
+# Tags
+
+Tags are the heart of the system.
+
+## Article tags
+
+Use normalized IDs:
+
+```gdscript
+const ARTICLE_TAGS := [
+	"article_2",
+	"article_3",
+	"article_5",
+	"article_6",
+	"article_8",
+	"article_9",
+	"article_10",
+	"article_11",
+	"article_13",
+	"article_14",
+	"p1_1",
+	"p1_2"
+]
+```
+
+For the game MVP, start with:
+
+```text
+article_6
+article_8
+article_10
+article_11
+p1_1
+```
+
+## Principle tags
+
+Start small.
+
+```gdscript
+const PRINCIPLE_TAGS := [
+	"access_to_court",
+	"fair_hearing",
+	"right_to_be_heard",
+	"proper_notice",
+	"procedural_fairness",
+	"practical_effective_rights",
+	"home",
+	"family_life",
+	"private_life",
+	"expression",
+	"assembly",
+	"property",
+	"proportionality",
+	"individual_assessment",
+	"positive_obligations",
+	"margin_of_appreciation",
+	"legal_certainty",
+	"non_arbitrariness",
+	"effective_remedy",
+	"chilling_effect",
+	"public_interest",
+	"necessity",
+	"legitimate_aim",
+	"causation",
+	"evidence_reliability"
+]
+```
+
+## Context tags
+
+Context tags prevent Article-level nonsense.
+
+```gdscript
+const CONTEXT_TAGS := [
+	"service",
+	"notice",
+	"deadline",
+	"default_judgment",
+	"court_access",
+	"eviction",
+	"home_loss",
+	"poster",
+	"landlord_rules",
+	"administrative_template",
+	"filing_sabotage",
+	"printer_logs",
+	"objection_filtering",
+	"mass_notice",
+	"pro_bono_access",
+	"contract_ambiguity",
+	"translation",
+	"invoice_reliability"
+]
+```
+
+Context tags should be designed around the game's chapters, not the whole Convention.
+
+---
+
+# Effectiveness calculation
+
+Use a scoring resolver, not a giant hand-coded matchup table.
+
+## Inputs
+
+```text
+selected judgment
+selected move
+opponent argument
+optional evidence
+optional ally support
+court context
+```
+
+## Output
+
+```text
+effectiveness tier
+force multiplier
+final persuasive force
+court reaction text key
+flags to set
+```
+
+## Tiers
+
+```gdscript
+enum EffectivenessTier {
+	NO_EFFECT,
+	NOT_EFFECTIVE,
+	WEAK,
+	EFFECTIVE,
+	SUPER_EFFECTIVE,
+	PERFECT_FIT
+}
+```
+
+UI labels:
+
+```text
+No effect.
+Not very effective.
+Somewhat relevant.
+Effective.
+Super effective.
+Perfect legal fit.
+```
+
+Maybe avoid "super effective" in the final UI if it feels too Pokémon. But it is funny, and the player will immediately understand it. We can use it in early prototypes.
+
+## Scoring method
+
+Calculate tag overlap.
+
+```gdscript
+func calculate_legal_fit(move: Dictionary, opponent: Dictionary, evidence := {}, ally := {}) -> Dictionary:
+	var score := 0
+
+	var article_matches := count_overlap(move.article_tags, opponent.article_tags)
+	var principle_matches := count_overlap(move.principle_tags, opponent.weak_to)
+	var context_matches := count_overlap(move.context_tags, opponent.context_tags)
+
+	var resisted_matches := count_overlap(move.principle_tags, opponent.resists)
+	var immune_matches := count_overlap(move.principle_tags, opponent.immune_to)
+
+	if immune_matches > 0:
+		return {
+			"tier": "no_effect",
+			"multiplier": 0.0,
+			"score": 0
+		}
+
+	score += article_matches * 20
+	score += principle_matches * 35
+	score += context_matches * 25
+	score -= resisted_matches * 25
+
+	if evidence.has("argument_tags"):
+		score += count_overlap(evidence.argument_tags, opponent.weak_to) * 15
+		score += count_overlap(evidence.context_tags, opponent.context_tags) * 10
+
+	if ally.has("support_tags"):
+		score += count_overlap(ally.support_tags, opponent.weak_to) * 10
+
+	var tier := score_to_tier(score)
+
+	return {
+		"tier": tier,
+		"multiplier": tier_to_multiplier(tier),
+		"score": score
+	}
+```
+
+Tier thresholds:
+
+```gdscript
+func score_to_tier(score: int) -> String:
+	if score >= 95:
+		return "perfect_fit"
+	if score >= 70:
+		return "super_effective"
+	if score >= 45:
+		return "effective"
+	if score >= 25:
+		return "weak"
+	if score > 0:
+		return "not_effective"
+	return "no_effect"
+```
+
+Multipliers:
+
+```gdscript
+func tier_to_multiplier(tier: String) -> float:
+	match tier:
+		"perfect_fit":
+			return 2.0
+		"super_effective":
+			return 1.6
+		"effective":
+			return 1.0
+		"weak":
+			return 0.6
+		"not_effective":
+			return 0.3
+		"no_effect":
+			return 0.0
+		_:
+			return 1.0
+```
+
+Damage / persuasive force:
+
+```gdscript
+final_force = round(move.base_force * multiplier)
+opponent.argument_strength -= final_force
+```
+
+This is easy for an AI coder to implement and easy for us to balance.
+
+---
+
+# Evidence integration
+
+A judgment move should often work alone in wild/training battles.
+
+In story court, the best result should require:
+
+```text
+right judgment
+right principle
+right evidence
+```
+
+This preserves the investigation loop. Chapter 1 already teaches that evidence unlocks arguments — the Procedural Binder unlocks defective service and the Rights Memo unlocks fair hearing.  Chapter 2 then makes evidence organisation central through the Evidence Board.  The Casebook System should respect that.
+
+## Evidence object
+
+```gdscript
+{
+	"id": "eviction_notice",
+	"display_name": "Eviction Notice",
+	"chapter": 2,
+	"article_tags": ["article_8"],
+	"principle_tags": ["proper_notice", "procedural_fairness", "home"],
+	"context_tags": ["eviction", "notice", "home_loss"],
+	"argument_tags": ["notice_problem", "home_interference"],
+	"quality": "standard"
+}
+```
+
+## Evidence effect
+
+Evidence modifies the legal fit.
+
+```text
+Move is relevant but evidence missing:
+effective, not super effective
+
+Move + correct evidence:
+super effective
+
+Move + correct evidence + correct ally:
+perfect fit
+```
+
+Example:
+
+```text
+Opponent:
+AUTOMATIC EVICTION
+
+Move:
+Individual Assessment
+
+Evidence:
+Poster Photo
+
+Ally:
+Waldek / Zielińska
+
+Result:
+Perfect legal fit.
+```
+
+Wrong evidence:
+
+```text
+Move:
+Individual Assessment
+
+Evidence:
+Coffee Receipt
+
+Result:
+Move remains somewhat relevant, but evidence gives no bonus.
+Murrow: "The coffee receipt is vivid, but not probative."
+```
+
+---
+
+# Ally integration
+
+Recruited allies should act like support modifiers, not separate fighters.
+
+Chapter 1 already establishes that Crab strengthens defective-service analysis and Whimsy strengthens fair-hearing rhetoric.  This maps perfectly.
+
+Ally object:
+
+```gdscript
+const ALLY_SUPPORTS := {
+	"crab": {
+		"display_name": "Crab",
+		"support_tags": ["service", "notice", "evidence_reliability", "causation"],
+		"support_text": "Crab narrows his eyes at the record.",
+		"bonus": 10
+	},
+
+	"whimsy": {
+		"display_name": "Whimsy",
+		"support_tags": ["fair_hearing", "expression", "proportionality", "closing_argument"],
+		"support_text": "Whimsy turns the principle into something dangerously memorable.",
+		"bonus": 10
+	},
+
+	"murrow": {
+		"display_name": "Murrow",
+		"support_tags": ["legal_structure", "procedural_fairness", "remedy"],
+		"support_text": "Murrow removes three unnecessary metaphors.",
+		"bonus": 10
+	}
+}
+```
+
+In battle:
+
+```text
+If ally support tags match opponent weakness:
++10 legal fit score
+special support line appears
+```
+
+Do not give allies independent turns in P0. Add that later if needed.
+
+---
+
+# Court mood and judicial patience
+
+Add only after the basic system works.
+
+But design it now.
+
+Court Mood:
+
+```text
+neutral
+interested
+skeptical
+irritated
+impressed
+```
+
+Judicial Patience:
+
+```gdscript
+judicial_patience = 100
+```
+
+Weak or irrelevant moves reduce patience.
+
+Good moves restore or preserve it.
+
+```gdscript
+match tier:
+	"perfect_fit":
+		judicial_patience += 5
+	"super_effective":
+		judicial_patience += 2
+	"effective":
+		pass
+	"weak":
+		judicial_patience -= 5
+	"not_effective":
+		judicial_patience -= 10
+	"no_effect":
+		judicial_patience -= 15
+```
+
+If patience falls below 30:
+
+```text
+Judge starts warning the player.
+Wrong moves become more costly.
+Opponent pressure increases.
+```
+
+If patience reaches 0:
+
+```text
+Training/wild encounter:
+loss
+
+Story court:
+weak outcome / retry / Murrow intervention depending on chapter
+```
+
+Do not make early Chapter 1 punishing. The first court should be forgiving.
+
+---
+
+# Casebook progression
+
+The Casebook should grow across the game.
+
+## Unlock methods
+
+```text
+story unlock
+archive pickup
+court victory reward
+optional wild argument reward
+NPC training reward
+chapter completion reward
+```
+
+## Chapter 1
+
+Starter authorities only.
+
+Purpose:
+
+```text
+teach Article 6 / procedural fairness / right to be heard
+```
+
+Suggested unlocks:
+
+```text
+Golder v. UK
+Airey v. Ireland
+Starter "Fair Hearing" authority, if we use fictional/abstract authority first
+```
+
+But for the very first build, we can use fictional placeholder authorities until the legal dataset is verified.
+
+Example placeholder:
+
+```text
+The Procedural Binder
+The Rights Memo
+Murrow's Notes
+```
+
+Then later replace or supplement them with actual judgments.
+
+## Chapter 2
+
+Unlock home/proportionality/expression authorities.
+
+Purpose:
+
+```text
+teach Article 8 home
+teach Article 10 expression angle
+teach proportionality
+teach individual assessment
+```
+
+Chapter 2's legal spine is already home, expression, notice, and proportionality in Waldek's eviction case.
+
+## Chapter 3
+
+Unlock procedural sabotage/access authorities.
+
+Purpose:
+
+```text
+deadlines
+access to court
+filing obstruction
+fairness despite technical default
+```
+
+## Chapter 4
+
+Unlock fair-hearing / property / contract-adjacent authorities only if useful.
+
+Chapter 4 should remain mainly Dual Attorney and contract ambiguity. Do not force ECHR case-law everywhere.
+
+## Chapter 5
+
+The full Casebook becomes available for final synthesis.
+
+Chapter 5 already uses returning evidence from previous chapters and Team Assembly slots such as defective notice, individual impact, technical suppression, conflict of interest, proportionality, social utility, and closing argument.  The Casebook should plug into those final legal points.
+
+---
+
+# Important content warning for implementation
+
+Do not ship real ECHR case summaries unless verified.
+
+In development data, mark every real judgment as:
+
+```gdscript
+"verified_against_hudoc": false
+```
+
+Then later run a legal content verification pass.
+
+The AI/dev instruction should be:
+
+> Judgment names, tags, and moves may be prototyped for gameplay, but before release every real judgment entry must be checked against HUDOC or another authoritative source. If not verified, it must remain fictionalised or clearly generic.
+
+This avoids building a legally educational game on half-remembered doctrine.
+
+For early implementation, we can use hybrid labels:
+
+```text
+Golder-style authority
+Connors-style authority
+Handyside-style authority
+```
+
+Then replace with exact case names after verification.
+
+But because the user-facing charm comes from real ECHR judgments, the final version should use real names once verified.
+
+---
+
+# Initial judgment set
+
+P0 should use 10 judgments maximum.
+
+Do not start with 50.
+
+## P0 starter set
+
+```gdscript
+const STARTER_JUDGMENTS := {
+	"golder_v_uk": {
+		"display_name": "Golder v. UK",
+		"year": 1975,
+		"article_tags": ["article_6"],
+		"principle_tags": ["access_to_court", "practical_effective_rights"],
+		"context_tags": ["court_access", "procedural_barrier"],
+		"moves": ["access_to_court", "practical_effective", "procedural_doorway"],
+		"chapter_unlock": 1,
+		"verified_against_hudoc": false
+	},
+
+	"airey_v_ireland": {
+		"display_name": "Airey v. Ireland",
+		"year": 1979,
+		"article_tags": ["article_6"],
+		"principle_tags": ["access_to_court", "practical_effective_rights"],
+		"context_tags": ["practical_obstacle", "court_access"],
+		"moves": ["practical_effective", "real_access", "barrier_to_justice"],
+		"chapter_unlock": 1,
+		"verified_against_hudoc": false
+	},
+
+	"connors_v_uk": {
+		"display_name": "Connors v. UK",
+		"year": 2004,
+		"article_tags": ["article_8"],
+		"principle_tags": ["home", "proportionality", "procedural_fairness"],
+		"context_tags": ["eviction", "home_loss"],
+		"moves": ["home_interference", "individual_assessment", "proportionality_review"],
+		"chapter_unlock": 2,
+		"verified_against_hudoc": false
+	},
+
+	"mccann_v_uk": {
+		"display_name": "McCann v. UK",
+		"year": 2008,
+		"article_tags": ["article_8"],
+		"principle_tags": ["home", "proportionality"],
+		"context_tags": ["eviction", "possession_proceedings", "home_loss"],
+		"moves": ["home_interference", "proportionality_review", "loss_of_home"],
+		"chapter_unlock": 2,
+		"verified_against_hudoc": false
+	},
+
+	"handyside_v_uk": {
+		"display_name": "Handyside v. UK",
+		"year": 1976,
+		"article_tags": ["article_10"],
+		"principle_tags": ["expression", "necessity", "pluralism"],
+		"context_tags": ["expression", "public_interest"],
+		"moves": ["protected_expression", "necessary_in_society", "pluralism"],
+		"chapter_unlock": 2,
+		"verified_against_hudoc": false
+	}
+}
+```
+
+Add more only after the system feels good.
+
+---
+
+# Initial move set
+
+```gdscript
+const P0_PRINCIPLE_MOVES := {
+	"access_to_court": {
+		"display_name": "Access to Court",
+		"article_tags": ["article_6"],
+		"principle_tags": ["access_to_court"],
+		"context_tags": ["court_access", "procedural_barrier"],
+		"base_force": 38,
+		"clarity": 95
+	},
+
+	"practical_effective": {
+		"display_name": "Practical Rights",
+		"article_tags": ["article_6"],
+		"principle_tags": ["practical_effective_rights"],
+		"context_tags": ["practical_obstacle", "court_access"],
+		"base_force": 34,
+		"clarity": 95
+	},
+
+	"procedural_doorway": {
+		"display_name": "Procedural Doorway",
+		"article_tags": ["article_6"],
+		"principle_tags": ["fair_hearing", "right_to_be_heard"],
+		"context_tags": ["notice", "service", "procedural_fairness"],
+		"base_force": 36,
+		"clarity": 90
+	},
+
+	"proper_notice": {
+		"display_name": "Proper Notice",
+		"article_tags": ["article_6", "article_8"],
+		"principle_tags": ["proper_notice", "procedural_fairness"],
+		"context_tags": ["notice", "service", "eviction"],
+		"base_force": 35,
+		"clarity": 90
+	},
+
+	"home_interference": {
+		"display_name": "Home Interference",
+		"article_tags": ["article_8"],
+		"principle_tags": ["home"],
+		"context_tags": ["home_loss", "eviction"],
+		"base_force": 36,
+		"clarity": 95
+	},
+
+	"individual_assessment": {
+		"display_name": "Individual Assessment",
+		"article_tags": ["article_8"],
+		"principle_tags": ["individual_assessment", "proportionality"],
+		"context_tags": ["eviction", "administrative_template", "home_loss"],
+		"base_force": 42,
+		"clarity": 90
+	},
+
+	"proportionality_review": {
+		"display_name": "Proportionality",
+		"article_tags": ["article_8", "article_10", "article_11", "p1_1"],
+		"principle_tags": ["proportionality", "necessity"],
+		"context_tags": ["rights_interference", "public_interest"],
+		"base_force": 40,
+		"clarity": 85
+	},
+
+	"protected_expression": {
+		"display_name": "Protected Expression",
+		"article_tags": ["article_10"],
+		"principle_tags": ["expression"],
+		"context_tags": ["poster", "speech", "public_expression"],
+		"base_force": 35,
+		"clarity": 88
+	},
+
+	"distinguish_facts": {
+		"display_name": "Distinguish Facts",
+		"article_tags": [],
+		"principle_tags": ["distinguishing", "case_analysis"],
+		"context_tags": [],
+		"base_force": 20,
+		"clarity": 100
+	},
+
+	"modest_remedy": {
+		"display_name": "Modest Remedy",
+		"article_tags": ["article_6", "article_8"],
+		"principle_tags": ["remedy", "procedural_fairness"],
+		"context_tags": ["adjournment", "reopening", "reconsideration"],
+		"base_force": 45,
+		"clarity": 90
+	}
+}
+```
+
+`distinguish_facts` is important. It gives the player a non-damaging move that can reduce opponent pressure or reveal weakness.
+
+---
+
+# Opponent argument set
+
+## P0 Chapter 1 opponents
+
+```gdscript
+const CHAPTER1_ARGUMENTS := {
+	"file_says_served": {
+		"display_name": "File Says Served",
+		"argument_strength": 80,
+		"pressure": 8,
+		"article_tags": ["article_6"],
+		"principle_tags": ["fair_hearing", "procedural_fairness"],
+		"context_tags": ["service", "notice", "right_to_be_heard"],
+		"weak_to": ["proper_notice", "access_to_court", "right_to_be_heard", "fair_hearing"],
+		"resists": ["expression", "assembly", "property"],
+		"immune_to": ["pure_rhetoric"],
+		"intro_text": "The file insists service happened because a box says so."
+	},
+
+	"technicality_does_not_matter": {
+		"display_name": "Technicality Dismissal",
+		"argument_strength": 90,
+		"pressure": 10,
+		"article_tags": ["article_6"],
+		"principle_tags": ["fair_hearing", "right_to_be_heard"],
+		"context_tags": ["procedural_fairness", "court_access"],
+		"weak_to": ["fair_hearing", "practical_effective_rights", "access_to_court"],
+		"resists": ["home", "expression"],
+		"immune_to": [],
+		"intro_text": "The opposing argument treats procedure as decoration."
+	},
+
+	"ask_for_everything": {
+		"display_name": "Overbroad Remedy",
+		"argument_strength": 70,
+		"pressure": 12,
+		"article_tags": ["article_6"],
+		"principle_tags": ["remedy", "proportionality"],
+		"context_tags": ["adjournment", "reopening", "procedural_reset"],
+		"weak_to": ["modest_remedy", "procedural_fairness", "right_to_be_heard"],
+		"resists": ["absolute_victory"],
+		"immune_to": [],
+		"intro_text": "The temptation to ask for total victory enters the courtroom."
+	}
+}
+```
+
+## P0 Chapter 2 opponents
+
+```gdscript
+const CHAPTER2_ARGUMENTS := {
+	"rule_is_rule": {
+		"display_name": "The Rule Is the Rule",
+		"argument_strength": 100,
+		"pressure": 10,
+		"article_tags": ["article_8"],
+		"principle_tags": ["home", "proportionality"],
+		"context_tags": ["eviction", "landlord_rules", "home_loss"],
+		"weak_to": ["proportionality", "individual_assessment", "home"],
+		"resists": ["access_to_court"],
+		"immune_to": [],
+		"intro_text": "The landlord says the rule ends the discussion."
+	},
+
+	"poster_caused_disorder": {
+		"display_name": "Poster Panic",
+		"argument_strength": 85,
+		"pressure": 9,
+		"article_tags": ["article_8", "article_10"],
+		"principle_tags": ["expression", "home", "evidence_reliability"],
+		"context_tags": ["poster", "disturbance", "eviction"],
+		"weak_to": ["protected_expression", "evidence_reliability", "proportionality"],
+		"resists": ["pure_procedure"],
+		"immune_to": [],
+		"intro_text": "The poster is accused of causing constitutional weather."
+	},
+
+	"eviction_available": {
+		"display_name": "Eviction Was Available",
+		"argument_strength": 110,
+		"pressure": 12,
+		"article_tags": ["article_8"],
+		"principle_tags": ["home", "proportionality", "individual_assessment"],
+		"context_tags": ["eviction", "home_loss", "remedy"],
+		"weak_to": ["home_interference", "individual_assessment", "proportionality"],
+		"resists": ["expression_only"],
+		"immune_to": [],
+		"intro_text": "Attorney Grzyb insists contractual availability settles proportionality."
+	}
+}
+```
+
+---
+
+# Battle UI
+
+Use a legal battle UI, not a monster arena.
+
+Scene:
+
+```text
+res://ui/casebook_battle/casebook_battle.tscn
+```
+
+Layout:
+
+```text
+Top-left:
+Player / Dr. A. Cula portrait
+Courtroom Composure meter
+
+Top-right:
+Opponent argument portrait / icon
+Argument Strength meter
+
+Center:
+Court / argument dialogue
+
+Bottom-left:
+Casebook judgment list
+
+Bottom-right:
+Principle moves for selected judgment
+
+Side panel:
+Evidence / ally support, when enabled
+```
+
+For wild arguments, the opponent portrait can be an animated legal speech bubble.
+
+For court battles, use judge/opponent portraits.
+
+The portrait system already expects court scenes to use left/right portraits, dialogue box, choices, evidence, argument options, and dramatic portrait rhythm.  The Casebook Battle UI should reuse that presentation rather than creating a separate visual language.
+
+## UI states
+
+```gdscript
+enum BattleUIState {
+	INTRO,
+	SELECT_JUDGMENT,
+	SELECT_MOVE,
+	SELECT_EVIDENCE,
+	CONFIRM_ACTION,
+	RESOLVE_ACTION,
+	OPPONENT_TURN,
+	VICTORY,
+	DEFEAT
+}
+```
+
+P0 court flow can skip `SELECT_EVIDENCE` unless the encounter requires evidence.
+
+---
+
+# Battle scene node structure
+
+```text
+CasebookBattle
+├── BackgroundPanel
+├── CourtBackdrop / EncounterBackdrop
+├── PlayerPanel
+│   ├── PlayerPortrait
+│   ├── ComposureMeter
+│   └── ActiveJudgmentName
+├── OpponentPanel
+│   ├── OpponentIcon
+│   ├── ArgumentStrengthMeter
+│   └── OpponentTypeTags
+├── DialoguePanel
+├── CasebookPanel
+│   ├── JudgmentList
+│   └── JudgmentSummary
+├── MovePanel
+│   ├── MoveButton1
+│   ├── MoveButton2
+│   ├── MoveButton3
+│   └── MoveButton4
+├── EvidencePanel
+├── AllySupportPanel
+├── EffectivenessPopup
+├── AnimationPlayer
+└── AudioRoot
+```
+
+---
+
+# Godot folder structure
+
+```text
+res://systems/casebook/
+├── casebook_manager.gd
+├── judgment_definition.gd
+├── principle_move_definition.gd
+├── argument_definition.gd
+├── encounter_definition.gd
+├── battle_state.gd
+├── battle_resolver.gd
+├── casebook_save_data.gd
+
+res://data/casebook/
+├── judgments.gd
+├── principle_moves.gd
+├── opponent_arguments.gd
+├── encounters_chapter1.gd
+├── encounters_chapter2.gd
+├── encounters_chapter3.gd
+├── encounters_chapter4.gd
+├── encounters_chapter5.gd
+
+res://ui/casebook_battle/
+├── casebook_battle.tscn
+├── casebook_battle_ui.gd
+├── judgment_button.tscn
+├── move_button.tscn
+├── tag_chip.tscn
+├── effectiveness_popup.tscn
+
+res://world/interactables/
+├── wild_argument_interactable.gd
+├── advocate_challenge_interactable.gd
+```
+
+---
+
+# Casebook manager
+
+Responsibilities:
+
+```text
+track unlocked judgments
+track active judgments
+track discovered moves
+provide available authorities for battle
+unlock judgments
+save/load casebook state
+```
+
+Script concept:
+
+```gdscript
+# res://systems/casebook/casebook_manager.gd
+extends Node
+class_name CasebookManager
+
+var unlocked_judgments: Dictionary = {}
+var active_judgment_ids: Array[String] = []
+var mastered_moves: Dictionary = {}
+
+func unlock_judgment(judgment_id: String) -> void:
+	if unlocked_judgments.has(judgment_id):
+		return
+
+	unlocked_judgments[judgment_id] = {
+		"unlocked": true,
+		"mastery": 0,
+		"seen": false
+	}
+
+func has_judgment(judgment_id: String) -> bool:
+	return unlocked_judgments.has(judgment_id)
+
+func set_active_judgments(ids: Array[String]) -> void:
+	active_judgment_ids = ids.slice(0, get_active_slot_count())
+
+func get_active_judgments() -> Array:
+	var result := []
+	for id in active_judgment_ids:
+		result.append(JudgmentRegistry.get_judgment(id))
+	return result
+
+func get_active_slot_count() -> int:
+	return 3 # P0
+```
+
+P0 active judgment slots:
+
+```text
+3
+```
+
+Later:
+
+```text
+4–6
+```
+
+Do not give the player 20 judgments to scroll through during battle. That will kill pacing.
+
+---
+
+# Encounter definition
+
+An encounter defines one or more opponent arguments.
+
+```gdscript
+const ENCOUNTERS := {
+	"chapter1_service_tutorial": {
+		"display_name": "Service Problem",
+		"encounter_type": "court_round",
+		"chapter": 1,
+		"opponent_arguments": ["file_says_served"],
+		"required_evidence": ["law_binder"],
+		"allowed_judgments": [], # empty = use active Casebook
+		"victory_flags": ["chapter1.argued_defective_service"],
+		"loss_behavior": "hint_and_retry",
+		"intro_dialogue": "judge_ch1_service_intro",
+		"victory_dialogue": "judge_ch1_service_success",
+		"weak_victory_dialogue": "judge_ch1_service_weak",
+		"defeat_dialogue": "murrow_ch1_service_hint"
+	}
+}
+```
+
+Encounter types:
+
+```gdscript
+enum EncounterType {
+	WILD_ARGUMENT,
+	TRAINING,
+	ADVOCATE_CHALLENGE,
+	COURT_ROUND,
+	FINAL_HEARING
+}
+```
+
+Loss behavior:
+
+```gdscript
+enum LossBehavior {
+	RETRY,
+	HINT_AND_RETRY,
+	WEAK_BRANCH,
+	STORY_CONTINUES,
+	GAME_OVER_OPTIONAL
+}
+```
+
+Do not use `GAME_OVER_OPTIONAL` in main story.
+
+---
+
+# Battle resolver
+
+The battle resolver should be pure logic.
+
+No UI code.
+
+Input:
+
+```text
+BattleState
+PlayerAction
+```
+
+Output:
+
+```text
+BattleResolutionResult
+```
+
+Player action:
+
+```gdscript
+{
+	"judgment_id": "golder_v_uk",
+	"move_id": "access_to_court",
+	"evidence_id": "law_binder",
+	"ally_id": "crab"
+}
+```
+
+Resolution result:
+
+```gdscript
+{
+	"effectiveness": "super_effective",
+	"fit_score": 82,
+	"force": 61,
+	"opponent_strength_before": 80,
+	"opponent_strength_after": 19,
+	"composure_delta": 0,
+	"patience_delta": 2,
+	"result_text": "Golder v. UK used Access to Court. It is super effective.",
+	"judge_text": "Counsel, surprisingly, that is a point.",
+	"flags_to_set": []
+}
+```
+
+Pseudo-code:
+
+```gdscript
+func resolve_player_action(state: BattleState, action: Dictionary) -> Dictionary:
+	var judgment = JudgmentRegistry.get_judgment(action["judgment_id"])
+	var move = MoveRegistry.get_move(action["move_id"])
+	var opponent = state.get_current_opponent()
+	var evidence = EvidenceManager.get_evidence(action.get("evidence_id", ""))
+	var ally = AllyRegistry.get_ally(action.get("ally_id", ""))
+
+	if !judgment["moves"].has(move["id"]):
+		return invalid_action("Judgment does not have this move.")
+
+	var fit = BattleResolver.calculate_legal_fit(move, opponent, evidence, ally)
+
+	var force = int(move["base_force"] * fit["multiplier"])
+
+	opponent["argument_strength"] = max(0, opponent["argument_strength"] - force)
+
+	var patience_delta = calculate_patience_delta(fit["tier"])
+	var composure_delta = calculate_composure_delta(fit["tier"], opponent)
+
+	state.judicial_patience = clamp(state.judicial_patience + patience_delta, 0, 100)
+	state.courtroom_composure = clamp(state.courtroom_composure + composure_delta, 0, 100)
+
+	var defeated = opponent["argument_strength"] <= 0
+
+	return {
+		"effectiveness": fit["tier"],
+		"fit_score": fit["score"],
+		"force": force,
+		"opponent_defeated": defeated,
+		"patience_delta": patience_delta,
+		"composure_delta": composure_delta,
+		"result_text": build_result_text(judgment, move, fit, force),
+		"reaction_text": select_reaction_text(opponent, move, fit, defeated)
+	}
+```
+
+---
+
+# Opponent turn
+
+Keep opponent turns simple.
+
+After player action, if opponent survives:
+
+```text
+Opponent applies pressure.
+Courtroom Composure decreases.
+A hint may appear if player is struggling.
+```
+
+Opponent action data:
+
+```gdscript
+{
+	"id": "formalism_pressure",
+	"display_name": "Formalism Pressure",
+	"pressure": 10,
+	"text": "The opposing argument insists that the file must be trusted over reality.",
+	"tags": ["formalism", "procedure"]
+}
+```
+
+Resolution:
+
+```gdscript
+state.courtroom_composure -= opponent.pressure
+```
+
+If player used a super-effective move last turn, reduce pressure:
+
+```gdscript
+if last_effectiveness in ["super_effective", "perfect_fit"]:
+	pressure = int(pressure * 0.5)
+```
+
+If player used no-effect move, increase pressure:
+
+```gdscript
+if last_effectiveness == "no_effect":
+	pressure = int(pressure * 1.25)
+```
+
+---
+
+# Tutorial design
+
+The first Casebook tutorial should be embedded in Chapter 1, after the player collects the Procedural Binder and Rights Memo.
+
+Do not start the game with a judgment battle. The current Chapter 1 plan correctly starts with movement, office entry, dialogue, quest, evidence pickup, allies, optional coffee, and only then court choices.
+
+## Tutorial sequence
+
+### Tutorial 1 — Wild Argument outside District Court
+
+Opponent:
+
+```text
+"TECHNICALITY!"
+```
+
+Murrow:
+
+> "A common specimen. It looks harmless until it eats a hearing."
+
+Player has one judgment/authority:
+
+```text
+The Procedural Binder
+```
+
+Move:
+
+```text
+Proper Notice
+```
+
+Outcome is guided. The player cannot fail permanently.
+
+### Tutorial 2 — First court round
+
+Opponent:
+
+```text
+FILE SAYS SERVED
+```
+
+Player chooses:
+
+```text
+Judgment / Authority:
+Procedural Binder or Golder
+
+Move:
+Access to Court / Proper Notice
+
+Evidence:
+Unreasonably Heavy Procedural Binder
+
+Ally:
+Crab, if recruited
+```
+
+The tutorial should show:
+
+```text
+Correct judgment
+Correct move
+Optional evidence bonus
+Optional ally bonus
+Effectiveness popup
+Argument Strength reduction
+Judge reaction
+```
+
+---
+
+# Chapter integration
+
+## Chapter 1 integration
+
+Replace the old simple court-choice UI with a limited Casebook battle UI.
+
+Chapter 1 rounds:
+
+```text
+Round 1:
+Defective service
+
+Round 2:
+Fair hearing
+
+Round 3:
+Modest remedy
+```
+
+These already exist in the design.
+
+Round 1:
+
+```gdscript
+{
+	"encounter_id": "ch1_round1_defective_service",
+	"opponent_argument": "file_says_served",
+	"recommended_moves": ["proper_notice", "access_to_court", "procedural_doorway"],
+	"best_evidence": ["law_binder"],
+	"best_ally": "crab",
+	"success_flag": "chapter1.argued_defective_service"
+}
+```
+
+Round 2:
+
+```gdscript
+{
+	"encounter_id": "ch1_round2_fair_hearing",
+	"opponent_argument": "technicality_does_not_matter",
+	"recommended_moves": ["fair_hearing", "practical_effective", "procedural_doorway"],
+	"best_evidence": ["rights_memo"],
+	"best_ally": "whimsy",
+	"success_flag": "chapter1.argued_fair_hearing"
+}
+```
+
+Round 3:
+
+```gdscript
+{
+	"encounter_id": "ch1_round3_remedy",
+	"opponent_argument": "ask_for_everything",
+	"recommended_moves": ["modest_remedy", "procedural_doorway"],
+	"best_evidence": ["law_binder", "rights_memo"],
+	"best_ally": "murrow",
+	"success_flag": "chapter1.argued_remedy"
+}
+```
+
+Chapter 1 should be forgiving. Even weak but relevant moves should pass after a Murrow hint.
+
+## Chapter 2 integration
+
+Chapter 2 keeps Evidence Board as preparation, then uses Casebook battles in Housing Court.
+
+Chapter 2 already asks four legal questions: what the eviction notice alleged, what rule Waldek breached, whether there was real disturbance, and whether eviction was proportionate.  Those become argument encounters.
+
+Housing Court rounds:
+
+```text
+Round 1:
+Rule clarity / arbitrary rule
+
+Round 2:
+Factual disturbance / complaint reliability
+
+Round 3:
+Proportionality / home / expression
+```
+
+Round 1:
+
+```gdscript
+{
+	"opponent_argument": "rule_is_rule",
+	"best_moves": ["individual_assessment", "proportionality_review", "proper_notice"],
+	"best_evidence": ["building_rules_extract"],
+	"best_ally": "crab"
+}
+```
+
+Round 2:
+
+```gdscript
+{
+	"opponent_argument": "poster_caused_disorder",
+	"best_moves": ["evidence_reliability", "protected_expression", "proportionality_review"],
+	"best_evidence": [
+		"neighbor_statement_no_disturbance",
+		"recovered_complaint_page",
+		"damaged_complaint_page"
+	],
+	"best_ally": "crab"
+}
+```
+
+Round 3:
+
+```gdscript
+{
+	"opponent_argument": "eviction_available",
+	"best_moves": ["home_interference", "individual_assessment", "proportionality_review"],
+	"best_evidence": ["poster_photo", "eviction_notice", "neighbor_statement_targeted_enforcement"],
+	"best_ally": "whimsy"
+}
+```
+
+Evidence Board score modifies starting conditions:
+
+```gdscript
+match chapter2.evidence_board_score:
+	"strong_case":
+		opponent_starting_strength -= 15
+		judicial_patience += 10
+	"standard_case":
+		pass
+	"shaky_case":
+		opponent_starting_strength += 10
+		judicial_patience -= 5
+```
+
+## Chapter 3 integration
+
+Chapter 3's main system remains contradiction spotting. Casebook battle should be used in court remedy rounds, not replace contradiction scenes.
+
+Use it for:
+
+```text
+technical irregularity argument
+procedural prejudice
+deadline remedy
+```
+
+Contradiction spotting exposes facts; Casebook battle turns facts into legal argument.
+
+## Chapter 4 integration
+
+Chapter 4's main system remains Dual Attorney.
+
+Casebook battle should be secondary.
+
+Use it lightly for:
+
+```text
+fairness of arbitration
+burden of proof
+document reliability
+```
+
+Do not make Chapter 4 an ECHR-heavy chapter unless the story demands it.
+
+## Chapter 5 integration
+
+Chapter 5 combines everything.
+
+Team Assembly produces bonuses.
+
+Final Hearing rounds:
+
+```text
+Round 1:
+Defective notice / procedural access
+
+Round 2:
+Individual impact / proportionality
+
+Round 3:
+Technical suppression / bad faith
+
+Round 4:
+Conflict of interest / private benefit
+
+Round 5:
+Remedy / social utility / access to justice
+```
+
+The current Chapter 5 plan already identifies those final-hearing functions and links them to Team Assembly and accumulated evidence.  Casebook battles should give each round a playable legal structure.
+
+---
+
+# Wild Argument map integration
+
+Wild arguments should be interactable nodes.
+
+Scene:
+
+```text
+res://world/interactables/wild_argument.tscn
+```
+
+Node structure:
+
+```text
+WildArgument
+├── AnimatedSprite2D
+├── SpeechBubbleLabel
+├── Area2D
+├── CollisionShape2D
+└── WildArgumentInteractable.gd
+```
+
+Script:
+
+```gdscript
+extends Area2D
+class_name WildArgumentInteractable
+
+@export var encounter_id: String
+@export var visible_if: String = ""
+@export var hidden_if: String = ""
+
+func interact() -> void:
+	if visible_if != "" and !GameState.has_flag(visible_if):
+		return
+
+	if hidden_if != "" and GameState.has_flag(hidden_if):
+		return
+
+	CasebookBattleRouter.start_encounter(encounter_id)
+```
+
+Example placement:
+
+```gdscript
+{
+	"id": "wild_argument_technicality_ch1",
+	"prefab": "wild_argument",
+	"pos": Vector2i(14, 8),
+	"encounter_id": "wild_technicality_ch1",
+	"visible_if": "chapter1.has_law_binder",
+	"hidden_if": "chapter1.wild_technicality_defeated"
+}
+```
+
+This works with the decoration/interactable philosophy already used for evidence and chapter overlays, where visible/hidden flags control world persistence.
+
+---
+
+# Rewards
+
+Rewards should be useful but not grindy.
+
+Possible rewards:
+
+```text
+unlock judgment
+unlock move
+Casebook note
+small badge
+court hint
+dialogue variation
+ally respect
+```
+
+Avoid:
+
+```text
+currency grinding
+XP grinding
+mandatory random battles
+stat inflation loops
+```
+
+Reward examples:
+
+```gdscript
+{
+	"encounter_id": "wild_technicality_ch1",
+	"rewards": {
+		"casebook_note": "procedure_not_decoration",
+		"unlock_move": "proper_notice",
+		"set_flags": ["chapter1.wild_technicality_defeated"]
+	}
+}
+```
+
+---
+
+# Judgment mastery
+
+Not P0, but design for later.
+
+Instead of Pokémon levels, use:
+
+```text
+Mastery
+```
+
+Judgment Mastery increases when a judgment is used correctly.
+
+```gdscript
+mastery += fit_score / 100.0
+```
+
+Mastery rewards:
+
+```text
+Level 1:
+case note unlocked
+
+Level 2:
+second move unlocked
+
+Level 3:
+memory hook unlocked
+
+Level 4:
+special line / combo
+
+Level 5:
+badge / portrait flourish
+```
+
+Do not add stat inflation early. Mastery should unlock readability and flavor, not break balance.
+
+---
+
+# Combos
+
+P2 only.
+
+Examples:
+
+```text
+Golder + Proper Notice + Law Binder:
+"Doorway to Court" combo
+
+Connors + Poster Photo + Waldek statement:
+"Home Is Not a Template" combo
+
+Handyside + Poster Photo + Whimsy:
+"Expression With Consequences" combo
+```
+
+Combo data:
+
+```gdscript
+{
+	"id": "home_not_template",
+	"required_move": "individual_assessment",
+	"required_evidence": "poster_photo",
+	"required_ally": "whimsy",
+	"bonus_force": 20,
+	"text": "Home is not a template. The court listens."
+}
+```
+
+Do not build this in P0. It is a polish layer.
+
+---
+
+# Save data
+
+Add to global save:
+
+```gdscript
+casebook: {
+	"unlocked_judgments": {
+		"golder_v_uk": {
+			"unlocked": true,
+			"mastery": 1.5,
+			"seen": true
+		}
+	},
+
+	"active_judgments": [
+		"golder_v_uk",
+		"airey_v_ireland",
+		"connors_v_uk"
+	],
+
+	"unlocked_moves": {
+		"access_to_court": true,
+		"proper_notice": true
+	},
+
+	"defeated_wild_arguments": [
+		"wild_technicality_ch1"
+	]
+}
+```
+
+Keep battle state out of permanent save unless saving mid-battle is required.
+
+---
+
+# Battle flags
+
+Example flags:
+
+```gdscript
+chapter1.casebook_tutorial_seen = false
+chapter1.wild_technicality_defeated = false
+chapter1.casebook_court_used = false
+
+chapter2.wild_rule_is_rule_defeated = false
+chapter2.grzyb_casebook_challenge_won = false
+
+casebook.has_golder = false
+casebook.has_connors = false
+casebook.has_handyside = false
+```
+
+Prefer structured state:
+
+```gdscript
+GameState.set_flag("casebook.unlocked.golder_v_uk", true)
+```
+
+or manager state:
+
+```gdscript
+CasebookManager.unlock_judgment("golder_v_uk")
+```
+
+Do not duplicate too much. The manager should own Casebook progression.
+
+---
+
+# Dialogue text patterns
+
+## Super effective
+
+```text
+[Judgment] invoked [Move].
+It is super effective.
+The opposing argument loses coherence.
+```
+
+Example:
+
+> Golder v. UK invoked Access to Court. It is super effective. The file's confidence begins to sweat.
+
+## Effective
+
+> The authority fits. The argument weakens.
+
+## Weak
+
+> The point is relevant, but not decisive here.
+
+## Not effective
+
+> The Court sees the principle, but not its connection.
+
+## No effect
+
+> Judge: "Counsel, this is not the issue before me."
+
+## Backfire
+
+Use rarely.
+
+> Whimsy: "An inspiring point."
+> Murrow: "In another case."
+
+---
+
+# Court reaction library
+
+Create reusable reactions keyed by tier and context.
+
+```gdscript
+const COURT_REACTIONS := {
+	"article_6": {
+		"super_effective": [
+			"Judge: "That goes directly to the fairness of the process."",
+			"Judge: "The Court will hear you on that point.""
+		],
+		"not_effective": [
+			"Judge: "Counsel, identify the procedural defect more precisely.""
+		],
+		"no_effect": [
+			"Judge: "That may be law, but it is not this law.""
+		]
+	},
+
+	"article_8_home": {
+		"super_effective": [
+			"Judge: "The loss of a home requires more than administrative convenience.""
+		],
+		"not_effective": [
+			"Judge: "Home life is engaged, but proportionality remains undeveloped.""
+		]
+	}
+}
+```
+
+Story battles should use custom lines for important moments. Wild arguments can use generic lines.
+
+---
+
+# AI implementation instruction
+
+An AI coder should implement this in layers.
+
+## Layer 1 — Pure data
+
+Create:
+
+```text
+judgments.gd
+principle_moves.gd
+opponent_arguments.gd
+encounters_chapter1.gd
+```
+
+No UI yet.
+
+## Layer 2 — Resolver tests
+
+Create unit-style debug script:
+
+```gdscript
+func test_casebook_resolver():
+	test("Golder/access_to_court vs file_says_served should be super_effective")
+	test("Handyside/protected_expression vs file_says_served should be not_effective")
+	test("Connors/home_interference vs eviction_available should be effective_or_super")
+```
+
+Expected outputs:
+
+```text
+Article 6 access move vs Article 6 service issue = super effective
+Article 10 expression move vs Article 6 service issue = not effective
+Article 8 home move vs eviction issue = super effective
+```
+
+## Layer 3 — Battle state
+
+Implement:
+
+```text
+BattleState
+start_encounter
+resolve_player_action
+opponent_turn
+victory/defeat
+```
+
+Run in console first.
+
+## Layer 4 — Basic UI
+
+Minimal UI:
+
+```text
+opponent name
+opponent strength
+player composure
+judgment buttons
+move buttons
+result text
+```
+
+No portraits required yet.
+
+## Layer 5 — Chapter 1 integration
+
+Replace the first court-choice screen with Casebook Battle for one round only.
+
+Do not convert all chapters at once.
+
+## Layer 6 — Full Chapter 1 court
+
+Convert all three Chapter 1 rounds.
+
+## Layer 7 — Chapter 2 Housing Court
+
+Integrate Evidence Board score and evidence bonuses.
+
+## Layer 8 — Wild Arguments
+
+Add visible overworld interactables.
+
+---
+
+# First implementation slice
+
+Build this first:
+
+```text
+Casebook Battle v0.1 — Chapter 1 Service Tutorial
+```
+
+Scope:
+
+```text
+3 judgments / authorities
+6 moves
+3 opponent arguments
+1 tutorial wild argument
+1 court round
+tag-based effectiveness
+basic UI
+no mastery
+no combos
+no random encounters
+no real judgment verification requirement at runtime
+```
+
+Concrete files:
+
+```text
+res://systems/casebook/casebook_manager.gd
+res://systems/casebook/battle_state.gd
+res://systems/casebook/battle_resolver.gd
+res://data/casebook/judgments.gd
+res://data/casebook/principle_moves.gd
+res://data/casebook/opponent_arguments.gd
+res://data/casebook/encounters_chapter1.gd
+res://ui/casebook_battle/casebook_battle.tscn
+res://ui/casebook_battle/casebook_battle_ui.gd
+```
+
+P0 data:
+
+```text
+Judgments:
+Golder v. UK
+Airey v. Ireland
+Handyside v. UK, for wrong-match tutorial
+
+Moves:
+Access to Court
+Practical Rights
+Procedural Doorway
+Proper Notice
+Protected Expression
+Distinguish Facts
+
+Opponents:
+Technicality!
+File Says Served
+Technicality Does Not Matter
+```
+
+Tutorial test:
+
+```text
+Use Golder + Access to Court on File Says Served:
+super effective
+
+Use Handyside + Protected Expression on File Says Served:
+not very effective
+
+Use Distinguish Facts:
+reveals hint but deals low force
+```
+
+---
+
+# Acceptance criteria
+
+The Casebook Battle System v0.1 is done when:
+
+```text
+the player can unlock at least three judgments
+the player can open a Casebook battle
+the player can select a judgment
+the player can select one of that judgment's moves
+the opponent has Argument Strength instead of HP
+the player has Courtroom Composure instead of HP
+the resolver compares article, principle, and context tags
+the result produces no effect / not effective / effective / super effective
+the result reduces opponent Argument Strength
+wrong legal matches produce funny but clear court feedback
+one Chapter 1 court round uses the system
+one visible Wild Argument uses the system
+battle outcome sets story flags
+the system can be extended by adding data, not rewriting battle code
+```
+
+---
+
+# Final design target
+
+The system should make players think like this:
+
+```text
+What is the legal problem?
+Which Article is engaged?
+Which principle actually answers it?
+Which judgment gives me that principle?
+Do I have evidence that makes the point land?
+Which ally can sharpen it?
+What remedy am I really asking for?
+```
+
+That is the real win.
+
+If this works, Pig & Swine stops being merely a funny legal RPG and becomes something much rarer: a game where the player learns legal reasoning through play.

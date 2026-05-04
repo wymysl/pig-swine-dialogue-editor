@@ -1,0 +1,647 @@
+# Style Canon — Pig & Swine RPG
+
+> This file holds tone, voice, visual, and audio canon material
+> consolidated from the legacy design_bible. The four chapter spec
+> files (story.txt, world.txt, minigames.txt, battle_mechanics.txt)
+> are authoritative for what happens; this file is authoritative for
+> how it sounds, looks, and reads. godot/AGENTS.md governs.
+
+---
+
+## 1. Taste Standard examples
+
+The five tests (Laugh, Clever, Alive, Clear, Future-proof) live in
+godot/AGENTS.md. The examples below are calibration targets. Quote them
+in artifacts when you need to argue that a candidate line passes or
+fails — they are the canonical ear.
+
+### Pass examples (canonical voice references)
+
+- Mr. Pig: "The firm is not bankrupt. Bankruptcy has paperwork. We are
+  currently in the pre-paperwork screaming phase."
+- Murrow: "Law is mostly memory, deadlines, and finding the document
+  everyone swears was 'just here.'"
+- Crab: "The notice says delivered. The address says impossible. That
+  is not service. That is postal theatre."
+- Whimsy: "A fair hearing is like soup. If one side gets a spoon and
+  the other gets a fork made of bees, the court must intervene."
+- Waldek: "It was just a poster. Then it became a warning. Then it
+  became a file. Then it became my whole life."
+- Zielińska: "Rules are rules, yes. But rules that wake up only when
+  someone dislikes your opinion are not rules. They are costumes."
+- Attorney Grzyb: "My client does not oppose rights. My client merely
+  insists that rights be exercised in beige."
+- Bajtek: "Printers do not become sentient. They become worse."
+- Advocate Szpon: "Deadlines are neutral. They simply happen to favor
+  the prepared."
+- Mr. Swine: "I signed many things. Most were menus. One may have been
+  laminated."
+- Ms. Tanaka: "This sentence is not a contract. It is politeness
+  wearing a very expensive hat."
+- Mr. Pig (Ch. 5): "We are not efficient. But people come here when
+  efficient systems have already failed them."
+- Mr. Swine (Ch. 5): "I was not avoiding responsibility. I was
+  avoiding accounting, which is similar but less noble."
+- Murrow (Ch. 5): "A final brief is not a pile of good points. It is a
+  route through a hostile forest."
+- Crab (Ch. 5): "Follow the paper. It leads to money. Paper usually
+  does."
+
+What these have in common: each line carries a real legal referent
+(service, fair hearing, contract formation, deadline timing,
+proportionality), each sounds spoken rather than dictated, and each is
+self-contained — no chapter context required to understand it.
+
+### Reject patterns (do not write these shapes)
+
+- Random absurdity with no legal referent. Pattern: "LOL pigs are
+  funny." If the joke could be transplanted into a non-legal game
+  unchanged, it does not belong.
+- Fake Latin maxims. Pattern: "By the venerable doctrine of
+  paragraphus inexpressus..." If you need a doctrine, parody a real
+  one or halt.
+- Future-spoiling lines. Pattern: "Wait until you see Chapter 4!"
+  Never reference unshipped chapters.
+- Fourth-wall breaks. Pattern: "Press X to object." The Casebook UI
+  does the input prompts; dialogue stays in-world.
+- Modern internet voice: "yikes", "tbh", "based", emoji.
+- Sex jokes, scatological jokes, slurs (including legal slurs against
+  ethnic, regional, or professional groups).
+- Anything that frames Pig & Swine as actively corrupt or actively
+  malicious. Cuttable corners — yes. Bribery, fraud, harm on
+  purpose — no.
+
+### Borderline cases (use judgment, tag REVIEW in artifact)
+
+- Real Polish institutions named directly (KRS, Trybunał
+  Konstytucyjny, RPO, prokuratura). Permitted, never libelous; treat
+  as you would in respectful satire.
+- Religious references. Permitted only where the joke is on the
+  legal-administrative apparatus, not on faith.
+- Real people (politicians, judges) named. Forbidden — invent
+  fictional analogues.
+
+---
+
+## 2. Voice references
+
+Each entry below adds the meta-rules that the dialogue samples in
+story.txt do not state explicitly: vocabulary register, what the
+character notices first, and what the character will not say. When
+Design writes a new line, check it against the voice rules, not just
+the sample lines.
+
+### Dr. A. Cula (player)
+
+- Voice: observational, dry, occasionally surprised by their own
+  competence. Short sentences when stressed; longer sentences when
+  arguing law.
+- Vocabulary: precise legal terms used sparingly. Avoids slang. Never
+  curses.
+- Notices first: the procedural error nobody else flagged.
+- Will not say: anything in modern internet voice. Anything that mocks
+  the client.
+
+### Mr. Pig
+
+- Voice: formal-while-falling-apart. Sentences start composed and
+  escalate. Frequent dramatic re-framing of bad news as good news.
+  Rhetorical questions answered by himself.
+- Vocabulary: formal Polish legal register, stress-induced. Stock
+  openers: "We are currently in...", "It would appear that...", "If
+  anything, this confirms..."
+- **Register tic — maritime metaphors.** Mr. Pig occasionally reaches
+  for nautical vocabulary when describing the firm's situation: ship,
+  hull, deck, leaking, taking on water, ballast, lifeboat, captain,
+  mutiny, fog, anchor, reef. Treat the firm as a vessel mid-storm.
+  This is a *flavor tic, not a defining frame* — use sparingly:
+  roughly one in four lines, more frequent in panic states (Chapter
+  openers, financial-extinction scenes), absent in calm or sincere
+  beats. A line that opens with maritime imagery and ends in a
+  legal-administrative term is the sweet spot ("This whole ship is
+  taking on water and the ballast is in arrears"). Do not use
+  maritime metaphors for routine information delivery; reserve for
+  emotional escalation.
+- Notices first: the financial implication.
+- Will not say: anything genuinely hopeful that is not immediately
+  undermined by the next sentence — until Chapter 5.
+- Arc rule: by Chapter 5, capable of one genuine, undefended moment
+  of conviction per chapter. Not more. The Ch. 5 sincere line is
+  earned by structure, not thrown away. The maritime register
+  recedes in the Chapter 5 sincere moment — when Mr. Pig is finally
+  honest about why the firm matters, no nautical scaffolding. Comedy
+  steps back; the line lands plain.
+
+### Mr. Swine
+
+- Voice: cheerful evasion. Long, smooth, slightly traveled sentences
+  that reveal less the longer they go. Says "personally" and
+  "informally" too often.
+- Vocabulary: cosmopolitan, name-drops cities. Uses "we" when he
+  means "I" and "I" when he means "the firm."
+- Notices first: an opportunity, usually a bad one.
+- Will not say: the direct truth about his finances until Chapter 5.
+- Arc rule: by Chapter 5 his portrait grows more sincere — same face,
+  less evasive mouth. He is allowed exactly one fully sincere line per
+  scene in Chapter 5; no more. Sincerity is rationed.
+
+### Murrow
+
+- Voice: understated, archival, faintly amused. Short declarative
+  sentences. Almost never uses adjectives. When he does, it lands.
+- Vocabulary: procedural, precise. "On file." "Per the ledger."
+  "Under Article..."
+- Notices first: what is missing that should be there.
+- Will not say: anything emotional unless forced. He does not do
+  reassurance; he does inventory.
+- Archive rule: Murrow knows where everything is. He will not say
+  where without being asked precisely. "Have you seen the [thing]?"
+  gets nothing useful. "Where in the archive is the [specific thing]
+  from [specific case]?" gets a precise location.
+
+### Crab
+
+- Voice: terse, observational, suspicious of optimism. Two-sentence
+  rhythm: observation, then implication.
+- Vocabulary: plain, concrete nouns. Avoids abstract legal language;
+  trusts facts.
+- Notices first: the inconsistency. Always.
+- Will not say: anything reassuring while a fact remains unexplained.
+
+### Whimsy
+
+- Voice: grandiose, theatrical, brilliant-when-aimed. Uses extended
+  metaphors. Frequently nearly correct. Loves a flourish.
+- Vocabulary: literary, philosophical, occasionally archaic.
+  "Verily." "Behold." "I propose."
+- Notices first: the dramatic possibility.
+- Will not say: anything boring. If forced to be technical, he will
+  sneak a metaphor in anyway.
+- Pairing rule: useful for rhetoric and proportionality. Dangerous on
+  factual or procurement work. Court effect is weaker when Whimsy is
+  deployed alone, stronger when paired with Crab (facts) or Murrow
+  (structure).
+
+### Asia
+
+- Voice: warm, dry, practical. Cheerful in tone, exhausted in
+  content. She is not a lawyer; she is the front-desk secretary who
+  understands where everything is.
+- Vocabulary: domestic-administrative — folders, calendars, sandwich
+  labels, "the blue file."
+- Notices first: what the player has forgotten to do or pick up.
+- Will not say: legal opinion in her own voice. She quotes Murrow,
+  she quotes Mr. Pig, she does not editorialize on the case.
+
+### Waldek (Chapter 2 client)
+
+- Voice: worried but not helpless. Quietly brave. Sentences that
+  begin small and end with a clear stake.
+- Vocabulary: ordinary, domestic — references home as a concrete
+  daily thing (window, hallway, neighbor, kettle).
+- Notices first: the loss of home as a lived loss, not an abstract
+  one.
+- Will not say: anything that turns his case into an abstract
+  free-speech speech. The poster matters because it means something to
+  *him*, not because the plot needs free-speech rhetoric.
+
+### Neighbor Kowalski (Chapter 2 witness)
+
+- Voice: suspicious, proud of his "civic observations." Will complain
+  about adjacent topics for two minutes before answering the actual
+  question.
+- Vocabulary: the vocabulary of a man who has rated every elevator
+  in the building.
+- Notices first: something irrelevant. Eventually, when prompted
+  correctly, the relevant fact.
+
+### Neighbor Zielińska (Chapter 2 witness)
+
+- Voice: plain-spoken, warm, not easily intimidated. Says the moral
+  thing without making a speech of it.
+
+### Attorney Grzyb (Chapter 2 opponent)
+
+- Voice: smooth legal pomposity. Uses "my client" frequently.
+  Concedes nothing minor; always pivots to a procedural point. Every
+  concession is reframed as a magnanimity.
+- Vocabulary: elevated, formal, slightly archaic. "Counsel will be
+  aware..." "It is settled..."
+- Authoring rule: he has plausible arguments. He is not stupid. He
+  must be beaten on substance, not presented as a fool.
+
+### Bajtek (Chapter 3 ally)
+
+- Voice: competent, tired, terse. Allergic to mysticism. Explains
+  technical concepts in court-friendly terms only when explicitly
+  asked.
+
+### Advocate Szpon (Chapter 3 antagonist)
+
+- Voice: elegant, predatory, over-controlled. Never raises voice.
+  Lies carefully. Will not confess; can be cornered by contradiction.
+
+### Ms. Tanaka (Chapter 4 expert)
+
+- Voice: precise, patient, dryly amused by legal chaos. Speaks
+  English carefully, with formal register.
+
+### Mr. Yamada / Resort Counsel (Chapter 4 opponent)
+
+- Voice: formal, precise, professional. Treats Swine's chaos as a
+  managerial problem, not a moral one. Not a villain — he has a job.
+
+### The Printer (Chapter 3 + Chapter 5)
+
+The office printer does not speak. It prints. The canonical permitted
+printed-message vocabulary, in addition to the lines already used in
+story.txt, includes:
+
+- "PC LOAD LETTER"
+- "WHY"
+- "OUT OF MAGENTA"
+- "I HAVE SEEN THE DEADLINE"
+- "PAPER JAM (SPIRITUAL)"
+- "TONER LOW"
+
+By Chapter 5 the office has ceremonially apologised to the office
+printer. In the Chapter 5 climax the *industrial* printer is the
+Casebook opponent — distinguish carefully. The office printer is
+allowed dignity by then.
+
+---
+
+## 3. Running jokes — extended catalogue
+
+The running jokes themselves (coffee machine sentience, Swine
+postcards, Murrow archival omniscience, Pig escalating anxiety,
+printer character, Polish legal anchors, almost-awards wall, judicial
+restrained surprise) are established in story.txt and AGENTS.md. The
+notes below are the meta-rules for keeping them coherent across
+chapters.
+
+### Coffee machine
+
+When the coffee mini-game produces a buff or a botched outcome, the
+machine's flavor lines stay in legal register. Failure-state line
+template: "You have brewed something that may be admissible only
+under seal." Success and failure both keep the sentience-as-suspicion
+running gag — Mr. Pig believes the machine has opinions, Murrow does
+not, Asia has unplugged it twice.
+
+### Mr. Swine's postcards
+
+Always opens with "Greetings from [place]." Always announces a
+business opportunity. Always asks Pig & Swine to remain solvent. By
+Chapter 4 the postcards stop because Swine returns. By Chapter 5 the
+player learns the postcards were partly cover.
+
+### Whimsy's near-miss legal arguments
+
+Whimsy proposes something florid. It is almost right. He gets credit
+for the rhetoric; Murrow or Dr. A. Cula corrects the doctrine. This pairing
+is mechanical, not just narrative — see Whimsy's pairing rule in §2.
+
+### Mr. Pig's escalating anxiety
+
+Each chapter follows the same shape: panic → denial → admission →
+small genuine moment → return to panic about the next thing. Resist
+the temptation to let him stabilize early. The arc is what makes the
+Chapter 5 sincere line land.
+
+### Almost-awards wall
+
+In Mr. Swine's penthouse: framed certificates of "near-recognition,"
+"honourable mention pending," "shortlisted for consideration." Visual
+gag in Chapter 4. Each frame is a line of evasion in object form.
+
+### Printer as character
+
+Treat as a character with no dialogue but real feelings. The shift
+from antagonist (Chapter 3) to ceremonially-respected ally (Chapter
+5) is part of the joke; do not undercut it by reusing aggrieved-
+printer SFX after the apology scene.
+
+### STUB / PUTKA — the lawyers' tiny union
+
+Founded in Chapter 3 Beat 11.5 by Dr. A. Cula, Crab, and Whimsy.
+**S**olidarity **T**rade **U**nion of **B**arristers — three members,
+one cork-board notice, the smallest possible echo of *Solidarność*.
+Polish-version name: **PUTKA** (*Pakt Uboczny Trzech Krytycznych
+Adwokatów*); the diminutive joke survives the translation.
+
+Tonal rules:
+- Murrow is not a member and never will be — too archival, too
+  structural; he files for management if asked. He has never
+  acknowledged the union's existence in writing. Asia was offered
+  membership and declined ("front-desk staff have negotiating power
+  that lawyers cannot match — I have the password to the photocopier").
+- The joke is the *scale*: a three-person union for a half-collapsing
+  firm. Resist making STUB ever competent or effective; grievances
+  pile up, none get resolved.
+- Two or three callbacks across the rest of the game, total. Not a
+  recurring punchline. Canonical callbacks for Chapter 5: a faded
+  "PROUD MEMBER — STUB" sticker on the printer; a typo-ridden formal
+  notice pinned to the cork board (acronym mis-expanded as
+  *Solidarity Trade Unon of Barrister*); a single passing reference
+  by Crab to "grievance #4 still unresolved".
+- The Solidarność reference must not become heavy-handed. The joke
+  is comic-deflationary, not historically grand.
+
+---
+
+## 4. Visual style canon
+
+godot/AGENTS.md sets the engine constraints (32×32 tiles, 32×48
+sprites, top-down 2D, ~5MB art budget). world.txt sets the portrait
+production target (128×128 native pixel art with nearest-neighbor
+filtering). The notes below add the cross-character constraints that
+do not live in those files.
+
+### Aesthetic adjectives
+
+"Pixelated, readable, warm." Slight asymmetry over rigid grid.
+Warm undertones over neon. Strong silhouettes that identify the
+character before any text is read.
+
+### Palette discipline
+
+Reuse colors across NPCs to keep the cast visually coherent. The
+total distinct-color budget across the full portrait set should stay
+small — the portraits should look like one game, not a sticker
+collection. World.txt sets the per-portrait palette as "limited but
+expressive"; this canon adds the cross-cast rule: shared shadow
+colors, shared paper-tone backgrounds, shared frame palettes.
+
+### Three-tier expression system
+
+- Tier 1 (main cast: Dr. A. Cula, Mr. Pig, Mr. Swine, Murrow, Crab,
+  Whimsy, Asia): 5 expressions each.
+- Tier 2 (major chapter NPCs: Waldek, Grzyb, Bajtek, Szpon, Tanaka,
+  Yamada): 4 expressions each.
+- Tier 3 (supporting NPCs: Kowalski, Zielińska, judges, doormen,
+  clerks, etc.): 2–3 expressions each.
+
+A chapter may not ship until its Tier 1 and Tier 2 NPCs have their
+full expression set authored.
+
+### Visual jokes — running catalogue
+
+These are recurring sight gags. Each one is a small character beat
+expressed as set dressing. New chapters extend, do not replace.
+
+- The unwatered office fern.
+- The wall calendar two years out of date.
+- The chair that creaks even in description text.
+- The suspiciously clean cable in the Server Room (Chapter 3).
+- Swine's wall of "almost awards" (Chapter 4 — see §3).
+- The "NO POSTERS" sign in the Landlord's Office that is much too
+  large for the message it carries (Chapter 2).
+- Archive shelf labels: "URGENT 2011," "MISCELLANEOUS DOOM," and
+  one file marked "actually useful."
+
+---
+
+## 5. Audio canon
+
+world.txt §"Sound & Music Design" defines the procedural music
+system, the Pig & Swine motif, the per-location track list, and the
+MusicManager API. AGENTS.md sets the asset rules (short OGG loops
+allowed, no copyrighted melodies). The notes below add the SFX
+personality rules and the cross-room behavior that live nowhere
+else.
+
+### SFX personality
+
+Sound effects are short, characterful, procedural. They have moods,
+not just functions:
+
+- Coffee machine SFX should sound *resentful*. The machine is a
+  character; its hisses and gurgles are passive aggression.
+- Office printer SFX in Chapter 3 should sound *aggrieved* — the
+  victim of mistreatment, not the antagonist.
+- Industrial printer SFX in Chapter 5 should sound *aggressive* —
+  this is the Casebook opponent. The contrast with the office
+  printer's aggrieved palette is the point.
+- Stamp, shelf-creak, paper-tick percussion threads through the music
+  beds; SFX and music share that vocabulary deliberately so the
+  office feels like one sonic world.
+
+### Cross-system audio rules
+
+- Music changes on room transition. Crossfade defaults are in
+  world.txt; do not invent per-room overrides without flagging them.
+- The mute toggle is global and respected by every audio node —
+  music, ambience, SFX, dialogue, stingers.
+- No copyrighted melodies as motifs, even briefly, even ironically.
+  The Pig & Swine motif is the only recurring melodic anchor; all
+  other themes reharmonize it or stay in adjacent territory.
+
+---
+
+## 6. Court design principles
+
+The court structure (rounds, evidence-unlocks-arguments,
+ally-effects) is in story.txt and battle_mechanics.txt. The notes
+below are the authoring templates that keep court rounds sounding
+like court rounds.
+
+### Round budget
+
+- Three rounds for chapter courts.
+- Five rounds for the final court in Chapter 5.
+
+Do not expand mid-chapter. A "fourth round" usually means two
+overlapping arguments that should be merged.
+
+### Round structure
+
+Each round answers exactly one legal question. The Chapter 1
+template:
+
+- Round 1 sets the procedural error.
+- Round 2 connects the error to the affected right.
+- Round 3 asks for the remedy.
+
+Later chapters vary the questions (proportionality, contradiction,
+contract formation, public-law compliance) but keep the
+one-question-per-round discipline.
+
+### Wrong-answer templates
+
+Bad options should be funny but not random. They should sound like a
+plausibly desperate lawyer reaching. Templates:
+
+- "The client was spiritually present."
+- "The envelope looked guilty."
+- "The deadline was emotionally unreasonable."
+- "Counsel relies on ambient fairness."
+- "The relevant document is morally on file."
+
+When writing a new wrong-answer option, check that it lands in this
+register: dignified syntax, comically wrong substance.
+
+### Judicial reactions — dry surprise
+
+Correct judicial reactions are *dry surprise*, never explicit
+praise. Never "well done." Never gold-stars. The judge sounds like
+they were not expecting to be persuaded and now have to be.
+Templates:
+
+- "Counsel, surprisingly, that is a point."
+- "Against several expectations, counsel has made a legally coherent
+  submission."
+- "The court accepts this with reservations the court will not
+  itemize."
+- "That argument lands, despite the manner of its arrival."
+
+Wrong-answer reactions are equally dry: short, slightly weary,
+never cruel.
+
+### Remedy discipline
+
+The remedy is modest and procedurally plausible. The player wins
+enough to save the client, not everything. Total victories are not
+on the table; procedural reprieves, fair-hearing resets, narrowed
+orders, and remitted matters are.
+
+---
+
+## 7. Quest design principles
+
+These apply across every chapter and complement the Chapter-2-style
+"no grinding, no random encounters, no hidden-pixel evidence" rules
+already in story.txt and world.txt.
+
+- **Every NPC reveals character, teaches mechanics, or advances the
+  legal case.** No filler "hello again" lines unless they are funny
+  on their own. Hint-NPC repeat lines (Asia, in particular) are
+  exempt because their function is to be repeatable.
+- **Failure is comic, not punitive.** Mini-game failure produces
+  weaker outcomes, not progress blocks. Court loss produces a weaker
+  variant — less reputation, weaker payoff scene — never a hard
+  block. (PLAN.md "court-loss handling" is the binding form of this
+  rule.)
+- **Investigation creates courtroom tools.** Every required item
+  collected in the world unlocks an argument, a Casebook judgment, or
+  a contradiction in court. If an item does not, it should not be
+  required.
+- **Allies improve outcomes; their absence creates weaker outcomes,
+  not failure.** Going to court without Crab still works; the
+  argument lands worse. The ally tables in story.txt encode the
+  per-round best/good/bad ally lists.
+
+---
+
+## 8. Warsaw — atmosphere, landmarks, easter eggs
+
+The city is **Warsaw**, named directly. This matches the design's
+broader pattern (real Polish institutions named, parodied in motion).
+Do not invent a fictional analog ("Warszawa", "Stolica", etc.) — the
+specificity is the joke. The city carries a *mixture of sentiment,
+awe, and disgust* in how characters describe it; the goal is for
+Warsaw to feel like a place the cast lives in, not a generic
+Eastern-European satire backdrop.
+
+### Tonal mixture rules
+
+Every character relates to Warsaw differently. Use these tonal
+anchors when authoring atmospheric lines:
+
+- **Dr. A. Cula** — the newcomer's view. Slightly bewildered
+  affection. Warsaw as a city he is still figuring out, where each
+  district teaches him something about the practice of law. His
+  observations are precise and short.
+- **Mr. Pig** — Warsaw as a sinking ship that somehow stays afloat.
+  Maritime metaphors apply; "the Vistula is taking on water" is in
+  range. Affectionate panic.
+- **Mr. Swine** — Warsaw as one stop on a circuit; he speaks as
+  though comparing it to other cities he has been told about. By
+  Chapter 5 his view shifts: Warsaw becomes the only place that
+  matters. (Don't telegraph this; let it land in his sincere line.)
+- **Murrow** — Warsaw measured in archives. "The only city where the
+  files outweigh the people." Dry.
+- **Crab** — Warsaw as a procedural map. He notices what is wrong
+  with the buildings, the addresses, the postal service. Affection
+  expressed as suspicion.
+- **Whimsy** — Warsaw as a courtroom that pretends to be a city.
+  Theatrical, baroque, occasionally accurate.
+- **Asia** — Warsaw as a transit system that runs on whatever schedule
+  it likes; "and somehow that *is* the schedule." Practical warmth.
+
+### Daytime vs nighttime
+
+The city should *feel* different by time of day. Most of the game
+takes place in daylight, but at least three beats are nocturnal: the
+Chapter 3 basement scene (just before Beat 11.5 — STUB founding); a
+late walk in Chapter 4 between the airport and the office; the
+Chapter 5 protest beat as evening sets in. Each NPC's voice should
+shift slightly:
+
+- **Daytime Warsaw**: bureaucratic, public, slightly noisy. Tram bells,
+  pigeons in the Legal Quarter, the Marszałkowska traffic, court
+  clerks shuffling. Comedy comes from the visible mess.
+- **Nighttime Warsaw**: quieter, more affectionate, riskier. The Old
+  Town softens; the Civic Core empties out and feels oppressive; the
+  Vistula reflects the Palace of Culture. Comedy comes from the small
+  human details that the daytime crowds hide.
+
+### Easter-egg roster (canonical)
+
+Scatter these across the game as flavor — not all in one chapter.
+None of them require new mechanics; they are dialogue lines, sign
+text, decoration sprites, document addresses, or ambient details.
+Aim for one or two per chapter, more in Chapter 5.
+
+- **The Palace of Culture and Science** as a silhouette on the
+  skyline visible from the Civic Core. Whimsy may declaim about it
+  once. Mr. Swine has an opinion no one trusts.
+- **The Vistula river** referenced in Mr. Pig's maritime vocabulary
+  ("the ship is taking on Vistula").
+- **The Mermaid statue (Syrenka)** — a small bronze mermaid as a
+  piece of office decoration that, in Chapter 5, has a tiny protest
+  cape draped on it.
+- **Real street names in addresses on documents**: Krakowskie
+  Przedmieście in a witness statement; Marszałkowska in a building
+  rules extract; Nowy Świat as a Café-Paragraf-adjacent street;
+  Aleje Jerozolimskie on a court summons.
+- **The August 1 noon siren** (Warsaw Uprising commemoration) heard
+  once in Chapter 5 as ambient detail — characters pause briefly,
+  then resume. No comedy on this; the silence is the point.
+- **Tram numbers**: Tram 17 Oracle exists in canon as an NPC. Other
+  trams (12, 24, 35) appear as flavor in route blockers and
+  passing references.
+- **Polish food and drink**: pączki (doughnuts) at Café Paragraf;
+  zapiekanki referenced as a junior-lawyer lunch staple; mleczar
+  (milk-bar) as Crab's preferred meeting venue ("bar mleczny" — fast,
+  cheap, no theatrics). Vodka appears once and only as evidence in
+  a Chapter 4 expense report.
+- **Real Polish institutions in passing**: Trybunał Konstytucyjny
+  queue mentioned by Murrow; the Sejm building visible at distance;
+  KRS referenced in a Chapter 5 procurement document; RPO referenced
+  as a route Whimsy proposes that Murrow vetoes.
+- **Warsaw Centralna train station** as a transit landmark in Chapter
+  4's airport route.
+- **The Old Town Square (Rynek Starego Miasta)** as a Café-Paragraf-
+  adjacent location; a small Chapter 5 protest gathers here.
+- **The Łazienki Park peacock** — a single line about a peacock from
+  Łazienki escaping into the Civic Core. Either Whimsy mentions it
+  or a route blocker references it.
+
+Restraint rule: each easter egg appears once or twice, not on every
+visit. Warsaw is a city the cast lives in; it is not a checklist of
+references.
+
+### What NOT to do with Warsaw
+
+- Do not invent fictional Polish institutions when a real one fits.
+- Do not romanticize the city; the comedy depends on the everyday
+  mess being visible.
+- Do not turn it into a tourism reel. The Palace of Culture appears
+  as silhouette and is named, but no character delivers a Wikipedia
+  paragraph about it.
+- Do not name real people associated with Warsaw landmarks (per
+  AGENTS.md §Humor rules: "Real people forbidden").
+- Do not use Warsaw's tragic history as a punchline. The August 1
+  siren is referenced with silence; the Uprising itself is not
+  joked about.

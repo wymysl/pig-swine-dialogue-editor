@@ -1,0 +1,7 @@
+{
+  "version": 1,
+  "chapter_id": 1,
+  "title": "The Financial Crisis",
+  "_doc": "State machine. Steps authored by Code role. Each step: { id, gates, on_enter, on_exit }. Text fields (description, label, hint, flavor) belong to Design role; mechanical fields belong to Code.",
+  "steps": []
+}

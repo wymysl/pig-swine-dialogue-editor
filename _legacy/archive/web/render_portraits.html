@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Portrait Test</title>
+</head>
+<body>
+<canvas id="c" width="400" height="460"></canvas>
+<script type="module">
+import { drawPortraitV2 } from './src/characters.js';
+
+const canvas = document.getElementById('c');
+const ctx = canvas.getContext('2d');
+// 6 characters, 5 expressions
+const chars = ['kula', 'pig', 'swine', 'muras', 'rak', 'wymysl'];
+const exprs = ['neutral', 'agitated', 'deadpan', 'panic', 'sly'];
+
+ctx.fillStyle = '#222';
+ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+chars.forEach((c, i) => {
+  exprs.forEach((e, j) => {
+    drawPortraitV2(ctx, c, 10 + j * 74, 10 + i * 74, e);
+  });
+});
+
+const a = document.createElement('a');
+a.download = 'portraits.png';
+a.href = canvas.toDataURL('image/png');
+a.id = 'download';
+a.textContent = 'Download PNG';
+document.body.appendChild(a);
+a.click();
+</script>
+</body>
+</html>

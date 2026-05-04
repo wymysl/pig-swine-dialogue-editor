@@ -1,0 +1,5 @@
+{
+  "version": 1,
+  "_doc": "NPC × state × line. Authored by Design role. Schema per NPC: { state_id: { neutral, agitated, deadpan } }. State ids match progress gates in data/chapters/chapter*.json.",
+  "npcs": {}
+}

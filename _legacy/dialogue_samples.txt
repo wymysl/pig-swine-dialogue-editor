@@ -1,0 +1,501 @@
+# Dialogue Samples — Pig & Swine RPG
+
+> Voice-reference library. These lines are NOT committed game text.
+> Design agents quote and rewrite from this file when authoring
+> godot/data/dialogues/dialogues.json. Every committed game line
+> must pass the Taste Standard 5/5 (see godot/AGENTS.md and
+> style_canon.txt) — that pass happens at JSON authoring time, not
+> here. Lines below may be drafts.
+
+## Cast voice samples
+
+### Mr. Pig
+"Mr. Murrow will know what the case is actually about. He's somewhere between the files and disappointment."
+"You're looking for the procedural binder. I tried lifting it once and briefly saw another dimension."
+"If it's a service problem, Crab will have an opinion. He always has an opinion."
+"Try Café Paragraf. If Whimsy isn't there, he's probably giving a speech to a pastry."
+"If Mr. Murrow says you're ready, go north to the District Court. And maybe drink water."
+Quest unlocked:
+
+> **Save Pig & Swine from immediate financial extinction.**
+
+Old woman:
+"The office used to be quieter before the printer learned procedure."
+
+Court clerk NPC:
+"Court is north. Panic is everywhere."
+
+### Murrow
+Quest update:
+
+
+### Asia
+With Over-Caffeinated:
+"You are vibrating near the case board. I'll mark that as readiness-adjacent."
+
+## Sign and notice text samples
+Business route:
+"A security guard says you need either an appointment or a better suit."
+
+City Hall route:
+"City Hall is technically open, which is not the same as accessible."
+
+Airport road:
+"You have no professional reason to flee yet."
+
+Supreme Court:
+"The stairs radiate endgame energy."
+Flag:
+
+> "You should talk to Mr. Pig first. He's the loudest crisis in the room."
+> "Mr. Murrow will know what the case is actually about. He's somewhere between the files and disappointment."
+> "You're looking for the procedural binder. I tried lifting it once and briefly saw another dimension."
+> "If it's a service problem, Crab will have an opinion. He always has an opinion."
+> "The rights memo may be near Whimsy. Try Café Paragraf — or wherever someone is talking too loudly about fairness."
+> "Whimsy is useful if pointed at the right legal issue. Try asking him about fair hearing."
+> "Mr. Murrow should check the case before court. He has a special face for missing documents."
+> "If Mr. Murrow says you're ready, go north to the District Court. And maybe drink water."
+> "Something arrived from Mr. Swine. The stamp looks expensive and irresponsible."
+> "For the first time today, nothing is actively on fire. I give it twelve minutes."
+"Private district. No entry without badge, appointment, or suspicious invoice."
+"The queue is closed because it is full of people asking whether the queue is open."
+"Airport buses are running. Your career has not collapsed enough yet."
+"The Supreme Court is visible in the distance. It pretends not to notice you."
+He explains:
+
+If only damaged page:
+
+Tutorial setup:
+
+Evidence found:
+
+Performance outcomes:
+
+Evidence obtained:
+
+Optional overworld object:
+
+Flag:
+
+Trigger:
+
+Outcomes:
+
+Best mappings:
+
+or:
+
+> LEGAL QUARTER CONSOLIDATION PLAN ANNOUNCED
+
+The legal spine is:
+
+> A mass administrative scheme cannot extinguish homes, legal practices, public-interest claims, and procedural rights through automated notices, manipulated filings, vague public-interest language, and inaccessible remedies.
+
+The comedy spine is:
+
+> The final villain is not only one person. It is bureaucracy, opportunism, and an industrial printer with excellent paper velocity.
+
+The emotional spine is:
+
+> Pig & Swine survives because it is ridiculous, accessible, human, and useful in exactly the situations where polished systems fail.
+
+Tenants' Row:
+Evidence obtained immediately:
+
+Flags:
+
+Evidence obtained:
+
+Optional Attorney Grzyb appearance:
+
+Flag if recruited:
+
+Flags:
+
+Main evidence:
+
+Success line:
+
+Main evidence before boss:
+
+duplicates:
+Evidence obtained:
+
+Team Assembly slots:
+
+If Kowalski assigned:
+
+Flag:
+
+If Grzyb recruited:
+
+Flag:
+
+Returning NPC payoff:
+
+Final narration:
+
+> Pig & Swine survives not because it is efficient, wealthy, or respectable, but because it does one thing the system keeps forgetting: it lets people through the door.
+
+> "The closure notice is on Murrow's desk. Mr. Pig is trying to interpret it optimistically. Please stop him."
+> "Go to Protest Square in the Civic Core. The people affected by the notices are gathering there."
+> "You need impact statements. The Court will need to know what the notices do to actual people."
+> "City Hall should have the official plan. I know, I also dislike that sentence."
+> "Find the notice templates. If everyone received the same notice, individual assessment may have been replaced by copy-paste."
+> "Crab thinks the money trail matters. Crab is usually right when he looks that annoyed."
+> "The City Official says everyone was individually assessed. The notice batch may disagree."
+> "The objection system points to the Industrial Printer Facility in the Business District. Bring Bajtek and emotional distance."
+> "The industrial printer is still running. This is not a metaphor anymore, which is inconvenient."
+> "The recovered files connect to Mr. Swine's ledger. He has the face of a man about to become less simple."
+> "Mr. Murrow opened the Team Assembly board. Assign the right people to the right legal points. Please do not assign Mr. Pig to procurement."
+> "The brief is ready, but I can index it before you go. Courts respect tabs more than they admit."
+> "The Supreme Court is open. Bring the Final Brief, the ledger, the objection logs, and everyone who still believes this office should exist."
+> "The judgment is in. Come back to the office. The printer has been unusually quiet, which I am choosing to view as ceremonial."
+> "Pig & Swine is still open. I have put that in writing before the universe changes its mind."
+
+## Court line samples
+Flag:
+
+Mini-game result:
+
+Missing rights memo:
+"Without the rights memo, fairness becomes vibes. Judges dislike vibes."
+
+Missing Crab:
+"Crab has the service point. Find him before the court asks obvious questions."
+
+Missing Whimsy:
+"We need someone who can make fairness sound less like homework."
+When ready:
+
+Correct argument:
+
+Flag:
+
+Correct argument:
+
+Flag:
+
+Correct answer:
+
+Flag:
+
+Flag:
+
+Reward:
+
+Quest starts:
+
+Quest update:
+
+Quest update:
+
+Key exchange:
+
+Evidence unlocked:
+
+Evidence unlocked:
+
+Unlocks:
+
+Mini-game title:
+
+> **Document Chase: Stampede of Evidence**
+
+Mechanic:
+
+Evidence Board slots:
+
+When ready:
+
+Correct response:
+
+If badly prepared:
+
+Flag:
+
+Correct response:
+
+If full complaint page recovered:
+
+If only witness statement:
+
+Flag:
+
+Correct response:
+
+Flag:
+
+Quest teaser:
+
+> "Waldek is waiting near the case board. He looks like someone carrying both paperwork and a very bad week."
+> "You should visit Waldek's apartment. Residential District is south-west. Follow the route with the worried balconies."
+> "The poster matters. Not because it is dangerous, but because someone is pretending it is."
+> "Try speaking to Kowalski. He watches everything, including possibly the concept of privacy."
+> "Zielińska may know whether Waldek was singled out. She has the calm face of someone who noticed everything."
+> "We need the building rules. The landlord's office should have them, unless the rules have become shy."
+> "There may be a complaint log. Please catch it before it becomes weather."
+> "Mr. Murrow wants the evidence organised on the board. He gets twitchy around unstructured justice."
+> "Ask Mr. Murrow for the readiness check. He'll tell you what the case is still missing."
+> "Housing Court is ready. Bring evidence, water, and reasonable expectations."
+> "The printer made a noise after the judgment. I am choosing not to interpret that emotionally."
+> "Waldek is safe for now. The poster, however, appears to be gaining influence."
+The legal spine is:
+
+> A party should not suffer procedural default where filings disappear, deadlines are manipulated, or access to court is obstructed through deliberate interference.
+
+The comedy spine is:
+
+> Everyone thinks the printer is sentient because that is emotionally easier than admitting a rival law firm is committing procedural sabotage.
+
+Trigger:
+
+Evidence obtained:
+
+Flag:
+
+Evidence found:
+
+Bajtek tutorial testimony:
+
+Success:
+
+Wrong evidence response:
+
+Flag:
+
+Street flavor NPCs:
+
+Optional evidence:
+
+Success line:
+
+Flag:
+
+Flag:
+
+Evidence found:
+
+Flag:
+
+Narrative trigger:
+
+Flags:
+
+Flags:
+
+Flags:
+
+Failure recovery scene:
+
+Docket board:
+
+> **Today: Pig & Swine v. Procedural Default**
+
+Flag:
+
+Core issue:
+
+> Should the court accept or restore the urgent filing where the apparent default was caused by deliberate sabotage of Pig & Swine's filing system?
+
+If player has backup drive:
+
+If player lacks strong evidence:
+
+Flag:
+
+Flag logic:
+
+Court result depends on preparation:
+
+Flag:
+
+Badge:
+
+> **Badge earned: Objection, Your Toner**
+
+Badge:
+
+> **Badge earned: Deadline Dodger**
+
+Failure / retry:
+
+Printer prints:
+
+> THANK YOU
+
+Flags:
+
+> "The printer is the loudest crisis in the room. Please inspect it before Mr. Pig tries mediation."
+> "I called Bajtek. He knows computers and has a healthy distrust of printers."
+> "Bajtek unlocked the Server Room. It is behind the archive corridor. Do not touch anything blinking with confidence."
+> "You need the printer logs. Bajtek says logs are witnesses that do not improvise."
+> "Bajtek wants you to compare his statement with the logs. He calls it contradiction spotting. Mr. Pig calls it printer therapy."
+> "The Print Shop is in the Business District. Follow Glass Street and the smell of expensive toner."
+> "That Szpon person said he has no connection. We have an invoice-shaped objection to that."
+> "The logs point back inside the office. I hate this, but you should check the basement."
+> "Mr. Murrow is preparing the filing. Crab is checking the route. Whimsy is being kept away from the cover page."
+> "Electronic filing is compromised. Apparently the emergency scooter is now a legal instrument."
+> "District Court is waiting. Bring Bajtek, the logs, and whichever parts of the filing survived traffic."
+> "The printer has been exonerated. Mr. Pig is preparing remarks."
+> "Something arrived from Mr. Swine. It has a bill attached, which is not a comforting genre."
+> "The printer is calm, the office is alive, and Mr. Swine is about to ruin the afternoon."
+The legal spine is:
+
+> Pig & Swine should not be held liable for an international commercial obligation unless the claimant proves a binding contract, authority to bind the firm, reliable charges, and a lawful basis for the remedy.
+
+The comedy spine is:
+
+> Mr. Swine may be innocent, but he has behaved exactly like someone trying to look guilty in twelve jurisdictions.
+
+Printer prints:
+
+> LOW CYAN
+
+Flag:
+
+Flags:
+
+Main evidence:
+
+Optional evidence:
+
+Flags:
+
+Evidence obtained:
+
+Optional evidence:
+
+Flags:
+
+Optional evidence:
+
+Flags:
+
+Flags:
+
+Flags:
+
+Recovery line:
+
+Preparation slots:
+
+Mr. Swine:
+2-3 correct:
+Godot API concept:
+
+If Translation Note used:
+
+If Real Contract Draft used:
+
+Flag:
+
+Flag:
+
+If clear flashback memory obtained:
+
+If partial memory:
+
+If Arrival Board Photo obtained:
+
+Flag:
+
+Flag:
+
+Badge:
+
+> **Badge earned: International Hambitrator**
+
+Badge:
+
+> **Badge earned: Contract Dodger**
+
+Failure / retry:
+
+Flag:
+
+Flags:
+
+> "The arbitration papers arrived before Mr. Swine did. This is considered bad scheduling."
+> "You should question Mr. Swine. Slowly. He becomes less informative when cornered too efficiently."
+> "Airport Road is open. Mr. Swine's luggage may contain evidence, souvenirs, or both pretending to be the other."
+> "The customs form matters. Mr. Murrow says intent sometimes hides in boring boxes."
+> "The translation issue points to the Japanese Embassy. Please remember: the comedy target is Mr. Swine, not translation officers."
+> "Ms. Tanaka can explain whether the alleged contract is really a contract or just politeness with consequences."
+> "Mr. Swine's apartment is on the map. Mr. Pig is not emotionally ready for its furniture."
+> "Find the original draft. If the scary clause was added later, the whole claim starts wobbling."
+> "Mr. Swine's memory is currently downhill. Apparently this is now literal."
+> "Mr. Murrow wants you to prepare the Dual Attorney board. Dr. A. Cula handles law; Mr. Swine handles facts, when facts survive him."
+> "The arbitration is ready. Bring the contract draft, translation note, expense reports, and patience."
+> "Some of Mr. Swine's money trail does not match the ski story. Crab has the face he gets near hidden facts."
+> "A new notice arrived. It is citywide, which is rarely comforting."
+> "Mr. Swine is back, the firm is alive, and the city appears to be preparing something worse."
+Printer prints:
+
+> INCOMING NOTICE
+
+Contradiction scene:
+
+Flags:
+
+Flags:
+
+Performance outcomes:
+
+Flags:
+
+Flags:
+
+Flags:
+
+Recovery scene:
+
+Scene:
+
+Flag:
+
+Flags:
+
+Best mappings:
+
+3-5 correct:
+Flags:
+
+Docket board:
+
+> **Today: The Warsaw Legal District Consolidation Case**
+
+If Waldek assigned:
+
+Flag:
+
+Contradiction scene:
+
+Flag:
+
+Flag:
+
+Badge:
+
+> **Badge earned: The Final Brief**
+
+Bonus badge:
+
+> **Badge earned: Access to Goblin Justice**
+
+Badge:
+
+> **Badge earned: District Defender**
+
+Badge:
+
+> **Badge earned: Still Open**
+
+Failure / retry:
+
+Then:
+
+> LOW PAPER
+
+Mr. Swine:
+Chapter 2:

@@ -1,0 +1,102 @@
+{
+    "files": {
+        "godot/PLAN.md": {
+            "before": 214,
+            "after": 214,
+            "replacements": 2
+        },
+        "godot/MANAGING_AGENTS.md": {
+            "before": 91,
+            "after": 91,
+            "replacements": 1
+        },
+        "godot/CURATION_BOARD.md": {
+            "before": 52,
+            "after": 52,
+            "replacements": 0
+        },
+        "godot/PROPOSALS.md": {
+            "before": 123,
+            "after": 123,
+            "replacements": 0
+        },
+        "godot/.antigravity/skills/design.md": {
+            "before": 83,
+            "after": 83,
+            "replacements": 1
+        },
+        "godot/.antigravity/skills/code.md": {
+            "before": 93,
+            "after": 93,
+            "replacements": 0
+        },
+        "godot/.antigravity/skills/art.md": {
+            "before": 78,
+            "after": 78,
+            "replacements": 1
+        },
+        "godot/.antigravity/skills/qa.md": {
+            "before": 71,
+            "after": 71,
+            "replacements": 1
+        },
+        "world.txt": {
+            "before": 10284,
+            "after": 10284,
+            "replacements": 54
+        },
+        "minigames.txt": {
+            "before": 2621,
+            "after": 2621,
+            "replacements": 10
+        },
+        "battle_mechanics.txt": {
+            "before": 2587,
+            "after": 2587,
+            "replacements": 8
+        },
+        "godot/data/asia_hints.json": {
+            "before": 121,
+            "after": 165,
+            "replacements": 0
+        },
+        "story.txt": {
+            "before": 6581,
+            "after": 6581,
+            "replacements": 0
+        },
+        "dialogue_samples.txt": {
+            "before": 502,
+            "after": 502,
+            "replacements": 2
+        },
+        "style_canon.txt": {
+            "before": 492,
+            "after": 492,
+            "replacements": 2
+        }
+    },
+    "flagged": [
+        "Unclear speaker in story.txt:389 -> He does not join immediately. He asks whether Dr. A. Cula has anything more than \u201cprocedural vibes.\u201d",
+        "Unclear speaker in dialogue_samples.txt:51 -> > \"Murrow will know what the case is actually about. He\u2019s somewhere between the files and disappointment.\"",
+        "Unclear speaker in dialogue_samples.txt:51 -> \"Murrow will know what the case is actually about. He\u2019s somewhere between the files and disappointment.\"",
+        "Unclear speaker in dialogue_samples.txt:56 -> > \"Murrow should check the case before court. He has a special face for missing documents.\"",
+        "Unclear speaker in dialogue_samples.txt:56 -> \"Murrow should check the case before court. He has a special face for missing documents.\"",
+        "Unclear speaker in dialogue_samples.txt:57 -> > \"If Murrow says you\u2019re ready, go north to the District Court. And maybe drink water.\"",
+        "Unclear speaker in dialogue_samples.txt:57 -> \"If Murrow says you\u2019re ready, go north to the District Court. And maybe drink water.\"",
+        "Unclear speaker in dialogue_samples.txt:140 -> > \"The closure notice is on Murrow\u2019s desk. Mr. Pig is trying to interpret it optimistically. Please stop him.\"",
+        "Unclear speaker in dialogue_samples.txt:140 -> \"The closure notice is on Murrow\u2019s desk. Mr. Pig is trying to interpret it optimistically. Please stop him.\"",
+        "Unclear speaker in dialogue_samples.txt:150 -> > \"Murrow opened the Team Assembly board. Assign the right people to the right legal points. Please do not assign Mr. Pig to procurement.\"",
+        "Unclear speaker in dialogue_samples.txt:150 -> \"Murrow opened the Team Assembly board. Assign the right people to the right legal points. Please do not assign Mr. Pig to procurement.\"",
+        "Unclear speaker in dialogue_samples.txt:238 -> > \"Murrow wants the evidence organised on the board. He gets twitchy around unstructured justice.\"",
+        "Unclear speaker in dialogue_samples.txt:238 -> \"Murrow wants the evidence organised on the board. He gets twitchy around unstructured justice.\"",
+        "Unclear speaker in dialogue_samples.txt:239 -> > \"Ask Murrow for the readiness check. He\u2019ll tell you what the case is still missing.\"",
+        "Unclear speaker in dialogue_samples.txt:239 -> \"Ask Murrow for the readiness check. He\u2019ll tell you what the case is still missing.\"",
+        "Unclear speaker in dialogue_samples.txt:337 -> > \"Murrow is preparing the filing. Crab is checking the route. Whimsy is being kept away from the cover page.\"",
+        "Unclear speaker in dialogue_samples.txt:337 -> \"Murrow is preparing the filing. Crab is checking the route. Whimsy is being kept away from the cover page.\"",
+        "Unclear speaker in dialogue_samples.txt:422 -> > \"The customs form matters. Murrow says intent sometimes hides in boring boxes.\"",
+        "Unclear speaker in dialogue_samples.txt:422 -> \"The customs form matters. Murrow says intent sometimes hides in boring boxes.\"",
+        "Unclear speaker in dialogue_samples.txt:428 -> > \"Murrow wants you to prepare the Dual Attorney board. Dr. A. Cula handles law; Mr. Swine handles facts, when facts survive him.\"",
+        "Unclear speaker in dialogue_samples.txt:428 -> \"Murrow wants you to prepare the Dual Attorney board. Dr. A. Cula handles law; Mr. Swine handles facts, when facts survive him.\""
+    ]
+}
