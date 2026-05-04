@@ -4,7 +4,7 @@ This is the project constitution. **Every agent reads this first, every invocati
 
 ## Project identity
 
-Pig & Swine RPG is a top-down tile legal-comedy RPG built in Godot 4.4 with GDScript. Single-developer hobby project. The game's identity: **a parody of post-Soviet legal practice that takes its law seriously and its dignity not at all.** The comedy has a legal spine — every joke must rest on a real-ish doctrinal foundation. We are not making a random absurd game; we are making a precise absurd game.
+Pig & Swine RPG is a top-down tile legal-comedy RPG built in Godot 4.6.2 with GDScript. Single-developer hobby project. The game's identity: **a parody of post-Soviet legal practice that takes its law seriously and its dignity not at all.** The comedy has a legal spine — every joke must rest on a real-ish doctrinal foundation. We are not making a random absurd game; we are making a precise absurd game.
 
 ## Source of truth
 
@@ -54,7 +54,7 @@ A line that violates these address rules fails the Taste Standard automatically.
 
 ## Stack invariants (never violate)
 
-- Godot 4.4, GDScript only. No C#, no GDExtension, no third-party engine plugins without human approval.
+- Godot 4.6.2, GDScript only. No C#, no GDExtension, no third-party engine plugins without human approval.
 - Top-down 2D. `Camera2D` follows the player; orthogonal grid; tile size 32×32 by default, sprites 32×48 for upright NPCs.
 - 128×128 overworld coordinate system from day one. Districts and routes are individual scenes loaded under one `overworld.tscn`. Chapter 1 only populates the Office Street corridor; later chapters extend into other districts.
 - Content is data, code is engine: dialogue lives in `data/dialogues/<npc_id>.json` (one file per NPC); voice references in `data/voice_references/<character_id>.jsonl`; quest steps in `data/chapters/chapter*.json`; doors in `data/doors.json`; Casebook judgments in `data/judgments.json`; opposing arguments in `data/argument_opponents.json`. Code reads these; designers edit these.
@@ -139,6 +139,14 @@ Each judgment in `data/judgments.json` is authored in two passes:
 
 Neither pass overwrites the other's fields. New judgments require both passes before the entry is playable; partially authored entries stay flagged `draft: true` and are not loaded by `casebook.gd`.
 
+## macOS userdata permissions (one-time setup)
+
+The project uses `config/use_custom_user_dir=true` and `config/custom_user_dir_name="pig_swine_rpg"`. On first run, Godot creates `~/Library/Application Support/pig_swine_rpg/` for logs, saves, and runtime state. Due to macOS TCC sandboxing, this directory can only be created by the Godot `.app` itself — not by shell-launched Godot binaries or other tools.
+
+**One-time setup (per machine):** open the project once via Godot Editor (`open -a Godot`, then load the project). Quit. After that, the userdata directory exists with the right entitlements and all CLI commands work normally.
+
+**If the userdata directory has not been created**, CLI commands will crash in `RotatedFileLogger` with signal 11 before the engine boots. Workaround until the editor has been opened: add `--log-file /tmp/godot.log` to every CLI invocation. Document this in the artifact's `SPRINT_LOG.md` entry so the next agent knows the editor open is still pending.
+
 ## Save migration policy
 
 Any change to the shape of saved state requires:
@@ -153,7 +161,7 @@ No exceptions. A broken save eats the playtest cycle.
 
 Every artifact that modifies code must end with all of the following passing:
 
-- `godot --headless --check-only --path .` (parses every script).
+- `godot --headless --path . --script tests/test_smoke.gd` (loads project, parses every script, runs Main.tscn for one frame, exits cleanly). The earlier spec command `godot --headless --check-only --path .` does NOT self-terminate in Godot 4.6 — `--check-only` requires `--script`. Use the smoke-test form.
 - `godot --headless --script tests/test_runner.gd` (GUT, exit 0).
 - For Code artifacts touching state or save: a save/load round-trip against the previous sprint's fixture.
 - For Design artifacts: a cross-reference check confirming every `topic_id`, `npc_id`, `item_id`, `quest_step_id`, `judgment_id` referenced in `dialogues.json` and `chapter*.json` exists.

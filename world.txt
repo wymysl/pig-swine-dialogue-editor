@@ -3677,7 +3677,16 @@ For this game, 64×64 is fine for tiny retro charm, but **128×128 is the better
 
 ## Part 3: Graphics Overhaul
 
-### Character Portraits — 128×128 Pixel Art
+> **SUPERSEDED — see `style_canon.txt §4`.** The portrait spec
+> below describes a pixel-art approach inherited from the JS
+> prototype era. The current canon is **hybrid: pixel-art world,
+> hand-illustrated 512×512 portraits** (Path B, Ace Attorney
+> pattern). When this section disagrees with `style_canon.txt §4`,
+> `style_canon.txt` wins. The pixel-art guidance below remains
+> useful for tiles, sprites, decorations, item icons, and UI
+> chrome — those layers are still pixel art per the hybrid.
+
+### Character Portraits — 128×128 Pixel Art (legacy, superseded)
 
 The character portrait overhaul should use **128×128 pixel-art portraits** as the native asset size.
 

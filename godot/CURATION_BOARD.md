@@ -4,12 +4,12 @@ The live tracker for the Godot rebuild. Update at the end of every session. The 
 
 ## Current Focus
 
-Bring up the empty Godot 4.4 project skeleton. All preparatory work is now complete.
+Sprint 2 — Office Street + Pig & Swine interior. Project skeleton is up and web-export-verified.
 
 ## Current Build State
 
 - Decisions on file (see `PLAN.md` and `AGENTS.md`):
-  - Godot 4.4, GDScript, top-down tile, web-first.
+  - Godot 4.6.2, GDScript, top-down tile, web-first.
   - Four agent roles: Design / Code / Art / QA.
   - English-first; Polish translation may follow (translation table seeded in `world.txt`).
   - Casebook Battle System is load-bearing; no wild encounters; Final Printer is a Casebook battle.
@@ -35,40 +35,34 @@ Bring up the empty Godot 4.4 project skeleton. All preparatory work is now compl
 
 ## Next Best Task
 
-Spawn the Godot 4.4 project. Code skill in Antigravity:
+Implement the room-transition system per PLAN.md §Vertical slice plan step 2:
 
-> Read `AGENTS.md`, `PLAN.md` (especially §Vertical slice plan and §Out of scope), and the last 5 entries of `SPRINT_LOG.md` (file may be empty).
+> Read `AGENTS.md`, `PLAN.md` §Vertical slice plan step 2, and the last 5 entries of `SPRINT_LOG.md`.
 >
 > Adopt the **Code** skill at `.antigravity/skills/code.md`.
 >
-> Task: bring up the empty Godot 4.4 GDScript project at `/Users/piotr/Documents/Silly projects/pig-swine-rpg/godot/`.
+> Task: wire `office_street.tscn` to the `pig_swine_office.tscn` interior via a door transition. Implement `scenes/world/routes/office_street.tscn` fully (Asia placeholder at reception, Mr. Pig pacing, locked route blockers visible with flavor text). Implement `scripts/systems/room_transition.gd` using a fade-to-black transition. Add `data/doors.json` with the office-street→interior door entry. Dialogue runner stub (reads `data/dialogues/` directory but shows "[no dialogue]" if empty). Save/load round-trip works. Locked routes (Residential, Business, City Hall, Airport, Supreme Court) visible with `route_blocker.gd` flavor lines from `story.txt`.
 >
-> Deliverables:
->   - `project.godot` configured for 960×640 viewport, integer scaling, pixel-perfect snapping, top-down 2D rendering.
->   - Three autoloads registered: `scripts/autoload/state.gd`, `scripts/autoload/signals.gd`, `scripts/autoload/casebook.gd`. Each is a minimal stub.
->   - `scenes/Main.tscn` with a top-level `Node2D` controller and an empty `CurrentScene` slot.
->   - `scenes/world/routes/office_street.tscn` — minimal placeholder room with a `Player` node walking on a 32×32 grid (WASD + arrows).
->   - `exports/web/` with a committed Godot Web export preset; `.gitignore` exclude for build artifacts.
->   - `tests/test_runner.gd` skeleton.
->
-> Acceptance:
->   - `godot --headless --check-only --path .` exits 0.
->   - `godot --headless --script tests/test_runner.gd` exits 0.
->   - `godot --headless --export-release "Web" exports/web/index.html` produces a non-empty file.
->   - Opening that index.html in a browser shows the placeholder room with a walking player. No console errors.
->
-> Out of scope for this artifact: NPCs, dialogue runner, room transitions, save/load, Casebook UI, mini-games, chapter content. Code-only structural shell.
+> Acceptance: same four commands pass; opening the exported game shows the office street with a working door transition into the interior.
+
+**Before starting:** resolve the two known issues from Session 1 (see SPRINT_LOG.md):
+1. Open Godot editor once to pre-create `~/Library/Application Support/pig_swine_rpg/` so bare headless commands work without `--log-file`.
+2. Propose governance amendment: update AGENTS.md acceptance commands from `godot --headless --check-only --path .` to `godot --headless --path . --script tests/test_smoke.gd`.
 
 ## Recent Improvements
 
-(Session N — 2026-05-04)
-- Voice-reference corpus audited and committed-clean (38 files, 24,544 records, 1 informational flag).
-- `tools/voice_audit.py` extended with `--auto-fix` (Rule A/B + dropped-mini-game re-tag + legacy-name + Final Printer tag fixes).
-- Address-form rules refined: Cula opens with "Mr. Murrow" at first meeting; Murrow invites informality (Beat 3); Asia hedged.
-- STUB / PUTKA union added to canon (Chapter 3 Beat 11.5; Chapter 5 easter-egg dressing; running-joke entry in `style_canon.txt`).
-- Warsaw atmosphere section added to `style_canon.txt §8` (per-NPC tonal anchors, day/night rules, easter-egg roster).
-- English ↔ Polish translation table seeded in `world.txt`.
-- Governance docs revised: AGENTS.md and PLAN.md now reflect 5 `.txt` source files, per-NPC dialogue schema, `_legacy/` layout, voice-reference corpus.
+(Session 1 — 2026-05-04)
+- **Godot 4.6.2 project bootstrapped.** `project.godot` wired: 960×640, integer scaling, pixel-perfect, GL Compatibility, custom userdata dir `pig_swine_rpg`.
+- Autoloads: `state.gd` (SAVE_VERSION=1), `signals.gd` (empty bus), `casebook.gd` (empty stub).
+- `scenes/Main.tscn` with MainController (prints version on ready) and CurrentScene slot.
+- `scenes/world/routes/office_street.tscn`: 960×640 dark ColorRect floor, Player (CharacterBody2D + Sprite2D + Camera2D), WASD+arrows movement.
+- `scripts/actors/player.gd`: raw-position grid movement, sprint-1 stub.
+- `tests/test_runner.gd`: GUT-compatible skeleton, exits 0 without GUT.
+- `tests/test_smoke.gd`: loads Main.tscn, waits one frame, exits 0 — CI headless check.
+- `export_presets.cfg`: Web export preset committed.
+- `exports/web/.gitignore`: build artefacts excluded.
+- All five acceptance commands pass (EXIT 0). Web export produces index.html (5.4 KB) + index.wasm (36 MB) + index.pck (30 KB).
+- Known issue logged in SPRINT_LOG.md: macOS TCC blocks bare headless commands; `--log-file /tmp/godot.log` workaround in use.
 
 (Session 1 — earlier)
 - Governance docs created.

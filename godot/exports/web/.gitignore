@@ -1,0 +1,7 @@
+# Web export build artifacts — never commit these.
+# Only export_presets.cfg (project root) is committed.
+*.html
+*.js
+*.wasm
+*.pck
+*.zip

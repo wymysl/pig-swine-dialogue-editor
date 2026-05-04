@@ -1,6 +1,6 @@
 # Pig & Swine RPG — Godot Build Plan
 
-This plan governs a fresh Godot 4.4 build of Pig & Swine RPG, with Google Antigravity as the primary agent IDE.
+This plan governs a fresh Godot 4.6.2 build of Pig & Swine RPG, with Google Antigravity as the primary agent IDE.
 
 ## Source of truth
 
@@ -16,7 +16,7 @@ Voice-reference drafts per character live in `godot/data/voice_references/<chara
 
 ## Decisions on file
 
-- **Engine:** Godot 4.4, GDScript.
+- **Engine:** Godot 4.6.2, GDScript.
 - **Perspective:** top-down tile, with `Camera2D` follow.
 - **Coordinate system:** 128×128 overworld from day one (per `world.txt`). Districts populated chapter by chapter, blocked routes visible from minute one.
 - **Primary export target:** HTML5/web. Native exports come after Chapter 1 ships.
@@ -173,7 +173,7 @@ PLAYTEST → PICK ONE PROBLEM → SPEC → IMPLEMENT → REVIEW → WEB-VERIFY �
 
 Substitutions for Godot:
 
-- "JS syntax check" → `godot --headless --check-only --path .` (parses every script).
+- "JS syntax check" → `godot --headless --path . --script tests/test_smoke.gd` (parses every script, runs Main.tscn for one frame, exits cleanly). The naive `--check-only --path .` command does not self-terminate in Godot 4.6.
 - "python test_story.py" → `godot --headless --script tests/test_runner.gd` (GUT).
 - "browser verify" → `godot --headless --export-release "Web" exports/web/index.html`, open in Antigravity browser.
 - "save/load round-trip" → `tests/test_save_load.gd` runs against the previous sprint's fixture in `tests/fixtures/`.

@@ -54,7 +54,7 @@ At the end of every sprint, after Design / Code / Art artifacts have shipped and
 
 ## Acceptance
 
-- `godot --headless --check-only --path .` passes.
+- `godot --headless --path . --script tests/test_smoke.gd` passes (project parses, Main.tscn loads, exits cleanly).
 - `godot --headless --script tests/test_runner.gd` passes (GUT, exit 0).
 - Web export builds without errors.
 - Save-load round-trip verified against the previous sprint's fixture.

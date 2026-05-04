@@ -74,7 +74,7 @@ When the task involves game state, save/load, room transitions, evidence board, 
 
 ## Acceptance
 
-- `godot --headless --check-only --path .` passes.
+- `godot --headless --path . --script tests/test_smoke.gd` passes (project parses, Main.tscn loads, exits cleanly).
 - `godot --headless --script tests/test_runner.gd` passes (GUT, exit 0).
 - Save from previous sprint's fixture loads cleanly under the new `SAVE_VERSION` (verified by running migration in `tests/test_save_load.gd`).
 - Web export builds cleanly: `godot --headless --export-release "Web" exports/web/index.html`.

@@ -93,14 +93,30 @@ the sample lines.
 
 ### Dr. A. Cula (player)
 
-- Voice: observational, dry, occasionally surprised by their own
+- **Age:** 25. Visual cues: smooth-shaven, smooth skin, slight
+  youthful softness in the face, dark suit slightly oversized, neat
+  dark hair, alert observant expression with a touch of nervousness
+  underneath. Glasses optional and character-defining if used.
+- **Status:** *Doctor of Law (PhD)* AND *aplikant* (legal apprentice
+  in the Polish bar-track sense). The combination is the joke: he
+  is the most credentialed person at Pig & Swine in academic terms
+  (he has a doctorate) but the least practically authorized — as an
+  aplikant he cannot independently sign certain filings or argue
+  cases without supervision. Brilliant on paper, junior in practice.
+  Polish readers will recognize the *Dr. iur.* + *aplikant* pairing
+  as a real and slightly absurd career configuration. Lean into it
+  in dialogue: he can cite ECHR jurisprudence fluently but defers
+  to Murrow on what form to file when.
+- **Voice:** observational, dry, occasionally surprised by their own
   competence. Short sentences when stressed; longer sentences when
   arguing law.
-- Vocabulary: precise legal terms used sparingly. Avoids slang. Never
-  curses.
-- Notices first: the procedural error nobody else flagged.
-- Will not say: anything in modern internet voice. Anything that mocks
-  the client.
+- **Vocabulary:** precise legal terms used sparingly. Avoids slang.
+  Never curses.
+- **Notices first:** the procedural error nobody else flagged.
+- **Will not say:** anything in modern internet voice. Anything that
+  mocks the client. Anything boastful about the doctorate (he is
+  embarrassed by the title in casual contexts; uses it formally in
+  court filings only).
 
 ### Mr. Pig
 
@@ -352,26 +368,94 @@ Tonal rules:
 
 ## 4. Visual style canon
 
-godot/AGENTS.md sets the engine constraints (32×32 tiles, 32×48
-sprites, top-down 2D, ~5MB art budget). world.txt sets the portrait
-production target (128×128 native pixel art with nearest-neighbor
-filtering). The notes below add the cross-character constraints that
-do not live in those files.
+**Hybrid aesthetic — pixel-art world, hand-illustrated portraits.**
+This is the Ace Attorney pattern: a pixel-art tilemap world with
+illustrated character portraits in dialogue scenes. The aesthetic
+gap between the two layers IS the look — the world is grounded and
+small; the dialogue is expressive and large.
 
-### Aesthetic adjectives
+Per-asset-class resolution and style targets:
+
+| Asset class            | Resolution    | Style                                      |
+|------------------------|---------------|--------------------------------------------|
+| World tiles            | 32×32 native  | Pixel art, nearest-neighbor, warm palette  |
+| NPC walking sprites    | 32×48 native  | Pixel art, 4-direction, palette-snapped    |
+| Decorations / props    | 32×32 to 96×96 native | Pixel art, palette-snapped         |
+| **Dialogue portraits** | **512×512 native** | **Hand-illustrated, soft inking, warm shading, NOT pixel art** |
+| Casebook judgment cards| 512×512 native | Hand-illustrated, slightly more formal than portraits |
+| UI frames / overlays   | as needed     | Pixel art chrome around illustrated content |
+| Item icons             | 64×64 native  | Pixel art, palette-snapped                 |
+
+godot/AGENTS.md sets the engine-level constraints (top-down 2D,
+~5MB art budget). The notes below add the cross-character
+constraints that do not live in that file.
+
+### Why hybrid
+
+The comedy depends on facial expression: Mr. Pig's escalating
+anxiety, Murrow's quiet disappointment, Whimsy's near-miss flourishes,
+Cula's restraint inside absurd situations. Pixel-art portraits at
+small native sizes cannot land that level of expressiveness;
+illustrated portraits can. Meanwhile the world is a tilemap-traversal
+JRPG; pixel art is the right register for that — readable,
+navigable, cheap, iconic.
+
+This split also matches the AI-assisted production pipeline:
+illustrated portraits are what AI image generators do best; pixel
+art is what they do worst. Hand-cleanup work concentrates on tiles
+and sprites (which are produced once per asset and reused), not on
+the much larger portrait set (which is per-character × per-expression).
+
+### Pixel-art world style
+
+### Cast species (canonical, do not redecide)
+
+The cast is **mixed**: anthropomorphic pigs and humans, no other
+animals.
+
+- **Mr. Pig** and **Mr. Swine** are anthropomorphic pigs. Bipedal,
+  dressed in legal attire, expressive snouts and ears. The firm
+  name is a literal visual joke — a law firm run by two pigs. Both
+  retain the "panicked founder" / "charming evasive" personality
+  archetypes; species reads as one bite of comedy, not the whole
+  character.
+- **Dr. A. Cula**, **Murrow**, **Crab**, **Whimsy**, **Asia**, and
+  every chapter NPC are **human**. "Crab" is a Polish-rendered
+  surname/nickname, not a literal crustacean.
+
+This is decided. New chapters do not introduce new species; new
+NPCs are human. If a future chapter needs an animal character for a
+specific gag (e.g., the Łazienki peacock), it appears as actual
+non-anthropomorphic wildlife, not as a member of the cast.
+
+### Aesthetic adjectives — pixel-art layer (world, sprites, tiles, items, UI chrome)
 
 "Pixelated, readable, warm." Slight asymmetry over rigid grid.
 Warm undertones over neon. Strong silhouettes that identify the
-character before any text is read.
+character before any text is read. Disciplined palette ~40 distinct
+colors across the entire pixel-art layer of the project.
+
+### Aesthetic adjectives — illustrated layer (dialogue portraits, Casebook cards)
+
+Warm hand-drawn, slightly inked, JRPG-meets-Ace-Attorney register.
+Cleaner lines than the pixel-art layer; expressive faces. Palette
+is wider here than in the world layer but stays tonally aligned —
+warm undertones, no neon, no oversaturation. A character's
+illustrated portrait should read as the same character as their
+pixel-art world sprite even though they are rendered at different
+levels of detail.
 
 ### Palette discipline
 
-Reuse colors across NPCs to keep the cast visually coherent. The
-total distinct-color budget across the full portrait set should stay
-small — the portraits should look like one game, not a sticker
-collection. World.txt sets the per-portrait palette as "limited but
-expressive"; this canon adds the cross-cast rule: shared shadow
-colors, shared paper-tone backgrounds, shared frame palettes.
+Reuse colors across NPCs in the pixel-art layer to keep the cast
+visually coherent. The total distinct-color budget for the full
+pixel-art project should stay small — the world should look like
+one game, not a sticker collection. Shared shadow colors, shared
+paper-tone backgrounds, shared frame palettes.
+
+The illustrated portrait layer has more palette latitude (you cannot
+constrain a 512×512 hand-illustrated face to ~40 colors without
+flattening it) but stays warm-toned and consistent across the cast.
 
 ### Three-tier expression system
 
