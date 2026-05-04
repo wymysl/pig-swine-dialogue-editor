@@ -1,3 +1,9 @@
 node_modules/
 *.pyc
 .DS_Store
+godot/.godot/
+godot/exports/web/index.html
+godot/exports/web/index.wasm
+godot/exports/web/index.pck
+godot/exports/web/index.js
+godot/exports/web/*.png
