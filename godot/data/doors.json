@@ -1,5 +1,24 @@
 {
   "version": 1,
   "_doc": "Door/transition definitions. Schema per entry: { id, map_pos, target_scene, target_spawn_id, required_flag (Code), locked_text (Design) }.",
-  "doors": []
+  "doors": [
+    {
+      "id": "office_front_door",
+      "_comment": "Street-side entrance to the Pig & Swine office interior.",
+      "map_pos": [480, 280],
+      "target_scene": "res://scenes/interiors/pig_swine_office.tscn",
+      "target_spawn_id": "StreetSpawn",
+      "required_flag": "",
+      "locked_text": ""
+    },
+    {
+      "id": "office_back_to_street",
+      "_comment": "Interior door leading back out to the office street.",
+      "map_pos": [480, 580],
+      "target_scene": "res://scenes/world/routes/office_street.tscn",
+      "target_spawn_id": "OfficeSpawn",
+      "required_flag": "",
+      "locked_text": ""
+    }
+  ]
 }

@@ -52,3 +52,11 @@ Screenshot saved in brain artifacts (click_feedback_1777918356501.png).
 Bootstrap is now complete and visually verified.
 
 
+
+**Session 2 — 2026-05-04 — Code — Room transition system and state management.**
+Implemented `scripts/systems/room_transition.gd` as a Main child system with 500ms fade-to-black. Updated `State.gd` with `data` dictionary for live state storage. Implemented `Area2D` door interaction in `door.gd` (Input: E). Added `scenes/interiors/pig_swine_office.tscn` with ochre floor. Updated `office_street.tscn` with door and spawn points. Expanded headless test capability: `MainController.gd` now handles `--smoke-test`, `--inspect`, and `--test-room-transition` CLI flags.
+Acceptance results (EXIT 0):
+- `godot --headless --path . --smoke-test --log-file /tmp/pig_smoke.log` → **PASS** ✅
+- `godot --headless --path . --inspect --log-file /tmp/pig_inspect.log` → **PASS** ✅
+- `godot --headless --path . --test-room-transition --log-file /tmp/pig_transition.log` → **PASS** ✅ (Transitions verified: Street <-> Office)
+- `godot --headless --export-release "Web" exports/web/index.html --log-file /tmp/pig_export.log` → **PASS** ✅

@@ -83,13 +83,24 @@ func _init() -> void:
 
 	print("[Inspect] Player visual: ", visual_desc)
 
-	# --- Camera ---
-	var camera: Camera2D = player.get_node_or_null("Camera2D")
-	print("[Inspect] Camera2D present: ", camera != null)
+	# --- Doors and Spawns ---
+	var front_door: Area2D = office.get_node_or_null("FrontDoor")
+	if front_door == null:
+		printerr("[Inspect] FAIL: FrontDoor not found")
+		quit(1)
+		return
+	print("[Inspect] FrontDoor target_scene: ", front_door.target_scene)
+	
+	var office_spawn: Node2D = office.get_node_or_null("OfficeSpawn")
+	if office_spawn == null:
+		printerr("[Inspect] FAIL: OfficeSpawn not found")
+		quit(1)
+		return
+	print("[Inspect] OfficeSpawn position: ", office_spawn.position)
 
 	# --- InputMap: each movement action must have ≥1 event bound ---
 	var input_ok: bool = true
-	for action: String in ["move_up", "move_down", "move_left", "move_right"]:
+	for action: String in ["move_up", "move_down", "move_left", "move_right", "interact"]:
 		if not InputMap.has_action(action):
 			printerr("[Inspect] FAIL: InputMap missing action '", action, "'")
 			input_ok = false
@@ -106,5 +117,4 @@ func _init() -> void:
 
 	print("")
 	print("[Inspect] PASS — scene tree is correctly wired and visually renderable.")
-	print("[Inspect] Expected on screen: dark floor ", floor_node.color, " | amber square at Player.position ", player.position)
 	quit(0)

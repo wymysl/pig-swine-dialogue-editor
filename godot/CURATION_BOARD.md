@@ -35,21 +35,21 @@ Sprint 2 — Office Street + Pig & Swine interior. Project skeleton is up and we
 
 ## Next Best Task
 
-Implement the room-transition system per PLAN.md §Vertical slice plan step 2:
+Implement placeholder NPCs and dialogue runner stub per PLAN.md §Vertical slice plan step 3:
 
-> Read `AGENTS.md`, `PLAN.md` §Vertical slice plan step 2, and the last 5 entries of `SPRINT_LOG.md`.
+> Read `AGENTS.md`, `PLAN.md` §Vertical slice plan step 3, and the last 5 entries of `SPRINT_LOG.md`.
 >
-> Adopt the **Code** skill at `.antigravity/skills/code.md`.
->
-> Task: wire `office_street.tscn` to the `pig_swine_office.tscn` interior via a door transition. Implement `scenes/world/routes/office_street.tscn` fully (Asia placeholder at reception, Mr. Pig pacing, locked route blockers visible with flavor text). Implement `scripts/systems/room_transition.gd` using a fade-to-black transition. Add `data/doors.json` with the office-street→interior door entry. Dialogue runner stub (reads `data/dialogues/` directory but shows "[no dialogue]" if empty). Save/load round-trip works. Locked routes (Residential, Business, City Hall, Airport, Supreme Court) visible with `route_blocker.gd` flavor lines from `story.txt`.
->
-> Acceptance: same four commands pass; opening the exported game shows the office street with a working door transition into the interior.
-
-**Before starting:** resolve the two known issues from Session 1 (see SPRINT_LOG.md):
-1. Open Godot editor once to pre-create `~/Library/Application Support/pig_swine_rpg/` so bare headless commands work without `--log-file`.
-2. Propose governance amendment: update AGENTS.md acceptance commands from `godot --headless --check-only --path .` to `godot --headless --path . --script tests/test_smoke.gd`.
+> Task: Implement `Asia` at reception (stationary), `Mr. Pig` (pacing), and `Murrow` (hidden near files). Implement a basic dialogue runner that reads from `data/dialogues/` but shows "[no dialogue]" if a specific topic is missing. Wire `Asia` to provide hints based on progress flags.
 
 ## Recent Improvements
+
+(Session 2 — 2026-05-04)
+- **Room Transition System implemented.** `room_transition.gd` handles fade-to-black (500ms total), scene swapping, and player placement at named spawn points.
+- **State Management improved.** `State.gd` now has a `data` dictionary for live state tracking.
+- **Door system functional.** `door.gd` triggers transitions via `Area2D` interaction (E). Data-driven via `data/doors.json`.
+- **Pig & Swine Interior added.** `pig_swine_office.tscn` with warm ochre floor.
+- **Office Street updated.** Door to interior and return spawn point configured.
+- **Headless Test Suite expanded.** `MainController` now handles `--smoke-test`, `--inspect`, and `--test-room-transition` CLI flags for robust automated verification.
 
 (Session 1 — 2026-05-04)
 - **Godot 4.6.2 project bootstrapped.** `project.godot` wired: 960×640, integer scaling, pixel-perfect, GL Compatibility, custom userdata dir `pig_swine_rpg`.

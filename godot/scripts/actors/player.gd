@@ -8,11 +8,15 @@ extends CharacterBody2D
 const TILE_SIZE: int = 32
 const MOVE_SPEED: float = 4.0  ## tiles per second (used for visual smoothing later)
 
+func _ready() -> void:
+	add_to_group("player")
+
+
 func _physics_process(_delta: float) -> void:
 	var dir: Vector2 = Input.get_vector("move_left", "move_right", "move_up", "move_down")
 	if dir != Vector2.ZERO:
 		# Raw position update: one tile per frame while held, capped at MOVE_SPEED tiles/s.
-		# Tile-snapping and smooth interpolation are deferred to sprint 2.
+		# Tile-snapping and smooth interpolation are deferred to a later sprint.
 		velocity = dir * TILE_SIZE * MOVE_SPEED
 	else:
 		velocity = Vector2.ZERO
