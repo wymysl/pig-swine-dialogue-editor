@@ -1,0 +1,25 @@
+{
+    "version": 1,
+    "npc_id": "test_npc",
+    "states": [
+        {
+            "id": "state_binder",
+            "trigger": "chapter1.has_law_binder == true",
+            "line": "Binder found."
+        },
+        {
+            "id": "state_false_flag",
+            "trigger": "chapter1.met_pig == false",
+            "line": "Pig has not been met."
+        },
+        {
+            "id": "compound_trigger",
+            "trigger": "chapter1.met_pig == true && chapter1.met_murrow == false",
+            "line": "Met pig, not murrow."
+        }
+    ],
+    "idle_flavor": [
+        "Idle line A.",
+        "Idle line B."
+    ]
+}

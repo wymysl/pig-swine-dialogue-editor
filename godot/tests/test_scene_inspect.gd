@@ -76,6 +76,13 @@ func _init() -> void:
 		elif spr != null:
 			visual_desc = "Sprite2D found but texture is null — invisible!"
 
+	# Fallback: check AnimatedSprite2D
+	if not visual_ok:
+		var anim_spr := player.get_node_or_null("Visual") as AnimatedSprite2D
+		if anim_spr != null and anim_spr.sprite_frames != null:
+			visual_ok = true
+			visual_desc = "AnimatedSprite2D with frames: " + anim_spr.sprite_frames.resource_path
+
 	if not visual_ok:
 		printerr("[Inspect] FAIL: Player has no visible primitive. ", visual_desc)
 		quit(1)
@@ -116,5 +123,49 @@ func _init() -> void:
 		return
 
 	print("")
-	print("[Inspect] PASS — scene tree is correctly wired and visually renderable.")
+
+	# --- NPCs in pig_swine_office.tscn ---
+	# Load the office scene directly and check for NPC nodes.
+	var office_packed: PackedScene = load("res://scenes/interiors/pig_swine_office.tscn")
+	if office_packed == null:
+		printerr("[Inspect] FAIL: could not load pig_swine_office.tscn")
+		quit(1)
+		return
+	var office_scene: Node = office_packed.instantiate()
+	get_root().add_child(office_scene)
+	await process_frame
+
+	var expected_npcs: Array[String] = ["Asia", "MrPig", "Murrow"]
+	for npc_name in expected_npcs:
+		var npc: Node = office_scene.get_node_or_null(npc_name)
+		if npc == null:
+			printerr("[Inspect] FAIL: NPC '%s' not found in pig_swine_office.tscn" % npc_name)
+			office_scene.queue_free()
+			quit(1)
+			return
+		var npc_id: String = npc.get("npc_id") if npc.get("npc_id") != null else ""
+		var display_name: String = npc.get("display_name") if npc.get("display_name") != null else ""
+		print("[Inspect] NPC '%s': npc_id='%s' display_name='%s'" % [npc_name, npc_id, display_name])
+		if npc_id == "":
+			printerr("[Inspect] FAIL: NPC '%s' has empty npc_id" % npc_name)
+			office_scene.queue_free()
+			quit(1)
+			return
+		if display_name == "":
+			printerr("[Inspect] FAIL: NPC '%s' has empty display_name" % npc_name)
+			office_scene.queue_free()
+			quit(1)
+			return
+		if npc_name == "MrPig":
+			var visual_spr := npc.get_node_or_null("Visual") as Sprite2D
+			if visual_spr == null or visual_spr.texture == null:
+				printerr("[Inspect] FAIL: MrPig does not have a valid Sprite2D Visual")
+				office_scene.queue_free()
+				quit(1)
+				return
+
+	office_scene.queue_free()
+
+	print("")
+	print("[Inspect] PASS — scene tree is correctly wired, visually renderable, and NPCs are present.")
 	quit(0)

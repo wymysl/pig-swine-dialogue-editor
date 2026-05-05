@@ -35,11 +35,11 @@ Sprint 2 — Office Street + Pig & Swine interior. Project skeleton is up and we
 
 ## Next Best Task
 
-Implement placeholder NPCs and dialogue runner stub per PLAN.md §Vertical slice plan step 3:
+Implement Sprint 5: "Asia hint progression + Murrow case-briefing dialogue".
 
-> Read `AGENTS.md`, `PLAN.md` §Vertical slice plan step 3, and the last 5 entries of `SPRINT_LOG.md`.
+> Read `AGENTS.md`, `PLAN.md` §Vertical slice plan, and the last 5 entries of `SPRINT_LOG.md`.
 >
-> Task: Implement `Asia` at reception (stationary), `Mr. Pig` (pacing), and `Murrow` (hidden near files). Implement a basic dialogue runner that reads from `data/dialogues/` but shows "[no dialogue]" if a specific topic is missing. Wire `Asia` to provide hints based on progress flags.
+> Task: Implement Asia's hint progression logic based on `chapter1` state flags and add Murrow's case-briefing dialogue. Verify via tests and visual confirmation.
 
 ## Recent Improvements
 

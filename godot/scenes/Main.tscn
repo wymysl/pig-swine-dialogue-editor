@@ -1,7 +1,9 @@
-[gd_scene load_steps=3 format=3 uid="uid://main_scene_001"]
+[gd_scene load_steps=5 format=3 uid="uid://main_scene_001"]
 
 [ext_resource type="Script" path="res://scripts/main_controller.gd" id="1_main"]
 [ext_resource type="Script" path="res://scripts/systems/room_transition.gd" id="2_rt"]
+[ext_resource type="Script" path="res://scripts/systems/dialogue_runner.gd" id="3_dr"]
+[ext_resource type="PackedScene" path="res://scenes/ui/dialogue_box.tscn" id="4_db"]
 
 [node name="Main" type="Node2D"]
 script = ExtResource("1_main")
@@ -9,4 +11,9 @@ script = ExtResource("1_main")
 [node name="RoomTransition" type="Node" parent="."]
 script = ExtResource("2_rt")
 
+[node name="DialogueRunner" type="Node" parent="."]
+script = ExtResource("3_dr")
+
 [node name="CurrentScene" type="Node2D" parent="."]
+
+[node name="DialogueBox" parent="." instance=ExtResource("4_db")]

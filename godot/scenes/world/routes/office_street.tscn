@@ -1,7 +1,8 @@
-[gd_scene load_steps=5 format=3 uid="uid://office_street_001"]
+[gd_scene load_steps=6 format=3 uid="uid://office_street_001"]
 
 [ext_resource type="Script" path="res://scripts/actors/player.gd" id="1_player"]
 [ext_resource type="Script" path="res://scripts/actors/door.gd" id="2_door"]
+[ext_resource type="SpriteFrames" path="res://art/sprites/cula/cula_sprite_frames.tres" id="3_cula_frames"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_1"]
 size = Vector2(24, 24)
@@ -39,7 +40,7 @@ required_flag = ""
 shape = SubResource("RectangleShape2D_2")
 
 [node name="OfficeSpawn" type="Node2D" parent="."]
-position = Vector2(480, 480)
+position = Vector2(480, 304)
 
 [node name="Player" type="CharacterBody2D" parent="."]
 position = Vector2(480, 400)
@@ -50,12 +51,10 @@ script = ExtResource("1_player")
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Player"]
 shape = SubResource("RectangleShape2D_1")
 
-[node name="Visual" type="ColorRect" parent="Player"]
-offset_left = -12.0
-offset_top = -12.0
-offset_right = 12.0
-offset_bottom = 12.0
-color = Color(0.9, 0.75, 0.3, 1)
+[node name="Visual" type="AnimatedSprite2D" parent="Player"]
+position = Vector2(0, -8)
+sprite_frames = ExtResource("3_cula_frames")
+animation = &"idle_front"
 
 [node name="Camera2D" type="Camera2D" parent="Player"]
 position_smoothing_enabled = true

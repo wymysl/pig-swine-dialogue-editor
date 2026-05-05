@@ -1,0 +1,26 @@
+{
+    "version": 1,
+    "npc_id": "murrow",
+    "states": [
+        {
+            "id": "first_meeting",
+            "trigger": "chapter1.met_murrow == false",
+            "line": "Dr. A. Cula, I assume Mr. Pig has explained the case as a financial weather event. Let us locate the law underneath it."
+        },
+        {
+            "id": "post_meeting_pre_binder",
+            "trigger": "chapter1.met_murrow == true && chapter1.has_law_binder == false",
+            "line": "Find the procedural binder and the rights memo. One tells us the rule. The other reminds the court why the rule matters."
+        },
+        {
+            "id": "has_binder",
+            "trigger": "chapter1.has_law_binder == true",
+            "line": "Good. Now we have a rule. We still need the rights point, unless we intend to argue fairness by facial expression."
+        }
+    ],
+    "idle_flavor": [
+        "Nothing is presently on fire. In this office, that is not calm; it is a drafting window.",
+        "Evidence is not decoration. If it does not support an issue, it is paper with self-esteem.",
+        "Before court, ask three things: what happened, what rule matters, and what remedy we can honestly request."
+    ]
+}

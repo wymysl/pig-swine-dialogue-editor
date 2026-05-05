@@ -26,6 +26,7 @@ extends Area2D
 @export var show_indicator: bool = true
 
 var _player_inside: bool = false
+var _prompt: Node
 
 
 func _ready() -> void:
@@ -34,6 +35,11 @@ func _ready() -> void:
 	# Resolve target_scene from doors.json if not set directly.
 	if target_scene.is_empty() and not door_id.is_empty():
 		_resolve_from_json()
+
+	var prompt_scene = load("res://scenes/ui/interaction_prompt.tscn")
+	if prompt_scene:
+		_prompt = prompt_scene.instantiate()
+		add_child(_prompt)
 
 
 func _resolve_from_json() -> void:
@@ -70,7 +76,10 @@ func _try_open() -> void:
 		return
 	# Check required flag.
 	if not required_flag.is_empty():
-		var st: Dictionary = State.reset_state()
+		var state_node = get_tree().get_root().get_node_or_null("State")
+		var st: Dictionary = state_node.reset_state() if state_node else {}
+		if state_node and state_node.get("data"):
+			st = state_node.data
 		if not st.get(required_flag, false):
 			return  # locked — Design will add locked_text feedback later
 	# Delegate to RoomTransition via MainController.
@@ -88,8 +97,12 @@ func _try_open() -> void:
 func _on_body_entered(body: Node) -> void:
 	if body.is_in_group("player"):
 		_player_inside = true
+		if _prompt:
+			_prompt.show_prompt()
 
 
 func _on_body_exited(body: Node) -> void:
 	if body.is_in_group("player"):
 		_player_inside = false
+		if _prompt:
+			_prompt.hide_prompt()

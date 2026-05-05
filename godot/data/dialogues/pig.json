@@ -1,0 +1,31 @@
+{
+    "version": 1,
+    "npc_id": "pig",
+    "states": [
+        {
+            "id": "first_meeting",
+            "trigger": "chapter1.met_pig == false",
+            "line": "Dr. A. Cula! Thank every harbour authority. This ship is sinking, the lifeboats are unlabelled, and Mr. Swine has taken the map to Japan."
+        },
+        {
+            "id": "post_meeting_pre_murrow",
+            "trigger": "chapter1.met_pig == true && chapter1.met_murrow == false",
+            "line": "Find Mr. Murrow. He knows what the case is actually about. I know only that the hull is making financial noises."
+        },
+        {
+            "id": "met_murrow_pre_binder",
+            "trigger": "chapter1.met_murrow == true && chapter1.has_law_binder == false",
+            "line": "The procedural binder is in the archive, unless it has finally achieved sentience and crawled below deck."
+        },
+        {
+            "id": "has_binder",
+            "trigger": "chapter1.has_law_binder == true",
+            "line": "The binder and the memo. Excellent. Two anchors. One may crush the deck, but morally anchors."
+        }
+    ],
+    "idle_flavor": [
+        "For the first time today, the ship is not actively sinking. It is merely making exploratory gurgling noises.",
+        "How goes the voyage? Are we navigating toward justice, or have we struck another procedural reef?",
+        "We cannot sail into court with a hole in the hull and optimism as our only oar."
+    ]
+}

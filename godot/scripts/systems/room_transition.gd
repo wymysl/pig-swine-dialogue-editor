@@ -34,18 +34,31 @@ func _ready() -> void:
 	add_child(_overlay)
 
 
+## _signals — safe accessor; returns null in headless --script mode.
+func _signals() -> Node:
+	return get_node_or_null("/root/Signals")
+
+
+## _state — safe accessor; returns null in headless --script mode.
+func _state() -> Node:
+	return get_node_or_null("/root/State")
+
+
 ## go_to — begin a transition to target_scene_path, placing the player at spawn_id.
 ## No-ops if a transition is already in progress.
 func go_to(target_scene_path: String, spawn_id: String) -> void:
 	if _is_transitioning:
 		return
 	_is_transitioning = true
-	Signals.room_transition_started.emit(target_scene_path)
+	var sigs = _signals()
+	if sigs:
+		sigs.room_transition_started.emit(target_scene_path)
 	await _fade_to(1.0)
 	_swap_scene(target_scene_path, spawn_id)
 	await _fade_to(0.0)
 	_is_transitioning = false
-	Signals.room_transition_finished.emit(target_scene_path)
+	if sigs:
+		sigs.room_transition_finished.emit(target_scene_path)
 
 
 ## _fade_to — tween the overlay alpha to target_alpha over FADE_DURATION seconds.
@@ -76,8 +89,10 @@ func _swap_scene(target_scene_path: String, spawn_id: String) -> void:
 	_current_scene_slot.add_child(new_scene)
 
 	# Update persistent state.
-	State.data["current_scene_path"] = target_scene_path
-	State.data["current_spawn_id"] = spawn_id
+	var st = _state()
+	if st:
+		st.data["current_scene_path"] = target_scene_path
+		st.data["current_spawn_id"] = spawn_id
 
 	# Place player at the named spawn point.
 	var player: Node = new_scene.get_node_or_null("Player")

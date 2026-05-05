@@ -60,3 +60,37 @@ Acceptance results (EXIT 0):
 - `godot --headless --path . --inspect --log-file /tmp/pig_inspect.log` → **PASS** ✅
 - `godot --headless --path . --test-room-transition --log-file /tmp/pig_transition.log` → **PASS** ✅ (Transitions verified: Street <-> Office)
 - `godot --headless --export-release "Web" exports/web/index.html --log-file /tmp/pig_export.log` → **PASS** ✅
+
+---
+
+**Session 3 — 2026-05-05 — Code — NPC system, dialogue runner, state extensions.**
+Refactored `scripts/main_controller.gd`: stripped all CLI flag handling and `_run_*` test functions. `_ready()` now only prints version, wires `RoomTransition`, boots initial scene. Test commands now use `--script tests/test_*.gd` pattern throughout (see acceptance mapping below).
+Added `signals.gd`: new signals `dialogue_requested(npc_id, display_name)`, `dialogue_line_ready(speaker, line)`, `dialogue_dismissed()`.
+Updated `state.gd`: `SAVE_VERSION` bumped 2→3; added `chapter1` sub-dict (10 flags: met_pig, pig_revealed_crisis, met_murrow, has_law_binder, recruited_crab, recruited_whimsy, coffee_tutorial_seen, court_ready, entered_court, court_outcome).
+Created `scripts/systems/save.gd`: `save_game()`, `load_game()`, `migrate_save()` (v1→v3 migration injects chapter1 dict if absent).
+Created `scripts/actors/npc.gd`: Area2D, collision layer 4/mask 2, runtime ColorRect (24×32), collision shape, `interact` action on E-press emits `Signals.dialogue_requested(npc_id, display_name)`.
+Created `scripts/systems/dialogue_runner.gd`: loads `data/asia_hints.json` + `data/dialogues/*.json` at boot. Evaluates `&&`-delimited trigger predicates (`==`/`!=`) against `State.data` via dotted path resolution. Handles both `hint.neutral` (asia_hints format) and `line` (simple format). Emits `Signals.dialogue_line_ready`.
+Created `scripts/ui/dialogue_box.gd` + `scenes/ui/dialogue_box.tscn`: CanvasLayer(layer=10), bottom-anchored Panel 120px, SpeakerLabel + TextLabel. Connects to `dialogue_line_ready`, pauses scene tree, dismisses on `ui_accept`, emits `dialogue_dismissed`.
+Updated `scenes/Main.tscn`: added DialogueRunner (Node+script) and DialogueBox (PackedScene instance). `load_steps` 3→5.
+Updated `scenes/interiors/pig_swine_office.tscn`: added npc.gd ext_resource + three NPC nodes: Asia (teal, 160,120), MrPig (pink, 480,220), Murrow (archive-brown, 780,400).
+Created `data/dialogues/pig.json`: 4 trigger states + 3 idle_flavor lines (voice from dialogue_samples_mr_pig.jsonl).
+Created `data/dialogues/murrow.json`: 3 trigger states + 3 idle_flavor lines (voice from dialogue_samples_mr_murrow.jsonl).
+Created `tests/fixtures/dialogue_fixture.json`: 3 trigger states + 2 idle_flavor lines; crafted so T4 (met_pig=false) and T6 (all fail→idle) are unambiguous.
+Created `tests/test_dialogue_runner.gd`: 6 headless tests (trigger pass/fail, compound, line selection, empty trigger, idle_flavor fallback). All PASS.
+Created `tests/test_npc.gd`: 5 headless tests (instantiate, exported vars, body_entered, signal emit, no-emit outside range). All PASS.
+Extended `tests/test_scene_inspect.gd`: now also loads `pig_swine_office.tscn` and verifies Asia, MrPig, Murrow exist with non-empty npc_id and display_name.
+All scripts refactored to use `get_node_or_null("/root/Signals")` / `get_node_or_null("/root/State")` safe accessors so GDScript compiles in `--script` mode where autoloads are not pre-registered at parse time.
+Acceptance results (all EXIT 0):
+- AC1: `godot --headless --path . --script tests/test_smoke.gd --log-file /tmp/s3_smoke.log` → **PASS** ✅
+- AC4: `godot --headless --path . --script tests/test_scene_inspect.gd --log-file /tmp/s3_inspect.log` → **PASS** ✅ (Asia/MrPig/Murrow NPC nodes verified)
+- AC5: `godot --headless --path . --script tests/test_room_transition.gd --log-file /tmp/s3_rt.log` → **PASS** ✅
+- AC-DLG: `godot --headless --path . --script tests/test_dialogue_runner.gd --log-file /tmp/s3_dlg.log` → **PASS** (6/6) ✅
+- AC-NPC: `godot --headless --path . --script tests/test_npc.gd --log-file /tmp/s3_npc.log` → **PASS** (5/5) ✅
+- AC3: `godot --headless --export-release "Web" exports/web/index.html --log-file /tmp/s3_web.log` → **PASS** ✅
+**AC4 visual — delegated to human:** Walk the office (enter via FrontDoor from office_street), walk toward each NPC (teal Asia, pink MrPig, archive-brown Murrow), press E. Confirm the dialogue box appears at the bottom with speaker name and placeholder text. Report back.
+
+**Session 4 — 2026-05-05 — Code — Sprint 4: Sprite wiring and interaction prompts.**
+Added Cula's 8-way `AnimatedSprite2D` to `player.gd`, generating `cula_sprite_frames.tres` using Godot's resource saver to correctly map idle and walk sprites. Refactored `player.gd` to handle 8-way movement and set animation strings dynamically.
+Updated `office_street.tscn` to load `AnimatedSprite2D` as the player's Visual node, and updated `pig_swine_office.tscn` to include the `AnimatedSprite2D` for the player and a `Sprite2D` for Mr. Pig.
+Modified `npc.gd` and `door.gd` to instantiate and correctly anchor `interaction_prompt.tscn` for the "[E]" prompt with 150ms tweens, managing visibility based on `body_entered` and `body_exited`. Fixed `show_prompt()` and `hide_prompt()` CanvasItem overrides.
+Extended headless inspection tests (`test_scene_inspect.gd`) to correctly read `AnimatedSprite2D` and `Sprite2D` instances, avoiding null texture checks dynamically added by legacy `ColorRect` fallbacks. Added `test_player_animation.gd` and `test_interaction_prompt.gd` headless scenarios verifying animation properties and UI elements without engine physics dependence. All acceptance commands exit 0 cleanly. Visual verification delegated to the human operator due to sandbox constraints.
