@@ -27,9 +27,9 @@ In narration, spec docs, code identifiers, JSON keys, autoload paths, and these 
 - **Dr. A. Cula** — player character. Canonical reference. Never "Kula", never "Doctor Cula", never "the doctor" alone.
 - **Mr. Pig** — panicked founder.
 - **Mr. Swine** — absent founder.
-- **Murrow** — clerk/archivist. Canonical reference. Never "Muraś".
-- **Crab** — investigator. Not "Rak".
-- **Whimsy** — rhetorical associate. Not "Wymysl".
+- **Murrow** — fully-qualified *adwokat* (lawyer); functions as the firm's archivist by temperament. Canonical reference. Never "Muraś". Late 20s; same generation as Cula, Crab, Whimsy.
+- **Crab** — *aplikant adwokacki* (legal apprentice); the firm's de-facto investigator. Not "Rak". Late 20s.
+- **Whimsy** — *aplikant adwokacki*; rhetorical associate, deployed for courtroom flourish. Not "Wymysl". Late 20s.
 - **Asia** — front-desk secretary. Permanent office NPC, repeatable hint source.
 
 Other named NPCs are introduced per chapter; their names live in `../story.txt`.

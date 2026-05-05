@@ -93,9 +93,10 @@ the sample lines.
 
 ### Dr. A. Cula (player)
 
-- **Age:** 25. Visual cues: smooth-shaven, smooth skin, slight
-  youthful softness in the face, dark suit slightly oversized, neat
-  dark hair, alert observant expression with a touch of nervousness
+- **Age:** 25. **Hair:** dark (near-black). Visual cues: smooth-shaven,
+  smooth skin, slight youthful softness in the face, dark suit
+  slightly oversized, neat dark hair, alert observant expression with
+  a touch of nervousness
   underneath. Glasses optional and character-defining if used.
 - **Status:** *Doctor of Law (PhD)* AND *aplikant* (legal apprentice
   in the Polish bar-track sense). The combination is the joke: he
@@ -163,6 +164,17 @@ the sample lines.
 
 ### Murrow
 
+- **Age and status:** late-20s human male lawyer. Same generation as
+  Cula, Crab, and Whimsy. Not aplikant — Murrow is a fully-qualified
+  *adwokat* (passed the bar) but functions as the firm's institutional
+  archivist by temperament and habit. He keeps the archive because
+  someone has to and he is the only one who can. **Hair:** sandy/wheat
+  blonde, neat short cut with a side part. The blonde is a deliberate
+  visual marker — distinguishes him at sprite scale from the other
+  late-20s lawyers (Cula dark, Crab brown, Whimsy jet-black). Visual
+  cue overall: looks young but reads older — premature reading glasses,
+  slightly stooped from too much paper, dressed more like a junior
+  academic than a courtroom advocate.
 - Voice: understated, archival, faintly amused. Short declarative
   sentences. Almost never uses adjectives. When he does, it lands.
 - Vocabulary: procedural, precise. "On file." "Per the ledger."
@@ -177,6 +189,15 @@ the sample lines.
 
 ### Crab
 
+- **Age and status:** late-20s human male, *aplikant adwokacki* (legal
+  apprentice, same career-track stage as Cula but without the PhD).
+  His "investigator" function at the firm is informal — he does the
+  factual legwork because he's good at it and because Pig & Swine
+  cannot afford an actual investigator. Lawyer first, fact-finder
+  by necessity. **Hair:** mid-brown, short cropped. Visual cue
+  overall: dresses like a young lawyer who lost patience with
+  formality — rumpled suit with sleeves rolled, tie loose or
+  pocketed, plain demeanour.
 - Voice: terse, observational, suspicious of optimism. Two-sentence
   rhythm: observation, then implication.
 - Vocabulary: plain, concrete nouns. Avoids abstract legal language;
@@ -186,6 +207,19 @@ the sample lines.
 
 ### Whimsy
 
+- **Age and status:** late-20s human male, *aplikant adwokacki*
+  (legal apprentice, same career-track stage as Crab and Cula). His
+  "rhetorical chaos engine" function at the firm is more about
+  temperament than role — he is technically a junior lawyer doing
+  the same apprenticeship work as Crab, but Mr. Pig keeps deploying
+  him for courtroom rhetoric because Whimsy is good at it when
+  pointed correctly. **Hair:** jet-black, slightly-too-long, swept
+  back. **Glasses:** circular thin wire-frame (intellectual-
+  aesthete register, distinct from Murrow's chunkier reading
+  frames). Visual cue overall: dressed more flamboyantly than is
+  appropriate for an aplikant — the eggplant velvet blazer would
+  embarrass a senior partner; on a young apprentice it reads as
+  defiant theatrical commitment.
 - Voice: grandiose, theatrical, brilliant-when-aimed. Uses extended
   metaphors. Frequently nearly correct. Loves a flourish.
 - Vocabulary: literary, philosophical, occasionally archaic.
