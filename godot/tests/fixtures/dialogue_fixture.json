@@ -10,12 +10,15 @@
         {
             "id": "state_false_flag",
             "trigger": "chapter1.met_pig == false",
-            "line": "Pig has not been met."
+            "line": "Pig has not been met.",
+            "on_dismiss": [
+                { "set": "chapter1.met_pig", "value": true }
+            ]
         },
         {
             "id": "compound_trigger",
             "trigger": "chapter1.met_pig == true && chapter1.met_murrow == false",
-            "line": "Met pig, not murrow."
+            "lines": ["Met pig, not murrow.", "Page two."]
         }
     ],
     "idle_flavor": [

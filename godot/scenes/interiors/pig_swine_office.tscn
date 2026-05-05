@@ -5,6 +5,7 @@
 [ext_resource type="Script" path="res://scripts/actors/npc.gd" id="3_npc"]
 [ext_resource type="SpriteFrames" path="res://art/sprites/cula/cula_sprite_frames.tres" id="4_cula_frames"]
 [ext_resource type="Texture2D" path="res://art/sprites/mr_pig/mr_pig_idle_front.png" id="5_pig_tex"]
+[ext_resource type="Texture2D" path="res://art/sprites/asia/asia_idle_front.png" id="6_asia_tex"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_1"]
 size = Vector2(24, 24)
@@ -75,13 +76,16 @@ position_smoothing_enabled = true
 position_smoothing_speed = 8.0
 
 [node name="Asia" type="Area2D" parent="."]
-position = Vector2(160, 120)
+position = Vector2(80, 240)
 collision_layer = 4
 collision_mask = 2
 script = ExtResource("3_npc")
 npc_id = "asia"
 display_name = "Asia"
-npc_color = Color(0.29, 0.54, 0.54, 1)
+
+[node name="Visual" type="Sprite2D" parent="Asia"]
+position = Vector2(0, -8)
+texture = ExtResource("6_asia_tex")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Asia"]
 shape = SubResource("RectangleShape2D_3")

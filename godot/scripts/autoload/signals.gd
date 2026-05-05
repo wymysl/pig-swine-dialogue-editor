@@ -20,8 +20,8 @@ signal room_transition_finished(target_scene_path: String)
 signal dialogue_requested(npc_id: String, display_name: String)
 
 ## Emitted by DialogueRunner when a line is resolved and ready to display.
-## speaker: canonical display_name (Rule A). line: resolved text.
-signal dialogue_line_ready(speaker: String, line: String)
+## speaker: canonical display_name (Rule A). lines: Array of strings for paginated dialogue.
+signal dialogue_line_ready(speaker: String, lines: Array)
 
 ## Emitted by the dialogue box when the player dismisses the current line.
 signal dialogue_dismissed()

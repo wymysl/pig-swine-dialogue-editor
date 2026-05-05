@@ -12,7 +12,7 @@ var _pass_count: int = 0
 var _fail_count: int = 0
 
 ## Capture buffers for signal results (Array avoids closure-capture issues).
-var _signal_capture: Array = ["", ""]  ## [speaker, line]
+var _signal_capture: Array = ["", []]  ## [speaker, lines]
 
 ## Minimal State stub so DialogueRunner can call State.data
 ## The real State autoload should be available via the project settings.
@@ -97,18 +97,18 @@ func _init() -> void:
 		_finish()
 		return
 	_signal_capture[0] = ""
-	_signal_capture[1] = ""
+	_signal_capture[1] = []
 	var capture := _signal_capture  ## named ref so lambda captures correctly
-	sigs.dialogue_line_ready.connect(func(s: String, l: String) -> void:
+	sigs.dialogue_line_ready.connect(func(s: String, l: Array) -> void:
 		capture[0] = s
 		capture[1] = l
 	, CONNECT_ONE_SHOT)
 	runner._on_dialogue_requested("test_npc", "Test NPC")
 	await process_frame
-	if _signal_capture[1] == "Pig has not been met.":
+	if _signal_capture[1].size() > 0 and _signal_capture[1][0] == "Pig has not been met.":
 		_pass("T4: first matching state line selected (met_pig==false -> 'Pig has not been met.')")
 	else:
-		_fail("T4: expected 'Pig has not been met.' but got: " + _signal_capture[1])
+		_fail("T4: expected 'Pig has not been met.' but got: " + str(_signal_capture[1]))
 
 	## -----------------------------------------------------------------------
 	## Test 5: empty trigger always passes (first unconditional state matched)
@@ -130,17 +130,45 @@ func _init() -> void:
 	state_node.data["chapter1"]["met_pig"] = true
 	state_node.data["chapter1"]["met_murrow"] = true
 	state_node.data["chapter1"]["has_law_binder"] = false
-	_signal_capture[1] = ""
+	_signal_capture[1] = []
 	var capture2 := _signal_capture
-	sigs.dialogue_line_ready.connect(func(s: String, l: String) -> void:
+	sigs.dialogue_line_ready.connect(func(s: String, l: Array) -> void:
 		capture2[1] = l
 	, CONNECT_ONE_SHOT)
 	runner._on_dialogue_requested("test_npc", "Test NPC")
 	await process_frame
-	if _signal_capture[1] in ["Idle line A.", "Idle line B."]:
+	if _signal_capture[1].size() > 0 and _signal_capture[1][0] in ["Idle line A.", "Idle line B."]:
 		_pass("T6: idle_flavor returned when no state trigger matches")
 	else:
-		_fail("T6: expected idle_flavor line but got: " + _signal_capture[1])
+		_fail("T6: expected idle_flavor line but got: " + str(_signal_capture[1]))
+
+	## -----------------------------------------------------------------------
+	## Test 7: on_dismiss mutation
+	## -----------------------------------------------------------------------
+	state_node.data["chapter1"]["met_pig"] = false
+	runner._on_dialogue_requested("test_npc", "Test NPC")
+	await process_frame
+	sigs.dialogue_dismissed.emit()
+	if state_node.data["chapter1"]["met_pig"] == true:
+		_pass("T7: on_dismiss hook successfully mutated state")
+	else:
+		_fail("T7: on_dismiss hook did not mutate state")
+
+	## -----------------------------------------------------------------------
+	## Test 8: multi-line dialogue parsing
+	## -----------------------------------------------------------------------
+	state_node.data["chapter1"]["met_pig"] = true
+	state_node.data["chapter1"]["met_murrow"] = false
+	var capture3 := _signal_capture
+	sigs.dialogue_line_ready.connect(func(s: String, l: Array) -> void:
+		capture3[1] = l
+	, CONNECT_ONE_SHOT)
+	runner._on_dialogue_requested("test_npc", "Test NPC")
+	await process_frame
+	if _signal_capture[1].size() == 2 and _signal_capture[1][1] == "Page two.":
+		_pass("T8: multi-line dialogue correctly resolved to Array")
+	else:
+		_fail("T8: expected multi-line array but got: " + str(_signal_capture[1]))
 
 	_finish()
 

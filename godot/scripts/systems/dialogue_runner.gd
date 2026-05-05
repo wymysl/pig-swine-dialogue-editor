@@ -25,13 +25,39 @@ const FALLBACK_LINE: String = "..."
 
 ## _catalogue — map of npc_id -> parsed dialogue Dict.
 var _catalogue: Dictionary = {}
+var _active_state_mutations: Array = []
 
 
 func _ready() -> void:
 	var sigs = get_node_or_null("/root/Signals")
 	if sigs:
 		sigs.dialogue_requested.connect(_on_dialogue_requested)
+		sigs.dialogue_dismissed.connect(_on_dialogue_dismissed)
 	_load_all_dialogues()
+
+func _on_dialogue_dismissed() -> void:
+	if _active_state_mutations.is_empty():
+		return
+	var state_node = get_node_or_null("/root/State")
+	if state_node == null:
+		return
+	for mut in _active_state_mutations:
+		if mut is Dictionary and mut.has("set") and mut.has("value"):
+			_set_state_value(state_node.data, mut["set"], mut["value"])
+	_active_state_mutations.clear()
+
+func _set_state_value(data: Dictionary, path: String, value: Variant) -> void:
+	var segments = path.split(".")
+	var current = data
+	for i in range(segments.size() - 1):
+		var seg = segments[i]
+		if current is Dictionary and current.has(seg) and current[seg] is Dictionary:
+			current = current[seg]
+		else:
+			return
+	var last_seg = segments[segments.size() - 1]
+	if current is Dictionary and current.has(last_seg):
+		current[last_seg] = value
 
 
 ## _signals — safe accessor; returns null in headless --script mode.
@@ -86,7 +112,7 @@ func _on_dialogue_requested(npc_id: String, display_name: String) -> void:
 		push_warning("DialogueRunner: no dialogue data for npc_id='%s'" % npc_id)
 		var sigs_fb = _signals()
 		if sigs_fb:
-			sigs_fb.dialogue_line_ready.emit(display_name, FALLBACK_LINE)
+			sigs_fb.dialogue_line_ready.emit(display_name, [FALLBACK_LINE])
 		return
 
 	var data: Dictionary = _catalogue[npc_id]
@@ -97,41 +123,49 @@ func _on_dialogue_requested(npc_id: String, display_name: String) -> void:
 	for entry in states:
 		var trigger: String = entry.get("trigger", "")
 		if _evaluate_trigger(trigger):
-			var line: String = _extract_line(entry)
+			_active_state_mutations = entry.get("on_dismiss", [])
+			var lines: Array = _extract_lines(entry)
 			var sigs2 = _signals()
 			if sigs2:
-				sigs2.dialogue_line_ready.emit(speaker, line)
+				sigs2.dialogue_line_ready.emit(speaker, lines)
 			return
 
 	## Fall back to idle_flavor (random).
 	var idle: Array = data.get("idle_flavor", [])
 	if idle.size() > 0:
-		var chosen: String = idle[randi() % idle.size()]
+		var chosen = idle[randi() % idle.size()]
+		var lines: Array = _extract_lines(chosen) if chosen is Dictionary else [str(chosen)]
 		var sigs3 = _signals()
 		if sigs3:
-			sigs3.dialogue_line_ready.emit(speaker, chosen)
+			sigs3.dialogue_line_ready.emit(speaker, lines)
 		return
 
 	## Hard fallback.
 	var sigs_hf = _signals()
 	if sigs_hf:
-		sigs_hf.dialogue_line_ready.emit(speaker, FALLBACK_LINE)
+		sigs_hf.dialogue_line_ready.emit(speaker, [FALLBACK_LINE])
 
 
 ## _extract_line — handles both dialogue JSON formats:
 ##   Simple:   { "line": "Text here." }
 ##   Asia hint: { "hint": { "neutral": "Text.", "agitated": "...", "deadpan": "..." } }
-func _extract_line(entry: Dictionary) -> String:
+func _extract_lines(entry: Dictionary) -> Array:
+	if entry.has("lines"):
+		var val = entry["lines"]
+		if val is Array:
+			return val
+		elif val is String:
+			return [val]
 	if entry.has("line"):
-		return entry["line"]
+		return [entry["line"]]
 	if entry.has("hint") and entry["hint"] is Dictionary:
 		var hint: Dictionary = entry["hint"]
 		## Prefer "neutral", then first available key.
 		if hint.has("neutral"):
-			return hint["neutral"]
+			return [hint["neutral"]]
 		for key in hint:
-			return hint[key]
-	return FALLBACK_LINE
+			return [hint[key]]
+	return [FALLBACK_LINE]
 
 
 ## _evaluate_trigger — returns true if every clause in the trigger string passes.

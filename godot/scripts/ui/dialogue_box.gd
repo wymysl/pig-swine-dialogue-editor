@@ -15,6 +15,8 @@ extends CanvasLayer
 @onready var _text_label: Label = $Panel/TextLabel
 
 var _visible_now: bool = false
+var _lines: Array = []
+var _current_line_idx: int = 0
 
 
 func _ready() -> void:
@@ -26,9 +28,13 @@ func _ready() -> void:
 	_panel.visible = false
 
 
-func _on_dialogue_line_ready(speaker: String, line: String) -> void:
+func _on_dialogue_line_ready(speaker: String, lines: Array) -> void:
+	if lines.is_empty():
+		return
 	_speaker_label.text = speaker
-	_text_label.text = line
+	_lines = lines
+	_current_line_idx = 0
+	_text_label.text = str(_lines[_current_line_idx])
 	_panel.visible = true
 	_visible_now = true
 	get_tree().paused = true
@@ -38,10 +44,14 @@ func _unhandled_input(event: InputEvent) -> void:
 	if not _visible_now:
 		return
 	if event.is_action_pressed("interact"):
-		_panel.visible = false
-		_visible_now = false
-		get_tree().paused = false
-		var sigs = get_node_or_null("/root/Signals")
-		if sigs:
-			sigs.dialogue_dismissed.emit()
 		get_viewport().set_input_as_handled()
+		_current_line_idx += 1
+		if _current_line_idx < _lines.size():
+			_text_label.text = str(_lines[_current_line_idx])
+		else:
+			_panel.visible = false
+			_visible_now = false
+			get_tree().paused = false
+			var sigs = get_node_or_null("/root/Signals")
+			if sigs:
+				sigs.dialogue_dismissed.emit()

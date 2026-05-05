@@ -5,7 +5,14 @@
         {
             "id": "first_meeting",
             "trigger": "chapter1.met_pig == false",
-            "line": "Dr. A. Cula! Thank every harbour authority. This ship is sinking, the lifeboats are unlabelled, and Mr. Swine has taken the map to Japan."
+            "lines": [
+                "Dr. A. Cula! Thank every harbour authority.",
+                "This ship is sinking, the lifeboats are unlabelled, and Mr. Swine has taken the map to Japan."
+            ],
+            "on_dismiss": [
+                { "set": "chapter1.met_pig", "value": true },
+                { "set": "chapter1.pig_revealed_crisis", "value": true }
+            ]
         },
         {
             "id": "post_meeting_pre_murrow",

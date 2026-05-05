@@ -13,11 +13,13 @@ One JSON file per NPC, named `<npc_id>.json`. The dialogue runner loads every `.
     {
       "id": "before_meeting_pig",
       "trigger": "chapter1.pig_revealed_crisis == false",
-      "lines": {
-        "neutral":  "...",
-        "agitated": "...",
-        "deadpan":  "..."
-      },
+      "lines": [
+        "First line of dialogue.",
+        "Second line of dialogue (advances on interact press)."
+      ],
+      "on_dismiss": [
+        { "set": "chapter1.pig_revealed_crisis", "value": true }
+      ],
       "tags": ["progress", "tutorial"]
     }
   ],
@@ -32,7 +34,8 @@ One JSON file per NPC, named `<npc_id>.json`. The dialogue runner loads every `.
 - `npc_id` matches the file name (without `.json`).
 - `id` strings within `states` are unique per NPC and map to quest-state keys in `data/chapters/chapter*.json`.
 - `trigger` is a boolean expression over `state.gd` fields. Code's dialogue_runner evaluates it.
-- `lines` uses three expression variants where the runner supports them. Single-string `lines` are also acceptable for simple NPCs.
+- `lines` can be a single string for simple dialogue or an array of strings for paginated dialogue (advanced on UI interact).
+- `on_dismiss` is an optional array of mutation objects (`{ "set": "path.to.flag", "value": true }`) that update State.data when the dialogue finishes playing.
 - Every committed line must pass the Taste Standard (see `godot/AGENTS.md` §The Taste Standard) and the Address forms in dialogue (§Address forms in dialogue).
 - See `data/asia_hints.json` for a fully-authored example.
 

@@ -3,24 +3,36 @@
     "npc_id": "murrow",
     "states": [
         {
+            "id": "before_pig",
+            "trigger": "chapter1.met_pig == false",
+            "line": "Dr. A. Cula. Speak to Mr. Pig first. He needs to vent his panic before we can address the procedural realities."
+        },
+        {
             "id": "first_meeting",
-            "trigger": "chapter1.met_murrow == false",
-            "line": "Dr. A. Cula, I assume Mr. Pig has explained the case as a financial weather event. Let us locate the law underneath it."
+            "trigger": "chapter1.met_pig == true && chapter1.met_murrow == false",
+            "lines": [
+                "Dr. A. Cula. You're here. Mr. Pig has already briefed you on the emotional state of the firm. Let us discuss the legal state.",
+                "We are defending a client who believes an invoice is a philosophical suggestion.",
+                "I need you to review the case binder and gather the necessary memos before we approach the bench."
+            ],
+            "on_dismiss": [
+                { "set": "chapter1.met_murrow", "value": true }
+            ]
         },
         {
-            "id": "post_meeting_pre_binder",
+            "id": "post_briefing_pre_binder",
             "trigger": "chapter1.met_murrow == true && chapter1.has_law_binder == false",
-            "line": "Find the procedural binder and the rights memo. One tells us the rule. The other reminds the court why the rule matters."
+            "line": "I will not discuss strategy until you have retrieved the procedural binder from the archive. We need facts, not improvisation."
         },
         {
-            "id": "has_binder",
-            "trigger": "chapter1.has_law_binder == true",
-            "line": "Good. Now we have a rule. We still need the rights point, unless we intend to argue fairness by facial expression."
+            "id": "has_binder_pre_crab",
+            "trigger": "chapter1.has_law_binder == true && chapter1.recruited_crab == false",
+            "line": "You have the binder. Good. Now find Crab. We have a service of process issue, and Crab's skepticism is exactly what we require."
         }
     ],
     "idle_flavor": [
-        "Nothing is presently on fire. In this office, that is not calm; it is a drafting window.",
-        "Evidence is not decoration. If it does not support an issue, it is paper with self-esteem.",
-        "Before court, ask three things: what happened, what rule matters, and what remedy we can honestly request."
+        "Procedure is the poetry of the law.",
+        "We do not guess in this office. We deduce.",
+        "Ensure every form is stamped in triplicate."
     ]
 }
