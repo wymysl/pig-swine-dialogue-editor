@@ -1,0 +1,26 @@
+{ "frames": {
+   "marble_tile-Sheet.aseprite": {
+	"frame": { "x": 0, "y": 0, "w": 256, "h": 192 },
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": { "x": 0, "y": 0, "w": 256, "h": 192 },
+	"sourceSize": { "w": 256, "h": 192 },
+	"duration": 100
+   }
+ },
+ "meta": {
+  "app": "https://www.aseprite.org/",
+  "version": "1.3.17.2-arm64",
+  "image": "marble_tile-Sheet.png",
+  "format": "RGBA8888",
+  "size": { "w": 256, "h": 192 },
+  "scale": "1",
+  "frameTags": [
+  ],
+  "layers": [
+   { "name": "Layer 1", "opacity": 255, "blendMode": "normal" }
+  ],
+  "slices": [
+  ]
+ }
+}

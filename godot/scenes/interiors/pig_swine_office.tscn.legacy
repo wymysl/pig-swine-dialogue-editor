@@ -1,0 +1,513 @@
+[gd_scene format=4 uid="uid://p2dlx18voq7o"]
+
+[ext_resource type="PackedScene" path="res://scenes/components/npc_walking_canon.tscn" id="1_canon"]
+[ext_resource type="Script" uid="uid://vwn6hsy0ypn7" path="res://scripts/actors/player.gd" id="1_player"]
+[ext_resource type="Script" uid="uid://ckwlgat482exj" path="res://scripts/actors/door.gd" id="2_door"]
+[ext_resource type="Script" uid="uid://bbi3trkp5jpng" path="res://scripts/actors/npc.gd" id="3_npc"]
+[ext_resource type="SpriteFrames" path="res://art/sprites/cula/cula_sprite_frames.tres" id="4_cula_frames"]
+[ext_resource type="Script" uid="uid://kopitkvcinqh" path="res://scripts/actors/pickup.gd" id="8_qhjoq"]
+[ext_resource type="Script" uid="uid://di4ddb40aei4h" path="res://scripts/actors/behind_desk_zone.gd" id="11_behind_desk"]
+[ext_resource type="Script" uid="uid://b4usmtwmbvxkl" path="res://scripts/actors/pig_idle_zone.gd" id="12_pig_idle"]
+[ext_resource type="AudioStream" uid="uid://r7l4v57vcnjp" path="res://audio/music/office.mp3" id="13_music"]
+[ext_resource type="Script" uid="uid://c4ydsjk7hc21x" path="res://scripts/actors/minigame_trigger.gd" id="14_minigame_trigger"]
+[ext_resource type="SpriteFrames" path="res://art/sprites/asia/asia_sprite_frames.tres" id="17_asia_frames"]
+[ext_resource type="Script" uid="uid://dqlupyp37tohw" path="res://scripts/actors/asia.gd" id="18_asia_gd"]
+[ext_resource type="SpriteFrames" path="res://art/sprites/mr_pig/mr_pig_sprite_frames.tres" id="frames_mr_pig"]
+[ext_resource type="SpriteFrames" path="res://art/sprites/murrow/murrow_sprite_frames.tres" id="frames_murrow"]
+[ext_resource type="SpriteFrames" path="res://art/sprites/halina/halina_sprite_frames.tres" id="frames_halina"]
+[ext_resource type="Script" path="res://scripts/actors/meeting_room_trigger.gd" id="meeting_room_trigger_gd"]
+[ext_resource type="Texture2D" uid="uid://vwkugt3nx7te" path="res://art/props/office/fern.png" id="p01_fern"]
+[ext_resource type="Texture2D" uid="uid://do5j0d1wjyh8n" path="res://art/props/office/wall_calendar.png" id="p02_calendar"]
+[ext_resource type="Texture2D" uid="uid://lp585k71xalv" path="res://art/props/office/chair_pig.png" id="p03_chair"]
+[ext_resource type="Texture2D" uid="uid://ctmo1i276h63q" path="res://art/props/office/coffee_machine.png" id="p04_coffee"]
+[ext_resource type="Texture2D" uid="uid://ldcvtcwcjpd5" path="res://art/props/office/printer.png" id="p05_printer"]
+[ext_resource type="Texture2D" uid="uid://ce8np20446022" path="res://art/props/office/desk_pig.png" id="p06_desk_pig"]
+[ext_resource type="Texture2D" uid="uid://d2h1limgdtfed" path="res://art/props/office/desk_swine.png" id="p07_desk_swine"]
+[ext_resource type="Texture2D" uid="uid://lw073qn0ub7w" path="res://art/props/office/desk_murrow.png" id="p08_desk_murrow"]
+[ext_resource type="Texture2D" uid="uid://bbjg23jo15ahp" path="res://art/props/office/desk_rak.png" id="p09_desk_rak"]
+[ext_resource type="Texture2D" uid="uid://dxftq7lldln3s" path="res://art/props/office/desk_wymysl.png" id="p10_desk_wymysl"]
+[ext_resource type="Texture2D" uid="uid://vech3mxkw53m" path="res://art/props/office/desk_kula.png" id="p11_desk_kula"]
+[ext_resource type="Texture2D" uid="uid://b5uc4qi6dkibn" path="res://art/props/office/bookshelf.png" id="p12_bookshelf"]
+[ext_resource type="Texture2D" uid="uid://bvn0weitao5s5" path="res://art/props/office/archive_boxes.png" id="p13_archive"]
+[ext_resource type="Texture2D" uid="uid://bthn2bhiubfrp" path="res://art/props/office/office_door.png" id="p14_door"]
+[ext_resource type="Texture2D" uid="uid://c0kb31uqjltcu" path="res://art/props/office/certificate.png" id="p15_cert"]
+[ext_resource type="Texture2D" uid="uid://psug7uvj4rqt" path="res://art/props/office/wall_clock.png" id="p16_clock"]
+[ext_resource type="Texture2D" uid="uid://bxruelyth1n48" path="res://art/props/office/desk_lamp.png" id="p17_lamp"]
+[ext_resource type="Texture2D" uid="uid://t4eurkjd3wdh" path="res://art/props/office/trash_bin.png" id="p18_trash"]
+[ext_resource type="Texture2D" uid="uid://b5n5qu46k452i" path="res://art/props/office/window.png" id="p19_window"]
+[ext_resource type="Texture2D" uid="uid://7tfp81ldhf8c" path="res://art/props/office/coffee_mug.png" id="p20_mug"]
+[ext_resource type="Texture2D" uid="uid://casmttpenc4wy" path="res://art/props/office/desk_asia_new.png" id="p21_desk_asia"]
+[ext_resource type="TileSet" uid="uid://d4nf6vj8sxrcd" path="res://art/tilesets/office_tileset.tres" id="tileset_office"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_left_wall"]
+size = Vector2(16, 1024)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_right_wall"]
+size = Vector2(16, 1024)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_bottom_left"]
+size = Vector2(192, 16)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_bottom_right"]
+size = Vector2(1216, 16)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_door_horiz"]
+size = Vector2(48, 16)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_reception_desk_bottom"]
+size = Vector2(80, 30)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_reception_desk_left"]
+size = Vector2(25, 60)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_npc"]
+size = Vector2(52, 56)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_deskfront_bottom"]
+size = Vector2(80, 30)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_deskfront_left"]
+size = Vector2(25, 60)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_coffee"]
+size = Vector2(48, 48)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_pigzone"]
+size = Vector2(144, 128)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_behinddsk"]
+size = Vector2(108, 120)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_player"]
+size = Vector2(24, 24)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_meeting_boundary"]
+size = Vector2(768, 16)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_meeting_trigger"]
+size = Vector2(768, 40)
+
+[node name="PigSwineOffice" type="Node2D" unique_id=922872123]
+y_sort_enabled = true
+
+[node name="Music" type="AudioStreamPlayer" parent="." unique_id=2012975241]
+process_mode = 3
+stream = ExtResource("13_music")
+autoplay = true
+
+[node name="Floor" type="TileMapLayer" parent="." unique_id=81826163]
+use_parent_material = true
+tile_map_data = PackedByteArray("AAAIAAUAAAAAAAAAAAAAAA8AAAACAAAAAAABAA8AAAAAAAEAAAABAA4AAAACAAEAAAACAA4AAAACAAAAAAACAA0AAAACAAEAAAABAA0AAAABAAEAAAAAAA0AAAAAAAEAAAAAAA4AAAABAAEAAAACAA8AAAAAAAEAAAADAA8AAAACAAAAAAADAA4AAAACAAEAAAAEAA4AAAABAAEAAAAAAAwAAAACAAAAAAABAAwAAAACAAEAAAACAAwAAAABAAAAAAADAA0AAAAAAAEAAAAEAA0AAAAAAAAAAAAEAAwAAAACAAEAAAAFAAwAAAACAAEAAAAGAA0AAAACAAEAAAAFAA0AAAACAAEAAAADAAwAAAACAAEAAAAGAAwAAAABAAEAAAAEAA8AAAABAAAAAAAFAA8AAAABAAAAAAAGAA8AAAACAAEAAAAHAA4AAAABAAAAAAAHAA0AAAAAAAEAAAAHAAwAAAABAAEAAAAHAAsAAAACAAEAAAAHAAoAAAAAAAAAAAAHAAkAAAAAAAEAAAAHAAgAAAACAAAAAAAHAAcAAAACAAEAAAAHAAYAAAAAAAEAAAAHAAUAAAABAAEAAAAGAAUAAAACAAEAAAAFAAUAAAAAAAAAAAAEAAUAAAACAAAAAAADAAUAAAABAAAAAAACAAUAAAABAAAAAAABAAUAAAABAAAAAAAAAAUAAAACAAEAAAAAAAYAAAACAAAAAAAAAAcAAAABAAAAAAAAAAgAAAAAAAEAAAAAAAkAAAABAAAAAAAAAAoAAAABAAAAAAAAAAsAAAACAAEAAAABAAsAAAACAAAAAAABAAoAAAABAAAAAAABAAkAAAACAAEAAAABAAgAAAABAAEAAAABAAcAAAABAAAAAAABAAYAAAACAAEAAAACAAYAAAABAAEAAAACAAcAAAACAAEAAAACAAgAAAABAAEAAAACAAkAAAABAAAAAAACAAoAAAACAAEAAAACAAsAAAABAAEAAAADAAsAAAAAAAAAAAADAAoAAAACAAEAAAADAAkAAAACAAAAAAADAAgAAAACAAAAAAADAAcAAAACAAAAAAADAAYAAAABAAAAAAAEAAYAAAAAAAEAAAAEAAcAAAACAAAAAAAEAAgAAAACAAEAAAAEAAkAAAABAAEAAAAEAAoAAAAAAAEAAAAEAAsAAAABAAAAAAAFAAsAAAAAAAEAAAAFAAoAAAAAAAAAAAAFAAkAAAAAAAAAAAAFAAgAAAAAAAAAAAAFAAcAAAAAAAEAAAAFAAYAAAACAAEAAAAGAAYAAAAAAAAAAAAGAAcAAAABAAAAAAAGAAgAAAABAAEAAAAGAAkAAAACAAEAAAAGAAoAAAAAAAEAAAAGAAsAAAABAAAAAAAIAAYAAAAAAAEAAAAIAAcAAAACAAAAAAAIAAgAAAACAAAAAAAIAAkAAAABAAEAAAAIAAoAAAABAAEAAAAIAAsAAAAAAAEAAAAIAAwAAAAAAAAAAAAIAA0AAAABAAAAAAAIAA4AAAABAAEAAAAIAA8AAAACAAEAAAAHAA8AAAACAAEAAAAGAA4AAAACAAAAAAAFAA4AAAACAAEAAAAIAAQAAAAAAAEAAAAIAAMAAAACAAEAAAAIAAIAAAAAAAEAAAAIAAEAAAABAAAAAAAIAAAAAAAAAAAAAAAJAAYAAAACAAAAAAAKAAYAAAACAAAAAAALAAYAAAAAAAAAAAAMAAYAAAACAAAAAAANAAYAAAABAAEAAAAOAAYAAAAAAAEAAAAPAAYAAAABAAAAAAAQAAYAAAABAAEAAAARAAYAAAACAAEAAAASAAYAAAACAAEAAAATAAYAAAAAAAAAAAAUAAYAAAABAAEAAAAUAAcAAAABAAAAAAAVAAcAAAABAAEAAAAWAAcAAAAAAAAAAAAWAAYAAAACAAEAAAAVAAYAAAABAAAAAAAXAAYAAAABAAEAAAAWAAQAAAABAAAAAAAWAAMAAAAAAAAAAAAWAAIAAAAAAAAAAAAWAAEAAAAAAAEAAAAWAAAAAAABAAEAAAAVAAAAAAACAAAAAAAUAAAAAAACAAEAAAATAAAAAAAAAAEAAAASAAAAAAAAAAEAAAARAAAAAAABAAEAAAAQAAAAAAABAAAAAAAPAAAAAAAAAAEAAAAOAAAAAAABAAAAAAANAAAAAAABAAEAAAAMAAAAAAAAAAEAAAALAAAAAAACAAEAAAAKAAAAAAAAAAAAAAAJAAAAAAAAAAAAAAAJAAEAAAABAAAAAAAJAAIAAAABAAEAAAAJAAMAAAABAAAAAAAJAAQAAAABAAEAAAAJAAUAAAABAAEAAAAKAAUAAAACAAAAAAAKAAQAAAACAAAAAAAKAAMAAAACAAAAAAAKAAIAAAABAAEAAAAKAAEAAAABAAEAAAALAAEAAAAAAAEAAAALAAIAAAAAAAEAAAALAAMAAAABAAEAAAALAAQAAAACAAAAAAALAAUAAAABAAAAAAAMAAUAAAAAAAEAAAAMAAQAAAABAAEAAAAMAAMAAAAAAAEAAAAMAAIAAAABAAAAAAAMAAEAAAAAAAEAAAANAAEAAAAAAAAAAAANAAIAAAACAAEAAAANAAMAAAACAAAAAAANAAQAAAABAAAAAAANAAUAAAABAAAAAAAOAAUAAAAAAAAAAAAOAAQAAAAAAAAAAAAOAAMAAAABAAEAAAAOAAIAAAAAAAAAAAAOAAEAAAAAAAEAAAAPAAEAAAABAAEAAAAPAAIAAAACAAAAAAAPAAMAAAACAAEAAAAPAAQAAAAAAAEAAAAPAAUAAAABAAEAAAAQAAUAAAABAAEAAAAQAAQAAAACAAAAAAAQAAMAAAABAAEAAAAQAAIAAAAAAAEAAAAQAAEAAAAAAAEAAAARAAEAAAAAAAAAAAARAAIAAAAAAAEAAAARAAMAAAABAAEAAAARAAQAAAABAAAAAAARAAUAAAACAAEAAAASAAUAAAABAAAAAAASAAQAAAACAAEAAAASAAMAAAAAAAEAAAASAAIAAAACAAEAAAASAAEAAAABAAEAAAATAAEAAAABAAAAAAATAAIAAAACAAEAAAATAAMAAAABAAAAAAATAAQAAAACAAAAAAATAAUAAAAAAAEAAAAUAAUAAAABAAEAAAAUAAQAAAAAAAAAAAAUAAMAAAAAAAAAAAAUAAIAAAACAAEAAAAUAAEAAAACAAAAAAAVAAEAAAAAAAAAAAAVAAIAAAABAAEAAAAVAAMAAAACAAAAAAAVAAQAAAACAAEAAAAVAAUAAAACAAEAAAAWAAUAAAABAAEAAAAXAAUAAAACAAEAAAAXAAQAAAAAAAAAAAAXAAMAAAACAAEAAAAXAAIAAAABAAEAAAAXAAEAAAAAAAAAAAAXAAAAAAABAAAAAAAVAAkAAAAAAAEAAAAVAAgAAAACAAEAAAAUAAgAAAACAAAAAAATAAgAAAABAAAAAAATAAcAAAAAAAEAAAASAAcAAAACAAAAAAARAAcAAAAAAAEAAAAQAAcAAAAAAAAAAAAPAAcAAAACAAAAAAAOAAcAAAACAAAAAAANAAcAAAABAAEAAAAMAAcAAAAAAAAAAAALAAcAAAABAAEAAAAKAAcAAAAAAAAAAAAJAAcAAAACAAAAAAAJAAgAAAACAAAAAAAJAAkAAAACAAEAAAAJAAoAAAABAAEAAAAJAAsAAAAAAAAAAAAJAAwAAAACAAAAAAAJAA0AAAABAAAAAAAJAA4AAAACAAEAAAAJAA8AAAACAAAAAAAKAA8AAAACAAEAAAAKAA4AAAAAAAEAAAAKAA0AAAACAAAAAAAKAAwAAAABAAAAAAAKAAsAAAAAAAAAAAAKAAoAAAACAAAAAAAKAAkAAAACAAAAAAAKAAgAAAABAAEAAAALAAgAAAABAAEAAAALAAkAAAACAAAAAAALAAoAAAAAAAEAAAALAAsAAAABAAEAAAALAAwAAAABAAEAAAALAA0AAAAAAAAAAAALAA4AAAACAAAAAAALAA8AAAACAAAAAAAMAA8AAAABAAEAAAAMAA4AAAACAAEAAAAMAA0AAAAAAAEAAAAMAAwAAAAAAAAAAAAMAAsAAAABAAAAAAAMAAoAAAACAAAAAAAMAAkAAAABAAEAAAAMAAgAAAAAAAEAAAANAAgAAAACAAEAAAANAAkAAAABAAAAAAANAAoAAAAAAAAAAAANAAsAAAAAAAEAAAANAAwAAAABAAAAAAANAA0AAAABAAAAAAANAA4AAAABAAEAAAANAA8AAAABAAAAAAAOAA8AAAAAAAEAAAAOAA4AAAABAAEAAAAOAA0AAAAAAAAAAAAOAAwAAAABAAAAAAAOAAsAAAABAAAAAAAOAAoAAAABAAAAAAAOAAkAAAACAAEAAAAOAAgAAAACAAAAAAAPAAgAAAAAAAEAAAAPAAkAAAAAAAAAAAAPAAoAAAACAAEAAAAPAAsAAAAAAAEAAAAPAAwAAAABAAEAAAAPAA0AAAAAAAAAAAAPAA4AAAABAAEAAAAPAA8AAAABAAAAAAAQAA8AAAAAAAEAAAAQAA4AAAAAAAAAAAAQAA0AAAABAAEAAAAQAAwAAAABAAAAAAAQAAsAAAAAAAEAAAAQAAoAAAACAAAAAAAQAAkAAAACAAAAAAAQAAgAAAACAAEAAAARAAgAAAACAAAAAAARAAkAAAACAAAAAAARAAoAAAABAAAAAAARAAsAAAAAAAEAAAARAAwAAAACAAAAAAARAA0AAAACAAAAAAARAA4AAAACAAEAAAARAA8AAAAAAAEAAAASAA8AAAACAAAAAAASAA4AAAABAAAAAAASAA0AAAAAAAEAAAASAAwAAAACAAEAAAASAAsAAAACAAAAAAASAAoAAAACAAAAAAASAAkAAAACAAEAAAASAAgAAAACAAEAAAATAAkAAAACAAAAAAATAAoAAAABAAAAAAATAAsAAAAAAAAAAAATAAwAAAABAAEAAAATAA0AAAACAAEAAAATAA4AAAABAAEAAAATAA8AAAABAAAAAAAUAA8AAAACAAAAAAAUAA4AAAABAAAAAAAUAA0AAAAAAAAAAAAUAAwAAAACAAAAAAAUAAsAAAABAAEAAAAUAAoAAAACAAAAAAAUAAkAAAAAAAAAAAAVAAoAAAACAAEAAAAVAAsAAAACAAAAAAAVAAwAAAACAAEAAAAVAA0AAAAAAAEAAAAVAA4AAAACAAAAAAAVAA8AAAABAAEAAAAWAA8AAAAAAAAAAAAWAA4AAAAAAAEAAAAWAA0AAAABAAEAAAAWAAwAAAACAAAAAAAWAAsAAAACAAAAAAAWAAoAAAAAAAEAAAAWAAkAAAACAAAAAAAWAAgAAAABAAAAAAAXAAgAAAACAAEAAAAXAAcAAAAAAAAAAAAXAAkAAAACAAEAAAAXAAoAAAABAAAAAAAXAAsAAAACAAAAAAAXAAwAAAABAAAAAAAXAA0AAAACAAEAAAAXAA4AAAACAAEAAAAXAA8AAAABAAEAAAAEAAMAAAABAAAAAAAEAAIAAAACAAEAAAAEAAEAAAAAAAEAAAAEAAAAAAACAAAAAAADAAAAAAABAAAAAAACAAAAAAABAAAAAAABAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAEAAAABAAAAAAAAAAIAAAAAAAEAAAAAAAMAAAAAAAAAAAAAAAQAAAABAAAAAAABAAQAAAAAAAEAAAABAAMAAAABAAEAAAABAAIAAAAAAAAAAAABAAEAAAACAAEAAAACAAEAAAABAAAAAAACAAIAAAAAAAEAAAACAAMAAAACAAEAAAACAAQAAAABAAEAAAADAAQAAAACAAEAAAADAAMAAAACAAAAAAADAAIAAAABAAAAAAADAAEAAAACAAEAAAAEAAQAAAABAAEAAAAFAAQAAAACAAEAAAAFAAMAAAACAAEAAAAFAAIAAAAAAAAAAAAFAAEAAAACAAAAAAAFAAAAAAAAAAEAAAAGAAAAAAAAAAEAAAAGAAEAAAABAAEAAAAGAAIAAAABAAAAAAAGAAMAAAAAAAAAAAAGAAQAAAABAAAAAAAHAAQAAAACAAAAAAAHAAMAAAAAAAEAAAAHAAIAAAAAAAEAAAAHAAEAAAAAAAEAAAAHAAAAAAACAAAAAAA=")
+tile_set = ExtResource("tileset_office")
+
+[node name="Walls" type="TileMapLayer" parent="." unique_id=1259283967]
+y_sort_enabled = true
+use_parent_material = true
+tile_map_data = PackedByteArray("AAAAAA4AAAAAAAAAAAAAAA8AAAAAAAEAAAABAA4AAAABAAAAAAABAA8AAAABAAEAAAACAA4AAAACAAAAAAACAA8AAAACAAEAAAAFAAkAAAABAAEAAAAEAAUAAAAAAAEAAAAJAAQAAAAAAAAAAAANAAkAAAACAAAAAAADAAwAAAABAAAAAAAEAA0AAAAAAAEAAAAFAAwAAAABAAAAAAADAAoAAAABAAAAAAAEAAsAAAAAAAEAAAAFAAoAAAABAAAAAAADAAgAAAABAAAAAAAEAAkAAAAAAAEAAAAFAAgAAAABAAAAAAADAAYAAAAAAAAAAAAEAAcAAAABAAEAAAAFAAYAAAACAAAAAAAGAAYAAAABAAEAAAAHAAcAAAABAAEAAAAIAAYAAAACAAAAAAAJAAYAAAAAAAAAAAAKAAcAAAABAAEAAAALAAYAAAABAAAAAAAMAAYAAAAAAAAAAAANAAcAAAAAAAAAAAAOAAYAAAACAAAAAAAMAAgAAAAAAAAAAAAOAAgAAAACAAAAAAAMAAoAAAABAAEAAAANAAsAAAAAAAAAAAAOAAoAAAACAAAAAAAJAAoAAAAAAAAAAAAKAAsAAAABAAAAAAALAAoAAAAAAAEAAAAGAAwAAAAAAAAAAAAHAA0AAAABAAEAAAAIAAwAAAACAAAAAAAAAAgAAAAAAAAAAAABAAkAAAABAAEAAAACAAgAAAAAAAAAAAADAAQAAAAAAAAAAAAFAAQAAAABAAAAAAAGAAQAAAACAAAAAAAHAAUAAAABAAEAAAAIAAQAAAACAAAAAAAKAAUAAAABAAEAAAALAAQAAAACAAAAAAAJAAgAAAAAAAAAAAAKAAkAAAABAAEAAAALAAgAAAACAAAAAAAGAAoAAAAAAAAAAAAHAAsAAAABAAAAAAAIAAoAAAACAAAAAAAGAAgAAAAAAAAAAAAHAAkAAAABAAEAAAAIAAgAAAACAAAAAAAMAAQAAAAAAAAAAAANAAUAAAABAAEAAAAOAAQAAAAAAAAAAAAMAAIAAAAAAAAAAAANAAMAAAABAAEAAAAOAAIAAAACAAAAAAAPAAIAAAAAAAAAAAAQAAMAAAABAAEAAAARAAIAAAACAAAAAAASAAQAAAABAAAAAAATAAUAAAACAAEAAAAUAAQAAAACAAAAAAASAAYAAAAAAAAAAAATAAcAAAABAAEAAAAUAAYAAAACAAAAAAAPAAYAAAAAAAAAAAAQAAcAAAABAAEAAAARAAYAAAACAAAAAAASAAgAAAAAAAAAAAATAAkAAAACAAAAAAAUAAgAAAACAAAAAAASAAoAAAAAAAAAAAATAAsAAAABAAEAAAAUAAoAAAACAAAAAAASAAwAAAABAAEAAAATAA0AAAABAAEAAAAUAAwAAAACAAAAAAAPAA4AAAABAAAAAAAQAA8AAAACAAEAAAARAA4AAAACAAAAAAAMAA4AAAABAAAAAAANAA8AAAACAAEAAAAOAA4AAAACAAAAAAAJAA4AAAAAAAAAAAAKAA8AAAABAAEAAAALAA4AAAAAAAAAAAAMAAwAAAACAAAAAAANAA0AAAABAAAAAAAOAAwAAAACAAAAAAAPAAgAAAACAAEAAAAQAAkAAAABAAEAAAARAAgAAAACAAAAAAAPAAoAAAACAAEAAAAQAAsAAAABAAEAAAARAAoAAAAAAAEAAAAPAAwAAAACAAEAAAAQAA0AAAABAAEAAAARAAwAAAACAAAAAAAHAA8AAAABAAEAAAAIAA4AAAACAAAAAAAJAA8AAAACAAEAAAAIAA0AAAACAAEAAAAJAAwAAAACAAEAAAAKAA0AAAABAAAAAAAHAAwAAAABAAAAAAAIAAsAAAACAAAAAAAHAAEAAAAAAAEAAAAIAAAAAAABAAAAAAAJAAAAAAACAAAAAAAHAAMAAAAAAAEAAAAIAAIAAAABAAAAAAAJAAIAAAACAAAAAAAKAAEAAAAAAAEAAAALAAAAAAABAAAAAAAMAAAAAAACAAAAAAAEAAEAAAAAAAEAAAAFAAAAAAABAAAAAAAGAAAAAAACAAAAAAAEAAMAAAAAAAEAAAAFAAIAAAABAAAAAAAGAAIAAAACAAAAAAABAAMAAAABAAEAAAACAAIAAAACAAAAAAADAAIAAAACAAAAAAABAAEAAAABAAEAAAACAAAAAAACAAAAAAADAAAAAAACAAAAAAAUAA4AAAACAAAAAAAUAA8AAAAAAAEAAAAWAA4AAAABAAAAAAAWAA8AAAACAAEAAAAVAAoAAAAAAAAAAAAVAAsAAAAAAAEAAAAXAAoAAAACAAAAAAAXAAsAAAACAAEAAAARAAkAAAAAAAAAAAATAAoAAAACAAEAAAANAAoAAAAAAAEAAAAPAAkAAAABAAAAAAALAAcAAAABAAEAAAAGAAUAAAABAAAAAAAAAAUAAAAAAAEAAAAAAAYAAAAAAAAAAAAKAAwAAAABAAEAAAAMAAsAAAACAAAAAAALAAwAAAAAAAEAAAAAAAwAAAAAAAAAAAAAAA0AAAAAAAEAAAABAAwAAAABAAAAAAABAA0AAAABAAEAAAAAAAoAAAAAAAAAAAAAAAsAAAAAAAEAAAABAAoAAAABAAAAAAABAAsAAAABAAEAAAAAAAkAAAAAAAEAAAABAAgAAAABAAAAAAACAAkAAAAAAAEAAAADAAkAAAABAAEAAAAEAAgAAAAAAAAAAAAGAAsAAAAAAAAAAAAHAAoAAAABAAAAAAAEAAoAAAAAAAAAAAAFAAsAAAABAAEAAAAEAAwAAAAAAAAAAAAFAA0AAAABAAEAAAACAAwAAAAAAAAAAAACAA0AAAAAAAEAAAADAA0AAAABAAEAAAACAAoAAAAAAAAAAAACAAsAAAAAAAEAAAADAAsAAAABAAEAAAAAAAAAAAAAAAAAAAAAAAEAAAAAAAEAAAABAAAAAAABAAAAAAACAAEAAAACAAEAAAAAAAIAAAAAAAAAAAAAAAMAAAAAAAEAAAABAAIAAAABAAAAAAACAAMAAAACAAEAAAAAAAQAAAAAAAAAAAABAAQAAAABAAAAAAABAAUAAAABAAEAAAACAAQAAAACAAAAAAACAAUAAAACAAEAAAAAAAcAAAAAAAEAAAABAAYAAAABAAAAAAABAAcAAAABAAEAAAACAAYAAAACAAAAAAACAAcAAAACAAEAAAADAAcAAAAAAAEAAAAEAAYAAAABAAAAAAAFAAcAAAACAAEAAAADAA4AAAAAAAAAAAADAA8AAAAAAAEAAAAEAA4AAAABAAAAAAAEAA8AAAABAAEAAAAFAA4AAAACAAAAAAAFAA8AAAACAAEAAAAGAA4AAAAAAAAAAAAGAA8AAAAAAAEAAAAHAA4AAAABAAAAAAAIAA8AAAACAAEAAAAGAA0AAAAAAAEAAAASAA4AAAAAAAAAAAASAA8AAAABAAEAAAASAAsAAAABAAAAAAAIAAcAAAAAAAAAAAAJAAcAAAABAAAAAAAKAAgAAAACAAEAAAAIAAkAAAAAAAAAAAAJAAkAAAABAAAAAAAKAAoAAAACAAEAAAAVAAAAAAAAAAAAAAAWAAAAAAABAAAAAAAXAAEAAAACAAEAAAATAAIAAAAAAAAAAAAUAAIAAAABAAAAAAAVAAMAAAABAAEAAAAVAAEAAAAAAAAAAAAWAAEAAAABAAAAAAAXAAIAAAACAAEAAAAQAAAAAAACAAAAAAARAAAAAAABAAAAAAASAAEAAAACAAEAAAAOAAUAAAAAAAEAAAAPAAQAAAABAAAAAAAQAAUAAAACAAEAAAARAAQAAAAAAAAAAAARAAUAAAAAAAEAAAALAAkAAAAAAAAAAAAMAAkAAAABAAAAAAAJAAsAAAAAAAAAAAALAAsAAAACAAAAAAAJAA0AAAAAAAAAAAAKAA4AAAABAAEAAAALAA0AAAACAAAAAAAMAA0AAAAAAAAAAAANAA4AAAACAAAAAAAOAA0AAAACAAAAAAAUAA0AAAABAAAAAAAVAA0AAAACAAAAAAATAA4AAAABAAAAAAATAA8AAAABAAEAAAAMAA8AAAABAAEAAAALAA8AAAAAAAEAAAAOAA8AAAAAAAEAAAAPAA8AAAAAAAEAAAAQAA4AAAABAAAAAAARAA8AAAACAAEAAAAPAA0AAAAAAAEAAAAQAAwAAAABAAAAAAARAA0AAAACAAEAAAAJAAMAAAAAAAEAAAAKAAIAAAABAAAAAAALAAMAAAACAAEAAAAKAAMAAAAAAAEAAAALAAIAAAABAAAAAAAMAAMAAAACAAEAAAAJAAEAAAAAAAEAAAAKAAAAAAABAAAAAAALAAEAAAACAAEAAAAGAAEAAAAAAAEAAAAHAAAAAAABAAAAAAAIAAEAAAACAAEAAAADAAEAAAAAAAEAAAAEAAAAAAABAAAAAAAFAAEAAAACAAEAAAADAAMAAAAAAAEAAAAEAAIAAAABAAAAAAAFAAMAAAACAAEAAAADAAUAAAAAAAEAAAAEAAQAAAABAAAAAAAFAAUAAAACAAEAAAAGAAMAAAAAAAEAAAAHAAIAAAABAAAAAAAIAAMAAAACAAEAAAAGAAcAAAABAAEAAAAHAAYAAAACAAAAAAAGAAkAAAAAAAEAAAAHAAgAAAABAAAAAAAJAAUAAAAAAAEAAAAKAAQAAAABAAAAAAAKAAYAAAAAAAEAAAALAAUAAAABAAAAAAAMAAcAAAAAAAEAAAANAAYAAAABAAAAAAAQAAoAAAABAAAAAAARAAsAAAACAAEAAAASAAcAAAABAAAAAAATAAgAAAACAAEAAAASAAUAAAABAAAAAAATAAYAAAACAAEAAAATAAQAAAABAAAAAAAUAAUAAAACAAEAAAARAAMAAAAAAAEAAAASAAIAAAABAAAAAAASAAMAAAABAAEAAAATAAMAAAACAAEAAAAMAAEAAAAAAAEAAAANAAAAAAABAAAAAAANAAEAAAABAAEAAAAOAAEAAAACAAEAAAAPAAEAAAAAAAEAAAAQAAEAAAACAAEAAAARAAEAAAACAAEAAAAVAAQAAAAAAAEAAAAWAAMAAAABAAAAAAAWAAQAAAABAAEAAAAXAAQAAAACAAEAAAAVAAkAAAAAAAEAAAAWAAgAAAABAAAAAAAWAAkAAAABAAEAAAAXAAkAAAACAAEAAAAVAAUAAAAAAAAAAAAVAAYAAAAAAAAAAAAWAAUAAAABAAAAAAAXAAUAAAACAAAAAAAVAAcAAAAAAAEAAAAVAAgAAAAAAAEAAAAWAAcAAAABAAAAAAAXAAcAAAACAAEAAAASAAAAAAAAAAAAAAATAAAAAAABAAAAAAAUAAAAAAACAAAAAAAUAAEAAAACAAEAAAAOAAAAAAAAAAAAAAAPAAAAAAABAAAAAAAVAAwAAAAAAAAAAAAWAAwAAAABAAAAAAAXAAwAAAACAAAAAAAXAA0AAAACAAEAAAAVAA4AAAAAAAAAAAAVAA8AAAAAAAEAAAAXAA4AAAACAAAAAAAXAA8AAAACAAEAAAAWAAYAAAABAAAAAAAXAAYAAAACAAAAAAANAAgAAAAAAAEAAAAOAAcAAAABAAAAAAAPAAcAAAACAAAAAAANAAwAAAAAAAEAAAAOAAsAAAABAAAAAAAPAAsAAAACAAAAAAATAAwAAAABAAAAAAAVAAIAAAABAAAAAAAWAAIAAAACAAAAAAAXAAAAAAAAAAAAAAAWAAoAAAACAAEAAAAXAAgAAAACAAEAAAAXAAMAAAAAAAEAAAATAAEAAAABAAAAAAASAA0AAAABAAEAAAAUAAsAAAACAAEAAAAUAAkAAAAAAAAAAAAUAAcAAAAAAAEAAAAOAAkAAAABAAAAAAAWAAsAAAACAAEAAAAWAA0AAAABAAEAAAARAAcAAAAAAAAAAAAQAAYAAAABAAEAAAAPAAUAAAACAAAAAAAQAAQAAAAAAAEAAAAQAAIAAAACAAEAAAAMAAUAAAABAAAAAAANAAQAAAABAAEAAAAOAAMAAAAAAAEAAAASAAkAAAACAAEAAAAQAAgAAAACAAAAAAAUAAMAAAAAAAEAAAANAAIAAAABAAAAAAAPAAMAAAABAAEAAAA=")
+
+[node name="FloorZones#HallFloor" type="ColorRect" parent="." unique_id=984192833]
+offset_right = 768.0
+offset_bottom = 1024.0
+color = Color(0.68, 0.6, 0.46, 0.32)
+
+[node name="FloorZones#MeetingFloor" type="ColorRect" parent="." unique_id=1444771609]
+offset_left = 768.0
+offset_right = 1536.0
+offset_bottom = 400.0
+color = Color(0.31, 0.43, 0.39, 0.24)
+
+[node name="FloorZones#PigOfficeFloor" type="ColorRect" parent="." unique_id=109271967]
+offset_left = 768.0
+offset_top = 400.0
+offset_right = 1536.0
+offset_bottom = 700.0
+color = Color(0.43, 0.35, 0.42, 0.22)
+
+[node name="FloorZones#ArchiveOfficeFloor" type="ColorRect" parent="." unique_id=556184769]
+offset_left = 768.0
+offset_top = 700.0
+offset_right = 1536.0
+offset_bottom = 1024.0
+color = Color(0.29, 0.35, 0.45, 0.26)
+
+[node name="Props" type="Node2D" parent="." unique_id=1404989474]
+y_sort_enabled = true
+
+[node name="Window" type="Sprite2D" parent="Props" unique_id=270715446]
+z_index = -5
+position = Vector2(200, 100)
+texture = ExtResource("p19_window")
+
+[node name="WallCalendar" type="Sprite2D" parent="Props" unique_id=961477473]
+z_index = -5
+position = Vector2(400, 100)
+texture = ExtResource("p02_calendar")
+
+[node name="Certificate" type="Sprite2D" parent="Props" unique_id=1914454496]
+z_index = -5
+position = Vector2(1100, 106)
+texture = ExtResource("p15_cert")
+
+[node name="WallClock" type="Sprite2D" parent="Props" unique_id=1338204754]
+z_index = -5
+position = Vector2(1500, 140)
+texture = ExtResource("p16_clock")
+
+[node name="OfficeDoor" type="Sprite2D" parent="Props" unique_id=42976923]
+z_index = -6
+position = Vector2(252, 960)
+texture = ExtResource("p14_door")
+offset = Vector2(0, -64)
+
+[node name="Bookshelf" type="Sprite2D" parent="Props" unique_id=173116057]
+z_index = -3
+position = Vector2(850, 106)
+texture = ExtResource("p12_bookshelf")
+offset = Vector2(0, -64)
+
+[node name="ChairPig" type="Sprite2D" parent="Props" unique_id=1548470937]
+position = Vector2(500, 287)
+texture = ExtResource("p03_chair")
+offset = Vector2(0, -46)
+
+[node name="DeskPig" type="Sprite2D" parent="Props" unique_id=1352840098]
+position = Vector2(500, 381)
+texture = ExtResource("p06_desk_pig")
+offset = Vector2(0, -64)
+
+[node name="DeskLamp" type="Sprite2D" parent="Props" unique_id=290651196]
+z_index = 2
+position = Vector2(468, 289)
+texture = ExtResource("p17_lamp")
+
+[node name="CoffeeMug" type="Sprite2D" parent="Props" unique_id=445960291]
+z_index = 2
+position = Vector2(528, 299)
+texture = ExtResource("p20_mug")
+
+[node name="TrashBin" type="Sprite2D" parent="Props" unique_id=2017108629]
+position = Vector2(418, 407)
+texture = ExtResource("p18_trash")
+offset = Vector2(0, -28)
+
+[node name="Printer" type="Sprite2D" parent="Props" unique_id=871775193]
+position = Vector2(100, 500)
+texture = ExtResource("p05_printer")
+offset = Vector2(0, -40)
+
+[node name="CoffeeMachine" type="Sprite2D" parent="Props" unique_id=966852293]
+position = Vector2(100, 800)
+texture = ExtResource("p04_coffee")
+offset = Vector2(0, -32)
+
+[node name="DeskSwine" type="Sprite2D" parent="Props" unique_id=463288322]
+position = Vector2(1300, 314)
+texture = ExtResource("p07_desk_swine")
+offset = Vector2(0, -64)
+
+[node name="DeskMurrow" type="Sprite2D" parent="Props" unique_id=682795753]
+position = Vector2(1000, 307)
+texture = ExtResource("p08_desk_murrow")
+offset = Vector2(0, -64)
+
+[node name="ArchiveBoxes" type="Sprite2D" parent="Props" unique_id=1902414693]
+position = Vector2(1150, 323)
+texture = ExtResource("p13_archive")
+offset = Vector2(0, -48)
+
+[node name="ReceptionDesk" type="Sprite2D" parent="Props" unique_id=1527738093]
+position = Vector2(1000, 664)
+texture = ExtResource("p21_desk_asia")
+offset = Vector2(0, -64)
+
+[node name="Fern" type="Sprite2D" parent="Props" unique_id=1201574821]
+z_index = 2
+position = Vector2(1080, 558)
+texture = ExtResource("p01_fern")
+offset = Vector2(0, -40)
+
+[node name="DeskRak" type="Sprite2D" parent="Props" unique_id=1649873677]
+position = Vector2(850, 898)
+texture = ExtResource("p09_desk_rak")
+offset = Vector2(0, -48)
+
+[node name="DeskWymysl" type="Sprite2D" parent="Props" unique_id=529450999]
+position = Vector2(1100, 914)
+texture = ExtResource("p10_desk_wymysl")
+offset = Vector2(0, -64)
+
+[node name="DeskKula" type="Sprite2D" parent="Props" unique_id=1873579953]
+position = Vector2(1350, 906)
+texture = ExtResource("p11_desk_kula")
+offset = Vector2(0, -56)
+
+[node name="LeftWall" type="StaticBody2D" parent="." unique_id=2127434292]
+position = Vector2(-8, 512)
+collision_mask = 0
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="LeftWall" unique_id=1660340062]
+shape = SubResource("RectangleShape2D_left_wall")
+
+[node name="RightWall" type="StaticBody2D" parent="." unique_id=256267737]
+position = Vector2(1544, 512)
+collision_mask = 0
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="RightWall" unique_id=433294009]
+shape = SubResource("RectangleShape2D_right_wall")
+
+[node name="BottomWallLeft" type="StaticBody2D" parent="." unique_id=649470165]
+position = Vector2(96, 1032)
+collision_mask = 0
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="BottomWallLeft" unique_id=212443120]
+shape = SubResource("RectangleShape2D_bottom_left")
+
+[node name="BottomWallRight" type="StaticBody2D" parent="." unique_id=1817503886]
+position = Vector2(928, 1032)
+collision_mask = 0
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="BottomWallRight" unique_id=6733329]
+shape = SubResource("RectangleShape2D_bottom_right")
+
+[node name="DoorIndicator" type="ColorRect" parent="." unique_id=2123751495]
+offset_left = 204.0
+offset_top = 960.0
+offset_right = 300.0
+offset_bottom = 976.0
+color = Color(0.12, 0.08, 0.04, 1)
+
+[node name="BackDoor" type="Area2D" parent="." unique_id=1237075748]
+position = Vector2(252, 964)
+collision_layer = 0
+collision_mask = 2
+script = ExtResource("2_door")
+door_id = "office_back_to_street"
+target_scene = "res://scenes/world/routes/office_street.tscn"
+target_spawn_id = "OfficeSpawn"
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="BackDoor" unique_id=1138067441]
+shape = SubResource("RectangleShape2D_door_horiz")
+
+[node name="StreetSpawn" type="Node2D" parent="." unique_id=998168493]
+position = Vector2(252, 920)
+
+[node name="ArchiveDoorIndicator" type="ColorRect" parent="." unique_id=659619809]
+offset_left = 1358.0
+offset_top = 64.0
+offset_right = 1442.0
+offset_bottom = 80.0
+color = Color(0.12, 0.08, 0.04, 1)
+
+[node name="ArchiveDoor" type="Area2D" parent="." unique_id=825070211]
+position = Vector2(1400, 76)
+collision_layer = 0
+collision_mask = 2
+script = ExtResource("2_door")
+door_id = "office_to_archive"
+target_scene = "res://scenes/interiors/archive_room.tscn"
+target_spawn_id = "ArchiveSpawn"
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="ArchiveDoor" unique_id=1250655735]
+shape = SubResource("RectangleShape2D_door_horiz")
+
+[node name="ArchiveSpawn" type="Node2D" parent="." unique_id=1222903885]
+position = Vector2(1400, 116)
+
+[node name="ReceptionDeskCollision" type="StaticBody2D" parent="." unique_id=440992705]
+position = Vector2(1000, 664)
+collision_mask = 0
+
+[node name="CollisionBottom" type="CollisionShape2D" parent="ReceptionDeskCollision" unique_id=1867389942]
+position = Vector2(5, -10)
+shape = SubResource("RectangleShape2D_reception_desk_bottom")
+
+[node name="CollisionLeft" type="CollisionShape2D" parent="ReceptionDeskCollision" unique_id=955621776]
+position = Vector2(-40, -35)
+shape = SubResource("RectangleShape2D_reception_desk_left")
+
+[node name="Asia" type="Area2D" parent="." unique_id=179225799]
+position = Vector2(1016, 600)
+collision_layer = 4
+collision_mask = 2
+script = ExtResource("18_asia_gd")
+cabinet_node_path = NodePath("../FileCabinet")
+npc_id = "asia"
+display_name = "Asia"
+default_facing = "front_left"
+
+[node name="Visual" parent="Asia" unique_id=1500322244 instance=ExtResource("1_canon")]
+position = Vector2(0, -8)
+sprite_frames = ExtResource("17_asia_frames")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Asia" unique_id=1773282817]
+shape = SubResource("RectangleShape2D_npc")
+
+[node name="FileCabinet" type="ColorRect" parent="." unique_id=1085589092]
+offset_left = 1200.0
+offset_top = 600.0
+offset_right = 1232.0
+offset_bottom = 616.0
+color = Color(0.3, 0.3, 0.3, 1)
+
+[node name="DeskFront" type="Area2D" parent="." unique_id=1553414104]
+position = Vector2(1000, 664)
+collision_layer = 4
+collision_mask = 2
+script = ExtResource("3_npc")
+npc_id = "asia"
+display_name = "Asia"
+prompt_anchor_path = NodePath("../Asia")
+npc_color = Color(0, 0, 0, 0)
+default_facing = "front_left"
+
+[node name="CollisionBottom" type="CollisionShape2D" parent="DeskFront" unique_id=1922344971]
+position = Vector2(5, -10)
+shape = SubResource("RectangleShape2D_deskfront_bottom")
+
+[node name="CollisionLeft" type="CollisionShape2D" parent="DeskFront" unique_id=1000121483]
+position = Vector2(-40, -35)
+shape = SubResource("RectangleShape2D_deskfront_left")
+
+[node name="MrPig" type="Area2D" parent="." unique_id=683917658]
+position = Vector2(500, 300)
+collision_layer = 4
+collision_mask = 2
+script = ExtResource("3_npc")
+npc_id = "pig"
+display_name = "Mr. Pig"
+npc_color = Color(0.83, 0.54, 0.54, 1)
+
+[node name="Visual" parent="MrPig" unique_id=1369309842 instance=ExtResource("1_canon")]
+position = Vector2(0, -8)
+sprite_frames = ExtResource("frames_mr_pig")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="MrPig" unique_id=2063559308]
+shape = SubResource("RectangleShape2D_npc")
+
+[node name="Murrow" type="Area2D" parent="." unique_id=1537608138]
+position = Vector2(1000, 250)
+collision_layer = 4
+collision_mask = 2
+script = ExtResource("3_npc")
+npc_id = "murrow"
+display_name = "Mr. Murrow"
+display_name_after_meeting = "Murrow"
+first_meeting_flag = "met_murrow"
+npc_color = Color(0.48, 0.42, 0.29, 1)
+
+[node name="Visual" parent="Murrow" unique_id=795125840 instance=ExtResource("1_canon")]
+position = Vector2(0, -8)
+sprite_frames = ExtResource("frames_murrow")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Murrow" unique_id=927080110]
+shape = SubResource("RectangleShape2D_npc")
+
+[node name="Halina" type="Area2D" parent="." unique_id=1740110001]
+position = Vector2(1152, 200)
+collision_layer = 4
+collision_mask = 2
+script = ExtResource("3_npc")
+npc_id = "halina"
+display_name = "Mrs. Sikorska"
+default_facing = "front"
+presence_flags = Array[String](["halina_arrived"])
+presence_logic = "all"
+
+[node name="Visual" parent="Halina" unique_id=1740110002 instance=ExtResource("1_canon")]
+position = Vector2(0, -8)
+sprite_frames = ExtResource("frames_halina")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Halina" unique_id=1740110003]
+shape = SubResource("RectangleShape2D_npc")
+
+[node name="MeetingRoomBoundary" type="StaticBody2D" parent="." unique_id=1740110004]
+position = Vector2(1152, 392)
+collision_mask = 0
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="MeetingRoomBoundary" unique_id=1740110005]
+shape = SubResource("RectangleShape2D_meeting_boundary")
+
+[node name="MeetingRoomEntryTrigger" type="Area2D" parent="." unique_id=1740110006]
+position = Vector2(1152, 360)
+collision_layer = 0
+collision_mask = 2
+script = ExtResource("meeting_room_trigger_gd")
+boundary_path = NodePath("../MeetingRoomBoundary")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="MeetingRoomEntryTrigger" unique_id=1740110007]
+shape = SubResource("RectangleShape2D_meeting_trigger")
+
+[node name="ProceduralBinder" type="Area2D" parent="." unique_id=1469238469]
+position = Vector2(1000, 160)
+collision_layer = 4
+collision_mask = 2
+script = ExtResource("8_qhjoq")
+item_id = "procedural_binder"
+display_name = "Procedural Binder"
+state_flag_path = "chapter1.has_law_binder"
+pickup_line = "A heavy tome on administrative law. Better take it."
+
+[node name="Visual" type="ColorRect" parent="ProceduralBinder" unique_id=1463841872]
+offset_left = -10.0
+offset_top = -8.0
+offset_right = 10.0
+offset_bottom = 8.0
+color = Color(0.74, 0.58, 0.22, 1)
+
+[node name="OfficeCoffeeMachine" type="Area2D" parent="." unique_id=1011983478]
+position = Vector2(100, 800)
+collision_layer = 4
+collision_mask = 2
+script = ExtResource("14_minigame_trigger")
+minigame_scene_path = "res://scenes/minigames/coffee_brewing.tscn"
+
+[node name="Visual" type="ColorRect" parent="OfficeCoffeeMachine" unique_id=17593219]
+offset_left = -20.0
+offset_top = -24.0
+offset_right = 20.0
+offset_bottom = 24.0
+color = Color(0, 0, 0, 0)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="OfficeCoffeeMachine" unique_id=1534156079]
+shape = SubResource("RectangleShape2D_coffee")
+
+[node name="PigIdleZone" type="Area2D" parent="." unique_id=168304099]
+position = Vector2(500, 300)
+collision_layer = 0
+collision_mask = 2
+script = ExtResource("12_pig_idle")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="PigIdleZone" unique_id=144405881]
+shape = SubResource("RectangleShape2D_pigzone")
+
+[node name="BehindDeskZone" type="Area2D" parent="." unique_id=1862936603]
+position = Vector2(1016, 600)
+collision_layer = 0
+collision_mask = 2
+script = ExtResource("11_behind_desk")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="BehindDeskZone" unique_id=250283425]
+shape = SubResource("RectangleShape2D_behinddsk")
+
+[node name="Player" type="CharacterBody2D" parent="." unique_id=1222700351]
+position = Vector2(252, 920)
+collision_layer = 2
+script = ExtResource("1_player")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Player" unique_id=937434053]
+position = Vector2(0, 24)
+shape = SubResource("RectangleShape2D_player")
+
+[node name="Visual" type="AnimatedSprite2D" parent="Player" unique_id=709361385]
+position = Vector2(0, -8)
+sprite_frames = ExtResource("4_cula_frames")
+animation = &"idle_front"
+
+[node name="Camera2D" type="Camera2D" parent="Player" unique_id=200116232]
+zoom = Vector2(1.35, 1.35)
+limit_left = 0
+limit_top = -64
+limit_right = 1536
+limit_bottom = 1024
+position_smoothing_enabled = true
+position_smoothing_speed = 8.0
