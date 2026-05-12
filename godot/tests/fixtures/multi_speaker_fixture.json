@@ -1,0 +1,22 @@
+{
+    "version": 1,
+    "npc_id": "test_npc_multi",
+    "states": [
+        {
+            "id": "test_multi",
+            "trigger": "chapter1.met_pig == false",
+            "lines": [
+                "Owning NPC speaks first.",
+                { "speaker": "cula", "text": "Cula responds." },
+                "Owning NPC speaks again.",
+                { "speaker": "asia", "text": "Asia chimes in." }
+            ],
+            "on_dismiss": [
+                { "set": "chapter1.met_pig", "value": true }
+            ]
+        }
+    ],
+    "idle_flavor": [
+        "Multi-speaker idle line."
+    ]
+}

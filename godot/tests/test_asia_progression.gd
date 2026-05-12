@@ -10,7 +10,7 @@ func _init() -> void:
 	print("[TestAsiaProgression] Starting...")
 	await process_frame
 
-	var runner_scene := load("res://scripts/systems/dialogue_runner.gd") as GDScript
+	var runner_scene := load("res://scripts/autoload/dialogue_runner.gd") as GDScript
 	if runner_scene == null:
 		_fail("Could not load dialogue_runner.gd")
 		_finish()
@@ -34,7 +34,7 @@ func _init() -> void:
 		return
 
 	var capture := _signal_capture
-	sigs.dialogue_line_ready.connect(func(s: String, l: Array) -> void:
+	sigs.dialogue_line_ready.connect(func(s: String, _npc_id: String, l: Array) -> void:
 		capture[0] = s
 		capture[1] = l
 	)

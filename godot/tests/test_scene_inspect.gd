@@ -167,5 +167,41 @@ func _init() -> void:
 	office_scene.queue_free()
 
 	print("")
+	# --- Archive Room ---
+	var archive_packed: PackedScene = load("res://scenes/interiors/archive_room.tscn")
+	if archive_packed == null:
+		printerr("[Inspect] FAIL: could not load archive_room.tscn")
+		quit(1)
+		return
+	var archive_scene: Node = archive_packed.instantiate()
+	get_root().add_child(archive_scene)
+	await process_frame
+	
+	var crab: Node = archive_scene.get_node_or_null("Crab")
+	if crab == null:
+		printerr("[Inspect] FAIL: NPC 'Crab' not found in archive_room.tscn")
+		quit(1)
+		return
+	print("[Inspect] NPC 'Crab' found in archive_room.tscn")
+	archive_scene.queue_free()
+
+	# --- Cafe Paragraf ---
+	var cafe_packed: PackedScene = load("res://scenes/interiors/cafe_paragraf.tscn")
+	if cafe_packed == null:
+		printerr("[Inspect] FAIL: could not load cafe_paragraf.tscn")
+		quit(1)
+		return
+	var cafe_scene: Node = cafe_packed.instantiate()
+	get_root().add_child(cafe_scene)
+	await process_frame
+	
+	var whimsy: Node = cafe_scene.get_node_or_null("Whimsy")
+	if whimsy == null:
+		printerr("[Inspect] FAIL: NPC 'Whimsy' not found in cafe_paragraf.tscn")
+		quit(1)
+		return
+	print("[Inspect] NPC 'Whimsy' found in cafe_paragraf.tscn")
+	cafe_scene.queue_free()
+
 	print("[Inspect] PASS — scene tree is correctly wired, visually renderable, and NPCs are present.")
 	quit(0)

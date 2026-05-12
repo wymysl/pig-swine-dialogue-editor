@@ -414,11 +414,9 @@ func _init() -> void:
 	runner._catalogue["asia_v1a_isolated"] = asia_parsed
 
 	## Helper: reset every chapter1 flag used by V1.A triggers to false.
-	## halina_arrived added in Phase B (between recruited_whimsy and halina_met
-	## in the priority chain — owns the Beat 7-close announcement state).
 	var v1a_flags: Array = [
 		"pig_revealed_crisis", "met_murrow", "has_law_binder", "recruited_crab",
-		"has_rights_memo", "recruited_whimsy", "halina_arrived", "halina_met",
+		"has_rights_memo", "recruited_whimsy", "halina_met",
 		"archive_research_complete", "court_ready", "won_court",
 		"received_swine_postcard",
 	]
@@ -444,8 +442,6 @@ func _init() -> void:
 
 	## Test 18 — state 7 (`recruited_whimsy && !halina_met`) — phase-8 new
 	## state authored from V1.A pack §B.1.
-	## halina_arrived must be true so the Phase B announcement state (which
-	## sits ahead of hint_halina_met in priority) doesn't pre-empt this match.
 	reset_flags.call()
 	state_node.data["chapter1"]["pig_revealed_crisis"] = true
 	state_node.data["chapter1"]["met_murrow"] = true
@@ -453,7 +449,6 @@ func _init() -> void:
 	state_node.data["chapter1"]["recruited_crab"] = true
 	state_node.data["chapter1"]["has_rights_memo"] = true
 	state_node.data["chapter1"]["recruited_whimsy"] = true
-	state_node.data["chapter1"]["halina_arrived"] = true
 	_signal_capture[1] = []
 	var capture18 := _signal_capture
 	sigs.dialogue_line_ready.connect(func(s: String, _npc_id: String, l: Array) -> void:
