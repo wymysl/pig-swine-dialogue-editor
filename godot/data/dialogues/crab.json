@@ -1,0 +1,88 @@
+{
+    "version": 2,
+    "npc_id": "crab",
+    "_comment_v1_4_coffee": "V1.4 (2026-05-12): four coffee_reaction_* states added per minigames.txt §Character reactions §Crab. Two outcomes (Perfect = procedurally_alert_plus; Bad = over_caffeinated), each in pre- and post-recruit variants per the design brief's address-form rule (Crab uses 'Cula' only after recruited_crab flips; pre-recruit uses 'Dr. A. Cula'). In normal play, coffee_buff is only set after recruited_whimsy, which is gated downstream of recruited_crab — so the pre-recruit variants are practically unreachable. They exist for completeness per the design brief. Reactions are placed AFTER the engagement states and BEFORE after_engagement so they win priority during the buff window. !entered_court scopes them to pre-court.",
+    "_legacy": {
+        "_note": "Phase-6 lines replaced by Phase-7 V1.2 pass 3. Original lines violated Phase-6 Hit #3 (self-explaining-stance discipline: Crab explaining his own character rather than doing the work).",
+        "before_meeting_lines": [
+            "Dr. A. Cula. If anyone asks, I was already suspicious before the facts arrived.",
+            "I check the facts. I do not arrange them to look prettier."
+        ],
+        "after_meeting_line": "The facts are not beautiful, but they are standing in the right order."
+    },
+    "states": [
+        {
+            "id": "before_binder",
+            "trigger": "chapter1.met_crab == false && chapter1.has_law_binder == false",
+            "_comment_v1_2_p6": "Phase 7 V1.2 pass 6 dialogue. Sikorska file reference per V1.4 canonical case content. Pass-3 'Borowski file' provisional state superseded.",
+            "lines": [
+                { "speaker": "cula", "text": "Crab. I'm Cula. I could use a second pair of eyes on the Sikorska file before fourteen hundred." },
+                "Cula. Heard.",
+                "The binder is not in the room. I cannot check service without the binder.",
+                { "speaker": "cula", "text": "Right." }
+            ],
+            "on_dismiss": [
+                { "set": "chapter1.met_crab", "value": true }
+            ]
+        },
+        {
+            "id": "first_meeting_with_binder",
+            "trigger": "chapter1.met_crab == false && chapter1.has_law_binder == true",
+            "_comment_intro_rule": "Fused intro + binder hand-off for the path where Cula collects the procedural binder before speaking to Crab. Required by AGENTS.md §First-meeting introductions: an inventory hand-off line ('Here.') must not stand as the first word spoken between Cula and Crab. Sets both met_crab and recruited_crab because the binder hand-off IS the recruitment beat in this branch.",
+            "lines": [
+                { "speaker": "cula", "text": "Crab. I'm Cula. The binder — service on the Sikorska notice. Need a second pair of eyes before fourteen hundred." },
+                "Cula. Heard.",
+                "The binder cites Article 132. The notice mentions service. I can check that.",
+                { "speaker": "cula", "text": "Right." }
+            ],
+            "on_dismiss": [
+                { "set": "chapter1.met_crab", "value": true },
+                { "set": "chapter1.recruited_crab", "value": true }
+            ]
+        },
+        {
+            "id": "after_binder_first_engagement",
+            "trigger": "chapter1.met_crab == true && chapter1.has_law_binder == true && chapter1.recruited_crab == false",
+            "lines": [
+                { "speaker": "cula", "text": "Here." },
+                "The binder cites Article 132. The notice mentions service. I can check that.",
+                { "speaker": "cula", "text": "Good." }
+            ],
+            "on_dismiss": [
+                { "set": "chapter1.recruited_crab", "value": true }
+            ]
+        },
+        {
+            "id": "coffee_reaction_perfect_recruited",
+            "trigger": "chapter1.coffee_buff == \"procedurally_alert_plus\" && chapter1.met_crab == true && chapter1.recruited_crab == true && !chapter1.entered_court",
+            "_comment": "V1.4 coffee reaction — S-grade, post-recruit. Voice verbatim from minigames.txt §Character reactions §Crab Perfect ('No obvious flaws. Disturbing.'). Crab addresses Cula by bare 'Cula' per AGENTS.md §Address forms (Crab uses 'Cula' only after recruitment).",
+            "line": "Cula. No obvious flaws. Disturbing."
+        },
+        {
+            "id": "coffee_reaction_bad_recruited",
+            "trigger": "chapter1.coffee_buff == \"over_caffeinated\" && chapter1.met_crab == true && chapter1.recruited_crab == true && !chapter1.entered_court",
+            "_comment": "V1.4 coffee reaction — D/F-grade, post-recruit. Voice verbatim from minigames.txt §Character reactions §Crab Bad ('That is not coffee. That is witness intimidation.').",
+            "line": "Cula. That is not coffee. That is witness intimidation."
+        },
+        {
+            "id": "coffee_reaction_perfect_pre_recruit",
+            "trigger": "chapter1.coffee_buff == \"procedurally_alert_plus\" && chapter1.met_crab == true && chapter1.recruited_crab == false && !chapter1.entered_court",
+            "_comment": "V1.4 coffee reaction — S-grade, pre-recruit. Authored for completeness per design brief; in normal play coffee_buff is only set after recruited_whimsy, which is downstream of recruited_crab — so this branch is practically unreachable. Pre-recruit Crab uses 'Dr. A. Cula' per AGENTS.md §Address forms.",
+            "line": "Dr. A. Cula. No obvious flaws. Disturbing."
+        },
+        {
+            "id": "coffee_reaction_bad_pre_recruit",
+            "trigger": "chapter1.coffee_buff == \"over_caffeinated\" && chapter1.met_crab == true && chapter1.recruited_crab == false && !chapter1.entered_court",
+            "_comment": "V1.4 coffee reaction — D/F-grade, pre-recruit. Same scope note as the perfect pre-recruit variant; pre-recruit Crab uses 'Dr. A. Cula' per AGENTS.md §Address forms.",
+            "line": "Dr. A. Cula. That is not coffee. That is witness intimidation."
+        },
+        {
+            "id": "after_engagement",
+            "trigger": "chapter1.recruited_crab == true",
+            "_comment": "TODO: No V1.x draft line exists for a post-engagement repeat beat with Crab. Falls through to idle_flavor. Wire a V1.4-era line here when the courtroom-round pack is authored."
+        }
+    ],
+    "idle_flavor": [
+        "The office is quiet. Either nothing happened, or the evidence is hiding better than usual."
+    ]
+}

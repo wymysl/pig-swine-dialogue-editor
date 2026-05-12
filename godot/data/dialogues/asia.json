@@ -1,0 +1,46 @@
+{
+    "version": 1,
+    "npc_id": "asia",
+    "states": [
+        {
+            "id": "first_meeting_via_behind_counter",
+            "trigger": "chapter1.met_asia == false && chapter1.met_asia_via_behind == true",
+            "lines": [
+                "I apologise, only employees are allowed in this — oh.",
+                "Of course. Dr. A. Cula, good morning. We've been expecting you.",
+                "Your blue folder is on the second pile from the left. The archive is through that door, and Mr. Murrow is in there with the case file whenever you're ready for him.",
+                "Mr. Pig is at the case board. He'll want to say hello first."
+            ],
+            "on_dismiss": [
+                { "set": "chapter1.met_asia", "value": true }
+            ]
+        },
+        {
+            "id": "first_welcome",
+            "trigger": "chapter1.met_asia == false",
+            "lines": [
+                "Dr. A. Cula, good morning. We've been expecting you.",
+                "Your blue folder is on the second pile from the left. The archive is through that door, and Mr. Murrow is in there with the case file whenever you're ready for him.",
+                "Mr. Pig is at the case board. He'll want to say hello first."
+            ],
+            "on_dismiss": [
+                { "set": "chapter1.met_asia", "value": true }
+            ]
+        },
+        {
+            "id": "post_pig_pre_murrow",
+            "trigger": "chapter1.pig_revealed_crisis == true && chapter1.met_murrow == false",
+            "line": "Mr. Murrow will know what the case is actually about. Mr. Pig knows what it feels like, which is different and louder."
+        },
+        {
+            "id": "post_binder",
+            "trigger": "chapter1.has_law_binder == true && chapter1.recruited_crab == false",
+            "line": "You found it? Excellent. Please do not put it on my desk; the reception counter has not been load-tested."
+        }
+    ],
+    "idle_flavor": [
+        "I have filed three motions, answered five calls, and labelled a sandwich urgent. We are having a very productive collapse.",
+        "Mr. Pig panics. Mr. Murrow thinks. Crab suspects. Whimsy performs. I schedule the apocalypse.",
+        "If anyone asks, the office is running smoothly. If no one asks, please bring me the blue folder."
+    ]
+}

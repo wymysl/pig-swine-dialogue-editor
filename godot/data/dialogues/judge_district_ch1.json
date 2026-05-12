@@ -1,0 +1,92 @@
+{
+    "version": 1,
+    "npc_id": "judge_district_ch1",
+    "display_name": "Judge",
+    "_provenance": "V1.6 phase-7 voice pack (V1.6_court_rounds.md). Source draft: narrative_revision/phase_7_drafts/V1_6_draft_pass5.md (pass 5 — pass-1 + four §J review passes baked in; arbitrated commit shape).",
+    "_scope": "judge_district_ch1.json owns the District Court Judge's three rounds of dry-surprise across Beat 12. The states are gated on chapter1.client_meeting_stance ('sympathetic' / 'blunt_procedural' / 'technical') for Round 1 and Round 3, and on chapter1.casebook_judge_state for round-progression. Round 1 reactions also reference chapter1.bonus_evidence_collected ('wojcik_witness_statement' / 'return_to_sender_slip' / 'lease_1962_inheritance_1987') via the stance flag (1:1 mapping per V1.4 — sympathetic→Wójcik, blunt_procedural→slip+countersignature, technical→countersignature only). Round 2 is single-branch (no stance variation in Whimsy's third-clause non-cure preemption argument). Round 3 sympathetic and blunt_procedural variants share remedy-announcement text; technical adds the one-clause acknowledgment that the underlying tenancy is not before the court.",
+    "_engine_flags_required": "The casebook engine must set chapter1.casebook_judge_state to one of: 'round_1_open', 'round_1_react', 'round_2_open', 'round_2_react', 'round_3_open', 'round_3_remedy'. After each judge state dismisses, the engine should clear or advance the flag. Round_open states fire the bench prompt before the player's argument; round_react / round_3_remedy states fire after.",
+    "_address_forms": "Bench addresses Cula as 'Counsel' throughout. The judge does not address Halina. The judge does not name the landlord's counsel.",
+    "states": [
+        {
+            "id": "open_round",
+            "trigger": "chapter1.casebook_judge_state == 'round_1_open' || chapter1.casebook_judge_state == 'round_2_open' || chapter1.casebook_judge_state == 'round_3_open'",
+            "_comment": "Bench prompt at every round transition. Same line at all three rounds.",
+            "lines": [
+                "Counsel for the petitioner."
+            ],
+            "tags": ["court", "bench_prompt"]
+        },
+        {
+            "id": "react_round_1_sympathetic",
+            "trigger": "chapter1.casebook_judge_state == 'round_1_react' && chapter1.client_meeting_stance == 'sympathetic'",
+            "_comment": "Round 1 dry-surprise — sympathetic carrier with Wójcik affidavit. Service sufficient on documents alone; affidavit is supplementary.",
+            "lines": [
+                "Counsel. The affidavit is noted. The renumbering is enough for the service question on the documents. The respondent may address the third clause."
+            ],
+            "tags": ["court", "round_1", "dry_surprise", "sympathetic_carrier"]
+        },
+        {
+            "id": "react_round_1_blunt_procedural",
+            "trigger": "chapter1.casebook_judge_state == 'round_1_react' && chapter1.client_meeting_stance == 'blunt_procedural'",
+            "_comment": "Round 1 dry-surprise — blunt-procedural carrier with return-to-sender slip + countersignature. Strongest reaction; canonical 'knowledge is not in serious dispute' per pack §B.4.",
+            "lines": [
+                "Counsel. The renumbering, the prior return, and the countersignature are before the court. Knowledge is not in serious dispute. The adult-occupant point is preserved for the third clause."
+            ],
+            "tags": ["court", "round_1", "dry_surprise", "blunt_procedural_carrier"]
+        },
+        {
+            "id": "react_round_1_technical",
+            "trigger": "chapter1.casebook_judge_state == 'round_1_react' && chapter1.client_meeting_stance == 'technical'",
+            "_comment": "Round 1 dry-surprise — technical carrier with countersignature only (lease + inheritance held for Round 3).",
+            "lines": [
+                "Counsel. The renumbering and the countersignature are before the court. Knowledge is not in serious dispute. The respondent may address the third clause."
+            ],
+            "tags": ["court", "round_1", "dry_surprise", "technical_carrier"]
+        },
+        {
+            "id": "react_round_2",
+            "trigger": "chapter1.casebook_judge_state == 'round_2_react'",
+            "_comment": "Round 2 dry-surprise — single-branch (no stance variation). Metaphor noted; third-clause point lands; foreclosure of further service-question submission. 'Lands' tracks §A canonical envelope ('That argument lands, despite the manner of its arrival.').",
+            "lines": [
+                "Counsel. The metaphor is noted. The third-clause point lands. The respondent's adult-occupant submission is answered by Article 135-bis § 2. The court will proceed to remedy."
+            ],
+            "tags": ["court", "round_2", "dry_surprise", "fair_hearing", "third_clause"]
+        },
+        {
+            "id": "remedy_round_3_sympathetic",
+            "trigger": "chapter1.casebook_judge_state == 'round_3_remedy' && chapter1.client_meeting_stance == 'sympathetic'",
+            "_comment": "Round 3 remedy announcement — sympathetic carrier. Identical text to blunt_procedural variant. Long-form citation per §A.5 remedy-announcement recommendation.",
+            "lines": [
+                "Counsel. On the motion of the petitioner, the hearing of the eighth is set aside on the ground of invalid service under Article 135-bis § 2 of the Code of Civil Procedure. The matter is rescheduled. The clerk will assign a new hearing date within the statutory window. Notice will be served in the ordinary course."
+            ],
+            "on_dismiss": [
+                { "set": "chapter1.court_won_procedural_reset", "value": true }
+            ],
+            "tags": ["court", "round_3", "remedy_announcement", "sympathetic_carrier"]
+        },
+        {
+            "id": "remedy_round_3_blunt_procedural",
+            "trigger": "chapter1.casebook_judge_state == 'round_3_remedy' && chapter1.client_meeting_stance == 'blunt_procedural'",
+            "_comment": "Round 3 remedy announcement — blunt-procedural carrier. Identical text to sympathetic variant.",
+            "lines": [
+                "Counsel. On the motion of the petitioner, the hearing of the eighth is set aside on the ground of invalid service under Article 135-bis § 2 of the Code of Civil Procedure. The matter is rescheduled. The clerk will assign a new hearing date within the statutory window. Notice will be served in the ordinary course."
+            ],
+            "on_dismiss": [
+                { "set": "chapter1.court_won_procedural_reset", "value": true }
+            ],
+            "tags": ["court", "round_3", "remedy_announcement", "blunt_procedural_carrier"]
+        },
+        {
+            "id": "remedy_round_3_technical",
+            "trigger": "chapter1.casebook_judge_state == 'round_3_remedy' && chapter1.client_meeting_stance == 'technical'",
+            "_comment": "Round 3 remedy announcement — technical carrier. Adds one-clause acknowledgment that underlying tenancy is not before the court (per pack §B.4).",
+            "lines": [
+                "Counsel. On the motion of the petitioner, the hearing of the eighth is set aside on the ground of invalid service under Article 135-bis § 2 of the Code of Civil Procedure. The matter is rescheduled. The clerk will assign a new hearing date within the statutory window. Notice will be served in the ordinary course. The underlying tenancy is not before the court on this motion."
+            ],
+            "on_dismiss": [
+                { "set": "chapter1.court_won_procedural_reset", "value": true }
+            ],
+            "tags": ["court", "round_3", "remedy_announcement", "technical_carrier"]
+        }
+    ]
+}

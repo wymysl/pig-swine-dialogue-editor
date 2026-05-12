@@ -1,19 +1,34 @@
 {
-    "version": 1,
+    "version": 2,
     "npc_id": "murrow",
+    "_comment_v1_4_coffee": "V1.4 (2026-05-12): two coffee_reaction_* states added per minigames.txt §Character reactions §Murrow. Gated on chapter1.coffee_buff and chapter1.met_murrow per the design brief. Additional clause !chapter1.entered_court scopes them to the pre-court window. Reactions placed BEFORE court_readiness_check (whose long conjunction matches the same post-recruit window) so they win priority while a buff is set. Murrow addresses Cula as 'Doctor Cula' in speech per existing pattern in this file (first_meeting opening).",
     "states": [
         {
             "id": "before_pig",
             "trigger": "chapter1.met_pig == false",
-            "line": "Dr. A. Cula. Speak to Mr. Pig first. He needs to vent his panic before we can address the procedural realities."
+            "line": "Doctor Cula. Mr. Pig is expecting you. The case can wait the ten minutes Mr. Pig requires for opening remarks."
         },
         {
             "id": "first_meeting",
             "trigger": "chapter1.met_pig == true && chapter1.met_murrow == false",
+            "_comment_v1_2_p6": "Phase 7 V1.2 pass 6 dialogue. Sikorska eviction defense (V1.4-canonical): 2015 renumbering, flat #7 -> #12, landlord knowledge via 2019 renewal countersignature, motion to set aside, Friday 14:00 courtroom 4, retention pending. Pass-3 'Mrs. Borowski' provisional state superseded; V1.4 has shipped and locks the case content.",
             "lines": [
-                "Dr. A. Cula. You're here. Mr. Pig has already briefed you on the emotional state of the firm. Let us discuss the legal state.",
-                "We are defending a client who believes an invoice is a philosophical suggestion.",
-                "I need you to review the case binder and gather the necessary memos before we approach the bench."
+                { "speaker": "cula", "text": "Mr. Murrow. I was told you'd have the Sikorska file." },
+                "Doctor Cula. Welcome to Pig & Swine. You've picked a noisy day to begin.",
+                "The case is the Sikorska eviction defense. Halina Sikorska, at number twelve; the notice was served to old number seven.",
+                "The building was renumbered in two thousand and fifteen. The two thousand and nineteen renewal carries the landlord's countersignature. He served the old door anyway.",
+                "Hearing already ran ex parte. The current resident at number seven brought the notice down three weeks late. Actual notice reached her on the twenty-eighth of April.",
+                "We file a motion to set aside. Fourteen days from actual notice. We are inside the window.",
+                "Procedural binder, second shelf, blue spine. Rights memo clipped inside the front cover. Motion hearing Friday at fourteen hundred, courtroom four.",
+                "She has not formally retained yet. She is coming in this afternoon.",
+                { "speaker": "cula", "text": "The resident at number seven. Does his accepting the notice cure service?" },
+                "No. Express authority is required. He had none.",
+                { "speaker": "cula", "text": "Thank you, Mr. Murrow." },
+                "It is Murrow, to friends. The 'Mister' I keep for invoices.",
+                { "speaker": "cula", "text": "Then it's Cula." },
+                { "speaker": "murrow_friend", "text": "I am still deciding whether reception staff qualify as friends or as workplace constellations." },
+                { "speaker": "cula", "text": "She'll be relieved either way." },
+                { "speaker": "murrow_friend", "text": "Binder first. Memo second. Find me before fourteen hundred if anything in the binder reads wrong." }
             ],
             "on_dismiss": [
                 { "set": "chapter1.met_murrow", "value": true }
@@ -22,17 +37,49 @@
         {
             "id": "post_briefing_pre_binder",
             "trigger": "chapter1.met_murrow == true && chapter1.has_law_binder == false",
-            "line": "I will not discuss strategy until you have retrieved the procedural binder from the archive. We need facts, not improvisation."
+            "line": "You're back without the binder. The shelf has not moved."
         },
         {
             "id": "has_binder_pre_crab",
             "trigger": "chapter1.has_law_binder == true && chapter1.recruited_crab == false",
-            "line": "You have the binder. Good. Now find Crab. We have a service of process issue, and Crab's skepticism is exactly what we require."
+            "line": "Now Crab. Nothing else moves until service is checked."
+        },
+        {
+            "id": "coffee_reaction_perfect",
+            "trigger": "chapter1.coffee_buff == \"procedurally_alert_plus\" && chapter1.met_murrow == true && !chapter1.entered_court",
+            "_comment": "V1.4 coffee reaction — S-grade. Voice draft from minigames.txt §Character reactions §Murrow Perfect ('Acceptable.'). Spec note: 'This should be treated as immense praise.' Murrow's one-word approval is the entire joke; no address-form needed on a single word.",
+            "line": "Acceptable."
+        },
+        {
+            "id": "coffee_reaction_bad",
+            "trigger": "chapter1.coffee_buff == \"over_caffeinated\" && chapter1.met_murrow == true && !chapter1.entered_court",
+            "_comment": "V1.4 coffee reaction — D/F-grade. Voice verbatim from minigames.txt §Character reactions §Murrow Bad ('You have created a beverage with procedural defects.'). Opens with 'Doctor Cula' per Murrow's established speech form in first_meeting and before_pig.",
+            "line": "Doctor Cula. You have created a beverage with procedural defects."
+        },
+        {
+            "id": "court_readiness_check",
+            "trigger": "chapter1.has_law_binder == true && chapter1.has_rights_memo == true && chapter1.recruited_crab == true && chapter1.recruited_whimsy == true && chapter1.court_ready == false",
+            "_comment_borowski_title": "PROVISIONAL: 'Mrs. Borowski' usage inherits the same provisional title flag as murrow.json's first_meeting and asia.json's readiness_borowski_confirmed.",
+            "lines": [
+                "Cula.",
+                { "speaker": "cula", "text": "Murrow. We have the memo." },
+                "Procedural binder. On file.",
+                "Rights memo. On file.",
+                { "speaker": "pig", "text": "The printer lease has come back as a kraken. We renew next month, presumably with bait." },
+                "Crab and Whimsy on the appearance. Confirmed.",
+                "Hearing at fourteen hundred. Courtroom four.",
+                { "speaker": "pig", "text": "When I was an apprentice, we had no readiness check. Only fear. We navigated by panic alone." },
+                "Order set. Service first. Fair hearing second. Remedy last. We leave at thirteen-thirty.",
+                { "speaker": "cula", "text": "Understood. Asia, has Mrs. Borowski been told we're coming?" },
+                { "speaker": "asia", "text": "She rang an hour ago, Mr. Cula. She'll be there at quarter to." }
+            ],
+            "on_dismiss": [
+                { "set": "chapter1.court_ready", "value": true }
+            ]
         }
     ],
     "idle_flavor": [
-        "Procedure is the poetry of the law.",
-        "We do not guess in this office. We deduce.",
+        "The paperwork is current. Whether it is correct is a separate question.",
         "Ensure every form is stamped in triplicate."
     ]
 }
