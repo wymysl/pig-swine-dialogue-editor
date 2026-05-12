@@ -1,0 +1,124 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scripts/actors/player.gd" id="1_player"]
+[ext_resource type="Script" path="res://scripts/actors/door.gd" id="2_door"]
+[ext_resource type="Script" path="res://scripts/actors/npc.gd" id="3_npc"]
+[ext_resource type="SpriteFrames" path="res://art/sprites/cula/cula_sprite_frames.tres" id="4_cula_frames"]
+[ext_resource type="Texture2D" path="res://art/sprites/whimsy/whimsy_idle_front.png" id="5_3yqnk"]
+[ext_resource type="Script" path="res://scripts/actors/minigame_trigger.gd" id="6_651sy"]
+[ext_resource type="PackedScene" path="res://scenes/components/npc_walking_canon.tscn" id="1_canon"]
+[ext_resource type="SpriteFrames" path="res://art/sprites/whimsy/whimsy_sprite_frames.tres" id="frames_whimsy"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_2"]
+size = Vector2(48, 16)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_1"]
+size = Vector2(24, 24)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_3"]
+size = Vector2(32, 40)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_rsowq"]
+size = Vector2(640, 16)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_04ifm"]
+size = Vector2(640, 16)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_3yqnk"]
+size = Vector2(16, 480)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_651sy"]
+size = Vector2(16, 480)
+
+[node name="CafeParagraf" type="Node2D" unique_id=102090696]
+y_sort_enabled = true
+
+[node name="Floor" type="ColorRect" parent="." unique_id=1428487635]
+offset_right = 640.0
+offset_bottom = 480.0
+color = Color(0.35, 0.23, 0.13, 1)
+
+[node name="DoorIndicator" type="ColorRect" parent="." unique_id=627782065]
+offset_left = 296.0
+offset_top = 456.0
+offset_right = 344.0
+offset_bottom = 472.0
+color = Color(0.2, 0.12, 0.05, 1)
+
+[node name="StreetDoor" type="Area2D" parent="." unique_id=1328611371]
+position = Vector2(320, 464)
+collision_layer = 0
+collision_mask = 2
+script = ExtResource("2_door")
+door_id = "cafe_to_street"
+target_scene = "res://scenes/world/routes/office_street.tscn"
+target_spawn_id = "CafeSpawn"
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="StreetDoor" unique_id=954048291]
+shape = SubResource("RectangleShape2D_2")
+
+[node name="CafeSpawn" type="Node2D" parent="." unique_id=822146222]
+position = Vector2(320, 400)
+
+[node name="Player" type="CharacterBody2D" parent="." unique_id=1828813881]
+position = Vector2(320, 400)
+collision_layer = 2
+script = ExtResource("1_player")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Player" unique_id=365741414]
+position = Vector2(0, 24)
+shape = SubResource("RectangleShape2D_1")
+
+[node name="Visual" type="AnimatedSprite2D" parent="Player" unique_id=1880068961]
+position = Vector2(0, -8)
+sprite_frames = ExtResource("4_cula_frames")
+animation = &"idle_front"
+
+[node name="Camera2D" type="Camera2D" parent="Player" unique_id=1295479043]
+position_smoothing_enabled = true
+position_smoothing_speed = 8.0
+
+[node name="Whimsy" type="Area2D" parent="." unique_id=492220314]
+position = Vector2(450, 200)
+collision_layer = 4
+collision_mask = 2
+script = ExtResource("3_npc")
+npc_id = "whimsy"
+display_name = "Whimsy"
+npc_color = Color(0.4, 0.2, 0.5, 1)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Whimsy" unique_id=1643770615]
+shape = SubResource("RectangleShape2D_3")
+
+[node name="Visual" parent="Whimsy" instance=ExtResource("1_canon") unique_id=1898809187]
+position = Vector2(0, -8)
+sprite_frames = ExtResource("frames_whimsy")
+
+[node name="Walls" type="StaticBody2D" parent="." unique_id=1092545414]
+collision_mask = 0
+
+[node name="Top" type="CollisionShape2D" parent="Walls" unique_id=979230021]
+position = Vector2(320, -8)
+shape = SubResource("RectangleShape2D_rsowq")
+
+[node name="Bottom" type="CollisionShape2D" parent="Walls" unique_id=1929238876]
+position = Vector2(320, 488)
+shape = SubResource("RectangleShape2D_04ifm")
+
+[node name="Left" type="CollisionShape2D" parent="Walls" unique_id=1071737301]
+position = Vector2(-8, 240)
+shape = SubResource("RectangleShape2D_3yqnk")
+
+[node name="Right" type="CollisionShape2D" parent="Walls" unique_id=557253016]
+position = Vector2(648, 240)
+shape = SubResource("RectangleShape2D_651sy")
+
+[node name="CoffeeMachine" type="Area2D" parent="." unique_id=1973374685]
+position = Vector2(300, 200)
+collision_layer = 4
+collision_mask = 2
+script = ExtResource("6_651sy")
+minigame_scene_path = "res://scenes/minigames/coffee_brewing.tscn"
+pattern_id = "chapter1_court_coffee"
+repeatable = false
+availability_flag = ""
