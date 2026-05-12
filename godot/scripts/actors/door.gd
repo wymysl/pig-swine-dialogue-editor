@@ -25,13 +25,21 @@ extends Area2D
 ## Visual indicator: thin dark rect shown in the room floor.
 @export var show_indicator: bool = true
 
+const DOOR_SOUND_PATH: String = "res://audio/sfx/door_open.ogg"
+
 var _player_inside: bool = false
 var _prompt: Node
+var _sfx: AudioStreamPlayer
 
 
 func _ready() -> void:
 	body_entered.connect(_on_body_entered)
 	body_exited.connect(_on_body_exited)
+	_sfx = AudioStreamPlayer.new()
+	var stream = load(DOOR_SOUND_PATH) as AudioStream
+	if stream:
+		_sfx.stream = stream
+	add_child(_sfx)
 	# Resolve target_scene from doors.json if not set directly.
 	if target_scene.is_empty() and not door_id.is_empty():
 		_resolve_from_json()
@@ -91,6 +99,8 @@ func _try_open() -> void:
 	if rt == null:
 		push_error("Door: /root/Main/RoomTransition not found.")
 		return
+	if _sfx and _sfx.stream:
+		_sfx.play()
 	rt.go_to(target_scene, target_spawn_id)
 
 

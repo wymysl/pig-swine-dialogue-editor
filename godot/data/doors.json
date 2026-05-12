@@ -19,6 +19,42 @@
       "target_spawn_id": "OfficeSpawn",
       "required_flag": "",
       "locked_text": ""
+    },
+    {
+      "id": "office_to_archive",
+      "_comment": "Door from the office to the archive room.",
+      "map_pos": [850, 264],
+      "target_scene": "res://scenes/interiors/archive_room.tscn",
+      "target_spawn_id": "ArchiveSpawn",
+      "required_flag": "",
+      "locked_text": ""
+    },
+    {
+      "id": "archive_to_office",
+      "_comment": "Door from the archive room to the office.",
+      "map_pos": [320, 464],
+      "target_scene": "res://scenes/interiors/pig_swine_office.tscn",
+      "target_spawn_id": "ArchiveSpawn",
+      "required_flag": "",
+      "locked_text": ""
+    },
+    {
+      "id": "street_to_cafe",
+      "_comment": "Door from the street to Cafe Paragraf.",
+      "map_pos": [200, 264],
+      "target_scene": "res://scenes/interiors/cafe_paragraf.tscn",
+      "target_spawn_id": "CafeSpawn",
+      "required_flag": "",
+      "locked_text": ""
+    },
+    {
+      "id": "cafe_to_street",
+      "_comment": "Door from Cafe Paragraf to the street.",
+      "map_pos": [320, 464],
+      "target_scene": "res://scenes/world/routes/office_street.tscn",
+      "target_spawn_id": "CafeSpawn",
+      "required_flag": "",
+      "locked_text": ""
     }
   ]
 }

@@ -1,0 +1,139 @@
+{
+  "character": {
+    "id": "9f610f8f-b8b5-40ab-8af0-c41f833da42d",
+    "name": "asia",
+    "prompt": "Late-20s Polish female office secretary, slim, brown hair in long ponytail down her back, mustard knit cardigan over cream shirt, navy pencil skirt. Polish komiks illustration, clean ink-line outlines, flat warm earth-tone colors, PRL-era mood, 128\u00d7128 pixel-art, full body, hands at sides. Palette: #1a1410, #e6b08a, #1c2a40, #e8e4d8, #c8a868, #0d0a08",
+    "size": {
+      "width": 180,
+      "height": 180
+    },
+    "template_id": "mannequin",
+    "directions": 8,
+    "view": "low top-down",
+    "created_at": "2026-05-09T20:31:15.275312+00:00"
+  },
+  "frames": {
+    "rotations": {
+      "south": "rotations/south.png",
+      "south-east": "rotations/south-east.png",
+      "east": "rotations/east.png",
+      "north-east": "rotations/north-east.png",
+      "north": "rotations/north.png",
+      "north-west": "rotations/north-west.png",
+      "west": "rotations/west.png",
+      "south-west": "rotations/south-west.png"
+    },
+    "animations": {
+      "animation-897ee16d": {
+        "south": [
+          "animations/animation-897ee16d/south/frame_000.png",
+          "animations/animation-897ee16d/south/frame_001.png",
+          "animations/animation-897ee16d/south/frame_002.png",
+          "animations/animation-897ee16d/south/frame_003.png",
+          "animations/animation-897ee16d/south/frame_004.png",
+          "animations/animation-897ee16d/south/frame_005.png"
+        ],
+        "south-west": [
+          "animations/animation-897ee16d/south-west/frame_000.png",
+          "animations/animation-897ee16d/south-west/frame_001.png",
+          "animations/animation-897ee16d/south-west/frame_002.png",
+          "animations/animation-897ee16d/south-west/frame_003.png",
+          "animations/animation-897ee16d/south-west/frame_004.png",
+          "animations/animation-897ee16d/south-west/frame_005.png"
+        ],
+        "south-east": [
+          "animations/animation-897ee16d/south-east/frame_000.png",
+          "animations/animation-897ee16d/south-east/frame_001.png",
+          "animations/animation-897ee16d/south-east/frame_002.png",
+          "animations/animation-897ee16d/south-east/frame_003.png",
+          "animations/animation-897ee16d/south-east/frame_004.png",
+          "animations/animation-897ee16d/south-east/frame_005.png"
+        ],
+        "north": [
+          "animations/animation-897ee16d/north/frame_000.png",
+          "animations/animation-897ee16d/north/frame_001.png",
+          "animations/animation-897ee16d/north/frame_002.png",
+          "animations/animation-897ee16d/north/frame_003.png",
+          "animations/animation-897ee16d/north/frame_004.png",
+          "animations/animation-897ee16d/north/frame_005.png"
+        ],
+        "north-east": [
+          "animations/animation-897ee16d/north-east/frame_000.png",
+          "animations/animation-897ee16d/north-east/frame_001.png",
+          "animations/animation-897ee16d/north-east/frame_002.png",
+          "animations/animation-897ee16d/north-east/frame_003.png",
+          "animations/animation-897ee16d/north-east/frame_004.png",
+          "animations/animation-897ee16d/north-east/frame_005.png"
+        ],
+        "east": [
+          "animations/animation-897ee16d/east/frame_000.png",
+          "animations/animation-897ee16d/east/frame_001.png",
+          "animations/animation-897ee16d/east/frame_002.png",
+          "animations/animation-897ee16d/east/frame_003.png",
+          "animations/animation-897ee16d/east/frame_004.png",
+          "animations/animation-897ee16d/east/frame_005.png"
+        ],
+        "west": [
+          "animations/animation-897ee16d/west/frame_000.png",
+          "animations/animation-897ee16d/west/frame_001.png",
+          "animations/animation-897ee16d/west/frame_002.png",
+          "animations/animation-897ee16d/west/frame_003.png",
+          "animations/animation-897ee16d/west/frame_004.png",
+          "animations/animation-897ee16d/west/frame_005.png"
+        ],
+        "north-west": [
+          "animations/animation-897ee16d/north-west/frame_000.png",
+          "animations/animation-897ee16d/north-west/frame_001.png",
+          "animations/animation-897ee16d/north-west/frame_002.png",
+          "animations/animation-897ee16d/north-west/frame_003.png",
+          "animations/animation-897ee16d/north-west/frame_004.png",
+          "animations/animation-897ee16d/north-west/frame_005.png"
+        ]
+      },
+      "Walking-4258e8ce": {
+        "north": [
+          "animations/Walking-4258e8ce/north/frame_000.png",
+          "animations/Walking-4258e8ce/north/frame_001.png",
+          "animations/Walking-4258e8ce/north/frame_002.png",
+          "animations/Walking-4258e8ce/north/frame_003.png",
+          "animations/Walking-4258e8ce/north/frame_004.png",
+          "animations/Walking-4258e8ce/north/frame_005.png"
+        ],
+        "south": [
+          "animations/Walking-4258e8ce/south/frame_000.png",
+          "animations/Walking-4258e8ce/south/frame_001.png",
+          "animations/Walking-4258e8ce/south/frame_002.png",
+          "animations/Walking-4258e8ce/south/frame_003.png",
+          "animations/Walking-4258e8ce/south/frame_004.png",
+          "animations/Walking-4258e8ce/south/frame_005.png"
+        ]
+      },
+      "animation-ed682e77": {
+        "south": [
+          "animations/animation-ed682e77/south/frame_000.png",
+          "animations/animation-ed682e77/south/frame_001.png",
+          "animations/animation-ed682e77/south/frame_002.png",
+          "animations/animation-ed682e77/south/frame_003.png",
+          "animations/animation-ed682e77/south/frame_004.png",
+          "animations/animation-ed682e77/south/frame_005.png"
+        ]
+      },
+      "Walking-3b6adaaa": {
+        "south": [
+          "animations/Walking-3b6adaaa/south/frame_000.png",
+          "animations/Walking-3b6adaaa/south/frame_001.png",
+          "animations/Walking-3b6adaaa/south/frame_002.png",
+          "animations/Walking-3b6adaaa/south/frame_003.png"
+        ],
+        "north": [
+          "animations/Walking-3b6adaaa/north/frame_000.png",
+          "animations/Walking-3b6adaaa/north/frame_001.png",
+          "animations/Walking-3b6adaaa/north/frame_002.png",
+          "animations/Walking-3b6adaaa/north/frame_003.png"
+        ]
+      }
+    }
+  },
+  "export_version": "2.0",
+  "export_date": "2026-05-10T11:24:09.060516"
+}

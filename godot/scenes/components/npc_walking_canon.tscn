@@ -1,0 +1,5 @@
+[gd_scene format=3]
+
+[node name="Visual" type="AnimatedSprite2D"]
+y_sort_enabled = true
+offset = Vector2(0, -56)

@@ -3,5 +3,37 @@
   "chapter_id": 1,
   "title": "The Financial Crisis",
   "_doc": "State machine. Steps authored by Code role. Each step: { id, gates, on_enter, on_exit }. Text fields (description, label, hint, flavor) belong to Design role; mechanical fields belong to Code.",
+  "_new_flags_phase7": "Two flags added for phase-7 dialogue pass. 'met_asia' is set by asia.json 'first_welcome' on_dismiss. 'viewed_family_photo' is set by cula.json 'family_photo_ch1' on_dismiss. Both must be added to state.gd reset_state() chapter1 block and wired into a save.gd migration step before engine use.",
+  "_new_flags_ch1_phase_a": "Chapter 1 Phase A — Tier 1 implementation plan §A.1. Extends chapter1 flag set to cover Beat 7-14 (client meeting, archive, court rounds, postcard). Adds top-level 'badges' and 'routes_unlocked' dictionaries (semantic owners: DialogueRunner award_badge / unlock_route actions). SAVE_VERSION bumped 7→8.",
+  "new_state_flags": [
+    { "key": "chapter1.met_asia", "default": false, "set_by": "asia.json first_welcome" },
+    { "key": "chapter1.viewed_family_photo", "default": false, "set_by": "cula.json family_photo_ch1" },
+
+    { "key": "chapter1.halina_met", "default": false, "set_by": "halina.json client_meeting_<stance>" },
+    { "key": "chapter1.halina_arrived", "default": false, "set_by": "engine — Beat 7 close, meeting-room entry trigger gate" },
+    { "key": "chapter1.client_meeting_stance", "default": "", "_enum": ["sympathetic", "blunt_procedural", "technical"], "set_by": "Beat 7 stance-pick UI (B.1)" },
+    { "key": "chapter1.bonus_evidence_collected", "default": "", "_enum": ["wojcik_witness_statement", "return_to_sender_slip", "lease_1962_inheritance_1987"], "set_by": "halina.json client_meeting_<stance> on_dismiss" },
+    { "key": "chapter1.cardiologist_plant_landed", "default": false, "set_by": "halina.json client_meeting_<stance> on_dismiss" },
+    { "key": "chapter1.client_fee_agreed", "default": false, "set_by": "halina.json client_meeting_<stance> on_dismiss" },
+
+    { "key": "chapter1.archive_research_complete", "default": false, "set_by": "Beat 9 archive research (not yet authored; flag declared for V1.A state 8 dispatch)" },
+
+    { "key": "chapter1.casebook_judge_state", "default": "", "_enum": ["round_1_open", "round_1_react", "round_2_open", "round_2_react", "round_3_open", "round_3_remedy"], "set_by": "casebook engine — Beat 12 court orchestration" },
+    { "key": "chapter1.court_won_procedural_reset", "default": false, "set_by": "judge_district_ch1.json remedy_round_3_<stance> on_dismiss" },
+
+    { "key": "chapter1.beat13_complete", "default": false, "set_by": "Beat 13 office payoff close" },
+    { "key": "chapter1.received_swine_postcard", "default": false, "set_by": "Beat 14 postcard arrival trigger" },
+    { "key": "chapter1.postcard_asia_announced", "default": false, "set_by": "postcard_swine_ch1.json asia_address_label on_dismiss (when wired)" },
+    { "key": "chapter1.postcard_readaloud_cue_shown", "default": false, "set_by": "postcard_swine_ch1.json pig_readaloud_cue on_dismiss (when wired)" },
+    { "key": "chapter1.postcard_body_read", "default": false, "set_by": "postcard_swine_ch1.json pig_readaloud_body on_dismiss (when wired)" },
+    { "key": "chapter1.pig_postcard_reaction_shown", "default": false, "set_by": "postcard_swine_ch1.json pig_postcard_reaction on_dismiss (when wired)" },
+    { "key": "chapter1.whimsy_postcard_deflection_shown", "default": false, "set_by": "postcard_swine_ch1.json whimsy_archaic_deflection on_dismiss (when wired)" },
+    { "key": "chapter1.complete", "default": false, "set_by": "postcard_swine_ch1.json chapter_close on_dismiss" },
+
+    { "key": "badges.day_one_survivor", "default": false, "set_by": "postcard_swine_ch1.json chapter_close award_badge action" },
+    { "key": "routes_unlocked.residential", "default": false, "set_by": "postcard_swine_ch1.json chapter_close unlock_route action" },
+    { "key": "routes_unlocked.business_district", "default": false, "set_by": "postcard_swine_ch1.json chapter_close unlock_route action" },
+    { "key": "routes_unlocked.court_plaza", "default": false, "set_by": "postcard_swine_ch1.json chapter_close unlock_route action" }
+  ],
   "steps": []
 }

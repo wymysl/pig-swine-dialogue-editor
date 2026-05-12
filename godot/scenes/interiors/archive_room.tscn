@@ -1,0 +1,134 @@
+[gd_scene format=3]
+
+[ext_resource type="PackedScene" path="res://scenes/components/npc_walking_canon.tscn" id="1_canon"]
+[ext_resource type="Script" path="res://scripts/actors/player.gd" id="1_player"]
+[ext_resource type="Script" path="res://scripts/actors/door.gd" id="2_door"]
+[ext_resource type="Script" path="res://scripts/actors/npc.gd" id="3_npc"]
+[ext_resource type="SpriteFrames" path="res://art/sprites/cula/cula_sprite_frames.tres" id="4_cula_frames"]
+[ext_resource type="Script" path="res://scripts/actors/pickup.gd" id="6_cklam"]
+[ext_resource type="AudioStream" path="res://audio/music/office.mp3" id="13_music"]
+[ext_resource type="SpriteFrames" path="res://art/sprites/crab/crab_sprite_frames.tres" id="frames_crab"]
+[ext_resource type="Script" path="res://scripts/systems/persistent_music.gd" id="music_script"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_2"]
+size = Vector2(48, 16)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_1"]
+size = Vector2(24, 24)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_3"]
+size = Vector2(32, 40)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_gi53b"]
+size = Vector2(640, 16)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_b0376"]
+size = Vector2(640, 16)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_6qct3"]
+size = Vector2(16, 480)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_cklam"]
+size = Vector2(16, 480)
+
+[node name="ArchiveRoom" type="Node2D" unique_id=1273815087]
+y_sort_enabled = true
+
+[node name="Floor" type="ColorRect" parent="." unique_id=1616659974]
+offset_right = 640.0
+offset_bottom = 480.0
+color = Color(0.16, 0.16, 0.18, 1)
+
+[node name="DoorIndicator" type="ColorRect" parent="." unique_id=1042672486]
+offset_left = 296.0
+offset_top = 456.0
+offset_right = 344.0
+offset_bottom = 472.0
+color = Color(0.12, 0.12, 0.14, 1)
+
+[node name="OfficeDoor" type="Area2D" parent="." unique_id=1660108924]
+position = Vector2(320, 464)
+collision_layer = 0
+collision_mask = 2
+script = ExtResource("2_door")
+door_id = "archive_to_office"
+target_scene = "res://scenes/interiors/pig_swine_office.tscn"
+target_spawn_id = "ArchiveSpawn"
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="OfficeDoor" unique_id=1947891360]
+shape = SubResource("RectangleShape2D_2")
+
+
+[node name="ArchiveSpawn" type="Node2D" parent="." unique_id=501828501]
+position = Vector2(320, 400)
+
+[node name="Player" type="CharacterBody2D" parent="." unique_id=1719610495]
+position = Vector2(320, 400)
+collision_layer = 2
+script = ExtResource("1_player")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Player" unique_id=896715371]
+position = Vector2(0, 24)
+shape = SubResource("RectangleShape2D_1")
+
+[node name="Visual" type="AnimatedSprite2D" parent="Player" unique_id=573630166]
+position = Vector2(0, -8)
+sprite_frames = ExtResource("4_cula_frames")
+animation = &"idle_front"
+
+[node name="Camera2D" type="Camera2D" parent="Player" unique_id=1804713305]
+position_smoothing_enabled = true
+position_smoothing_speed = 8.0
+
+[node name="Crab" type="Area2D" parent="." unique_id=1356946114]
+position = Vector2(150, 200)
+collision_layer = 4
+collision_mask = 2
+script = ExtResource("3_npc")
+npc_id = "crab"
+display_name = "Crab"
+npc_color = Color(0.6, 0.4, 0.2, 1)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Crab" unique_id=1318428644]
+shape = SubResource("RectangleShape2D_3")
+
+[node name="Visual" type="AnimatedSprite2D" parent="Crab" unique_id=68703522 instance=ExtResource("1_canon")]
+y_sort_enabled = true
+position = Vector2(0, -8)
+sprite_frames = ExtResource("frames_crab")
+offset = Vector2(0, -56)
+
+[node name="Walls" type="StaticBody2D" parent="." unique_id=1171131134]
+collision_mask = 0
+
+[node name="Top" type="CollisionShape2D" parent="Walls" unique_id=1599956650]
+position = Vector2(320, -8)
+shape = SubResource("RectangleShape2D_gi53b")
+
+[node name="Bottom" type="CollisionShape2D" parent="Walls" unique_id=952356588]
+position = Vector2(320, 488)
+shape = SubResource("RectangleShape2D_b0376")
+
+[node name="Left" type="CollisionShape2D" parent="Walls" unique_id=670753125]
+position = Vector2(-8, 240)
+shape = SubResource("RectangleShape2D_6qct3")
+
+[node name="Right" type="CollisionShape2D" parent="Walls" unique_id=20384116]
+position = Vector2(648, 240)
+shape = SubResource("RectangleShape2D_cklam")
+
+[node name="RightsMemo" type="Area2D" parent="." unique_id=801410872]
+position = Vector2(400, 200)
+collision_layer = 4
+collision_mask = 2
+script = ExtResource("6_cklam")
+item_id = "rights_memo"
+display_name = "Rights Memo"
+state_flag_path = "chapter1.has_rights_memo"
+pickup_line = "A dusty memo concerning suspect rights."
+
+[node name="Music" type="AudioStreamPlayer" parent="." unique_id=1006733989]
+process_mode = 3
+stream = ExtResource("13_music")
+autoplay = true
+script = ExtResource("music_script")

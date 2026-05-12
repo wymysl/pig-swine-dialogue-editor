@@ -1,0 +1,30 @@
+{
+  "character": {
+    "id": "49c545a3-571a-4ee2-9a26-1d4ce40ca460",
+    "name": "WHIMSY",
+    "prompt": "Late-20s Polish male junior lawyer, slim tall, slightly-too-long jet-black hair swept back, small round wire-frame glasses, eggplant velvet blazer over cream shirt, mismatched mustard yellow tie, dark trousers. Polish komiks illustration, clean ink-line outlines, flat warm earth-tone colors, PRL-era mood, 128\u00d7128 pixel-art, full body, hands at sides. Palette: #1a1410, #e6b08a, #5a2a4a, #e8e4d8, #c8a868, #0d0a08",
+    "size": {
+      "width": 180,
+      "height": 180
+    },
+    "template_id": "mannequin",
+    "directions": 8,
+    "view": "low top-down",
+    "created_at": "2026-05-09T20:47:12.681089+00:00"
+  },
+  "frames": {
+    "rotations": {
+      "south": "rotations/south.png",
+      "south-east": "rotations/south-east.png",
+      "east": "rotations/east.png",
+      "north-east": "rotations/north-east.png",
+      "north": "rotations/north.png",
+      "north-west": "rotations/north-west.png",
+      "west": "rotations/west.png",
+      "south-west": "rotations/south-west.png"
+    },
+    "animations": {}
+  },
+  "export_version": "2.0",
+  "export_date": "2026-05-09T21:08:23.863424"
+}

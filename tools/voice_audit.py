@@ -8,11 +8,15 @@ Catches what regex can catch:
   - JSON validity per record.
   - Schema: required fields present (record_type, id, character_id, speaker,
     text).
-  - Rule A: canonical names in `speaker` and `text` (no "Dr. Cula" without A.,
-    no legacy names Kula/Muraś/Rak/Wymysl).
+  - Rule A: canonical names in `speaker` field (no "Dr. Cula" without A.,
+    no legacy names Kula/Muraś/Rak/Wymysl). Note: "Dr. Cula" in dialogue *text*
+    is a valid short-title address form (non-inner-circle characters addressing
+    Cula by title) and is NOT flagged as a Rule A violation.
   - Rule B: address forms match speaker's circle. Inner-circle speakers
     (Dr. A. Cula, Crab, Whimsy) say "Murrow"; everyone else says "Mr. Murrow".
-    Crab and Whimsy may say "Cula" (bare); everyone else says "Dr. A. Cula".
+    Crab and Whimsy may say "Cula" (bare); everyone else says "Dr. A. Cula" or
+    the short-title form "Dr. Cula" (both are accepted — only truly bare "Cula"
+    without any title prefix is a violation for outer-circle speakers).
     Cula in Chapter 1 first-meeting context is flagged POSSIBLE_FIRST_MEETING.
   - Out-of-scope content: references to Scooter Racing or Ski Slalom; the
     Final Printer tagged as minigame instead of casebook_battle.
@@ -73,7 +77,8 @@ CANONICAL_SPEAKERS: set[str] = {
     "Administrator Beton",
     "Waldek",
     "Kowalski",
-    "Zielińska",
+    "Zielinska",
+    "Halina Sikorska",  # Ch1 client (V1.4 Halina meeting + Archive Room research)
     # --- Judges and court staff ---
     "Judge",
     "District Court Judge",
@@ -82,6 +87,7 @@ CANONICAL_SPEAKERS: set[str] = {
     "Supreme Court Judge",
     "Court Clerk",
     "Arbitrator",
+    "Landlord's Counsel",  # Ch1 V1.6 functional adversary; not bibled, not Grzyb
     # --- City / civic NPCs ---
     "City Official",
     # --- Background and chapter colour ---
@@ -121,6 +127,46 @@ POOLED_CHARACTER_IDS: set[str] = {
 INNER_CIRCLE_TO_MURROW: set[str] = {"Dr. A. Cula", "Crab", "Whimsy"}
 INNER_CIRCLE_TO_CULA: set[str] = {"Crab", "Whimsy"}
 
+# Audience-conditional address forms for Murrow → Cula (per Piotr arbitration
+# 2026-05-08, captured in feedback_pig_swine_address_forms.md):
+#   - Murrow says "Doctor Cula" (full title) when clients/third parties are
+#     present (e.g., Beat 8 client meeting room) AND in pre-invitation
+#     first-encounter formal scenes (e.g., V1.2 Beat 3 case-summary).
+#   - Murrow says "Cula" (bare) when alone with Cula (e.g., Beat 9 archive
+#     room, V1.3 court-readiness check, hallways without third parties).
+# The audit detects these via scene-name hints. Outside these scenes Murrow
+# follows normal Rule B (i.e., should say "Dr. A. Cula" by default).
+MURROW_CLIENT_PRESENT_SCENE_HINTS: list[str] = [
+    "office_meeting_room",  # Beat 8 — client at the table
+    "client_meeting",
+    "courtroom",  # opposing counsel / judge present
+    "court_",
+]
+# Pre-invitation first-encounter formal scenes. Murrow uses "Doctor Cula" here
+# because the address-form invitation has not yet landed — formal default per
+# bibles/murrow.md Social-register samples. Distinct from client-present.
+MURROW_FIRST_ENCOUNTER_SCENE_HINTS: list[str] = [
+    "case_summary",  # V1.2 Beat 3 — first encounter at Murrow's desk
+    "first_meeting",
+    "murrow_intro",
+]
+MURROW_PRIVATE_SCENE_HINTS: list[str] = [
+    "office_archive_room",  # Beat 9 — Cula and Murrow alone
+    "office_archive",
+    "archive_room",
+    "court_readiness",  # V1.3 — readiness check in office, no client present
+    "post_ledger",  # V1.7 — private post-work conversation, no client present
+    "private",
+]
+# Cula → "Mr. Murrow" formal-register scenes where the address form is
+# canonical, not a violation. Covers Beat 3 first encounter at Murrow's desk
+# (pre-invitation) and Beat 8 group introductions where Cula maintains tonal
+# consistency with adjacent "Mr. Crab" / "Mr. Whimsy" references.
+CULA_TO_MURROW_FORMAL_SCENE_HINTS: list[str] = [
+    "murrow_case_summary",  # Beat 3 — first encounter at Murrow's desk
+    "office_meeting_room",  # Beat 8 — group intro, tonal consistency
+]
+
 LEGACY_NAMES: list[str] = ["Kula", "Muraś", "Rak", "Wymysl"]
 
 DROPPED_MINIGAMES: list[str] = ["Scooter Racing", "Ski Slalom"]
@@ -157,14 +203,20 @@ def normalize_text(text: str) -> str:
 # Per-record checks
 # ---------------------------------------------------------------------------
 
-# "Cula" not preceded by "A. " — matches the bare/incorrect form.
-RE_BARE_CULA = re.compile(r"(?<!A\. )\bCula\b")
+# "Cula" not preceded by "A. " OR "Dr. " — matches truly bare form only.
+# "Dr. Cula" is a valid short-title address form (outer-circle speakers
+# addressing Cula by shortened title); it is NOT a Rule B violation.
+RE_BARE_CULA = re.compile(r"(?<!A\. )(?<!Dr\. )\bCula\b")
 # "Murrow" not preceded by "Mr. " — matches the bare form.
 RE_BARE_MURROW = re.compile(r"(?<!Mr\. )\bMurrow\b")
 # "Mr. Murrow" — explicit honorific form.
 RE_MR_MURROW = re.compile(r"\bMr\. Murrow\b")
-# "Dr. Cula" without "A." — Rule A violation.
+# "Dr. Cula" without "A." — only flagged in the `speaker` field, NOT in text.
+# In dialogue text, "Dr. Cula" is a valid short-title address form.
 RE_DR_CULA = re.compile(r"\bDr\. Cula\b")
+# "Doctor Cula" — Murrow's audience-conditional title form (clients present).
+# Distinct from bare "Cula" (Rule B violation).
+RE_DOCTOR_CULA = re.compile(r"\bDoctor Cula\b")
 
 
 def check_schema(record: dict) -> list[str]:
@@ -177,6 +229,12 @@ def check_schema(record: dict) -> list[str]:
 def check_rule_a(record: dict, file_character_id: str = "") -> tuple[list[str], list[str]]:
     """Canonical names in speaker field and narration.
     Returns (violations, info_notes). Unknown speakers are info, not violations.
+
+    Rule A name-canonicity applies to the `speaker` field only. In dialogue
+    *text*, 'Dr. Cula' is a valid short-title address form used by outer-circle
+    characters when addressing Cula (e.g., 'Good work, Dr. Cula.') and is NOT
+    flagged. Only truly bare 'Cula' (no title prefix) in text from an
+    outer-circle speaker is caught by Rule B.
     """
     issues: list[str] = []
     info: list[str] = []
@@ -190,8 +248,11 @@ def check_rule_a(record: dict, file_character_id: str = "") -> tuple[list[str], 
         if re.search(rf"\b{legacy}\b", text):
             issues.append(f"Rule A: legacy name '{legacy}' in text")
 
-    if RE_DR_CULA.search(text):
-        issues.append("Rule A: 'Dr. Cula' (no A.) — should be 'Dr. A. Cula'")
+    # Rule A on the speaker field: 'Dr. Cula' (no A.) is not a canonical speaker
+    # handle. Note: we do NOT flag 'Dr. Cula' in dialogue text — that is a valid
+    # short-title address form for outer-circle characters.
+    if RE_DR_CULA.search(speaker):
+        issues.append("Rule A: speaker field has 'Dr. Cula' (no A.) — canonical speaker is 'Dr. A. Cula'")
 
     return issues, info
 
@@ -204,35 +265,100 @@ def check_rule_b(record: dict) -> list[str]:
     chapter = record.get("chapter", "")
     scene = record.get("scene", "")
     context = record.get("context", "") or ""
+    record_id = record.get("id", "") or ""
+
+    # Self-reference exception. The address-form rules govern who can ADDRESS
+    # Cula/Murrow, not who can MENTION their own name. A speaker naming
+    # themselves uses the bare form by definition. Canonical examples:
+    #   - Cula introducing himself: "Crab. I'm Cula."
+    #   - Cula accepting first-name invitation: "Then it's Cula."
+    #   - Murrow giving first-name invitation: "It is Murrow, to friends."
+    cula_self_reference = (speaker == "Dr. A. Cula")
+    murrow_self_reference = (speaker == "Murrow")
 
     # --- Cula address form ---
-    if RE_BARE_CULA.search(text):
-        if speaker not in INNER_CIRCLE_TO_CULA:
-            issues.append(
-                f"Rule B: '{speaker}' uses bare 'Cula' — only Crab and Whimsy "
-                f"may, and only post-recruitment. Should be 'Dr. A. Cula'."
-            )
+    # Audience-conditional exception for Murrow:
+    #   - "Doctor Cula" form is allowed in client-present scenes (Beat 8) and
+    #     in pre-invitation first-encounter formal scenes (V1.2 Beat 3).
+    #   - Bare "Cula" is allowed in private scenes (Beat 9 archive room,
+    #     V1.3 court-readiness check).
+    # See INNER_CIRCLE_TO_CULA, MURROW_*_SCENE_HINTS, and the address-forms
+    # feedback memory.
+    scene_lower = (scene or "").lower()
+    # Private-scene hints may live in the record id (e.g. "post_ledger" pass
+    # markers) or context blurb, not just the scene field. Match against all
+    # three so V1.7+ private-working-session passes aren't false-positived.
+    private_scene_blob = scene_lower + " " + record_id.lower() + " " + context.lower()
+    murrow_client_present = (
+        speaker == "Murrow"
+        and any(h in scene_lower for h in MURROW_CLIENT_PRESENT_SCENE_HINTS)
+    )
+    murrow_first_encounter = (
+        speaker == "Murrow"
+        and any(h in scene_lower for h in MURROW_FIRST_ENCOUNTER_SCENE_HINTS)
+    )
+    murrow_private = (
+        speaker == "Murrow"
+        and any(h in private_scene_blob for h in MURROW_PRIVATE_SCENE_HINTS)
+    )
+
+    if RE_BARE_CULA.search(text) and not cula_self_reference:
+        # Strip out "Doctor Cula" matches before judging: the title form is
+        # handled separately below, and we don't want it to also trip the
+        # bare-Cula rule when Murrow is in a client-present scene.
+        text_minus_doctor = RE_DOCTOR_CULA.sub("", text)
+        residual_bare_cula = bool(RE_BARE_CULA.search(text_minus_doctor))
+
+        if residual_bare_cula and speaker not in INNER_CIRCLE_TO_CULA:
+            if not murrow_private:
+                issues.append(
+                    f"Rule B: '{speaker}' uses bare 'Cula' — only Crab and "
+                    f"Whimsy may, and only post-recruitment. Should be "
+                    f"'Dr. A. Cula'."
+                )
+
+    # Murrow's "Doctor Cula" title form: allowed in client-present scenes
+    # (post-invitation, formal-because-audience) and in pre-invitation
+    # first-encounter formal scenes (V1.2 Beat 3 case-summary, etc.).
+    if (
+        RE_DOCTOR_CULA.search(text)
+        and speaker == "Murrow"
+        and not murrow_client_present
+        and not murrow_first_encounter
+    ):
+        issues.append(
+            f"Rule B (audience-conditional): Murrow uses 'Doctor Cula' in "
+            f"{scene} but scene registers as neither client-present nor "
+            f"first-encounter formal. Use 'Cula' (private) or 'Dr. A. Cula' "
+            f"(default) instead."
+        )
 
     # --- Murrow address form ---
     has_bare_murrow = bool(RE_BARE_MURROW.search(text))
     has_mr_murrow = bool(RE_MR_MURROW.search(text))
 
-    if has_bare_murrow and speaker not in INNER_CIRCLE_TO_MURROW:
+    if has_bare_murrow and speaker not in INNER_CIRCLE_TO_MURROW and not murrow_self_reference:
         issues.append(
             f"Rule B: '{speaker}' uses bare 'Murrow' — should be 'Mr. Murrow'."
         )
 
     if has_mr_murrow and speaker in INNER_CIRCLE_TO_MURROW:
-        # Inner circle uses "Mr. Murrow" — only valid for Cula at first meeting.
-        if speaker == "Dr. A. Cula" and chapter in ("ch01", "chapter1", "1"):
+        # Inner circle uses "Mr. Murrow" — only valid for Cula at first meeting
+        # or in formal-register group scenes (see CULA_TO_MURROW_FORMAL_SCENE_HINTS).
+        scene_blob = (scene + " " + context).lower()
+        if speaker == "Dr. A. Cula" and any(
+            h in scene_blob for h in CULA_TO_MURROW_FORMAL_SCENE_HINTS
+        ):
+            # Canonical formal register — not a violation.
+            pass
+        elif speaker == "Dr. A. Cula" and chapter in ("ch01", "chapter1", "1"):
             # First-meeting beat heuristic: scene/context mentions murrow first
             # encounter or Beat 3 area.
             first_meeting_hints = [
                 "first", "meeting", "introduction", "intro", "case_summary",
                 "murrow_intro", "beat_3", "beat3",
             ]
-            blob = (scene + " " + context).lower()
-            if any(h in blob for h in first_meeting_hints):
+            if any(h in scene_blob for h in first_meeting_hints):
                 issues.append(
                     f"POSSIBLE_FIRST_MEETING: Cula uses 'Mr. Murrow' in {scene} "
                     f"({context}) — verify this is the canonical first-meeting "
@@ -334,10 +460,12 @@ def auto_fix_record(record: dict, file_character_id: str = "") -> tuple[dict, li
 
     new_text = text
 
-    # Rule A: "Dr. Cula" -> "Dr. A. Cula" (always safe).
-    if RE_DR_CULA.search(new_text):
-        new_text = RE_DR_CULA.sub("Dr. A. Cula", new_text)
-        fixes.append("Rule A: Dr. Cula -> Dr. A. Cula")
+    # Rule A: "Dr. Cula" in the speaker field -> "Dr. A. Cula".
+    # We do NOT auto-fix "Dr. Cula" in dialogue text — that is a valid
+    # short-title address form for outer-circle characters addressing Cula.
+    if RE_DR_CULA.search(speaker):
+        record["speaker"] = RE_DR_CULA.sub("Dr. A. Cula", speaker)
+        fixes.append("Rule A: speaker 'Dr. Cula' -> 'Dr. A. Cula'")
 
     # Rule B: speaker is outer-circle, uses bare "Cula" -> "Dr. A. Cula".
     if speaker not in INNER_CIRCLE_TO_CULA and RE_BARE_CULA.search(new_text):

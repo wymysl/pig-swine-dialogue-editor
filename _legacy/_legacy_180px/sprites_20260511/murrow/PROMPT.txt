@@ -1,0 +1,9 @@
+Prompt: Late-20s Polish male archivist, slim slightly stooped, neat short sandy blonde hair with side part, reading glasses pushed up, threadbare warm-brown wool cardigan over white shirt and skinny dark tie, navy trousers, ink-stained fingers. Polish komiks illustration, clean ink-line outlines, flat warm earth-tone colors, PRL-era mood, pixel-art, full body, hands at sides. Palette: #d4b878, #e6b08a, #1c2a40, #e8e4d8, #6a4a30, #0d0a08
+Negative: held objects, facial expressions, caricature, gradients, anime
+Pixellab Character ID: 9a11a794-c8ab-45e1-a666-0e1f5fd33a62
+Pixellab Template: mannequin
+Pixellab View: low top-down
+Directions: 8
+Size: 180×180
+Generated: 2026-05-09T20:59:05.914227+00:00
+Last updated: 2026-05-10 — sprites regenerated and copied to canonical location (180×180, mapped cardinal→camera-relative direction names)

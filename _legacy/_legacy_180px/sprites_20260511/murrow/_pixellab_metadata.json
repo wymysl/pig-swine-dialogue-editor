@@ -1,0 +1,30 @@
+{
+  "character": {
+    "id": "9a11a794-c8ab-45e1-a666-0e1f5fd33a62",
+    "name": "MURROW",
+    "prompt": "Late-20s Polish male archivist, slim slightly stooped, neat short sandy blonde hair with side part, reading glasses pushed up, threadbare warm-brown wool blazer over white shirt and skinny dark tie, navy trousers, ink-stained fingers. Polish komiks illustration, clean ink-line outlines, flat warm earth-tone colors, PRL-era mood, 128\u00d7128 pixel-art, full body, hands at sides. Palette: #d4b878, #e6b08a, #1c2a40, #e8e4d8, #6a4a30, #0d0a08",
+    "size": {
+      "width": 180,
+      "height": 180
+    },
+    "template_id": "mannequin",
+    "directions": 8,
+    "view": "low top-down",
+    "created_at": "2026-05-09T20:59:05.914227+00:00"
+  },
+  "frames": {
+    "rotations": {
+      "south": "rotations/south.png",
+      "south-east": "rotations/south-east.png",
+      "east": "rotations/east.png",
+      "north-east": "rotations/north-east.png",
+      "north": "rotations/north.png",
+      "north-west": "rotations/north-west.png",
+      "west": "rotations/west.png",
+      "south-west": "rotations/south-west.png"
+    },
+    "animations": {}
+  },
+  "export_version": "2.0",
+  "export_date": "2026-05-09T21:08:28.054175"
+}

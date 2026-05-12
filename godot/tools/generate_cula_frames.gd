@@ -30,6 +30,19 @@ func _init() -> void:
 			else:
 				print("Missing walk: ", walk_path)
 				
+		# Run
+		frames.add_animation("run_" + d)
+		frames.set_animation_loop("run_" + d, true)
+		frames.set_animation_speed("run_" + d, 12.0)
+		for i in range(6):
+			var num = str(i).pad_zeros(2)
+			var run_path = "res://art/sprites/cula/run/" + d + "/cula_run_" + d + "_" + num + ".png"
+			var tex_run = ResourceLoader.load(run_path)
+			if tex_run:
+				frames.add_frame("run_" + d, tex_run)
+			else:
+				print("Missing run: ", run_path)
+				
 	var err = ResourceSaver.save(frames, "res://art/sprites/cula/cula_sprite_frames.tres")
 	if err != OK:
 		print("Error saving resource: ", err)

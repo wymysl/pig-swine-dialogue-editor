@@ -1,0 +1,6 @@
+Prompt: Late-20s Polish male archivist, slim slightly stooped, neat short sandy blonde hair with side part, reading glasses pushed up, threadbare warm-brown wool cardigan over white shirt and skinny dark tie, navy trousers, ink-stained fingers. Polish komiks illustration, clean ink-line outlines, flat warm earth-tone colors, PRL-era mood, 128×128 pixel-art, full body, hands at sides. Palette: #d4b878, #e6b08a, #1c2a40, #e8e4d8, #6a4a30, #0d0a08
+Negative: held objects, facial expressions, caricature, gradients, anime
+Model Version: unknown
+Seed: unknown
+Date: 2026-05-05T07:50:27.102847+00:00
+Last updated: 2026-05-09 — compressed

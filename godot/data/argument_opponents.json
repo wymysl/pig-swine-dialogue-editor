@@ -1,5 +1,170 @@
 {
   "version": 1,
-  "_doc": "Opposing arguments encountered in court. Schema: { id, weakness_tags, strength_tags, base_strength (Code), display_name (Design), opening_statement (Design), taunts (Design), defeat_lines (Design) }.",
-  "opponents": []
+  "_doc": "Opposing arguments encountered in court. Schema per opponent: { id, chapter, display_name (Design), court_rounds[] — one entry per casebook_judge_state value, each with: round_tag, opening_statement (Design), moves[{ move_id, article_tags, principle_tags, context_tags, base_strength (Code), flavor_line (Design) }], defeat_lines (Design), partial_lines (Design) }. Tag values must exist in data/tag_taxonomy.json.",
+  "opponents": [
+    {
+      "id": "landlord_counsel_ch1",
+      "_doc": "Landlord's counsel at the District Court, Beat 12. Unnamed throughout — the judge does not address him by name (see judge_district_ch1.json _address_forms). Recurring in Ch2 as Attorney Grzyb; do not use that name here.",
+      "chapter": 1,
+      "display_name": "Landlord's Counsel",
+
+      "court_rounds": [
+        {
+          "_doc": "Round 1 — Defective service. casebook_judge_state = 'round_1_open' (bench prompt) then 'round_1_react' (judge dry-surprise after player argues). Opponent opens before player chooses a move.",
+          "round_tag": "round_1_open",
+          "react_tag": "round_1_react",
+          "round_label": "Round 1 — Defective Service",
+
+          "opening_statement": "The file records service. The address used is the address on the tenancy. The court cannot reopen a hearing that was properly notified.",
+          "pressure": 8,
+
+          "moves": [
+            {
+              "move_id": "file_says_served",
+              "display_name": "File Says Served",
+              "article_tags": ["echr_6", "pl_const_45"],
+              "principle_tags": ["service_of_process", "procedural_fairness"],
+              "context_tags": ["civil_proceedings", "service_failure", "documentary"],
+              "base_strength": 80,
+              "weak_to": ["service_of_process", "access_to_court", "procedural_fairness"],
+              "resists": ["proportionality", "margin_of_appreciation"],
+              "immune_to": [],
+              "on_intro": "The opposing file insists the client was served because a box was ticked.",
+              "on_defeat": "The formal service argument collapses under the weight of basic procedural fairness.",
+              "on_partial": "The argument weakens, but the court wants a cleaner link to notice.",
+              "flavor_line": "The address appears in the file. That is the end of it."
+            },
+            {
+              "move_id": "third_party_cure",
+              "display_name": "Third-Party Acceptance",
+              "article_tags": ["echr_6"],
+              "principle_tags": ["service_of_process", "legal_certainty"],
+              "context_tags": ["civil_proceedings", "service_failure"],
+              "base_strength": 55,
+              "weak_to": ["service_of_process", "procedural_fairness"],
+              "resists": [],
+              "immune_to": [],
+              "on_intro": "Someone accepted the notice at that address. Service is not the petitioner's problem.",
+              "on_defeat": "Third-party acceptance cannot cure notice to a wrong address when the serving party knew of the renumbering.",
+              "on_partial": "The adult-occupant point stands, but the knowledge element is still in dispute.",
+              "flavor_line": "The current occupant of number seven received the notice and signed for it. The form is satisfied."
+            }
+          ],
+
+          "defeat_lines": [
+            "The service question is answered. The renumbering speaks for itself.",
+            "The court has heard enough on notice."
+          ],
+          "partial_lines": [
+            "The affidavit is supplementary. Knowledge alone does not settle the form.",
+            "The address is on the record. The court will hear the third clause."
+          ]
+        },
+
+        {
+          "_doc": "Round 2 — Fair hearing. casebook_judge_state = 'round_2_open' then 'round_2_react'. Single-branch (no stance variation — judge_district_ch1.json react_round_2 is stance-agnostic).",
+          "round_tag": "round_2_open",
+          "react_tag": "round_2_react",
+          "round_label": "Round 2 — Fair Hearing",
+
+          "opening_statement": "The procedure is a technicality. The landlord's position on the underlying tenancy is sound. Reopening the hearing merely delays an inevitable outcome.",
+          "pressure": 10,
+
+          "moves": [
+            {
+              "move_id": "technicality_does_not_matter",
+              "display_name": "Technicality Dismissal",
+              "article_tags": ["echr_6", "pl_const_45"],
+              "principle_tags": ["procedural_fairness", "access_to_court"],
+              "context_tags": ["fair_trial", "civil_proceedings"],
+              "base_strength": 90,
+              "weak_to": ["access_to_court", "procedural_fairness", "effective_remedy"],
+              "resists": ["proportionality", "positive_obligations"],
+              "immune_to": [],
+              "on_intro": "The opposing argument treats procedure as decoration.",
+              "on_defeat": "The right to a fair hearing is not a technicality. It is the condition under which everything else is decided.",
+              "on_partial": "The court is not unsympathetic to efficiency, but the Article 6 point requires an answer.",
+              "flavor_line": "Procedure is only the door. What matters is what is behind it."
+            },
+            {
+              "move_id": "merits_override",
+              "display_name": "Merits Override",
+              "article_tags": ["echr_6"],
+              "principle_tags": ["procedural_fairness", "legal_certainty"],
+              "context_tags": ["civil_proceedings", "fair_trial"],
+              "base_strength": 60,
+              "weak_to": ["access_to_court", "procedural_fairness"],
+              "resists": [],
+              "immune_to": [],
+              "on_intro": "The underlying merits of the landlord's claim are strong enough to make the procedural point academic.",
+              "on_defeat": "The merits are not before the court at this hearing. They cannot pre-empt a fair-hearing objection.",
+              "on_partial": "The argument has some force, but the procedural defect must be addressed first.",
+              "flavor_line": "Whatever the process, the conclusion would be the same. We are wasting the court's afternoon."
+            }
+          ],
+
+          "defeat_lines": [
+            "The third-clause point lands. The court will proceed to remedy.",
+            "The right-to-be-heard argument is answered."
+          ],
+          "partial_lines": [
+            "The argument weakens, but the landlord's position on the underlying tenancy is not yet resolved.",
+            "Procedure is acknowledged. The court wants a cleaner evidentiary link."
+          ]
+        },
+
+        {
+          "_doc": "Round 3 — Remedy. casebook_judge_state = 'round_3_open' then 'round_3_remedy'. After player argues remedy, judge delivers the remedy announcement (in judge_district_ch1.json remedy_round_3_<stance>).",
+          "round_tag": "round_3_open",
+          "react_tag": "round_3_remedy",
+          "round_label": "Round 3 — Remedy",
+
+          "opening_statement": "If the court is inclined to grant any remedy, it should be limited to a technical notation. An adjournment would prejudice the landlord's position and delay a legitimate eviction.",
+          "pressure": 12,
+
+          "moves": [
+            {
+              "move_id": "ask_for_everything",
+              "display_name": "Overbroad Remedy",
+              "article_tags": ["echr_6"],
+              "principle_tags": ["procedural_fairness", "proportionality"],
+              "context_tags": ["civil_proceedings", "housing", "deadline"],
+              "base_strength": 70,
+              "weak_to": ["effective_remedy", "procedural_fairness", "access_to_court"],
+              "resists": [],
+              "immune_to": [],
+              "on_intro": "The temptation to ask for total victory enters the courtroom.",
+              "on_defeat": "A procedural reset is the correct remedy. The merits remain open; the hearing is restored.",
+              "on_partial": "The remedy ask is noted, but the court will calibrate to the procedural defect only.",
+              "flavor_line": "Any remedy granted now should not predetermine the merits of the underlying tenancy. We ask for proportionality."
+            },
+            {
+              "move_id": "landlord_prejudice",
+              "display_name": "Adjournment Prejudice",
+              "article_tags": ["echr_6", "pl_const_45"],
+              "principle_tags": ["proportionality", "procedural_fairness"],
+              "context_tags": ["civil_proceedings", "deadline", "housing"],
+              "base_strength": 50,
+              "weak_to": ["effective_remedy", "access_to_court"],
+              "resists": [],
+              "immune_to": [],
+              "on_intro": "The landlord has spent resources on this matter. An adjournment imposes an unfair cost.",
+              "on_defeat": "The cost of rescheduling falls on the party whose defective service caused the problem.",
+              "on_partial": "The prejudice point requires a factual foundation the landlord has not supplied.",
+              "flavor_line": "An adjournment costs the respondent. That cost is real and before the court."
+            }
+          ],
+
+          "defeat_lines": [
+            "The motion to set aside is granted. The matter is rescheduled.",
+            "The procedural reset stands. Notice will be re-served in the ordinary course."
+          ],
+          "partial_lines": [
+            "The remedy is calibrated. The underlying tenancy is not before the court.",
+            "The court reserves the merits. The hearing is restored on the service point only."
+          ]
+        }
+      ]
+    }
+  ]
 }

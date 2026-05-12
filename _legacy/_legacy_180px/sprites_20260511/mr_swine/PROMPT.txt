@@ -1,0 +1,9 @@
+Prompt: Anthropomorphic bipedal pig, pink skin, prominent snout and ears, slim well-groomed, well-fitted dark charcoal travel suit, white shirt, oxblood silk cravat (not a tie), no glasses, confident upright posture, middle-aged Polish law firm partner. Polish komiks illustration, clean ink-line outlines, flat warm earth-tone colors, PRL-era mood, pixel-art, full body, hands at sides. Palette: #1a1410, #f0c8c0, #1c2a40, #e8e4d8, #7a1f2a, #0d0a08
+Negative: held objects, facial expressions, caricature, gradients, anime, four-legged pig, human in pig mask
+Pixellab Character ID: 1c901922-487a-4189-9138-02d77e577028
+Pixellab Template: mannequin
+Pixellab View: low top-down
+Directions: 8
+Size: 180×180
+Generated: 2026-05-09T19:44:48.330673+00:00
+Last updated: 2026-05-10 — sprites regenerated and copied to canonical location (180×180, mapped cardinal→camera-relative direction names)

@@ -1,5 +1,86 @@
 {
   "version": 1,
-  "_doc": "Items, evidence, Casebook collectibles. Schema: { item_id: { name (Design), description (Design), effect, slot, prereq } }.",
-  "items": {}
+  "_doc": "Items, evidence, and Casebook collectibles. Schema per item: { display_name (Design), description (Design), chapter, beat (Design), item_type, state_flag (Code — path pickup.gd writes on collect), argument_tags (Code — used by effectiveness resolver when item is played as evidence), stance_gate (optional — item only available if chapter1.client_meeting_stance matches) }. Pickup actor (scripts/actors/pickup.gd) uses item_id as key and state_flag_path as the flag it sets. Items keyed as object map so pickup.gd can look up by item_id.",
+  "items": {
+
+    "procedural_binder": {
+      "display_name": "Unreasonably Heavy Procedural Binder",
+      "description": "A lever-arch file so thoroughly annotated by Murrow that it has developed opinions of its own. Contains Article 135-bis § 2 KPC and adjacent provisions. Unlocks the defective-service argument in court.",
+      "chapter": 1,
+      "beat": 4,
+      "_beat_note": "Beat 4 — Murrow hands it over during the eviction briefing. Pickup node placed in the file area near Murrow's desk.",
+      "item_type": "evidence",
+      "state_flag": "chapter1.has_law_binder",
+      "argument_tags": ["service_of_process", "procedural_fairness", "access_to_court"],
+      "context_tags": ["civil_proceedings", "service_failure", "deadline"],
+      "required_for_rounds": ["round_1_open", "round_3_open"],
+      "pickup_line": "The binder is heavier than it has any right to be. Murrow has flagged Article 135-bis in three colors."
+    },
+
+    "rights_memo": {
+      "display_name": "Rights Memo with Coffee Ring",
+      "description": "A single-page note on fair-hearing procedure, drafted by Whimsy and further disfigured by a café ring stain. The coffee ring is, somehow, centered. Unlocks the fair-hearing argument in court.",
+      "chapter": 1,
+      "beat": 6,
+      "_beat_note": "Beat 6–7 — Found at Café Paragraf, half-buried under Whimsy's notes. Collecting it is one of the two routes to recruiting Whimsy.",
+      "item_type": "evidence",
+      "state_flag": "chapter1.has_rights_memo",
+      "argument_tags": ["procedural_fairness", "access_to_court", "effective_remedy"],
+      "context_tags": ["fair_trial", "civil_proceedings"],
+      "required_for_rounds": ["round_2_open", "round_3_open"],
+      "pickup_line": "The memo is a single page. The coffee ring is, somehow, centered. Whimsy's handwriting is theatrical even in note form."
+    },
+
+    "wojcik_witness_statement": {
+      "display_name": "Mrs. Wójcik's Witness Statement",
+      "description": "A signed statement from the second-floor neighbor, resident since 1991, confirming that Halina Sikorska has been a continuous resident throughout. Bonus evidence — available only on the sympathetic stance.",
+      "chapter": 1,
+      "beat": 8,
+      "_beat_note": "Beat 8 — Surfaces during the client meeting on the sympathetic stance carrier. Halina produces it from her folder.",
+      "item_type": "bonus_evidence",
+      "state_flag": "chapter1.bonus_evidence_collected",
+      "_state_flag_note": "chapter1.bonus_evidence_collected is a string enum. Pickup sets it to 'wojcik_witness_statement'. Only one bonus item per playthrough.",
+      "stance_gate": "sympathetic",
+      "argument_tags": ["service_of_process", "procedural_fairness"],
+      "context_tags": ["housing", "civil_proceedings", "documentary"],
+      "required_for_rounds": ["round_1_react", "round_3_remedy"],
+      "_round_effect": "Round 1 — adds character-witness texture; produces stronger judge reaction (react_round_1_sympathetic). Round 3 — witness texture for the harm done by improper hearing.",
+      "pickup_line": "Mrs. Wójcik has lived on the second floor since before the renumbering. She will testify. Her statement is two pages and unambiguous."
+    },
+
+    "return_to_sender_slip": {
+      "display_name": "Postal Return-to-Sender Slip",
+      "description": "The returned envelope from a landlord letter sent six months earlier — also addressed to old number seven, also bounced. Proves the landlord knew the address was bad before the eviction notice. Bonus evidence — available only on the blunt-procedural stance.",
+      "chapter": 1,
+      "beat": 8,
+      "_beat_note": "Beat 8 — Surfaces during the client meeting on the blunt-procedural stance carrier. Halina has kept everything.",
+      "item_type": "bonus_evidence",
+      "state_flag": "chapter1.bonus_evidence_collected",
+      "_state_flag_note": "chapter1.bonus_evidence_collected is a string enum. Pickup sets it to 'return_to_sender_slip'. Only one bonus item per playthrough.",
+      "stance_gate": "blunt_procedural",
+      "argument_tags": ["service_of_process", "procedural_fairness", "legal_certainty"],
+      "context_tags": ["civil_proceedings", "service_failure", "documentary"],
+      "required_for_rounds": ["round_1_react", "round_3_remedy"],
+      "_round_effect": "Round 1 — knockout-style proof-of-knowledge; landlord's 'I didn't know' defense fails on its face (react_round_1_blunt_procedural). Round 3 — strengthens the wrongful-service finding underlying the remedy.",
+      "pickup_line": "The envelope came back six months ago. Same wrong address. The landlord's countersignature is on the renewal. He knew."
+    },
+
+    "lease_1962_inheritance_1987": {
+      "display_name": "1962 Lease + 1987 Inheritance Paperwork",
+      "description": "The original flat assignment in Halina's father's name (Warsaw railway housing stock, 1962) and the inheritance documentation confirming succession of the tenancy (1987). Two documents, one chain. Bonus evidence — available only on the technical stance.",
+      "chapter": 1,
+      "beat": 8,
+      "_beat_note": "Beat 8 — Surfaces during the client meeting on the technical stance carrier. Halina arrives with a folder; these are at the back of it.",
+      "item_type": "bonus_evidence",
+      "state_flag": "chapter1.bonus_evidence_collected",
+      "_state_flag_note": "chapter1.bonus_evidence_collected is a string enum. Pickup sets it to 'lease_1962_inheritance_1987'. Only one bonus item per playthrough.",
+      "stance_gate": "technical",
+      "argument_tags": ["service_of_process", "procedural_fairness", "prescribed_by_law"],
+      "context_tags": ["housing", "civil_proceedings", "documentary"],
+      "required_for_rounds": ["round_3_remedy"],
+      "_round_effect": "Round 3 only — historical weight for the tenancy-validity argument supporting the rehearing-remedy ask (react_round_1_technical holds lease for Round 3). Judge adds one-clause acknowledgment that the underlying tenancy is not before the court (remedy_round_3_technical).",
+      "pickup_line": "The 1962 assignment is her father's. The 1987 paperwork is the succession. The chain runs clean through both reorganizations."
+    }
+
+  }
 }

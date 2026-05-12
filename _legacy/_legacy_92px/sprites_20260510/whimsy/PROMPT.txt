@@ -1,0 +1,6 @@
+Prompt: Late-20s Polish male junior lawyer, slim tall, slightly-too-long jet-black hair swept back, small round wire-frame glasses, eggplant velvet blazer over cream shirt, mismatched mustard yellow tie, dark trousers. Polish komiks illustration, clean ink-line outlines, flat warm earth-tone colors, PRL-era mood, 128×128 pixel-art, full body, hands at sides. Palette: #1a1410, #e6b08a, #5a2a4a, #e8e4d8, #c8a868, #0d0a08
+Negative: held objects, facial expressions, caricature, raised hands, gradients, anime
+Model Version: unknown
+Seed: unknown
+Date: 2026-05-05T08:16:35.889337+00:00
+Last updated: 2026-05-09 — compressed

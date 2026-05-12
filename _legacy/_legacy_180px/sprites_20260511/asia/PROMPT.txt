@@ -1,0 +1,9 @@
+Prompt: Late-20s Polish female office secretary, slim, brown hair in long ponytail down her back, mustard knit cardigan over cream shirt, navy pencil skirt. Polish komiks illustration, clean ink-line outlines, flat warm earth-tone colors, PRL-era mood, pixel-art, full body, hands at sides. Palette: #1a1410, #e6b08a, #1c2a40, #e8e4d8, #c8a868, #0d0a08
+Negative: held objects, facial expressions, caricature, gradients, anime
+Pixellab Character ID: 9f610f8f-b8b5-40ab-8af0-c41f833da42d
+Pixellab Template: mannequin
+Pixellab View: low top-down
+Directions: 8
+Size: 180×180
+Generated: 2026-05-09T20:31:15.275312+00:00
+Last updated: 2026-05-10 — sprites regenerated and copied to canonical location (180×180, mapped cardinal→camera-relative direction names)

@@ -1,5 +1,86 @@
 {
   "version": 1,
-  "_doc": "Casebook judgments. Two-pass authoring per AGENTS.md §Casebook authoring. Schema: { id, tags: { article, principle, context }, principle_moves[]: { id, effectiveness_modifiers, cost, name (Design), flavor_line (Design) }, judgment_name (Design), case_summary (Design), draft }.",
-  "judgments": []
+  "_doc": "Casebook judgments. Two-pass authoring per AGENTS.md §Casebook authoring. Schema per entry: { id, chapter_unlock, draft, tags: { article[], principle[], context[] }, principle_moves[]: { id, effectiveness_modifiers, cost, name (Design), flavor_line (Design) }, judgment_name (Design), case_summary (Design) }. Tag values must exist in data/tag_taxonomy.json. draft:true entries are not loaded by casebook.gd until both Code and Design passes are complete.",
+  "judgments": [
+    {
+      "id": "procedural_reset_ch1",
+      "_doc": "Beat 12 procedural-reset judgment. Triggers chapter1.court_won_procedural_reset via judge_district_ch1.json remedy_round_3_<stance> on_dismiss. Unlocked as a Casebook entry after court victory. Conditions: casebook_judge_state reaches 'round_3_remedy' AND at least one bonus_evidence_collected item is present OR all three rounds are won without bonus evidence (modest-remedy discipline — the remedy is always procedural, never a full merits win). The actual remedy text lives in judge_district_ch1.json; do not duplicate it here.",
+      "chapter_unlock": 1,
+      "draft": false,
+
+      "conditions": {
+        "_doc": "Judgment 'fires' (is added to Casebook) when all conditions are met. casebook_judge_state must have reached round_3_remedy. court_won_procedural_reset is set true by judge_district_ch1.json on_dismiss; this entry is unlocked at that moment. bonus_evidence_collected is optional — its presence affects argument strength during the rounds but not whether the judgment is awarded.",
+        "required_flags": [
+          { "path": "chapter1.casebook_judge_state", "op": "any_of", "values": ["round_3_remedy"] },
+          { "path": "chapter1.court_won_procedural_reset", "op": "eq", "value": true }
+        ],
+        "bonus_evidence_variants": {
+          "_doc": "Bonus evidence in chapter1.bonus_evidence_collected changes the flavor of the Round 3 argument but not the judgment outcome. All three paths award the same judgment.",
+          "wojcik_witness_statement": "Round 3 sympathetic carrier — affidavit adds tenancy-validity texture to the rehearing-remedy argument.",
+          "return_to_sender_slip": "Round 3 blunt-procedural carrier — slip strengthens the wrongful-service finding underlying the remedy.",
+          "lease_1962_inheritance_1987": "Round 3 technical carrier — historical paperwork adds underlying tenancy weight; one-clause acknowledgment from the bench that tenancy is not before the court."
+        }
+      },
+
+      "remedy_discipline": "Modest procedural reset only. The client remains (procedurally, for now). The firm receives the 5,000 PLN Sikorska fee. The hearing is rescheduled; the merits remain open. Bonus evidence may strengthen argument strength but cannot upgrade the remedy itself beyond the procedural reset.",
+
+      "tags": {
+        "article": ["echr_6", "pl_const_45"],
+        "principle": ["service_of_process", "procedural_fairness", "access_to_court", "effective_remedy"],
+        "context": ["civil_proceedings", "service_failure", "housing", "deadline"]
+      },
+
+      "principle_moves": [
+        {
+          "id": "motion_to_set_aside",
+          "name": "Motion to Set Aside",
+          "effectiveness_modifiers": {
+            "article_match_weight": 1.0,
+            "principle_match_weight": 1.2,
+            "context_match_weight": 1.0
+          },
+          "cost": 0,
+          "flavor_line": "Service of process is the threshold. Below it, there is no hearing. There was no hearing."
+        },
+        {
+          "id": "notice_window",
+          "name": "Actual Notice Window",
+          "effectiveness_modifiers": {
+            "article_match_weight": 1.0,
+            "principle_match_weight": 1.1,
+            "context_match_weight": 1.2
+          },
+          "cost": 0,
+          "flavor_line": "The fourteen-day clock runs from actual notice, not from the defective delivery. We are inside that window. The statute says so."
+        },
+        {
+          "id": "third_clause_non_cure",
+          "name": "Third-Clause Non-Cure",
+          "effectiveness_modifiers": {
+            "article_match_weight": 0.9,
+            "principle_match_weight": 1.3,
+            "context_match_weight": 1.0
+          },
+          "cost": 0,
+          "flavor_line": "The current occupant of number seven is not her authorized agent. The landlord cannot bootstrap service through a stranger to the tenancy."
+        },
+        {
+          "id": "rehearing_as_remedy",
+          "name": "Rehearing as Remedy",
+          "effectiveness_modifiers": {
+            "article_match_weight": 1.0,
+            "principle_match_weight": 1.0,
+            "context_match_weight": 1.1
+          },
+          "cost": 0,
+          "flavor_line": "The remedy is modest. We do not ask for a merits finding. We ask for the hearing she was entitled to before any of this began."
+        }
+      ],
+
+      "judgment_name": "Sikorska — District Court — Article 135-bis § 2 KPC",
+      "case_summary": "A misdirected eviction notice — sent to an address renumbered eleven years before, by a landlord whose 2019 countersignature proved he knew — entitled the client to a set-aside and a fresh hearing she had never received.",
+      "memory_hook": "The address was old. The landlord's signature was new. The gap between those two facts was the case.",
+      "verified_against_hudoc": false
+    }
+  ]
 }
