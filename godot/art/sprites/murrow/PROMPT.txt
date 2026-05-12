@@ -1,0 +1,10 @@
+Prompt: Slim slightly stooped young man in threadbare brown cardigan, dark tie, sandy hair, hunched reading posture. Minimal synthetic line drawing, sparse flat shapes, Polish satirical illustration, institutional mood, pixel-art, adult proportions, full body, hands at sides.
+Negative: detailed, shaded, gradient, anime, chibi, cute, big head, decorative, fantasy, realistic, 3D, held objects, facial expressions
+Pixellab Character ID: eb8ec857-35f4-4639-9944-1e3c8e951bac
+Pixellab Template: mannequin
+Pixellab View: low top-down
+Directions: 8
+Generation Size: 128×128 (downscale to 64×64 nearest-neighbor)
+Size: 64×64
+Palette: #d4b878, #e6b08a, #1c2a40, #e8e4d8, #6a4a30, #0d0a08
+Last updated: 2026-05-11 — prompts rewritten for Świdziński-minimal direction (128→64 workflow). Pending regeneration.

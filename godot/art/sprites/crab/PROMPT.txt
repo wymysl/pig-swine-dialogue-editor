@@ -1,0 +1,9 @@
+Prompt: Late-20s Polish male junior lawyer, sturdy compact, short cropped mid-brown hair, square jaw, narrow eyes, rumpled navy suit jacket with sleeves pushed up, white shirt, oxblood tie loose at collar, dark trousers, small notebook clipped to belt. Polish komiks illustration, clean ink-line outlines, flat warm earth-tone colors, PRL-era mood, pixel-art, full body, hands at sides. Palette: #6a4a30, #e6b08a, #1c2a40, #e8e4d8, #7a1f2a, #0d0a08
+Negative: held objects, facial expressions, caricature, gradients, anime
+Pixellab Character ID: f9e64615-98c1-48ed-8e99-a4d66ab8b82f
+Pixellab Template: mannequin
+Pixellab View: low top-down
+Directions: 8
+Size: 64×64
+Generated: 2026-05-10T19:54:47.772452+00:00
+Last updated: 2026-05-11 — sprites regenerated at 112×112 (replacing failed 2026-05-10 180×180 pass). Same Polish komiks + no-held-objects prompts.

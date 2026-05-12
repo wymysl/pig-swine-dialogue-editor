@@ -1,0 +1,212 @@
+{
+  "group_id": "ba753df1-eb0e-428b-8dee-89a8ba44fd69",
+  "states": [
+    {
+      "character": {
+        "id": "61e75185-61bb-428c-b7d6-12c8cf8bc3f3",
+        "name": "DR. A. CULA",
+        "prompt": "A small, meticulously crafted pixel-art character with sharp facial expressions and a clear, recognizable form, designed to remain legible and expressive even at a compact 64 pixel height, capturing the core essence and defining traits of the original design.",
+        "size": {
+          "width": 124,
+          "height": 124
+        },
+        "template_id": "mannequin",
+        "directions": 8,
+        "view": "low top-down",
+        "created_at": "2026-05-12T11:17:10.628561+00:00"
+      },
+      "folder": "states/DR._A._CULA",
+      "frames": {
+        "rotations": {
+          "south": "states/DR._A._CULA/rotations/south.png",
+          "south-east": "states/DR._A._CULA/rotations/south-east.png",
+          "east": "states/DR._A._CULA/rotations/east.png",
+          "north-east": "states/DR._A._CULA/rotations/north-east.png",
+          "north": "states/DR._A._CULA/rotations/north.png",
+          "north-west": "states/DR._A._CULA/rotations/north-west.png",
+          "west": "states/DR._A._CULA/rotations/west.png",
+          "south-west": "states/DR._A._CULA/rotations/south-west.png"
+        },
+        "animations": {
+          "Running-92d93825": {
+            "west": [
+              "states/DR._A._CULA/animations/Running-92d93825/west/frame_000.png",
+              "states/DR._A._CULA/animations/Running-92d93825/west/frame_001.png",
+              "states/DR._A._CULA/animations/Running-92d93825/west/frame_002.png",
+              "states/DR._A._CULA/animations/Running-92d93825/west/frame_003.png",
+              "states/DR._A._CULA/animations/Running-92d93825/west/frame_004.png",
+              "states/DR._A._CULA/animations/Running-92d93825/west/frame_005.png"
+            ],
+            "south": [
+              "states/DR._A._CULA/animations/Running-92d93825/south/frame_000.png",
+              "states/DR._A._CULA/animations/Running-92d93825/south/frame_001.png",
+              "states/DR._A._CULA/animations/Running-92d93825/south/frame_002.png",
+              "states/DR._A._CULA/animations/Running-92d93825/south/frame_003.png",
+              "states/DR._A._CULA/animations/Running-92d93825/south/frame_004.png",
+              "states/DR._A._CULA/animations/Running-92d93825/south/frame_005.png"
+            ],
+            "south-east": [
+              "states/DR._A._CULA/animations/Running-92d93825/south-east/frame_000.png",
+              "states/DR._A._CULA/animations/Running-92d93825/south-east/frame_001.png",
+              "states/DR._A._CULA/animations/Running-92d93825/south-east/frame_002.png",
+              "states/DR._A._CULA/animations/Running-92d93825/south-east/frame_003.png",
+              "states/DR._A._CULA/animations/Running-92d93825/south-east/frame_004.png",
+              "states/DR._A._CULA/animations/Running-92d93825/south-east/frame_005.png"
+            ],
+            "south-west": [
+              "states/DR._A._CULA/animations/Running-92d93825/south-west/frame_000.png",
+              "states/DR._A._CULA/animations/Running-92d93825/south-west/frame_001.png",
+              "states/DR._A._CULA/animations/Running-92d93825/south-west/frame_002.png",
+              "states/DR._A._CULA/animations/Running-92d93825/south-west/frame_003.png",
+              "states/DR._A._CULA/animations/Running-92d93825/south-west/frame_004.png",
+              "states/DR._A._CULA/animations/Running-92d93825/south-west/frame_005.png"
+            ],
+            "north": [
+              "states/DR._A._CULA/animations/Running-92d93825/north/frame_000.png",
+              "states/DR._A._CULA/animations/Running-92d93825/north/frame_001.png",
+              "states/DR._A._CULA/animations/Running-92d93825/north/frame_002.png",
+              "states/DR._A._CULA/animations/Running-92d93825/north/frame_003.png",
+              "states/DR._A._CULA/animations/Running-92d93825/north/frame_004.png",
+              "states/DR._A._CULA/animations/Running-92d93825/north/frame_005.png"
+            ],
+            "east": [
+              "states/DR._A._CULA/animations/Running-92d93825/east/frame_000.png",
+              "states/DR._A._CULA/animations/Running-92d93825/east/frame_001.png",
+              "states/DR._A._CULA/animations/Running-92d93825/east/frame_002.png",
+              "states/DR._A._CULA/animations/Running-92d93825/east/frame_003.png",
+              "states/DR._A._CULA/animations/Running-92d93825/east/frame_004.png",
+              "states/DR._A._CULA/animations/Running-92d93825/east/frame_005.png"
+            ],
+            "north-east": [
+              "states/DR._A._CULA/animations/Running-92d93825/north-east/frame_000.png",
+              "states/DR._A._CULA/animations/Running-92d93825/north-east/frame_001.png",
+              "states/DR._A._CULA/animations/Running-92d93825/north-east/frame_002.png",
+              "states/DR._A._CULA/animations/Running-92d93825/north-east/frame_003.png",
+              "states/DR._A._CULA/animations/Running-92d93825/north-east/frame_004.png",
+              "states/DR._A._CULA/animations/Running-92d93825/north-east/frame_005.png"
+            ],
+            "north-west": [
+              "states/DR._A._CULA/animations/Running-92d93825/north-west/frame_000.png",
+              "states/DR._A._CULA/animations/Running-92d93825/north-west/frame_001.png",
+              "states/DR._A._CULA/animations/Running-92d93825/north-west/frame_002.png",
+              "states/DR._A._CULA/animations/Running-92d93825/north-west/frame_003.png",
+              "states/DR._A._CULA/animations/Running-92d93825/north-west/frame_004.png",
+              "states/DR._A._CULA/animations/Running-92d93825/north-west/frame_005.png"
+            ]
+          },
+          "animation-0545e641": {
+            "east": [
+              "states/DR._A._CULA/animations/animation-0545e641/east/frame_000.png",
+              "states/DR._A._CULA/animations/animation-0545e641/east/frame_001.png",
+              "states/DR._A._CULA/animations/animation-0545e641/east/frame_002.png",
+              "states/DR._A._CULA/animations/animation-0545e641/east/frame_003.png",
+              "states/DR._A._CULA/animations/animation-0545e641/east/frame_004.png",
+              "states/DR._A._CULA/animations/animation-0545e641/east/frame_005.png"
+            ],
+            "south-west": [
+              "states/DR._A._CULA/animations/animation-0545e641/south-west/frame_000.png",
+              "states/DR._A._CULA/animations/animation-0545e641/south-west/frame_001.png",
+              "states/DR._A._CULA/animations/animation-0545e641/south-west/frame_002.png",
+              "states/DR._A._CULA/animations/animation-0545e641/south-west/frame_003.png",
+              "states/DR._A._CULA/animations/animation-0545e641/south-west/frame_004.png",
+              "states/DR._A._CULA/animations/animation-0545e641/south-west/frame_005.png"
+            ],
+            "south": [
+              "states/DR._A._CULA/animations/animation-0545e641/south/frame_000.png",
+              "states/DR._A._CULA/animations/animation-0545e641/south/frame_001.png",
+              "states/DR._A._CULA/animations/animation-0545e641/south/frame_002.png",
+              "states/DR._A._CULA/animations/animation-0545e641/south/frame_003.png",
+              "states/DR._A._CULA/animations/animation-0545e641/south/frame_004.png",
+              "states/DR._A._CULA/animations/animation-0545e641/south/frame_005.png"
+            ],
+            "north-east": [
+              "states/DR._A._CULA/animations/animation-0545e641/north-east/frame_000.png",
+              "states/DR._A._CULA/animations/animation-0545e641/north-east/frame_001.png",
+              "states/DR._A._CULA/animations/animation-0545e641/north-east/frame_002.png",
+              "states/DR._A._CULA/animations/animation-0545e641/north-east/frame_003.png",
+              "states/DR._A._CULA/animations/animation-0545e641/north-east/frame_004.png",
+              "states/DR._A._CULA/animations/animation-0545e641/north-east/frame_005.png"
+            ],
+            "north-west": [
+              "states/DR._A._CULA/animations/animation-0545e641/north-west/frame_000.png",
+              "states/DR._A._CULA/animations/animation-0545e641/north-west/frame_001.png",
+              "states/DR._A._CULA/animations/animation-0545e641/north-west/frame_002.png",
+              "states/DR._A._CULA/animations/animation-0545e641/north-west/frame_003.png",
+              "states/DR._A._CULA/animations/animation-0545e641/north-west/frame_004.png",
+              "states/DR._A._CULA/animations/animation-0545e641/north-west/frame_005.png"
+            ],
+            "south-east": [
+              "states/DR._A._CULA/animations/animation-0545e641/south-east/frame_000.png",
+              "states/DR._A._CULA/animations/animation-0545e641/south-east/frame_001.png",
+              "states/DR._A._CULA/animations/animation-0545e641/south-east/frame_002.png",
+              "states/DR._A._CULA/animations/animation-0545e641/south-east/frame_003.png",
+              "states/DR._A._CULA/animations/animation-0545e641/south-east/frame_004.png",
+              "states/DR._A._CULA/animations/animation-0545e641/south-east/frame_005.png"
+            ],
+            "north": [
+              "states/DR._A._CULA/animations/animation-0545e641/north/frame_000.png",
+              "states/DR._A._CULA/animations/animation-0545e641/north/frame_001.png",
+              "states/DR._A._CULA/animations/animation-0545e641/north/frame_002.png",
+              "states/DR._A._CULA/animations/animation-0545e641/north/frame_003.png",
+              "states/DR._A._CULA/animations/animation-0545e641/north/frame_004.png",
+              "states/DR._A._CULA/animations/animation-0545e641/north/frame_005.png"
+            ],
+            "west": [
+              "states/DR._A._CULA/animations/animation-0545e641/west/frame_000.png",
+              "states/DR._A._CULA/animations/animation-0545e641/west/frame_001.png",
+              "states/DR._A._CULA/animations/animation-0545e641/west/frame_002.png",
+              "states/DR._A._CULA/animations/animation-0545e641/west/frame_003.png",
+              "states/DR._A._CULA/animations/animation-0545e641/west/frame_004.png",
+              "states/DR._A._CULA/animations/animation-0545e641/west/frame_005.png"
+            ]
+          },
+          "Backflip-60c6c14a": {
+            "south": [
+              "states/DR._A._CULA/animations/Backflip-60c6c14a/south/frame_000.png",
+              "states/DR._A._CULA/animations/Backflip-60c6c14a/south/frame_001.png",
+              "states/DR._A._CULA/animations/Backflip-60c6c14a/south/frame_002.png",
+              "states/DR._A._CULA/animations/Backflip-60c6c14a/south/frame_003.png",
+              "states/DR._A._CULA/animations/Backflip-60c6c14a/south/frame_004.png",
+              "states/DR._A._CULA/animations/Backflip-60c6c14a/south/frame_005.png",
+              "states/DR._A._CULA/animations/Backflip-60c6c14a/south/frame_006.png",
+              "states/DR._A._CULA/animations/Backflip-60c6c14a/south/frame_007.png",
+              "states/DR._A._CULA/animations/Backflip-60c6c14a/south/frame_008.png",
+              "states/DR._A._CULA/animations/Backflip-60c6c14a/south/frame_009.png"
+            ]
+          }
+        }
+      }
+    },
+    {
+      "character": {
+        "id": "4695d3cd-e10c-4213-bc2e-701cb09bf1c5",
+        "name": "sitting down",
+        "prompt": "A small, meticulously crafted pixel-art character with sharp facial expressions and a clear, recognizable form, designed to remain legible and expressive even at a compact 64 pixel height, capturing the core essence and defining traits of the original design.",
+        "size": {
+          "width": 124,
+          "height": 124
+        },
+        "template_id": "mannequin",
+        "directions": 8,
+        "view": "low top-down",
+        "created_at": "2026-05-12T15:15:05.89804+00:00"
+      },
+      "folder": "states/sitting_down",
+      "frames": {
+        "rotations": {
+          "south": "states/sitting_down/rotations/south.png",
+          "south-east": "states/sitting_down/rotations/south-east.png",
+          "east": "states/sitting_down/rotations/east.png",
+          "north-east": "states/sitting_down/rotations/north-east.png",
+          "north": "states/sitting_down/rotations/north.png",
+          "north-west": "states/sitting_down/rotations/north-west.png",
+          "west": "states/sitting_down/rotations/west.png",
+          "south-west": "states/sitting_down/rotations/south-west.png"
+        },
+        "animations": {}
+      }
+    }
+  ],
+  "export_version": "3.0",
+  "export_date": "2026-05-12T16:18:14.298273"
+}

@@ -1,16 +1,16 @@
 {
   "character": {
-    "id": "0468da2b-418f-4359-b3e3-aa447560534c",
-    "name": "Anthropomorphic pig character, bipedal pig-person,",
-    "prompt": "Anthropomorphic pig character, bipedal pig-person, pink pig skin with prominent pig snout and pig ears, slim trim well-groomed cosmopolitan pig, well-fitted dark charcoal travel suit, white dress shirt, deep oxblood silk cravat around neck (cravat NOT a tie), no glasses, charming knowing smile with confident upright posture, middle-aged traveled Polish law firm partner with salesman air, fully bipedal anthropomorphic, NOT a four-legged farm pig, NOT a human in a pig mask, full body, 16-bit JRPG, pallette: #1a1410, #f0c8c0, #1c2a40, #e8e4d8, #7a1f2a, #0d0a08",
+    "id": "2675fbbf-04b9-4044-af5a-2088ff543b07",
+    "name": "swine",
+    "prompt": "Anthropomorphic bipedal pig, pink skin, prominent snout and ears, slim well-groomed, well-fitted dark charcoal travel suit, white shirt, oxblood silk cravat (not a tie), no glasses, confident upright posture, middle-aged Polish law firm partner. Polish komiks illustration, clean ink-line outlines, flat warm earth-tone colors, PRL-era mood, pixel-art, full body, hands at sides. Palette: #1a1410, #f0c8c0, #1c2a40, #e8e4d8, #7a1f2a, #0d0a08",
     "size": {
-      "width": 144,
-      "height": 144
+      "width": 112,
+      "height": 112
     },
     "template_id": "mannequin",
     "directions": 8,
     "view": "low top-down",
-    "created_at": "2026-05-05T07:16:18.026517+00:00"
+    "created_at": "2026-05-10T20:31:57.39448+00:00"
   },
   "frames": {
     "rotations": {
@@ -26,5 +26,5 @@
     "animations": {}
   },
   "export_version": "2.0",
-  "export_date": "2026-05-05T07:20:07.052065"
+  "export_date": "2026-05-11T07:21:17.579973"
 }

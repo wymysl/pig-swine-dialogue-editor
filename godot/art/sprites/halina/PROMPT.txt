@@ -1,0 +1,11 @@
+Prompt: Elderly slim upright woman, short gray hair, beige cardigan, cream blouse, navy skirt, dignified stiff posture. Minimal synthetic line drawing, sparse flat shapes, Polish satirical illustration, institutional mood, pixel-art, adult proportions, full body, hands at sides.
+Negative: detailed, shaded, gradient, anime, chibi, cute, big head, decorative, fantasy, realistic, 3D, held objects, facial expressions, cane
+Pixellab Character ID: e1c8d847-98de-42d9-93e4-50a928e88363
+Pixellab Template: mannequin
+Pixellab View: low top-down
+Directions: 8
+Generation Size: 128×128 (downscale to 64×64 nearest-neighbor)
+Size: 64×64
+Palette: #9a9088, #d4b878, #e8e4d8, #1c2a40, #e6b08a, #0d0a08
+Last updated: 2026-05-11 — prompts rewritten for Świdziński-minimal direction (128→64 workflow). Pending regeneration.
+Notes: Ch1 baseline (upright, no cane). Ch4 reappearance variant (visibly diminished, walks slower, uses a cane) is a separate future generation — store in halina_ch4/ folder when generated. The cane in Ch4 must be a separately-layered Sprite2D at runtime, never baked into the character art (per held-objects rule). Folder of documents (her diegetic prop in dialogues) lives in portrait/cutscene art only, never in the walking sprite.

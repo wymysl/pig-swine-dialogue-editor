@@ -1,0 +1,186 @@
+[gd_resource type="SpriteFrames" format=3]
+
+[ext_resource type="Texture2D" path="res://art/sprites/murrow/murrow_idle_front.png" id="1_tex"]
+[ext_resource type="Texture2D" path="res://art/sprites/murrow/walk/front/murrow_walk_front_00.png" id="2_tex"]
+[ext_resource type="Texture2D" path="res://art/sprites/murrow/walk/front/murrow_walk_front_01.png" id="3_tex"]
+[ext_resource type="Texture2D" path="res://art/sprites/murrow/walk/front/murrow_walk_front_02.png" id="4_tex"]
+[ext_resource type="Texture2D" path="res://art/sprites/murrow/walk/front/murrow_walk_front_03.png" id="5_tex"]
+[ext_resource type="Texture2D" path="res://art/sprites/murrow/walk/front/murrow_walk_front_04.png" id="6_tex"]
+[ext_resource type="Texture2D" path="res://art/sprites/murrow/walk/front/murrow_walk_front_05.png" id="7_tex"]
+[ext_resource type="Texture2D" path="res://art/sprites/murrow/murrow_idle_back.png" id="8_tex"]
+[ext_resource type="Texture2D" path="res://art/sprites/murrow/murrow_idle_left.png" id="9_tex"]
+[ext_resource type="Texture2D" path="res://art/sprites/murrow/murrow_idle_right.png" id="10_tex"]
+[ext_resource type="Texture2D" path="res://art/sprites/murrow/murrow_idle_front_left.png" id="11_tex"]
+[ext_resource type="Texture2D" path="res://art/sprites/murrow/murrow_idle_front_right.png" id="12_tex"]
+[ext_resource type="Texture2D" path="res://art/sprites/murrow/murrow_idle_back_left.png" id="13_tex"]
+[ext_resource type="Texture2D" path="res://art/sprites/murrow/murrow_idle_back_right.png" id="14_tex"]
+
+[resource]
+animations = [{
+"frames": [],
+"loop": true,
+"name": &"default",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("8_tex")
+}],
+"loop": true,
+"name": &"idle_back",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("13_tex")
+}],
+"loop": true,
+"name": &"idle_back_left",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("14_tex")
+}],
+"loop": true,
+"name": &"idle_back_right",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("1_tex")
+}],
+"loop": true,
+"name": &"idle_front",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("11_tex")
+}],
+"loop": true,
+"name": &"idle_front_left",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("12_tex")
+}],
+"loop": true,
+"name": &"idle_front_right",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("9_tex")
+}],
+"loop": true,
+"name": &"idle_left",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("10_tex")
+}],
+"loop": true,
+"name": &"idle_right",
+"speed": 5.0
+}, {
+"frames": [],
+"loop": true,
+"name": &"run_back",
+"speed": 12.0
+}, {
+"frames": [],
+"loop": true,
+"name": &"run_back_left",
+"speed": 12.0
+}, {
+"frames": [],
+"loop": true,
+"name": &"run_back_right",
+"speed": 12.0
+}, {
+"frames": [],
+"loop": true,
+"name": &"run_front",
+"speed": 12.0
+}, {
+"frames": [],
+"loop": true,
+"name": &"run_front_left",
+"speed": 12.0
+}, {
+"frames": [],
+"loop": true,
+"name": &"run_front_right",
+"speed": 12.0
+}, {
+"frames": [],
+"loop": true,
+"name": &"run_left",
+"speed": 12.0
+}, {
+"frames": [],
+"loop": true,
+"name": &"run_right",
+"speed": 12.0
+}, {
+"frames": [],
+"loop": true,
+"name": &"walk_back",
+"speed": 8.0
+}, {
+"frames": [],
+"loop": true,
+"name": &"walk_back_left",
+"speed": 8.0
+}, {
+"frames": [],
+"loop": true,
+"name": &"walk_back_right",
+"speed": 8.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("2_tex")
+}, {
+"duration": 1.0,
+"texture": ExtResource("3_tex")
+}, {
+"duration": 1.0,
+"texture": ExtResource("4_tex")
+}, {
+"duration": 1.0,
+"texture": ExtResource("5_tex")
+}, {
+"duration": 1.0,
+"texture": ExtResource("6_tex")
+}, {
+"duration": 1.0,
+"texture": ExtResource("7_tex")
+}],
+"loop": true,
+"name": &"walk_front",
+"speed": 8.0
+}, {
+"frames": [],
+"loop": true,
+"name": &"walk_front_left",
+"speed": 8.0
+}, {
+"frames": [],
+"loop": true,
+"name": &"walk_front_right",
+"speed": 8.0
+}, {
+"frames": [],
+"loop": true,
+"name": &"walk_left",
+"speed": 8.0
+}, {
+"frames": [],
+"loop": true,
+"name": &"walk_right",
+"speed": 8.0
+}]

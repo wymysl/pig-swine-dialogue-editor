@@ -1,16 +1,16 @@
 {
   "character": {
-    "id": "c96b6c5a-0fa3-46e6-9bea-a472f42c8781",
-    "name": "Late-20s Polish human male junior lawyer (aplikant adwokacki) with theatrical flair, slim tall build, slightly-too-long JET-BLACK hair swept back (clearly black not dark-brown), CIRCULAR THIN WIRE-FRAME glasses (small round John-Lennon style, intellectual-aesthete register), expressive face with a performative knowing grin, flamboyant deep eggplant velvet blazer worn over a cream dress shirt, mismatched mustard yellow tie (deliberate eccentric pairing), dark trousers, expressive posture with one hand slightly raised mid-gesture, dressed more flamboyantly than is appropriate for an apprentice, full body, 16-bit JRPG, pallette: #1a1410, #e6b08a, #5a2a4a, #e8e4d8, #c8a868, #0d0a08",
-    "prompt": "Late-20s Polish human male junior lawyer (aplikant adwokacki) with theatrical flair, slim tall build, slightly-too-long JET-BLACK hair swept back (clearly black not dark-brown), CIRCULAR THIN WIRE-FRAME glasses (small round John-Lennon style, intellectual-aesthete register), expressive face with a performative knowing grin, flamboyant deep eggplant velvet blazer worn over a cream dress shirt, mismatched mustard yellow tie (deliberate eccentric pairing), dark trousers, expressive posture with one hand slightly raised mid-gesture, dressed more flamboyantly than is appropriate for an apprentice, full body, 16-bit JRPG, pallette: #1a1410, #e6b08a, #5a2a4a, #e8e4d8, #c8a868, #0d0a08",
+    "id": "c0f5ccd4-a6fc-49c4-8bc4-f6a7f320b5e9",
+    "name": "whimsy",
+    "prompt": "Late-20s Polish male junior lawyer, slim tall, slightly-too-long jet-black hair swept back, small round wire-frame glasses, eggplant velvet blazer over cream shirt, mismatched mustard yellow tie, dark trousers. Polish komiks illustration, clean ink-line outlines, flat warm earth-tone colors, PRL-era mood, 128\u00d7128 pixel-art, full body, hands at sides. Palette: #1a1410, #e6b08a, #5a2a4a, #e8e4d8, #c8a868, #0d0a08",
     "size": {
-      "width": 92,
-      "height": 92
+      "width": 112,
+      "height": 112
     },
     "template_id": "mannequin",
     "directions": 8,
     "view": "low top-down",
-    "created_at": "2026-05-05T08:16:35.889337+00:00"
+    "created_at": "2026-05-11T05:17:25.536818+00:00"
   },
   "frames": {
     "rotations": {
@@ -26,5 +26,5 @@
     "animations": {}
   },
   "export_version": "2.0",
-  "export_date": "2026-05-05T08:18:55.717221"
+  "export_date": "2026-05-11T07:21:25.720031"
 }

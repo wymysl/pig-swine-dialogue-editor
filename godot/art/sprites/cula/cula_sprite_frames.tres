@@ -1,61 +1,109 @@
 [gd_resource type="SpriteFrames" format=3]
 
-[ext_resource type="Texture2D" path="res://art/sprites/cula/cula_idle_back.png" id="1_ehtkk"]
-[ext_resource type="Texture2D" path="res://art/sprites/cula/cula_idle_back_left.png" id="2_2dypm"]
-[ext_resource type="Texture2D" path="res://art/sprites/cula/cula_idle_back_right.png" id="3_7t5t1"]
-[ext_resource type="Texture2D" path="res://art/sprites/cula/cula_idle_front.png" id="4_gpf1n"]
-[ext_resource type="Texture2D" path="res://art/sprites/cula/cula_idle_front_left.png" id="5_qsu7x"]
-[ext_resource type="Texture2D" path="res://art/sprites/cula/cula_idle_front_right.png" id="6_gxbd3"]
-[ext_resource type="Texture2D" path="res://art/sprites/cula/cula_idle_left.png" id="7_76nbm"]
-[ext_resource type="Texture2D" path="res://art/sprites/cula/cula_idle_right.png" id="8_2yn8r"]
-[ext_resource type="Texture2D" path="res://art/sprites/cula/walk/back/cula_walk_back_00.png" id="9_33iev"]
-[ext_resource type="Texture2D" path="res://art/sprites/cula/walk/back/cula_walk_back_01.png" id="10_sqcxm"]
-[ext_resource type="Texture2D" path="res://art/sprites/cula/walk/back/cula_walk_back_02.png" id="11_ty8lo"]
-[ext_resource type="Texture2D" path="res://art/sprites/cula/walk/back/cula_walk_back_03.png" id="12_4dijp"]
-[ext_resource type="Texture2D" path="res://art/sprites/cula/walk/back/cula_walk_back_04.png" id="13_iev8p"]
-[ext_resource type="Texture2D" path="res://art/sprites/cula/walk/back/cula_walk_back_05.png" id="14_qpn4v"]
-[ext_resource type="Texture2D" path="res://art/sprites/cula/walk/back_left/cula_walk_back_left_00.png" id="15_jn5nt"]
-[ext_resource type="Texture2D" path="res://art/sprites/cula/walk/back_left/cula_walk_back_left_01.png" id="16_bm5v6"]
-[ext_resource type="Texture2D" path="res://art/sprites/cula/walk/back_left/cula_walk_back_left_02.png" id="17_3ea6p"]
-[ext_resource type="Texture2D" path="res://art/sprites/cula/walk/back_left/cula_walk_back_left_03.png" id="18_gsy3x"]
-[ext_resource type="Texture2D" path="res://art/sprites/cula/walk/back_left/cula_walk_back_left_04.png" id="19_up5m7"]
-[ext_resource type="Texture2D" path="res://art/sprites/cula/walk/back_left/cula_walk_back_left_05.png" id="20_o2k65"]
-[ext_resource type="Texture2D" path="res://art/sprites/cula/walk/back_right/cula_walk_back_right_00.png" id="21_l53xy"]
-[ext_resource type="Texture2D" path="res://art/sprites/cula/walk/back_right/cula_walk_back_right_01.png" id="22_mrpij"]
-[ext_resource type="Texture2D" path="res://art/sprites/cula/walk/back_right/cula_walk_back_right_02.png" id="23_bty1g"]
-[ext_resource type="Texture2D" path="res://art/sprites/cula/walk/back_right/cula_walk_back_right_03.png" id="24_og1xt"]
-[ext_resource type="Texture2D" path="res://art/sprites/cula/walk/back_right/cula_walk_back_right_04.png" id="25_k12wa"]
-[ext_resource type="Texture2D" path="res://art/sprites/cula/walk/back_right/cula_walk_back_right_05.png" id="26_jn2so"]
-[ext_resource type="Texture2D" path="res://art/sprites/cula/walk/front/cula_walk_front_00.png" id="27_7o71v"]
-[ext_resource type="Texture2D" path="res://art/sprites/cula/walk/front/cula_walk_front_01.png" id="28_mruob"]
-[ext_resource type="Texture2D" path="res://art/sprites/cula/walk/front/cula_walk_front_02.png" id="29_jbmvj"]
-[ext_resource type="Texture2D" path="res://art/sprites/cula/walk/front/cula_walk_front_03.png" id="30_5pj63"]
-[ext_resource type="Texture2D" path="res://art/sprites/cula/walk/front/cula_walk_front_04.png" id="31_pfcaj"]
-[ext_resource type="Texture2D" path="res://art/sprites/cula/walk/front/cula_walk_front_05.png" id="32_ngswb"]
-[ext_resource type="Texture2D" path="res://art/sprites/cula/walk/front_left/cula_walk_front_left_00.png" id="33_7uibr"]
-[ext_resource type="Texture2D" path="res://art/sprites/cula/walk/front_left/cula_walk_front_left_01.png" id="34_vaxde"]
-[ext_resource type="Texture2D" path="res://art/sprites/cula/walk/front_left/cula_walk_front_left_02.png" id="35_a3rxa"]
-[ext_resource type="Texture2D" path="res://art/sprites/cula/walk/front_left/cula_walk_front_left_03.png" id="36_seiy1"]
-[ext_resource type="Texture2D" path="res://art/sprites/cula/walk/front_left/cula_walk_front_left_04.png" id="37_bq5er"]
-[ext_resource type="Texture2D" path="res://art/sprites/cula/walk/front_left/cula_walk_front_left_05.png" id="38_iwdq2"]
-[ext_resource type="Texture2D" path="res://art/sprites/cula/walk/front_right/cula_walk_front_right_00.png" id="39_dqnnd"]
-[ext_resource type="Texture2D" path="res://art/sprites/cula/walk/front_right/cula_walk_front_right_01.png" id="40_o1sbv"]
-[ext_resource type="Texture2D" path="res://art/sprites/cula/walk/front_right/cula_walk_front_right_02.png" id="41_i6nf8"]
-[ext_resource type="Texture2D" path="res://art/sprites/cula/walk/front_right/cula_walk_front_right_03.png" id="42_wdlmg"]
-[ext_resource type="Texture2D" path="res://art/sprites/cula/walk/front_right/cula_walk_front_right_04.png" id="43_xjyty"]
-[ext_resource type="Texture2D" path="res://art/sprites/cula/walk/front_right/cula_walk_front_right_05.png" id="44_t6yex"]
-[ext_resource type="Texture2D" path="res://art/sprites/cula/walk/left/cula_walk_left_00.png" id="45_lnpnu"]
-[ext_resource type="Texture2D" path="res://art/sprites/cula/walk/left/cula_walk_left_01.png" id="46_kl3xm"]
-[ext_resource type="Texture2D" path="res://art/sprites/cula/walk/left/cula_walk_left_02.png" id="47_y0d3e"]
-[ext_resource type="Texture2D" path="res://art/sprites/cula/walk/left/cula_walk_left_03.png" id="48_mqgm1"]
-[ext_resource type="Texture2D" path="res://art/sprites/cula/walk/left/cula_walk_left_04.png" id="49_tkgoc"]
-[ext_resource type="Texture2D" path="res://art/sprites/cula/walk/left/cula_walk_left_05.png" id="50_tqvwo"]
-[ext_resource type="Texture2D" path="res://art/sprites/cula/walk/right/cula_walk_right_00.png" id="51_28g21"]
-[ext_resource type="Texture2D" path="res://art/sprites/cula/walk/right/cula_walk_right_01.png" id="52_o5fi3"]
-[ext_resource type="Texture2D" path="res://art/sprites/cula/walk/right/cula_walk_right_02.png" id="53_yj0ay"]
-[ext_resource type="Texture2D" path="res://art/sprites/cula/walk/right/cula_walk_right_03.png" id="54_wjtx3"]
-[ext_resource type="Texture2D" path="res://art/sprites/cula/walk/right/cula_walk_right_04.png" id="55_x2560"]
-[ext_resource type="Texture2D" path="res://art/sprites/cula/walk/right/cula_walk_right_05.png" id="56_ue5qu"]
+[ext_resource type="Texture2D" path="res://art/sprites/cula/cula_idle_back.png" id="1_cula128"]
+[ext_resource type="Texture2D" path="res://art/sprites/cula/cula_idle_back_left.png" id="2_cula128"]
+[ext_resource type="Texture2D" path="res://art/sprites/cula/cula_idle_back_right.png" id="3_cula128"]
+[ext_resource type="Texture2D" path="res://art/sprites/cula/cula_idle_front.png" id="4_cula128"]
+[ext_resource type="Texture2D" path="res://art/sprites/cula/cula_idle_front_left.png" id="5_cula128"]
+[ext_resource type="Texture2D" path="res://art/sprites/cula/cula_idle_front_right.png" id="6_cula128"]
+[ext_resource type="Texture2D" path="res://art/sprites/cula/cula_idle_left.png" id="7_cula128"]
+[ext_resource type="Texture2D" path="res://art/sprites/cula/cula_idle_right.png" id="8_cula128"]
+[ext_resource type="Texture2D" path="res://art/sprites/cula/walk/back/cula_walk_back_00.png" id="9_cula128"]
+[ext_resource type="Texture2D" path="res://art/sprites/cula/walk/back/cula_walk_back_01.png" id="10_cula128"]
+[ext_resource type="Texture2D" path="res://art/sprites/cula/walk/back/cula_walk_back_02.png" id="11_cula128"]
+[ext_resource type="Texture2D" path="res://art/sprites/cula/walk/back/cula_walk_back_03.png" id="12_cula128"]
+[ext_resource type="Texture2D" path="res://art/sprites/cula/walk/back/cula_walk_back_04.png" id="13_cula128"]
+[ext_resource type="Texture2D" path="res://art/sprites/cula/walk/back/cula_walk_back_05.png" id="14_cula128"]
+[ext_resource type="Texture2D" path="res://art/sprites/cula/walk/back_left/cula_walk_back_left_00.png" id="15_cula128"]
+[ext_resource type="Texture2D" path="res://art/sprites/cula/walk/back_left/cula_walk_back_left_01.png" id="16_cula128"]
+[ext_resource type="Texture2D" path="res://art/sprites/cula/walk/back_left/cula_walk_back_left_02.png" id="17_cula128"]
+[ext_resource type="Texture2D" path="res://art/sprites/cula/walk/back_left/cula_walk_back_left_03.png" id="18_cula128"]
+[ext_resource type="Texture2D" path="res://art/sprites/cula/walk/back_left/cula_walk_back_left_04.png" id="19_cula128"]
+[ext_resource type="Texture2D" path="res://art/sprites/cula/walk/back_left/cula_walk_back_left_05.png" id="20_cula128"]
+[ext_resource type="Texture2D" path="res://art/sprites/cula/walk/back_right/cula_walk_back_right_00.png" id="21_cula128"]
+[ext_resource type="Texture2D" path="res://art/sprites/cula/walk/back_right/cula_walk_back_right_01.png" id="22_cula128"]
+[ext_resource type="Texture2D" path="res://art/sprites/cula/walk/back_right/cula_walk_back_right_02.png" id="23_cula128"]
+[ext_resource type="Texture2D" path="res://art/sprites/cula/walk/back_right/cula_walk_back_right_03.png" id="24_cula128"]
+[ext_resource type="Texture2D" path="res://art/sprites/cula/walk/back_right/cula_walk_back_right_04.png" id="25_cula128"]
+[ext_resource type="Texture2D" path="res://art/sprites/cula/walk/back_right/cula_walk_back_right_05.png" id="26_cula128"]
+[ext_resource type="Texture2D" path="res://art/sprites/cula/walk/front/cula_walk_front_00.png" id="27_cula128"]
+[ext_resource type="Texture2D" path="res://art/sprites/cula/walk/front/cula_walk_front_01.png" id="28_cula128"]
+[ext_resource type="Texture2D" path="res://art/sprites/cula/walk/front/cula_walk_front_02.png" id="29_cula128"]
+[ext_resource type="Texture2D" path="res://art/sprites/cula/walk/front/cula_walk_front_03.png" id="30_cula128"]
+[ext_resource type="Texture2D" path="res://art/sprites/cula/walk/front/cula_walk_front_04.png" id="31_cula128"]
+[ext_resource type="Texture2D" path="res://art/sprites/cula/walk/front/cula_walk_front_05.png" id="32_cula128"]
+[ext_resource type="Texture2D" path="res://art/sprites/cula/walk/front_left/cula_walk_front_left_00.png" id="33_cula128"]
+[ext_resource type="Texture2D" path="res://art/sprites/cula/walk/front_left/cula_walk_front_left_01.png" id="34_cula128"]
+[ext_resource type="Texture2D" path="res://art/sprites/cula/walk/front_left/cula_walk_front_left_02.png" id="35_cula128"]
+[ext_resource type="Texture2D" path="res://art/sprites/cula/walk/front_left/cula_walk_front_left_03.png" id="36_cula128"]
+[ext_resource type="Texture2D" path="res://art/sprites/cula/walk/front_left/cula_walk_front_left_04.png" id="37_cula128"]
+[ext_resource type="Texture2D" path="res://art/sprites/cula/walk/front_left/cula_walk_front_left_05.png" id="38_cula128"]
+[ext_resource type="Texture2D" path="res://art/sprites/cula/walk/front_right/cula_walk_front_right_00.png" id="39_cula128"]
+[ext_resource type="Texture2D" path="res://art/sprites/cula/walk/front_right/cula_walk_front_right_01.png" id="40_cula128"]
+[ext_resource type="Texture2D" path="res://art/sprites/cula/walk/front_right/cula_walk_front_right_02.png" id="41_cula128"]
+[ext_resource type="Texture2D" path="res://art/sprites/cula/walk/front_right/cula_walk_front_right_03.png" id="42_cula128"]
+[ext_resource type="Texture2D" path="res://art/sprites/cula/walk/front_right/cula_walk_front_right_04.png" id="43_cula128"]
+[ext_resource type="Texture2D" path="res://art/sprites/cula/walk/front_right/cula_walk_front_right_05.png" id="44_cula128"]
+[ext_resource type="Texture2D" path="res://art/sprites/cula/walk/left/cula_walk_left_00.png" id="45_cula128"]
+[ext_resource type="Texture2D" path="res://art/sprites/cula/walk/left/cula_walk_left_01.png" id="46_cula128"]
+[ext_resource type="Texture2D" path="res://art/sprites/cula/walk/left/cula_walk_left_02.png" id="47_cula128"]
+[ext_resource type="Texture2D" path="res://art/sprites/cula/walk/left/cula_walk_left_03.png" id="48_cula128"]
+[ext_resource type="Texture2D" path="res://art/sprites/cula/walk/left/cula_walk_left_04.png" id="49_cula128"]
+[ext_resource type="Texture2D" path="res://art/sprites/cula/walk/left/cula_walk_left_05.png" id="50_cula128"]
+[ext_resource type="Texture2D" path="res://art/sprites/cula/walk/right/cula_walk_right_00.png" id="51_cula128"]
+[ext_resource type="Texture2D" path="res://art/sprites/cula/walk/right/cula_walk_right_01.png" id="52_cula128"]
+[ext_resource type="Texture2D" path="res://art/sprites/cula/walk/right/cula_walk_right_02.png" id="53_cula128"]
+[ext_resource type="Texture2D" path="res://art/sprites/cula/walk/right/cula_walk_right_03.png" id="54_cula128"]
+[ext_resource type="Texture2D" path="res://art/sprites/cula/walk/right/cula_walk_right_04.png" id="55_cula128"]
+[ext_resource type="Texture2D" path="res://art/sprites/cula/walk/right/cula_walk_right_05.png" id="56_cula128"]
+[ext_resource type="Texture2D" path="res://art/sprites/cula/run/back/cula_run_back_00.png" id="57_cula128"]
+[ext_resource type="Texture2D" path="res://art/sprites/cula/run/back/cula_run_back_01.png" id="58_cula128"]
+[ext_resource type="Texture2D" path="res://art/sprites/cula/run/back/cula_run_back_02.png" id="59_cula128"]
+[ext_resource type="Texture2D" path="res://art/sprites/cula/run/back/cula_run_back_03.png" id="60_cula128"]
+[ext_resource type="Texture2D" path="res://art/sprites/cula/run/back/cula_run_back_04.png" id="61_cula128"]
+[ext_resource type="Texture2D" path="res://art/sprites/cula/run/back/cula_run_back_05.png" id="62_cula128"]
+[ext_resource type="Texture2D" path="res://art/sprites/cula/run/back_left/cula_run_back_left_00.png" id="63_cula128"]
+[ext_resource type="Texture2D" path="res://art/sprites/cula/run/back_left/cula_run_back_left_01.png" id="64_cula128"]
+[ext_resource type="Texture2D" path="res://art/sprites/cula/run/back_left/cula_run_back_left_02.png" id="65_cula128"]
+[ext_resource type="Texture2D" path="res://art/sprites/cula/run/back_left/cula_run_back_left_03.png" id="66_cula128"]
+[ext_resource type="Texture2D" path="res://art/sprites/cula/run/back_left/cula_run_back_left_04.png" id="67_cula128"]
+[ext_resource type="Texture2D" path="res://art/sprites/cula/run/back_left/cula_run_back_left_05.png" id="68_cula128"]
+[ext_resource type="Texture2D" path="res://art/sprites/cula/run/back_right/cula_run_back_right_00.png" id="69_cula128"]
+[ext_resource type="Texture2D" path="res://art/sprites/cula/run/back_right/cula_run_back_right_01.png" id="70_cula128"]
+[ext_resource type="Texture2D" path="res://art/sprites/cula/run/back_right/cula_run_back_right_02.png" id="71_cula128"]
+[ext_resource type="Texture2D" path="res://art/sprites/cula/run/back_right/cula_run_back_right_03.png" id="72_cula128"]
+[ext_resource type="Texture2D" path="res://art/sprites/cula/run/back_right/cula_run_back_right_04.png" id="73_cula128"]
+[ext_resource type="Texture2D" path="res://art/sprites/cula/run/back_right/cula_run_back_right_05.png" id="74_cula128"]
+[ext_resource type="Texture2D" path="res://art/sprites/cula/run/front/cula_run_front_00.png" id="75_cula128"]
+[ext_resource type="Texture2D" path="res://art/sprites/cula/run/front/cula_run_front_01.png" id="76_cula128"]
+[ext_resource type="Texture2D" path="res://art/sprites/cula/run/front/cula_run_front_02.png" id="77_cula128"]
+[ext_resource type="Texture2D" path="res://art/sprites/cula/run/front/cula_run_front_03.png" id="78_cula128"]
+[ext_resource type="Texture2D" path="res://art/sprites/cula/run/front/cula_run_front_04.png" id="79_cula128"]
+[ext_resource type="Texture2D" path="res://art/sprites/cula/run/front/cula_run_front_05.png" id="80_cula128"]
+[ext_resource type="Texture2D" path="res://art/sprites/cula/run/front_left/cula_run_front_left_00.png" id="81_cula128"]
+[ext_resource type="Texture2D" path="res://art/sprites/cula/run/front_left/cula_run_front_left_01.png" id="82_cula128"]
+[ext_resource type="Texture2D" path="res://art/sprites/cula/run/front_left/cula_run_front_left_02.png" id="83_cula128"]
+[ext_resource type="Texture2D" path="res://art/sprites/cula/run/front_left/cula_run_front_left_03.png" id="84_cula128"]
+[ext_resource type="Texture2D" path="res://art/sprites/cula/run/front_left/cula_run_front_left_04.png" id="85_cula128"]
+[ext_resource type="Texture2D" path="res://art/sprites/cula/run/front_left/cula_run_front_left_05.png" id="86_cula128"]
+[ext_resource type="Texture2D" path="res://art/sprites/cula/run/front_right/cula_run_front_right_00.png" id="87_cula128"]
+[ext_resource type="Texture2D" path="res://art/sprites/cula/run/front_right/cula_run_front_right_01.png" id="88_cula128"]
+[ext_resource type="Texture2D" path="res://art/sprites/cula/run/front_right/cula_run_front_right_02.png" id="89_cula128"]
+[ext_resource type="Texture2D" path="res://art/sprites/cula/run/front_right/cula_run_front_right_03.png" id="90_cula128"]
+[ext_resource type="Texture2D" path="res://art/sprites/cula/run/front_right/cula_run_front_right_04.png" id="91_cula128"]
+[ext_resource type="Texture2D" path="res://art/sprites/cula/run/front_right/cula_run_front_right_05.png" id="92_cula128"]
+[ext_resource type="Texture2D" path="res://art/sprites/cula/run/left/cula_run_left_00.png" id="93_cula128"]
+[ext_resource type="Texture2D" path="res://art/sprites/cula/run/left/cula_run_left_01.png" id="94_cula128"]
+[ext_resource type="Texture2D" path="res://art/sprites/cula/run/left/cula_run_left_02.png" id="95_cula128"]
+[ext_resource type="Texture2D" path="res://art/sprites/cula/run/left/cula_run_left_03.png" id="96_cula128"]
+[ext_resource type="Texture2D" path="res://art/sprites/cula/run/left/cula_run_left_04.png" id="97_cula128"]
+[ext_resource type="Texture2D" path="res://art/sprites/cula/run/left/cula_run_left_05.png" id="98_cula128"]
+[ext_resource type="Texture2D" path="res://art/sprites/cula/run/right/cula_run_right_00.png" id="99_cula128"]
+[ext_resource type="Texture2D" path="res://art/sprites/cula/run/right/cula_run_right_01.png" id="100_cula128"]
+[ext_resource type="Texture2D" path="res://art/sprites/cula/run/right/cula_run_right_02.png" id="101_cula128"]
+[ext_resource type="Texture2D" path="res://art/sprites/cula/run/right/cula_run_right_03.png" id="102_cula128"]
+[ext_resource type="Texture2D" path="res://art/sprites/cula/run/right/cula_run_right_04.png" id="103_cula128"]
+[ext_resource type="Texture2D" path="res://art/sprites/cula/run/right/cula_run_right_05.png" id="104_cula128"]
 
 [resource]
 animations = [{
@@ -66,86 +114,86 @@ animations = [{
 }, {
 "frames": [{
 "duration": 1.0,
-"texture": ExtResource("1_ehtkk")
+"texture": ExtResource("1_cula128")
 }],
-"loop": false,
+"loop": true,
 "name": &"idle_back",
 "speed": 5.0
 }, {
 "frames": [{
 "duration": 1.0,
-"texture": ExtResource("2_2dypm")
+"texture": ExtResource("2_cula128")
 }],
-"loop": false,
+"loop": true,
 "name": &"idle_back_left",
 "speed": 5.0
 }, {
 "frames": [{
 "duration": 1.0,
-"texture": ExtResource("3_7t5t1")
+"texture": ExtResource("3_cula128")
 }],
-"loop": false,
+"loop": true,
 "name": &"idle_back_right",
 "speed": 5.0
 }, {
 "frames": [{
 "duration": 1.0,
-"texture": ExtResource("4_gpf1n")
+"texture": ExtResource("4_cula128")
 }],
-"loop": false,
+"loop": true,
 "name": &"idle_front",
 "speed": 5.0
 }, {
 "frames": [{
 "duration": 1.0,
-"texture": ExtResource("5_qsu7x")
+"texture": ExtResource("5_cula128")
 }],
-"loop": false,
+"loop": true,
 "name": &"idle_front_left",
 "speed": 5.0
 }, {
 "frames": [{
 "duration": 1.0,
-"texture": ExtResource("6_gxbd3")
+"texture": ExtResource("6_cula128")
 }],
-"loop": false,
+"loop": true,
 "name": &"idle_front_right",
 "speed": 5.0
 }, {
 "frames": [{
 "duration": 1.0,
-"texture": ExtResource("7_76nbm")
+"texture": ExtResource("7_cula128")
 }],
-"loop": false,
+"loop": true,
 "name": &"idle_left",
 "speed": 5.0
 }, {
 "frames": [{
 "duration": 1.0,
-"texture": ExtResource("8_2yn8r")
+"texture": ExtResource("8_cula128")
 }],
-"loop": false,
+"loop": true,
 "name": &"idle_right",
 "speed": 5.0
 }, {
 "frames": [{
 "duration": 1.0,
-"texture": ExtResource("9_33iev")
+"texture": ExtResource("9_cula128")
 }, {
 "duration": 1.0,
-"texture": ExtResource("10_sqcxm")
+"texture": ExtResource("10_cula128")
 }, {
 "duration": 1.0,
-"texture": ExtResource("11_ty8lo")
+"texture": ExtResource("11_cula128")
 }, {
 "duration": 1.0,
-"texture": ExtResource("12_4dijp")
+"texture": ExtResource("12_cula128")
 }, {
 "duration": 1.0,
-"texture": ExtResource("13_iev8p")
+"texture": ExtResource("13_cula128")
 }, {
 "duration": 1.0,
-"texture": ExtResource("14_qpn4v")
+"texture": ExtResource("14_cula128")
 }],
 "loop": true,
 "name": &"walk_back",
@@ -153,22 +201,22 @@ animations = [{
 }, {
 "frames": [{
 "duration": 1.0,
-"texture": ExtResource("15_jn5nt")
+"texture": ExtResource("15_cula128")
 }, {
 "duration": 1.0,
-"texture": ExtResource("16_bm5v6")
+"texture": ExtResource("16_cula128")
 }, {
 "duration": 1.0,
-"texture": ExtResource("17_3ea6p")
+"texture": ExtResource("17_cula128")
 }, {
 "duration": 1.0,
-"texture": ExtResource("18_gsy3x")
+"texture": ExtResource("18_cula128")
 }, {
 "duration": 1.0,
-"texture": ExtResource("19_up5m7")
+"texture": ExtResource("19_cula128")
 }, {
 "duration": 1.0,
-"texture": ExtResource("20_o2k65")
+"texture": ExtResource("20_cula128")
 }],
 "loop": true,
 "name": &"walk_back_left",
@@ -176,22 +224,22 @@ animations = [{
 }, {
 "frames": [{
 "duration": 1.0,
-"texture": ExtResource("21_l53xy")
+"texture": ExtResource("21_cula128")
 }, {
 "duration": 1.0,
-"texture": ExtResource("22_mrpij")
+"texture": ExtResource("22_cula128")
 }, {
 "duration": 1.0,
-"texture": ExtResource("23_bty1g")
+"texture": ExtResource("23_cula128")
 }, {
 "duration": 1.0,
-"texture": ExtResource("24_og1xt")
+"texture": ExtResource("24_cula128")
 }, {
 "duration": 1.0,
-"texture": ExtResource("25_k12wa")
+"texture": ExtResource("25_cula128")
 }, {
 "duration": 1.0,
-"texture": ExtResource("26_jn2so")
+"texture": ExtResource("26_cula128")
 }],
 "loop": true,
 "name": &"walk_back_right",
@@ -199,22 +247,22 @@ animations = [{
 }, {
 "frames": [{
 "duration": 1.0,
-"texture": ExtResource("27_7o71v")
+"texture": ExtResource("27_cula128")
 }, {
 "duration": 1.0,
-"texture": ExtResource("28_mruob")
+"texture": ExtResource("28_cula128")
 }, {
 "duration": 1.0,
-"texture": ExtResource("29_jbmvj")
+"texture": ExtResource("29_cula128")
 }, {
 "duration": 1.0,
-"texture": ExtResource("30_5pj63")
+"texture": ExtResource("30_cula128")
 }, {
 "duration": 1.0,
-"texture": ExtResource("31_pfcaj")
+"texture": ExtResource("31_cula128")
 }, {
 "duration": 1.0,
-"texture": ExtResource("32_ngswb")
+"texture": ExtResource("32_cula128")
 }],
 "loop": true,
 "name": &"walk_front",
@@ -222,22 +270,22 @@ animations = [{
 }, {
 "frames": [{
 "duration": 1.0,
-"texture": ExtResource("33_7uibr")
+"texture": ExtResource("33_cula128")
 }, {
 "duration": 1.0,
-"texture": ExtResource("34_vaxde")
+"texture": ExtResource("34_cula128")
 }, {
 "duration": 1.0,
-"texture": ExtResource("35_a3rxa")
+"texture": ExtResource("35_cula128")
 }, {
 "duration": 1.0,
-"texture": ExtResource("36_seiy1")
+"texture": ExtResource("36_cula128")
 }, {
 "duration": 1.0,
-"texture": ExtResource("37_bq5er")
+"texture": ExtResource("37_cula128")
 }, {
 "duration": 1.0,
-"texture": ExtResource("38_iwdq2")
+"texture": ExtResource("38_cula128")
 }],
 "loop": true,
 "name": &"walk_front_left",
@@ -245,22 +293,22 @@ animations = [{
 }, {
 "frames": [{
 "duration": 1.0,
-"texture": ExtResource("39_dqnnd")
+"texture": ExtResource("39_cula128")
 }, {
 "duration": 1.0,
-"texture": ExtResource("40_o1sbv")
+"texture": ExtResource("40_cula128")
 }, {
 "duration": 1.0,
-"texture": ExtResource("41_i6nf8")
+"texture": ExtResource("41_cula128")
 }, {
 "duration": 1.0,
-"texture": ExtResource("42_wdlmg")
+"texture": ExtResource("42_cula128")
 }, {
 "duration": 1.0,
-"texture": ExtResource("43_xjyty")
+"texture": ExtResource("43_cula128")
 }, {
 "duration": 1.0,
-"texture": ExtResource("44_t6yex")
+"texture": ExtResource("44_cula128")
 }],
 "loop": true,
 "name": &"walk_front_right",
@@ -268,22 +316,22 @@ animations = [{
 }, {
 "frames": [{
 "duration": 1.0,
-"texture": ExtResource("45_lnpnu")
+"texture": ExtResource("45_cula128")
 }, {
 "duration": 1.0,
-"texture": ExtResource("46_kl3xm")
+"texture": ExtResource("46_cula128")
 }, {
 "duration": 1.0,
-"texture": ExtResource("47_y0d3e")
+"texture": ExtResource("47_cula128")
 }, {
 "duration": 1.0,
-"texture": ExtResource("48_mqgm1")
+"texture": ExtResource("48_cula128")
 }, {
 "duration": 1.0,
-"texture": ExtResource("49_tkgoc")
+"texture": ExtResource("49_cula128")
 }, {
 "duration": 1.0,
-"texture": ExtResource("50_tqvwo")
+"texture": ExtResource("50_cula128")
 }],
 "loop": true,
 "name": &"walk_left",
@@ -291,24 +339,208 @@ animations = [{
 }, {
 "frames": [{
 "duration": 1.0,
-"texture": ExtResource("51_28g21")
+"texture": ExtResource("51_cula128")
 }, {
 "duration": 1.0,
-"texture": ExtResource("52_o5fi3")
+"texture": ExtResource("52_cula128")
 }, {
 "duration": 1.0,
-"texture": ExtResource("53_yj0ay")
+"texture": ExtResource("53_cula128")
 }, {
 "duration": 1.0,
-"texture": ExtResource("54_wjtx3")
+"texture": ExtResource("54_cula128")
 }, {
 "duration": 1.0,
-"texture": ExtResource("55_x2560")
+"texture": ExtResource("55_cula128")
 }, {
 "duration": 1.0,
-"texture": ExtResource("56_ue5qu")
+"texture": ExtResource("56_cula128")
 }],
 "loop": true,
 "name": &"walk_right",
 "speed": 8.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("57_cula128")
+}, {
+"duration": 1.0,
+"texture": ExtResource("58_cula128")
+}, {
+"duration": 1.0,
+"texture": ExtResource("59_cula128")
+}, {
+"duration": 1.0,
+"texture": ExtResource("60_cula128")
+}, {
+"duration": 1.0,
+"texture": ExtResource("61_cula128")
+}, {
+"duration": 1.0,
+"texture": ExtResource("62_cula128")
+}],
+"loop": true,
+"name": &"run_back",
+"speed": 12.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("63_cula128")
+}, {
+"duration": 1.0,
+"texture": ExtResource("64_cula128")
+}, {
+"duration": 1.0,
+"texture": ExtResource("65_cula128")
+}, {
+"duration": 1.0,
+"texture": ExtResource("66_cula128")
+}, {
+"duration": 1.0,
+"texture": ExtResource("67_cula128")
+}, {
+"duration": 1.0,
+"texture": ExtResource("68_cula128")
+}],
+"loop": true,
+"name": &"run_back_left",
+"speed": 12.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("69_cula128")
+}, {
+"duration": 1.0,
+"texture": ExtResource("70_cula128")
+}, {
+"duration": 1.0,
+"texture": ExtResource("71_cula128")
+}, {
+"duration": 1.0,
+"texture": ExtResource("72_cula128")
+}, {
+"duration": 1.0,
+"texture": ExtResource("73_cula128")
+}, {
+"duration": 1.0,
+"texture": ExtResource("74_cula128")
+}],
+"loop": true,
+"name": &"run_back_right",
+"speed": 12.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("75_cula128")
+}, {
+"duration": 1.0,
+"texture": ExtResource("76_cula128")
+}, {
+"duration": 1.0,
+"texture": ExtResource("77_cula128")
+}, {
+"duration": 1.0,
+"texture": ExtResource("78_cula128")
+}, {
+"duration": 1.0,
+"texture": ExtResource("79_cula128")
+}, {
+"duration": 1.0,
+"texture": ExtResource("80_cula128")
+}],
+"loop": true,
+"name": &"run_front",
+"speed": 12.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("81_cula128")
+}, {
+"duration": 1.0,
+"texture": ExtResource("82_cula128")
+}, {
+"duration": 1.0,
+"texture": ExtResource("83_cula128")
+}, {
+"duration": 1.0,
+"texture": ExtResource("84_cula128")
+}, {
+"duration": 1.0,
+"texture": ExtResource("85_cula128")
+}, {
+"duration": 1.0,
+"texture": ExtResource("86_cula128")
+}],
+"loop": true,
+"name": &"run_front_left",
+"speed": 12.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("87_cula128")
+}, {
+"duration": 1.0,
+"texture": ExtResource("88_cula128")
+}, {
+"duration": 1.0,
+"texture": ExtResource("89_cula128")
+}, {
+"duration": 1.0,
+"texture": ExtResource("90_cula128")
+}, {
+"duration": 1.0,
+"texture": ExtResource("91_cula128")
+}, {
+"duration": 1.0,
+"texture": ExtResource("92_cula128")
+}],
+"loop": true,
+"name": &"run_front_right",
+"speed": 12.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("93_cula128")
+}, {
+"duration": 1.0,
+"texture": ExtResource("94_cula128")
+}, {
+"duration": 1.0,
+"texture": ExtResource("95_cula128")
+}, {
+"duration": 1.0,
+"texture": ExtResource("96_cula128")
+}, {
+"duration": 1.0,
+"texture": ExtResource("97_cula128")
+}, {
+"duration": 1.0,
+"texture": ExtResource("98_cula128")
+}],
+"loop": true,
+"name": &"run_left",
+"speed": 12.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("99_cula128")
+}, {
+"duration": 1.0,
+"texture": ExtResource("100_cula128")
+}, {
+"duration": 1.0,
+"texture": ExtResource("101_cula128")
+}, {
+"duration": 1.0,
+"texture": ExtResource("102_cula128")
+}, {
+"duration": 1.0,
+"texture": ExtResource("103_cula128")
+}, {
+"duration": 1.0,
+"texture": ExtResource("104_cula128")
+}],
+"loop": true,
+"name": &"run_right",
+"speed": 12.0
 }]

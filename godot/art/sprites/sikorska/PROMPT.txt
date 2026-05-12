@@ -1,0 +1,6 @@
+Prompt: Elderly slim upright woman, short gray hair, beige cardigan, cream blouse, navy skirt, dignified stiff posture. Minimal synthetic line drawing, sparse flat shapes, Polish satirical illustration, institutional mood, pixel-art, adult proportions, full body, hands at sides.
+Negative: detailed, shaded, gradient, anime, chibi, cute, big head, decorative, fantasy, realistic, 3D, held objects, facial expressions, cane
+Model Version: not yet generated
+Seed: not yet generated
+Date: 2026-05-11
+Notes: Ch1 baseline (upright, no cane). Ch4 reappearance variant (visibly diminished, walks slower, uses a cane) is a separate future generation — store in halina_ch4/ folder when generated. The cane in Ch4 must be a separately-layered Sprite2D at runtime, never baked into the character art (per held-objects rule). Folder of documents (her diegetic prop in dialogues) lives in portrait/cutscene art only, never in the walking sprite.
