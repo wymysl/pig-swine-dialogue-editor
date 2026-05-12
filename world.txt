@@ -80,7 +80,7 @@ north / north-east  → courts, law library, Supreme Court
 west / south-west   → Café Paragraf, Old Town, archive, Tenants' Row
 east                → Business District, Rival Firm, Print Shop
 centre / south-east → City Hall, Protest Square, civic bureaucracy
-far north-east      → Transit Edge, airport route, Chapter 4 travel gate
+far north-east      → Transit Edge, airport route, Chapter 5 travel gate
 ```
 
 This gives the overworld a readable moral geography:
@@ -136,7 +136,7 @@ OverworldRoot
 └── PlayerSpawnPoints
 ```
 
-Use multiple `TileMapLayer`s rather than a single overloaded TileMap. That will matter later when Chapter 5 adds protest signs, notice walls, paper clutter, and district-wide state changes.
+Use multiple `TileMapLayer`s rather than a single overloaded TileMap. That will matter later when Chapter 6 adds protest signs, notice walls, paper clutter, and district-wide state changes.
 
 Each important entrance should be an `Area2D` door node:
 
@@ -176,7 +176,7 @@ Rough layout:
 ```text
 ┌────────────────────────────────────────────────────────────────────┐
 │                         Transit Edge / Airport Road                 │
-│                         Airport bus, tram depot, Chapter 4 gate     │
+│                         Airport bus, tram depot, Chapter 5 gate     │
 │                                                                    │
 │              Legal Quarter                                         │
 │              District Court, Housing Court, Supreme Court           │
@@ -225,21 +225,21 @@ Landlord's Office
 Housing Court Plaza
 Housing Court Interior
 
-Chapter 3:
+Chapter 4:
 Business District route
 Print Shop
 Rival Firm exterior
 Server/Basement links
 District Court return
 
-Chapter 4:
+Chapter 5:
 Transit Edge
 Airport access
 Embassy route
 Swine Penthouse route
 International arbitration access
 
-Chapter 5:
+Chapter 6:
 Civic Core
 City Hall
 Protest Square
@@ -287,7 +287,7 @@ Example route blocker data:
 ```gdscript
 {
 	"id": "blocker_business_ch1",
-	"requires_missing": "chapter3.started",
+	"requires_missing": "chapter4.started",
 	"text": "Private district. No entry without badge, appointment, or suspicious invoice."
 }
 ```
@@ -311,8 +311,8 @@ Gameplay role:
 ```text
 Chapter 1: District Court route
 Chapter 2: Housing Court route
-Chapter 3: District Court return for sabotage hearing
-Chapter 5: Supreme Court final approach
+Chapter 4: District Court return for sabotage hearing
+Chapter 6: Supreme Court final approach
 ```
 
 This route should be visually straight and authoritative. It is the "procedure corridor."
@@ -336,7 +336,7 @@ Gameplay role:
 ```text
 Chapter 1: Whimsy recruitment and optional coffee tutorial
 Chapter 2: optional flavor return and gossip
-Chapter 5: protest supply point
+Chapter 6: protest supply point
 ```
 
 This should be the softest and funniest recurring route. It is where the player breathes between legal crises.
@@ -361,7 +361,7 @@ Gameplay role:
 
 ```text
 Chapter 2: Waldek investigation
-Chapter 5: impact statements and community stakes
+Chapter 6: impact statements and community stakes
 ```
 
 This route should feel warmer than the Legal Quarter. It is not a "poor district" caricature. It is a lived-in residential area under legal pressure.
@@ -383,8 +383,8 @@ Industrial Printer Facility
 Gameplay role:
 
 ```text
-Chapter 3: printer sabotage investigation
-Chapter 5: final conflict-of-interest / industrial printer route
+Chapter 4: printer sabotage investigation
+Chapter 6: final conflict-of-interest / industrial printer route
 ```
 
 This route should feel efficient in a vaguely threatening way.
@@ -410,7 +410,7 @@ Tram Interchange
 Gameplay role:
 
 ```text
-Chapter 5: mass notices, public law evidence, protest gathering
+Chapter 6: mass notices, public law evidence, protest gathering
 ```
 
 Civic Core should be visible earlier but feel inaccessible. It should always have NPCs queuing, reading notices, and failing to understand deadlines.
@@ -427,15 +427,15 @@ airport bus stop
 taxi stand
 airport route transition
 embassy route transition
-Swine Chapter 4 return route
+Swine Chapter 5 return route
 ```
 
 Gameplay role:
 
 ```text
 Chapter 1: joke blocker
-Chapter 4: Swine return / airport investigation
-Chapter 5: optional public chaos flavor
+Chapter 5: Swine return / airport investigation
+Chapter 6: optional public chaos flavor
 ```
 
 In Godot, treat the airport as a separate interior/exterior hybrid scene loaded from this edge gate:
@@ -473,10 +473,10 @@ District Court active. Housing Court visible but not relevant. Supreme Court sta
 Chapter 2:
 Housing Court active. District Court remains accessible for flavor.
 
-Chapter 3:
+Chapter 4:
 District Court has deadline urgency. Clerk NPCs mention filings.
 
-Chapter 5:
+Chapter 6:
 Supreme Court opens. Grand stairs, public gallery queue, final-hearing atmosphere.
 ```
 
@@ -510,10 +510,10 @@ Café Paragraf introduces Whimsy and optional coffee.
 Chapter 2:
 Café has housing gossip and poster jokes.
 
-Chapter 3:
+Chapter 4:
 NPCs complain about filings vanishing.
 
-Chapter 5:
+Chapter 6:
 Tables carry protest flyers; café becomes informal supply point.
 ```
 
@@ -546,14 +546,14 @@ During Chapter 2:
 Waldek poster visible.
 Landlord notice appears.
 Kowalski curtain animation active.
-Zielińska balcony NPC active.
+Zielinska balcony NPC active.
 
 After Chapter 2:
 Poster remains.
 A second supportive poster appears.
 Kowalski comments on typography escalation.
 
-Chapter 5:
+Chapter 6:
 Residents gather for protest.
 Notice wall expands.
 Impact-statement NPCs appear.
@@ -585,11 +585,11 @@ Business District locked. Security guard joke.
 Chapter 2:
 Attorney Grzyb may be glimpsed near the edge.
 
-Chapter 3:
+Chapter 4:
 Print Shop and Rival Firm exterior become relevant.
 Printer-sabotage route opens.
 
-Chapter 5:
+Chapter 6:
 Industrial Printer Facility opens.
 Glass Street becomes hostile and crowded with notices.
 ```
@@ -614,10 +614,10 @@ Queue Maze
 Chapter states:
 
 ```text
-Before Chapter 5:
+Before Chapter 6:
 City Hall visible but inaccessible / queue-blocked.
 
-Chapter 5 opening:
+Chapter 6 opening:
 Mass notices appear.
 Crowds gather.
 Protest Square activates.
@@ -628,7 +628,7 @@ Banners remain, but tone softens.
 NPCs discuss restored objections / temporary relief.
 ```
 
-The Chapter 5 plan requires City Hall, Protest Square, Industrial Printer Room, and Supreme Court as final locations, with returning NPCs and a final public-law arc.   The Civic Core therefore needs to be visible before Chapter 5, so the finale feels like a return to a known public space, not a newly invented arena.
+The Chapter 6 plan requires City Hall, Protest Square, Industrial Printer Room, and Supreme Court as final locations, with returning NPCs and a final public-law arc.   The Civic Core therefore needs to be visible before Chapter 6, so the finale feels like a return to a known public space, not a newly invented arena.
 
 #### Transit Edge
 
@@ -651,15 +651,15 @@ Chapter states:
 Chapter 1:
 Airport Road blocked: "You have no professional reason to flee yet."
 
-Chapter 4:
+Chapter 5:
 Swine return route opens.
 Airport investigation becomes available.
 
-Chapter 5:
+Chapter 6:
 Transit NPCs discuss mass notices and public disruption.
 ```
 
-Do not overbuild Transit Edge early. It is mainly a gateway until Chapter 4.
+Do not overbuild Transit Edge early. It is mainly a gateway until Chapter 5.
 
 ---
 
@@ -687,9 +687,9 @@ Chapter overlays:
 | --------- | --------------------------------------------------------------------------- |
 | Chapter 1 | flickering sign, debt notice, scattered papers                              |
 | Chapter 2 | Waldek file notice / rolled poster briefly visible near entrance            |
-| Chapter 3 | printer warning note, suspicious cable, paper scraps                        |
-| Chapter 4 | Swine luggage pile, airport stickers, arbitration envelope                  |
-| Chapter 5 | protest flyers, clients outside, "Final Brief" board visible through window |
+| Chapter 4 | printer warning note, suspicious cable, paper scraps                        |
+| Chapter 5 | Swine luggage pile, airport stickers, arbitration envelope                  |
+| Chapter 6 | protest flyers, clients outside, "Final Brief" board visible through window |
 
 Godot implementation:
 
@@ -743,19 +743,19 @@ var route_gates := {
 		"text": "Sorry, counsel. Tenant drama ahead. Come back when the plot has served notice."
 	},
 	"gate_business_ch1": {
-		"blocks_until": "chapter3.started",
+		"blocks_until": "chapter4.started",
 		"text": "Private district. No entry without badge, appointment, or suspicious invoice."
 	},
 	"gate_city_hall_ch1": {
-		"blocks_until": "chapter5.started",
+		"blocks_until": "chapter6.started",
 		"text": "City Hall is technically open, which is not the same as accessible."
 	},
 	"gate_airport_ch1": {
-		"blocks_until": "chapter4.started",
+		"blocks_until": "chapter5.started",
 		"text": "Airport buses are running. Your career has not collapsed enough yet."
 	},
 	"gate_supreme_court": {
-		"blocks_until": "chapter5.supreme_court_unlocked",
+		"blocks_until": "chapter6.supreme_court_unlocked",
 		"text": "The Supreme Court is visible in the distance. It pretends not to notice you."
 	}
 }
@@ -863,9 +863,9 @@ Target density:
 Office Street: 3–5 NPCs
 Legal Quarter: 5–8 NPCs
 Old Town: 6–10 NPCs
-Residential District: 6–10 NPCs during Chapter 2, more in Chapter 5
+Residential District: 6–10 NPCs during Chapter 2, more in Chapter 6
 Business District: 4–8 NPCs
-Civic Core: 6–12 NPCs, more during Chapter 5
+Civic Core: 6–12 NPCs, more during Chapter 6
 Transit Edge: 3–6 NPCs
 ```
 
@@ -882,7 +882,7 @@ Old Town:
 barista, student, bookshop owner, Tram Oracle, Whimsy-flavored social NPCs
 
 Residential:
-tenant, child with toy gavel, market vendor, Kowalski window, Zielińska balcony
+tenant, child with toy gavel, market vendor, Kowalski window, Zielinska balcony
 
 Business:
 security guard, corporate lawyer, print courier, rival-firm intern
@@ -916,17 +916,17 @@ A second poster appears in another window.
 Kowalski comments on typography escalation.
 Landlord notice becomes crossed out or replaced.
 
-After Chapter 3:
+After Chapter 4:
 Business District has printer-repair scandal gossip.
 Pig & Swine exterior has cable debris / printer warning sign.
 Print Shop NPCs mention "the toner incident."
 
-After Chapter 4:
+After Chapter 5:
 Swine luggage appears near Pig & Swine.
 Airport route has souvenir / arbitration jokes.
 Penthouse route becomes known.
 
-During Chapter 5:
+During Chapter 6:
 Notice posters appear across districts.
 Protest flyers appear in Old Town and Residential.
 Civic Core fills with NPCs.
@@ -960,7 +960,7 @@ Build it in this order:
 9. Add Waldek's Apartment Building exterior and Housing Court Plaza.
 10. Add placeholder silhouettes for Business District, Civic Core, Transit Edge.
 11. Add chapter overlay system.
-12. Add fast-travel tram stop after Chapter 2 or Chapter 3.
+12. Add fast-travel tram stop after Chapter 2 or Chapter 4.
 13. Polish each district only when its chapter needs it.
 ```
 
@@ -1217,10 +1217,13 @@ Murrow's file area
 Crab side desk / case board area
 printer corner
 coffee corner
-case board / meeting table
+case board / open-area meeting table
+dedicated meeting room (NEW phase-8; separate interior sub-area; big table; Beat 8 client meeting venue)
 archive door
 postcard / trophy wall
 ```
+
+**(Phase-8 addition — dedicated meeting room.)** The post-playtest rewrite (`narrative_revision/audit/chapter_1_v2.md`) adds a dedicated meeting room as a separate interior sub-area within the office. The big table is its defining feature: formal, professional, deliberately contrasted with the case-board-and-paperwork chaos of the open office. The room is accessed through a connecting door from the main legal work area. It is used at Chapter 1 Beat 8 (the client meeting with Halina Sikorska) and remains available for future client meetings in subsequent chapters. Phase-5 (Stage 5) implementation: recommended as a sub-area within `pig_swine_office.tscn` with a transition zone (no fade) for tighter pacing; alternative is a separate `pig_swine_office_meeting_room.tscn` if Godot scene structure prefers full scene transitions.
 
 Key interactables:
 
@@ -1236,6 +1239,8 @@ filing_cabinet
 archive_door
 swine_postcard_board
 badge_shelf
+meeting_room_door (phase-8 addition; opens into dedicated meeting room sub-area)
+meeting_room_table (phase-8 addition; the big table; Beat 8 staging anchor; chairs arranged around it)
 ```
 
 NPC placement:
@@ -1257,7 +1262,7 @@ Whimsy:
 appears in office after recruitment, otherwise at Café Paragraf
 
 Mr. Swine:
-absent until Chapter 4
+absent until Chapter 5
 ```
 
 Asia's position should never move far from reception. She is the player's stable hint NPC. The Chapter 1 plan treats Asia as the office helper, the practical glue, and a repeatable guidance NPC, so the room layout must support that: the player should see her immediately when entering.
@@ -1287,13 +1292,13 @@ papers everywhere, debt notice, Pig panic route, empty Swine postcard board
 Chapter 2:
 temporary survival stamp on calendar, Swine postcard pinned, Waldek file on desk, one coin in STABILITY jar
 
-Chapter 3:
+Chapter 4:
 printer warning sign, suspicious cable, misprinted pages, deadline notice
 
-Chapter 4:
+Chapter 5:
 Swine luggage pile, arbitration papers, Japanese souvenirs
 
-Chapter 5:
+Chapter 6:
 final brief board, protest flyers, clients waiting near reception
 ```
 
@@ -1460,10 +1465,10 @@ Whimsy present, Rights Memo on table, coffee tutorial available
 Chapter 2:
 tenants gossip about Waldek poster case
 
-Chapter 3:
+Chapter 4:
 NPCs complain about missing filings
 
-Chapter 5:
+Chapter 6:
 protest flyers, legal-aid queue coffee tab, public notice jokes
 ```
 
@@ -1538,7 +1543,7 @@ Chapter-state overlays:
 Chapter 1:
 first hearing, small crowd, docket: Financial Crisis v. Basic Procedural Competence
 
-Chapter 3:
+Chapter 4:
 deadline / sabotage procedural hearing, more tense clerk presence
 
 After Chapter 1:
@@ -1653,7 +1658,7 @@ poster visible, letter stack active, Waldek anxious
 After victory:
 poster remains, supportive note appears, Waldek calmer
 
-Chapter 5:
+Chapter 6:
 closure notice appears near door, Waldek becomes impact witness
 ```
 
@@ -1683,7 +1688,7 @@ Functional zones:
 ```text id="ltnkbe"
 Waldek door
 Kowalski door / curtain or peephole
-Zielińska door / balcony access
+Zielinska door / balcony access
 notice board
 stairwell exit
 ```
@@ -1705,7 +1710,7 @@ NPC staging:
 Kowalski:
 appears at doorway / peephole / half-open door
 
-Zielińska:
+Zielinska:
 near balcony side or doorway, less defensive
 
 Waldek:
@@ -1719,13 +1724,13 @@ neighbor_statement_no_disturbance
 neighbor_statement_targeted_enforcement
 ```
 
-The Chapter 2 outline defines Kowalski as the comic witness who confirms there was no real disturbance, and Zielińska as the practical witness who confirms targeted enforcement.
+The Chapter 2 outline defines Kowalski as the comic witness who confirms there was no real disturbance, and Zielinska as the practical witness who confirms targeted enforcement.
 
 Design function:
 
 ```text id="6hf8ft"
 Kowalski teaches: witness who seems silly can still be legally useful.
-Zielińska teaches: proportionality often depends on context and selective enforcement.
+Zielinska teaches: proportionality often depends on context and selective enforcement.
 ```
 
 Example layout:
@@ -1735,11 +1740,11 @@ Example layout:
 │ Kowalski │ notice│
 │          │ board │
 │ hallway          │
-│ Zielińska│ stairs│
+│ Zielinska│ stairs│
 └──────────────────┘
 ```
 
-Do not create separate full apartments for Kowalski and Zielińska in v1. The landing is enough.
+Do not create separate full apartments for Kowalski and Zielinska in v1. The landing is enough.
 
 ---
 
@@ -1911,9 +1916,92 @@ The Chapter 2 acceptance criteria require the player to prepare the case on the 
 
 These should be planned now but built later.
 
-## 9. Pig & Swine Basement
+## 9. Areszt Śledczy — Visitor Room (NEW; phase-8 addition for compact Chapter 3)
 
-Purpose: Chapter 3 physical sabotage reveal.
+Purpose: Chapter 3 detention scene (Beat 3) — the load-bearing meeting between Cula and Kacper Mazurek.
+
+Recommended size:
+
+```text
+8×6
+```
+
+Tone:
+
+```text
+small
+functional
+cold-feeling
+institutional fluorescent overhead
+acoustically dead (no echo, no ambience)
+```
+
+Functional zones:
+
+```text
+table (centered)
+two chairs (one for Cula, one for Kacper; opposite each other)
+guard observation window (door, looking outward)
+side wall — institutional notices, faded
+```
+
+Key interactables:
+
+```text
+visitor_room_table (the table; central)
+visitor_room_chair_lawyer (Cula's seat)
+visitor_room_chair_client (Kacper's seat)
+visitor_room_door (the door; one-way visible to guard outside)
+```
+
+NPC placement:
+
+```text
+Cula:
+seated at table when scene opens (after intake offstage)
+
+Kacper:
+brought in by guard; seated opposite Cula; remains seated for duration of scene
+
+Guard (non-speaking):
+visible through door window; one position; static
+```
+
+No glass divider (this is a remand visitor room, not maximum-security). The lack of physical barrier makes Cula's encounter with Kacper land harder — they are in the same room, facing each other across the table. Phase-5 implementation: ensure the table is wide enough that the proximity reads as professional rather than intimate, but narrow enough that the eye-contact moment at the verdict (Beat 5 hearing aftermath, recalled here in player memory) carries weight.
+
+Suggested layout:
+
+```text
+┌────────────────┐
+│ door │ guard   │ ← visible through small window
+│      │         │
+│  ┌────────┐    │
+│  │ table  │    │ ← Kacper's seat at far side
+│  └────────┘    │
+│  ┌────────┐    │
+│  │ Cula   │    │ ← Cula's seat at near side
+│  └────────┘    │
+│                │
+└────────────────┘
+```
+
+Visual register: gray walls, scuffed flooring, single fluorescent overhead, no decoration except institutional notices (visiting hours, prisoner rights — not detailed; environmental texture only). The room is cold in feel, not necessarily in actual temperature.
+
+Ambience entry (add to `interior_ambience` table):
+
+```gdscript
+"areszt_visitor_room": "fluorescent_buzz_silence_distant_door"
+```
+
+Implementation note: this room has no other use in the game (Kacper's β return in Chapter 6 is at the courthouse corridor, not detention). It can be a single Godot scene that loads only during Chapter 3 Beat 3 and unloads after.
+
+**(Phase-8 addition.)** This interior is the only new world location added by the compact Chapter 3 expansion. The chapter does not add new districts, courts, or major buildings. The Detention Route — a short outdoor walking path from Office Street to the *areszt śledczy* — is implied as a transitional path with minimal staging (no separate Godot scene required if implemented as a transition zone).
+
+---
+
+## 10. Pig & Swine Basement
+
+Purpose: Chapter 4 physical sabotage reveal.
 
 Recommended size:
 
@@ -1954,9 +2042,9 @@ rival_firm_leaflet
 
 This room should feel like the office has a subconscious.
 
-## 10. Server Room
+## 11. Server Room
 
-Purpose: Chapter 3 technical investigation and contradiction tutorial.
+Purpose: Chapter 4 technical investigation and contradiction tutorial.
 
 Recommended size:
 
@@ -1984,9 +2072,9 @@ router
 dusty_manual
 ```
 
-## 11. Print Shop
+## 12. Print Shop
 
-Purpose: Chapter 3 external confirmation.
+Purpose: Chapter 4 external confirmation.
 
 Recommended size:
 
@@ -2014,9 +2102,9 @@ paper_stack
 counter
 ```
 
-## 12. Airport Arrivals
+## 13. Airport Arrivals
 
-Purpose: Chapter 4 Swine return and travel evidence.
+Purpose: Chapter 5 Swine return and travel evidence.
 
 Recommended size:
 
@@ -2045,9 +2133,9 @@ ski_case
 airport_receipt
 ```
 
-## 13. Japanese Embassy
+## 14. Japanese Embassy
 
-Purpose: Chapter 4 translation evidence.
+Purpose: Chapter 5 translation evidence.
 
 Recommended size:
 
@@ -2076,9 +2164,9 @@ appointment_log
 tea_table
 ```
 
-## 14. Swine Penthouse
+## 15. Swine Penthouse
 
-Purpose: Chapter 4 character reversal and contract trail.
+Purpose: Chapter 5 character reversal and contract trail.
 
 Recommended size:
 
@@ -2107,9 +2195,9 @@ secret_folder
 pro_bono_transfer_stub
 ```
 
-## 15. City Hall
+## 16. City Hall
 
-Purpose: Chapter 5 administrative evidence.
+Purpose: Chapter 6 administrative evidence.
 
 Recommended size:
 
@@ -2137,9 +2225,9 @@ public_interest_statement
 locked_archive_terminal
 ```
 
-## 16. Industrial Printer Room
+## 17. Industrial Printer Room
 
-Purpose: Chapter 5 technical scheme and final boss setup.
+Purpose: Chapter 6 technical scheme and final boss setup.
 
 Recommended size:
 
@@ -2168,7 +2256,7 @@ paper_ammunition_stack
 
 This can shift into mini-game mode rather than normal walking mode.
 
-## 17. Supreme Court
+## 18. Supreme Court
 
 Purpose: final hearing.
 
@@ -2348,7 +2436,7 @@ func refresh_room_state() -> void:
 	chapter5_closure_notice.visible = GameState.current_chapter >= 5
 ```
 
-The player should revisit rooms and see consequences, especially after Chapter 2 and Chapter 5.
+The player should revisit rooms and see consequences, especially after Chapter 2 and Chapter 6.
 
 ---
 
@@ -2416,7 +2504,7 @@ Build interiors in this order:
 10. Waldek's Apartment shell
 11. Poster / eviction notice / letter stack interactions
 12. Neighbors' Landing shell
-13. Kowalski / Zielińska interaction points
+13. Kowalski / Zielinska interaction points
 14. Landlord's Office shell
 15. Building Rules Extract / complaint log
 16. Housing Court shell
@@ -2439,7 +2527,7 @@ The Archive contains the Procedural Binder and teaches evidence pickup.
 Café Paragraf supports Whimsy, Rights Memo, and optional coffee.
 District Court has a staged 3-round Chapter 1 court layout.
 Waldek's Apartment feels personal and contains visible poster / notice / letter evidence.
-Neighbors' Landing supports Kowalski and Zielińska without needing full extra apartments.
+Neighbors' Landing supports Kowalski and Zielinska without needing full extra apartments.
 Landlord's Office supports Building Rules Extract and Document Chase setup.
 Housing Court feels visually distinct from District Court.
 All exits are obvious.
@@ -2469,7 +2557,7 @@ The central idea:
 A plant may only add warmth.
 A desk shapes navigation.
 A poster may be evidence.
-A printer is furniture, interactable object, recurring joke, Chapter 3 plot device, and possibly emotional damage.
+A printer is furniture, interactable object, recurring joke, Chapter 4 plot device, and possibly emotional damage.
 
 So the system should not divide objects too rigidly into "visual props" and "gameplay objects." Instead, each decoration should be able to opt into several roles.
 
@@ -2582,8 +2670,8 @@ Practical examples:
 | Complaint log      | evidence, interactive, quest_marker   | starts Document Chase             |
 | Court bench        | structural, furniture                 | staging and authority             |
 | Server cable       | floor_items, quest_marker             | leads to printer conspiracy       |
-| Swine luggage      | chapter_overlay, ambient, interactive | Chapter 4 state change            |
-| Protest flyers     | chapter_overlay, wall_art             | Chapter 5 escalation              |
+| Swine luggage      | chapter_overlay, ambient, interactive | Chapter 5 state change            |
+| Protest flyers     | chapter_overlay, wall_art             | Chapter 6 escalation              |
 
 The updated Chapter 2 outline is a good model: Waldek's Apartment needs poster, eviction notice, letter stack, window, kitchen table, plant, bookshelf, and balcony, with required interactions tied to poster, letter stack, eviction notice, and Waldek dialogue.  Decorations here are not cosmetic; they carry evidence, legal meaning, and emotional weight.
 
@@ -2920,7 +3008,7 @@ Examples:
 	"prefab": "printer_warning_note",
 	"pos": Vector2i(18, 7),
 	"layer": "wall",
-	"visible_if": "chapter3.printer_incident_seen",
+	"visible_if": "chapter4.printer_incident_seen",
 	"hidden_if": ""
 }
 ```
@@ -2932,8 +3020,8 @@ Examples:
 	"pos": Vector2i(3, 14),
 	"layer": "object",
 	"blocking": true,
-	"visible_if": "chapter4.swine_returned",
-	"hidden_if": "chapter5.started"
+	"visible_if": "chapter5.swine_returned",
+	"hidden_if": "chapter6.started"
 }
 ```
 
@@ -3005,13 +3093,13 @@ debt notice, panic papers, empty postcard board
 Chapter 2:
 temporary survival calendar stamp, STABILITY jar, Waldek file
 
-Chapter 3:
+Chapter 4:
 printer warning note, misprinted pages, suspicious cable
 
-Chapter 4:
+Chapter 5:
 Swine luggage, arbitration papers, ski resort invoice
 
-Chapter 5:
+Chapter 6:
 Final Brief board, protest flyers, client queue papers
 ```
 
@@ -3659,7 +3747,7 @@ Interactable decorations show examine text.
 Evidence decorations can collect evidence and set flags.
 Decorations can appear/disappear based on chapter flags.
 Decorations can change state after inspection, collection, victory, or chapter transition.
-Pig & Swine Office visibly evolves from Chapter 1 to Chapter 5 without rebuilding the room.
+Pig & Swine Office visibly evolves from Chapter 1 to Chapter 6 without rebuilding the room.
 Waldek's Apartment uses decoration to show home, poster, notice, and vulnerability.
 Landlord's Office uses decoration to show bureaucracy, rules, and complaint-log setup.
 Validation catches duplicate IDs, missing prefabs, broken evidence links, blocked exits, and impossible visibility conditions.
@@ -4122,7 +4210,7 @@ Chapter-critical NPCs:
 ```text
 Waldek
 Kowalski
-Zielińska
+Zielinska
 Attorney Grzyb
 Judge / Housing Judge
 Sysadmin Bajtek
@@ -4303,7 +4391,7 @@ Role:
 ```text
 absent founder
 charming liability
-Chapter 4 client
+Chapter 5 client
 secret benefactor
 ```
 
@@ -4401,7 +4489,7 @@ His eyes should look like they have been monitoring the stairwell for twenty yea
 
 ---
 
-### Zielińska
+### Zielinska
 
 Role:
 
@@ -4432,7 +4520,7 @@ She should look like someone who has no patience for bureaucratic theatre.
 Role:
 
 ```text
-Chapter 3 technical guide
+Chapter 4 technical guide
 printer-sabotage witness
 contradiction tutorial ally
 ```
@@ -4458,7 +4546,7 @@ Bajtek should look allergic to printer superstition.
 Role:
 
 ```text
-Chapter 3 antagonist
+Chapter 4 antagonist
 rival-firm threat
 polished procedural predator
 ```
@@ -4484,7 +4572,7 @@ Szpon should look like he weaponises deadlines.
 Role:
 
 ```text
-Chapter 4 translation officer
+Chapter 5 translation officer
 neutral expert
 legal ambiguity explainer
 ```
@@ -4500,7 +4588,7 @@ precise
 
 Notes:
 
-The comedy target in Chapter 4 is Swine, not Japan. Her portrait should be respectful, grounded, and quietly dry.
+The comedy target in Chapter 5 is Swine, not Japan. Her portrait should be respectful, grounded, and quietly dry.
 
 ---
 
@@ -4706,13 +4794,13 @@ Pig panic → Murrow dry structure → Dr. A. Cula objecting → Judge amused re
 Chapter 2:
 Grzyb smug → Waldek worried → Crab sharp_focus → Whimsy serious_rights_mode → Judge interested
 
-Chapter 3:
+Chapter 4:
 Bajtek annoyed → Szpon polite → Dr. A. Cula objecting → Szpon cornered
 
-Chapter 4:
+Chapter 5:
 Swine evasive → Dr. A. Cula legal framing → Arbitrator stern → Swine factual admission
 
-Chapter 5:
+Chapter 6:
 Team portraits become legal instruments, not just speakers
 ```
 
@@ -4780,9 +4868,9 @@ Use sparingly:
 ```text
 first court objection in Chapter 1
 final proportionality point in Chapter 2
-first contradiction in Chapter 3
-Dual Attorney switch in Chapter 4
-final remedy argument in Chapter 5
+first contradiction in Chapter 4
+Dual Attorney switch in Chapter 5
+final remedy argument in Chapter 6
 ```
 
 ### Contradiction hit
@@ -4797,11 +4885,11 @@ brief pause
 then response line
 ```
 
-This is essential for Chapter 3.
+This is essential for Chapter 4.
 
 ### Dual Attorney
 
-Chapter 4 should use two portrait panels:
+Chapter 5 should use two portrait panels:
 
 ```text
 Left: Dr. A. Cula
@@ -4823,7 +4911,7 @@ thoughtful → stressed
 
 ### Team Assembly
 
-Chapter 5 should use portraits as ally cards.
+Chapter 6 should use portraits as ally cards.
 
 Card format:
 
@@ -4908,7 +4996,7 @@ smug, offended, cornered
 Kowalski:
 suspicious, useful_admission
 
-Zielińska:
+Zielinska:
 practical, firm
 
 Housing Judge:
@@ -5590,7 +5678,7 @@ olive jacket, folder/poster roll
 Kowalski:
 small older-neighbor silhouette, curtain-watch posture
 
-Zielińska:
+Zielinska:
 warm practical palette, steady stance
 
 Attorney Grzyb:
@@ -5672,7 +5760,7 @@ Example:
 
 ```gdscript id="hbk39g"
 func get_waldek_variant() -> String:
-	if GameState.has_flag("chapter5.started"):
+	if GameState.has_flag("chapter6.started"):
 		return "protest"
 
 	if GameState.has_flag("chapter2.complete"):
@@ -5687,7 +5775,7 @@ func get_waldek_variant() -> String:
 	return "worried_with_papers"
 ```
 
-The old sprite plan already contemplated chapter-state sprite variants, such as a client becoming a protest variant later, and Chapter 5 office crowds showing the ensemble gathered around the Final Brief.  Keep that idea, but update the IDs and names to the new cast.
+The old sprite plan already contemplated chapter-state sprite variants, such as a client becoming a protest variant later, and Chapter 6 office crowds showing the ensemble gathered around the Final Brief.  Keep that idea, but update the IDs and names to the new cast.
 
 ---
 
@@ -5922,7 +6010,7 @@ Required sprites:
 ```text id="d3xwsn"
 Waldek
 Kowalski
-Zielińska
+Zielinska
 Attorney Grzyb
 Administrator Beton
 Housing Judge
@@ -5942,7 +6030,7 @@ holds folder/poster roll; anxious idle; hopeful variant after victory
 Kowalski:
 peeks from door/window; suspicious idle; useful-admission gesture
 
-Zielińska:
+Zielinska:
 steady stance; practical hand gesture; calm witness energy
 
 Grzyb:
@@ -5958,7 +6046,7 @@ Child NPC:
 toy gavel bounce
 ```
 
-Waldek's apartment and building exterior should make the case visible even before dialogue: poster in window, notice on entrance door, twitching curtain, decorated balconies, and the apartment key gate.  Sprites should reinforce that: Waldek near his poster, Kowalski half-hidden, Zielińska calm in the shared space, Grzyb too polished for the building.
+Waldek's apartment and building exterior should make the case visible even before dialogue: poster in window, notice on entrance door, twitching curtain, decorated balconies, and the apartment key gate.  Sprites should reinforce that: Waldek near his poster, Kowalski half-hidden, Zielinska calm in the shared space, Grzyb too polished for the building.
 
 ---
 
@@ -6011,7 +6099,7 @@ Housing Judge seated
 Grzyb standing
 Waldek seated
 Kowalski witness
-Zielińska witness
+Zielinska witness
 Crab support
 Whimsy support
 ```
@@ -6120,13 +6208,13 @@ Resolver:
 
 ```gdscript id="3jojie"
 func get_pig_office_variant() -> String:
-	if GameState.has_flag("chapter5.started"):
+	if GameState.has_flag("chapter6.started"):
 		return "final_morale"
 
-	if GameState.has_flag("chapter4.swine_returned"):
+	if GameState.has_flag("chapter5.swine_returned"):
 		return "swine_argument"
 
-	if GameState.has_flag("chapter3.printer_incident_seen"):
+	if GameState.has_flag("chapter4.printer_incident_seen"):
 		return "printer_panic"
 
 	if GameState.has_flag("chapter2.complete"):
@@ -6226,7 +6314,7 @@ make important NPCs visually distinct from crowd sprites
 avoid too many animated NPCs on one screen
 ```
 
-For Chapter 5 Protest Square, ambient sprites can carry signs and move slightly, but the important returning NPCs need unique sprites.
+For Chapter 6 Protest Square, ambient sprites can carry signs and move slightly, but the important returning NPCs need unique sprites.
 
 ---
 
@@ -6284,7 +6372,7 @@ Priority order:
 3. Asia, Pig, Murrow idle loops
 4. Crab and Whimsy idle loops
 5. Court poses
-6. Waldek, Grzyb, Kowalski, Zielińska
+6. Waldek, Grzyb, Kowalski, Zielinska
 7. Chapter-state variants
 8. Mini-game sprites
 9. Ambient crowd loops
@@ -6353,7 +6441,7 @@ worried_with_papers, apartment_waiting, hopeful
 Kowalski:
 suspicious_peek, useful_admission
 
-Zielińska:
+Zielinska:
 practical_idle, firm_talk
 
 Attorney Grzyb:
@@ -6387,7 +6475,7 @@ idle_bounce
 11. Add Crab and Whimsy placeholder sprites.
 12. Add court pose sprites for Chapter 1.
 13. Add sprite variants selected by GameState.
-14. Add Chapter 2 sprites: Waldek, Kowalski, Zielińska, Grzyb, Housing Judge.
+14. Add Chapter 2 sprites: Waldek, Kowalski, Zielinska, Grzyb, Housing Judge.
 15. Add ambient NPC sprite variants for Tenants' Row and Court Plaza.
 16. Add mini-game sprite folders and separate sprite standards.
 17. Replace placeholders with final pixel art.
@@ -6809,8 +6897,8 @@ Use in:
 ```text id="jvciye"
 Mr. Pig panic scenes
 Chapter 2 Document Chase
-Chapter 3 printer incident
-Chapter 5 final printer battle
+Chapter 4 printer incident
+Chapter 6 final printer battle
 chapter transitions involving filings
 ```
 
@@ -6831,8 +6919,8 @@ Paper flutter should be the game's signature physical effect. The legal world sh
 Use in:
 
 ```text id="b6cdjy"
-Chapter 3 printer incident
-Chapter 3 payoff
+Chapter 4 printer incident
+Chapter 4 payoff
 Final Printer boss setup
 Industrial Printer Room
 ```
@@ -6959,7 +7047,7 @@ screen scanline
 small blinking terminal cursor
 ```
 
-Chapter 3 should use blue monitor glow and blinking racks to signal that the printer problem is technical, not supernatural.
+Chapter 4 should use blue monitor glow and blinking racks to signal that the printer problem is technical, not supernatural.
 
 ### Court spotlight
 
@@ -6981,7 +7069,7 @@ Weather should be chapter mood, not simulation.
 
 ```text id="rug0hc"
 Rain = pressure / public crisis / reflective mood
-Wind = documents moving / instability / Chapter 3 and Document Chase
+Wind = documents moving / instability / Chapter 4 and Document Chase
 Snow = Swine flashback / Ski Slalom only
 Heat haze = coffee / café warmth
 ```
@@ -6993,8 +7081,8 @@ Use in:
 ```text id="m2swj3"
 Café windows
 Old Town windows
-Chapter 5 Protest Square
-possibly Chapter 3 cloudy routes
+Chapter 6 Protest Square
+possibly Chapter 4 cloudy routes
 ```
 
 Visual layers:
@@ -7021,7 +7109,7 @@ Use in:
 ```text id="f78bco"
 Document Chase setup
 Tenants' Row
-Chapter 3 printer route
+Chapter 4 printer route
 Final Printer battle
 Protest Square
 ```
@@ -7145,7 +7233,7 @@ Do not use stamp transitions for ordinary room movement. Save them for legal bea
 
 ### Memory blur
 
-Use only in Chapter 4 Ski Slalom / Swine memory sequences.
+Use only in Chapter 5 Ski Slalom / Swine memory sequences.
 
 Visual:
 
@@ -7383,7 +7471,7 @@ Do not make chapter completion too long. The player should feel rewarded, then r
 Trigger:
 
 ```text id="68iiml"
-Chapter 5 Team Assembly complete
+Chapter 6 Team Assembly complete
 ```
 
 Visual:
@@ -7450,7 +7538,7 @@ Court sequences should usually switch to staged UI panels rather than zooming th
 
 ### Final reveal pan
 
-Chapter 5 can use a slow pan across:
+Chapter 6 can use a slow pan across:
 
 ```text id="p0u29k"
 Protest Square crowd
@@ -7564,13 +7652,13 @@ subtle paper clutter, crisis papers, warm but unstable light
 Chapter 2:
 poster roll sparkle, Waldek file glow, stability jar glint
 
-Chapter 3:
+Chapter 4:
 printer smoke, misprinted pages, suspicious cable blink
 
-Chapter 4:
+Chapter 5:
 Swine luggage shine, arbitration papers glint, travel receipt flutter
 
-Chapter 5:
+Chapter 6:
 Final Brief board glow, protest flyers, client queue paper movement
 ```
 
@@ -7588,7 +7676,7 @@ Asia's desk papers flutter
 quest popup appears
 ```
 
-This should happen in Chapter 1, Chapter 3, and Chapter 5, but with variations.
+This should happen in Chapter 1, Chapter 4, and Chapter 6, but with variations.
 
 ---
 
@@ -7616,7 +7704,7 @@ pastry case glint
 
 The café should feel like a safe pocket of warmth. Effects should be cozy, not noisy.
 
-Chapter 5 variant:
+Chapter 6 variant:
 
 ```text id="vz7i4n"
 flyers on tables
@@ -7807,7 +7895,7 @@ terminal cursor pulse
 dust in cold light
 ```
 
-The Chapter 3 plan frames the Server Room as cramped, blue-lit, full of blinking racks, loose cables, and printer logs.  Effects should make it feel technical, not mystical.
+The Chapter 4 plan frames the Server Room as cramped, blue-lit, full of blinking racks, loose cables, and printer logs.  Effects should make it feel technical, not mystical.
 
 ---
 
@@ -7872,7 +7960,7 @@ Purpose:
 ```text id="0vk3qa"
 Swine's chaotic return
 travel evidence
-Chapter 4 expansion
+Chapter 5 expansion
 ```
 
 Effects:
@@ -7974,7 +8062,7 @@ Purpose:
 ```text id="d2kyo9"
 human stakes
 returning allies
-Chapter 5 public pressure
+Chapter 6 public pressure
 ```
 
 Effects:
@@ -8228,7 +8316,7 @@ Residential District apartment silhouettes
 Business District glass towers
 Civic Core / City Hall background
 Transit Edge airport lights
-Chapter 5 protest banners
+Chapter 6 protest banners
 ```
 
 District presets:
@@ -8293,7 +8381,7 @@ Home Defender badge
 
 The contrast should be clear: Waldek's home is warm and specific; the landlord's office is cold and procedural.
 
-### Chapter 3 — paper, electricity, contradiction
+### Chapter 4 — paper, electricity, contradiction
 
 Effects:
 
@@ -8310,7 +8398,7 @@ printer apology final page
 
 This is the first chapter where effects become more mechanical and energetic.
 
-### Chapter 4 — travel, memory, split advocacy
+### Chapter 5 — travel, memory, split advocacy
 
 Effects:
 
@@ -8324,9 +8412,9 @@ arbitration stamp transitions
 partial confession light shift
 ```
 
-Chapter 4 should feel polished, international, and slightly suspicious.
+Chapter 5 should feel polished, international, and slightly suspicious.
 
-### Chapter 5 — public crisis and final restraint
+### Chapter 6 — public crisis and final restraint
 
 Effects:
 
@@ -8483,7 +8571,7 @@ Evidence Board card-slot glow
 Home Defender badge
 ```
 
-Minimum Chapter 3 add-on:
+Minimum Chapter 4 add-on:
 
 ```text id="hog5yd"
 printer smoke
@@ -8691,7 +8779,7 @@ short upward fragment
 Court victory:
 full confident cadence
 
-Chapter 5:
+Chapter 6:
 slower, sincere, almost heroic
 ```
 
@@ -9142,13 +9230,13 @@ thin, nervous, empty
 Chapter 2:
 slightly warmer, more stable
 
-Chapter 3:
+Chapter 4:
 printer glitch layer appears
 
-Chapter 4:
+Chapter 5:
 travel/arbitration motif sneaks in
 
-Chapter 5:
+Chapter 6:
 final brief layer, more solemn chords
 ```
 
@@ -9432,9 +9520,9 @@ Victory should not be bombastic. It should feel like relief.
 
 ---
 
-## Chapter 3 music design
+## Chapter 4 music design
 
-Chapter 3 is the printer/sabotage systems chapter.
+Chapter 4 is the printer/sabotage systems chapter.
 
 Core sound identity:
 
@@ -9517,9 +9605,9 @@ The race should sound urgent but not punishing because failure does not block pr
 
 ---
 
-## Chapter 4 music design
+## Chapter 5 music design
 
-Chapter 4 introduces Swine, international arbitration, and dual-attorney play.
+Chapter 5 introduces Swine, international arbitration, and dual-attorney play.
 
 Core sound identity:
 
@@ -9622,9 +9710,9 @@ This reinforces the rule: Dr. A. Cula handles law; Swine handles facts and memor
 
 ---
 
-## Chapter 5 music design
+## Chapter 6 music design
 
-Chapter 5 is the final synthesis chapter. The music should call back to every major prior motif.
+Chapter 6 is the final synthesis chapter. The music should call back to every major prior motif.
 
 Tracks:
 
@@ -9748,7 +9836,7 @@ Round 2 — proportionality:
 Chapter 2 home motif
 
 Round 3 — technical suppression:
-Chapter 3 printer/server motif
+Chapter 4 printer/server motif
 
 Round 4 — conflict of interest:
 Szpon/rival motif
@@ -9896,9 +9984,9 @@ func _ready() -> void:
 	AmbienceManager.play(ambience)
 
 func get_office_track() -> String:
-	if GameState.chapter5.started:
+	if GameState.chapter6.started:
 		return "office_final_brief"
-	if GameState.chapter3.printer_incident_seen:
+	if GameState.chapter4.printer_incident_seen:
 		return "office_printer_suspicion"
 	if GameState.chapter1.complete:
 		return "office_after_victory"
@@ -10004,7 +10092,7 @@ light stereo variation
 
 ### Printer Bass
 
-Use for Chapter 3 and final boss.
+Use for Chapter 4 and final boss.
 
 ```text
 low pulse
@@ -10049,10 +10137,10 @@ Home Motif:
 Waldek's Apartment, Tenants' Row, proportionality round, Protest Square
 
 Printer Motif:
-Chapter 3 incident, server room, contradiction, final boss
+Chapter 4 incident, server room, contradiction, final boss
 
 Swine Motif:
-Chapter 4 arrival, airport, arbitration, pro-bono reveal
+Chapter 5 arrival, airport, arbitration, pro-bono reveal
 
 Rival Motif:
 Szpon, procurement link, conflict-of-interest round
@@ -10087,15 +10175,15 @@ Chapter 2 Complete:
 POSTER CASE SHAKES HOUSING COURT
 Stinger: Home motif + court cadence
 
-Chapter 3 Complete:
+Chapter 4 Complete:
 PRINTER CLEARED OF WRONGDOING
 Stinger: printer glitch resolving into major chord
 
-Chapter 4 Complete:
+Chapter 5 Complete:
 SWINE LIABILITY MOSTLY NON-BINDING
 Stinger: Swine motif dodges, then resolves
 
-Chapter 5 Complete:
+Chapter 6 Complete:
 FINAL BRIEF SAVES LEGAL DISTRICT
 Stinger: full Pig & Swine motif
 ```
@@ -10238,7 +10326,7 @@ arbitration
 dual_attorney
 ```
 
-### Phase 7 — Chapter 5 / final systems
+### Phase 7 — Chapter 6 / final systems
 
 Add:
 

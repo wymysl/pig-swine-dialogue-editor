@@ -1913,7 +1913,7 @@ Evidence:
 
 Description:
 
-> The complaint pages escaped into procedural legend, but Kowalski and Zielińska's statements still undermine the alleged disturbance.
+> The complaint pages escaped into procedural legend, but Kowalski and Zielinska's statements still undermine the alleged disturbance.
 
 Evidence Board effect:
 
@@ -1926,7 +1926,7 @@ Court effect:
 ```text
 Court gives warning.
 Round 2 is harder.
-Chapter remains completable through Kowalski and Zielińska.
+Chapter remains completable through Kowalski and Zielinska.
 ```
 
 Failure line:
@@ -2003,7 +2003,7 @@ Best evidence:
 ```text
 Recovered Complaint Page
 Neighbor Statement: No Disturbance
-Zielińska Statement
+Zielinska Statement
 ```
 
 With full recovery:

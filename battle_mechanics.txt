@@ -356,9 +356,9 @@ Training battles should not punish the player.
 
 ## 5. Final Hearing Phase
 
-Chapter 5's Supreme Court rounds become advanced Casebook battles with evidence and ally assignments added.
+Chapter 6's Supreme Court rounds become advanced Casebook battles with evidence and ally assignments added.
 
-Chapter 5 is already designed as the convergence chapter where prior mechanics return: investigation, evidence, contradiction spotting, dual-attorney advocacy, team strategy, and final case synthesis.  The Casebook Battle System should provide the legal combat skeleton underneath those rounds.
+Chapter 6 is already designed as the convergence chapter where prior mechanics return: investigation, evidence, contradiction spotting, dual-attorney advocacy, team strategy, and final case synthesis.  The Casebook Battle System should provide the legal combat skeleton underneath those rounds.
 
 ---
 
@@ -705,7 +705,20 @@ const CONTEXT_TAGS := [
 	"pro_bono_access",
 	"contract_ambiguity",
 	"translation",
-	"invoice_reliability"
+	"invoice_reliability",
+
+	# Phase-8 additions (Ch1 post-playtest rewrite — Halina Sikorska eviction case)
+	"tenancy",                  # tenancy validity; lease lineage; continuous residency
+	"address_renumbering",      # building/unit renumbered after lease established; landlord knowledge
+	"actual_notice_window",     # 14-day window from actual notice (not original service); Art. 135-bis § 2 KPC
+	"inheritance_paperwork",    # lease inheritance documentation; intergenerational tenancy
+	"third_party_non_cure",     # acceptance of misdirected notice by third party does not cure invalid service
+
+	# Phase-8 additions (Ch3 NEW compact criminal chapter — Kacper Mazurek's case)
+	"ex_officio_appointment",   # state-appointed defense; rate-fixed; gates Mr. Pig's Beat 1 fury
+	"pre_broken_lock",          # entry barrier was non-functional before defendant arrived; Art. 279 reduction angle
+	"homelessness_circumstance", # defendant aged out of state foster care; documented mitigating context
+	"suspended_sentence"        # warunkowe zawieszenie wykonania kary; KK Art. 69 § 1 (max 1y); Art. 70 § 2 młodociany
 ]
 ```
 
@@ -913,7 +926,7 @@ Evidence:
 Poster Photo
 
 Ally:
-Waldek / Zielińska
+Waldek / Zielinska
 
 Result:
 Perfect legal fit.
@@ -1106,6 +1119,22 @@ Chapter 2's legal spine is already home, expression, notice, and proportionality
 
 ## Chapter 3
 
+Unlock criminal-defense authorities (NEW; phase-8 compact chapter — Kacper Mazurek's case).
+
+Purpose:
+
+```text
+teach criminal-defense register
+teach the breaking-element doctrinal dispute (włamanie)
+teach contextualization arguments (mitigating circumstances; not pleading mercy)
+teach suspended-sentence statutory criteria (KK Art. 69 § 1; Art. 70 § 2 młodociany)
+teach the "winning is losing" pattern in criminal mode
+```
+
+Chapter 3 is the compact criminal-defense chapter. The legal spine is the procedural-defect dispute over the włamanie element (the lock was already broken before Kacper entered) plus contextualization plus statutory suspension criteria. Suggested unlocks: starter "Kradzież z Włamaniem Doctrine," "Mitigating Circumstances," "Suspended Sentence — Młodociany Standard." See `narrative_revision/audit/chapter_3.md`.
+
+## Chapter 4
+
 Unlock procedural sabotage/access authorities.
 
 Purpose:
@@ -1117,17 +1146,17 @@ filing obstruction
 fairness despite technical default
 ```
 
-## Chapter 4
+## Chapter 5
 
 Unlock fair-hearing / property / contract-adjacent authorities only if useful.
 
-Chapter 4 should remain mainly Dual Attorney and contract ambiguity. Do not force ECHR case-law everywhere.
+Chapter 5 should remain mainly Dual Attorney and contract ambiguity. Do not force ECHR case-law everywhere.
 
-## Chapter 5
+## Chapter 6
 
 The full Casebook becomes available for final synthesis.
 
-Chapter 5 already uses returning evidence from previous chapters and Team Assembly slots such as defective notice, individual impact, technical suppression, conflict of interest, proportionality, social utility, and closing argument.  The Casebook should plug into those final legal points.
+Chapter 6 already uses returning evidence from previous chapters and Team Assembly slots such as defective notice, individual impact, technical suppression, conflict of interest, proportionality, social utility, and closing argument.  The Casebook should plug into those final legal points.
 
 ---
 
@@ -1902,6 +1931,17 @@ Modest remedy
 
 These already exist in the design.
 
+**(Phase-8 update — Ch1 post-playtest rewrite.)** Each round now supports stance-aware bonus evidence surfaced from Beat 8 (the client meeting). The `chapter1.client_meeting_stance` flag (`"sympathetic"` / `"blunt_procedural"` / `"technical"`) gates which bonus evidence is available. The base round structure is unchanged; bonus evidence adds optional argument depth without making any single stance mandatory. The remedy-discipline rule (Round 3 modest reset, not total victory) is **preserved load-bearing** — bonus evidence may strengthen the rehearing-remedy argument's historical weight but cannot upgrade the remedy itself beyond the procedural reset.
+
+**New argument tags introduced for Ch1 (used in evidence schema in `story.txt` Beat 8 + Casebook resolution):**
+
+```text
+notice_defect       — invalid service / wrong-address mechanism / Art. 135-bis § 2 KPC
+due_process         — fair hearing / right to be heard / ex parte without proper notice
+rehearing_remedy    — motion to set aside / procedural reset / 14-day window
+tenancy_validity    — lease validity / continuous residency / inheritance lineage
+```
+
 Round 1:
 
 ```gdscript
@@ -1909,9 +1949,17 @@ Round 1:
 	"encounter_id": "ch1_round1_defective_service",
 	"opponent_argument": "file_says_served",
 	"recommended_moves": ["proper_notice", "access_to_court", "procedural_doorway"],
-	"best_evidence": ["law_binder"],
+	"best_evidence": ["law_binder", "defective_eviction_notice", "ex_parte_court_docket"],
+	"argument_tags": ["notice_defect", "due_process"],
 	"best_ally": "crab",
-	"success_flag": "chapter1.argued_defective_service"
+	"success_flag": "chapter1.argued_defective_service",
+
+	# Phase-8 additions — stance-aware bonus evidence
+	"bonus_evidence_by_stance": {
+		"sympathetic":      ["wojcik_witness"],         # adds character-witness texture; stronger judge reaction
+		"blunt_procedural": ["return_to_sender_slip"],  # knockout-style proof-of-knowledge; landlord's prior letter also went to old #7
+		"technical":        []                          # technical bonus held in reserve for Round 3
+	}
 }
 ```
 
@@ -1922,9 +1970,16 @@ Round 2:
 	"encounter_id": "ch1_round2_fair_hearing",
 	"opponent_argument": "technicality_does_not_matter",
 	"recommended_moves": ["fair_hearing", "practical_effective", "procedural_doorway"],
-	"best_evidence": ["rights_memo"],
+	"best_evidence": ["rights_memo", "ex_parte_court_docket"],
+	"argument_tags": ["due_process"],
 	"best_ally": "whimsy",
-	"success_flag": "chapter1.argued_fair_hearing"
+	"success_flag": "chapter1.argued_fair_hearing",
+
+	# Phase-8 note — Beat 8 stance affects Whimsy's argument shape rather than evidence selection.
+	# Phase-7 V1.4 voice work specifies how Whimsy's flourish references the case obliquely
+	# (per cynic register: case-as-rhetorical-specimen). Must respect Beat 8 audit point —
+	# flourish addresses the case, not the person.
+	"stance_affects_ally_argument_shape": true
 }
 ```
 
@@ -1935,13 +1990,27 @@ Round 3:
 	"encounter_id": "ch1_round3_remedy",
 	"opponent_argument": "ask_for_everything",
 	"recommended_moves": ["modest_remedy", "procedural_doorway"],
-	"best_evidence": ["law_binder", "rights_memo"],
+	"best_evidence": ["law_binder", "rights_memo", "halina_tenancy_paperwork"],
+	"argument_tags": ["rehearing_remedy", "tenancy_validity"],
 	"best_ally": "murrow",
-	"success_flag": "chapter1.argued_remedy"
+	"success_flag": "chapter1.argued_remedy",
+
+	# Phase-8 additions — stance-aware bonus evidence (technical surfaces here)
+	"bonus_evidence_by_stance": {
+		"sympathetic":      ["wojcik_witness"],          # witness texture for the harm done by improper hearing
+		"blunt_procedural": ["return_to_sender_slip"],   # strengthens wrongful-service finding underlying remedy
+		"technical":        ["lease_inheritance"]        # historical weight (1962 lease + 1987 inheritance) for tenancy validity
+	},
+
+	# Remedy-discipline rule preserved load-bearing.
+	# Bonus evidence cannot upgrade the remedy beyond procedural reset.
+	# Cula's Round 3 line varies in flavor by stance carrier (sympathetic carries slight care;
+	# blunt-procedural carries pure procedure; technical carries archival weight) — phase-7 voice work specifies.
+	"remedy_discipline": "modest_procedural_reset_only"
 }
 ```
 
-Chapter 1 should be forgiving. Even weak but relevant moves should pass after a Murrow hint.
+Chapter 1 should be forgiving. Even weak but relevant moves should pass after a Murrow hint. **Phase-8 note:** the bonus evidence is *additive* rather than gating — a player who chose any stance still wins the rounds with required evidence; bonus evidence simply produces stronger judge reactions, more memorable Cula lines, and (in Round 1's blunt-procedural bonus) a notably knockout-shaped argument. No stance is "wrong"; each stance just colors the win differently.
 
 ## Chapter 2 integration
 
@@ -2013,9 +2082,104 @@ match chapter2.evidence_board_score:
 		judicial_patience -= 5
 ```
 
-## Chapter 3 integration
+## Chapter 3 integration (NEW; phase-8 compact criminal chapter)
 
-Chapter 3's main system remains contradiction spotting. Casebook battle should be used in court remedy rounds, not replace contradiction scenes.
+Chapter 3 is the compact criminal-defense chapter (Kacper Mazurek's case — *kradzież z włamaniem*, KK Art. 279). The hearing uses the Casebook three-round mechanic adapted for criminal procedure: contest the breaking element / contextualize the act / argue for suspended sentence. The remedy-discipline rule is preserved load-bearing (suspended sentence is the achievable outcome, not acquittal).
+
+**New argument tags introduced for Ch3 (criminal-defense register):**
+
+```text
+breaking_element_dispute   — was it actually włamanie? (pre-broken lock; doctrinal reduction to Art. 278 § 3a)
+mitigating_circumstances   — homelessness, age, no violence, no flight, survival-coded items
+suspended_sentence_criteria — KK Art. 69 § 1 (max suspendable: 1 year); KK Art. 70 § 2 młodociany (probation 2-5y)
+```
+
+**New context tags introduced for Ch3:**
+
+```text
+ex_officio_appointment    — state-appointed defense; rate-fixed; gates Mr. Pig's Beat 1 fury
+pre_broken_lock           — entry barrier was non-functional before defendant arrived
+homelessness_circumstance — defendant aged out of state foster care; documented
+suspended_sentence        — warunkowe zawieszenie wykonania kary (procedural mechanism)
+```
+
+These tags are added to the global CONTEXT_TAGS const in the tags section above (Stage 14 implementation complete).
+
+**Phased criminal-hearing encounter definitions:**
+
+Phase 1 — contest the *włamanie* element:
+
+```gdscript
+{
+	"encounter_id": "ch3_phase1_breaking_element_dispute",
+	"opponent_argument": "include_breaking_element",
+	"recommended_moves": ["doctrinal_distinction", "factual_dispute"],
+	"best_evidence": ["lock_condition_photo", "patrol_report"],
+	"argument_tags": ["breaking_element_dispute"],
+	"best_ally": "crab",
+	"success_flag": "chapter3.phase1_breaking_argued",
+	# Outcome: judge notes the doctrinal point but reserves it for sentencing
+	# rather than charge reduction. "Preserved-but-not-granted." Sample judge
+	# response shape (per phase-7 V3.* voice work): "Noted. Continue."
+	"judge_response": "preserve_for_sentencing"
+}
+```
+
+Phase 2 — contextualize the act:
+
+```gdscript
+{
+	"encounter_id": "ch3_phase2_mitigating_circumstances",
+	"opponent_argument": "act_speaks_for_itself",
+	"recommended_moves": ["factual_presentation", "circumstantial_context"],
+	"best_evidence": ["kacper_social_services_file", "alarm_log", "patrol_report"],
+	"argument_tags": ["mitigating_circumstances"],
+	"best_ally": "cula_alone",  # Cula leads alone; Crab provides factual support; Murrow's presence calibrates
+	"success_flag": "chapter3.phase2_mitigating_argued",
+	# CRITICAL phase-7 audit point: the argument must NOT plead for mercy and
+	# must NOT lecture about systemic poverty. Cula's register is direct
+	# factual presentation. If a draft lectures or pleads, it has failed audit.
+	"audit_constraint": "no_pleading_no_lecturing"
+}
+```
+
+Phase 3 — argue for suspended sentence:
+
+```gdscript
+{
+	"encounter_id": "ch3_phase3_suspended_sentence",
+	"opponent_argument": "imprisonment_appropriate",
+	"recommended_moves": ["statutory_criteria_application", "first_offender_emphasis"],
+	"best_evidence": ["kacper_social_services_file", "no_prior_record"],
+	"argument_tags": ["suspended_sentence_criteria"],
+	"best_ally": "murrow",  # supervisory presence at peak weight; procedural credibility supports application
+	"success_flag": "chapter3.phase3_suspended_argued",
+	# Outcome: court grants 1 year imprisonment (statutory minimum for Art. 279 § 1;
+	# also maximum suspendable under Art. 69 § 1 — the two constraints converge),
+	# suspended for 3 years' probation under Art. 70 § 2 (młodociany).
+	# Remedy-discipline rule preserved: suspended sentence is the modest outcome.
+	"verdict": {
+		"sentence_years": 1,
+		"suspended": true,
+		"probation_years": 3,
+		"młodociany": true,
+		"articles_cited": ["KK Art. 279 § 1", "KK Art. 69 § 1", "KK Art. 70 § 2"]
+	},
+	"remedy_discipline": "modest_suspended_sentence_only"
+}
+```
+
+**Stance carrier from Beat 3 affects argument flavor (not gating):**
+
+The `chapter3.detention_stance` flag (`"sympathetic"` / `"procedural"` / `"direct"`) carries flavor from Beat 3 (the detention scene) into Phase 2 and Phase 3 arguments. Cula's argument-line variants are spec'd by phase-7 V3.* voice work; mechanically the stance does not change which evidence is required or which phases succeed. The stance is texture, not gating.
+
+**Whimsy is absent.** Phase-7 V3.* voice work must NOT generate Whimsy lines for this hearing. He is working Plotek's case (per Ch5 setup); his absence is character development. The encounter-definition `best_ally` field never returns `"whimsy"` for any Ch3 phase.
+
+**No "wild argument" encounters in Ch3.** The chapter is too compact and tonally controlled for optional-encounter overworld content. Skip the wild-argument layer entirely.
+
+## Chapter 4 integration
+
+Chapter 4's main system remains contradiction spotting. Casebook battle should be used in court remedy rounds, not replace contradiction scenes.
 
 Use it for:
 
@@ -2027,9 +2191,9 @@ deadline remedy
 
 Contradiction spotting exposes facts; Casebook battle turns facts into legal argument.
 
-## Chapter 4 integration
+## Chapter 5 integration
 
-Chapter 4's main system remains Dual Attorney.
+Chapter 5's main system remains Dual Attorney.
 
 Casebook battle should be secondary.
 
@@ -2041,11 +2205,11 @@ burden of proof
 document reliability
 ```
 
-Do not make Chapter 4 an ECHR-heavy chapter unless the story demands it.
+Do not make Chapter 5 an ECHR-heavy chapter unless the story demands it.
 
-## Chapter 5 integration
+## Chapter 6 integration
 
-Chapter 5 combines everything.
+Chapter 6 combines everything.
 
 Team Assembly produces bonuses.
 
@@ -2068,7 +2232,7 @@ Round 5:
 Remedy / social utility / access to justice
 ```
 
-The current Chapter 5 plan already identifies those final-hearing functions and links them to Team Assembly and accumulated evidence.  Casebook battles should give each round a playable legal structure.
+The current Chapter 6 plan already identifies those final-hearing functions and links them to Team Assembly and accumulated evidence.  Casebook battles should give each round a playable legal structure.
 
 ---
 

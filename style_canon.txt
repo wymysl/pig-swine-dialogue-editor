@@ -27,7 +27,7 @@ fails — they are the canonical ear.
   the other gets a fork made of bees, the court must intervene."
 - Waldek: "It was just a poster. Then it became a warning. Then it
   became a file. Then it became my whole life."
-- Zielińska: "Rules are rules, yes. But rules that wake up only when
+- Zielinska: "Rules are rules, yes. But rules that wake up only when
   someone dislikes your opinion are not rules. They are costumes."
 - Attorney Grzyb: "My client does not oppose rights. My client merely
   insists that rights be exercised in beige."
@@ -265,7 +265,7 @@ the sample lines.
 - Notices first: something irrelevant. Eventually, when prompted
   correctly, the relevant fact.
 
-### Neighbor Zielińska (Chapter 2 witness)
+### Neighbor Zielinska (Chapter 2 witness)
 
 - Voice: plain-spoken, warm, not easily intimidated. Says the moral
   thing without making a speech of it.
@@ -497,7 +497,7 @@ flattening it) but stays warm-toned and consistent across the cast.
   Whimsy, Asia): 5 expressions each.
 - Tier 2 (major chapter NPCs: Waldek, Grzyb, Bajtek, Szpon, Tanaka,
   Yamada): 4 expressions each.
-- Tier 3 (supporting NPCs: Kowalski, Zielińska, judges, doormen,
+- Tier 3 (supporting NPCs: Kowalski, Zielinska, judges, doormen,
   clerks, etc.): 2–3 expressions each.
 
 A chapter may not ship until its Tier 1 and Tier 2 NPCs have their
