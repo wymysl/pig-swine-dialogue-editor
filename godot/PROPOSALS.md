@@ -95,6 +95,40 @@ These are gaps I noticed. None are blockers; all should be settled before the re
 
 ---
 
+## 9. Thematic reframe — crisis of values as the spine
+
+The project has committed to a substantive thematic reframe. The game is now about a crisis of values, with Pig & Swine's human-rights ethos held in tension with its internal labor practices. The spine, as a single organizing question: **"does it matter why someone helps you, if they help?"** Mr. Pig is rewritten as a half-right idealist whose voluntary austerity is also a class blind spot; the juniors become a stance-trio (true believer / cynic / opportunist) rather than three character backstories; a new principal client is added — a rich white-collar defendant whose case tests whether the firm's universal-principles ethos survives contact with someone who weaponizes it; and the project commits to a funny-in-hindsight surface that requires re-traversal of spaces and a mid-game structural inflection. The ending is no-cathartic-resolution; the cathartic-exposure shape (firm exposed, juniors win, union triumphs) is explicitly forbidden.
+
+**Scope.** This is not a Proposal-1-through-8-sized editorial call. It touches `story.txt` chapter beats, `style_canon.txt` voice and tone, `data/voice_references/` for characters whose stances are now sharper, and a chapter-by-chapter audit. It does not touch the Casebook Battle System, the world structure, or the Godot build's Sprint cadence.
+
+**Status.** Decisions captured in chat brainstorming, 2026-05-05. Detail in `../narrative_revision/00_decisions.md`. Methodology for executing the reframe (phased: audit → bibles → beat sheet → re-traversal map → adversarial pass → writing) currently in chat history only; will be promoted to `../narrative_revision/methodology.md` before phase 2 begins. No `.txt` editing has happened yet — the reframe is at the decision-and-bible-stage; the writing phase comes after the per-character contradiction bibles stabilize.
+
+**Pre-work that should not be lost.** A previously proposed fourth junior named Camilla — "blonde, brilliant, humble" — was rejected for lack of mineable contradiction. Logged so the addition does not quietly return. The white-collar client survives review and joins the canonical client roster.
+
+---
+
+## 10. Court Round splits into two phases (witness fact-finding → closing argument)
+
+`battle_mechanics.txt` treats Court Rounds as undifferentiated turn-by-turn exchanges between player principles and opponent arguments. Polish trial structure separates witness fact-finding from closing argument (*mowy końcowe*), and Chapter 1's spec in `story.txt` already implies this split (client meeting → archive research → court readiness → win three rounds). **Recommendation: DEVELOP — make the split explicit in the battle controller and in each Court Round's data file.**
+
+A Court Round becomes two phases, both implemented as sub-controllers within `battle_controller.gd`:
+
+**Phase 1 — Fact-finding.** One or more witness-confrontation sub-rounds. Player presses statements or presents evidence. Resource: a new `witness_cooperation` counter per witness (distinct from `judicial_patience`). Quality of play determines how much of the pre-encoded "full truth" the player establishes, which sets case-state flags consumed by Phase 2.
+
+**Phase 2 — Closing argument.** One sub-round before the judge, modeled on Polish *mowy końcowe*. Judge raises counter-questions ("Article 6 doesn't apply, these aren't criminal proceedings — distinguish"); player cites principles from the Casebook. Resource: `judicial_patience` as already specced. Available citations are gated by Phase 1 flags. A judgment can sit in the Casebook and still be unciteable in closing if the underlying fact was never proved at trial.
+
+The load-bearing design move is the Phase 1 → Phase 2 carry-over. If the carry-over is absent, the closing round collapses to flashcards. The carry-over is what makes a sloppy questioning round actually cost the player when they reach the judge, and it lets the procedural reset in Chapter 1's spec follow from gameplay instead of from a scripted win/lose script.
+
+**Chapter scope.** Procedural and ECHR-substantive citations are not mutually exclusive. Chapter 1 leans procedural — KPC Article 135-bis § 2 is the load-bearing remedy per `story.txt` Beat 9 archive research — and ECHR flavor is welcome where it fits (an Article 8 family-life thread woven around the wrongful-eviction frame, for instance). Later chapters increase the substantive proportion as the Casebook fills and the meta-plot widens (Plotek thread, chapter-3 ledger inflection); landmark cases such as Engel and Salduz come online when the cases earn them. The two-phase structure itself is chapter-agnostic.
+
+**Authoring shape.** Each Court Round data file at `data/court_rounds/<chapter>_<round>.json` carries (a) a Phase 1 block: witness statements, evidence-gated press/question options, `witness_cooperation` budget, fact-flags set by outcomes; (b) a Phase 2 block: judge counter-questions, available principle citations keyed to Phase 1 fact-flags, `judicial_patience` deltas, weak/strong-victory branch.
+
+**v1 cut still holds.** The two-phase split is additive to the existing v1 cut from `battle_mechanics.txt`: one encounter type (Court Round), one or two judgments × 3–4 principles per chapter, no ally support, no stance-flavored move lines, no Wild Arguments (already permanently out of scope per PLAN.md). Allies, stance flavor, and the full taxonomy remain long-term targets in `battle_mechanics.txt`.
+
+**Status.** Proposed 2026-05-12 in a Cowork conversation that began with "the game is too much walking and reading." Not yet integrated into `battle_mechanics.txt`. Pre-work: Design sketches a one-page `data/court_rounds/_schema.md` before Code starts PLAN.md §Vertical slice plan step 4, so `battle_controller.gd` implements both sub-controllers from day one. Retrofitting Phase 1 onto a Phase-2-only prototype is the order most likely to derail the slice.
+
+---
+
 ## Status (post-approval, 2026-05-04)
 
 User approved all proposals. Language decision: **English version first; Polish translation may follow.**
@@ -109,6 +143,8 @@ User approved all proposals. Language decision: **English version first; Polish 
 | 6 | Chapter 5 beat list | **DEFERRED** | Not urgent. Lock before *Chapter 4* implementation begins. |
 | 7 | Consolidate `design/` into the canon | **PENDING** | One editorial session. Approach (a) recommended: port useful material into the four `.txt` files; freeze `design/`. |
 | 8 | Spec gaps: save slots, court-loss, tutorial visibility, language, accessibility | **DONE** | All five settled in `PLAN.md` §Standing decisions and `AGENTS.md` §Stack invariants. Language: English-first. |
+| 9 | Thematic reframe (crisis of values as the spine) | **PENDING** | Decisions captured in `../narrative_revision/00_decisions.md`. Phased methodology in chat; bible-writing and chapter-audit phases not yet started. No `.txt` edits yet. |
+| 10 | Court Round splits into two phases (witness → closing); load-bearing fact-flag carry-over; `witness_cooperation` counter for Phase 1 | **PENDING** | Proposed 2026-05-12 (Cowork). Requires `data/court_rounds/_schema.md` sketch before Code starts vertical-slice step 4. `battle_mechanics.txt` edit deferred per existing pattern. |
 
 ## Pending work, prioritized
 

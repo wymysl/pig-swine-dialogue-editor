@@ -52,6 +52,21 @@ Quest objective strings, docket entries, and system messages address the player 
 
 A line that violates these address rules fails the Taste Standard automatically. Design's authoring acceptance gate checks every quoted line against the speaker.
 
+## First-meeting introductions
+
+The first dialogue exchange between Dr. A. Cula and any named NPC must include a recognisable greeting before the conversation pivots to task content. A state that violates this rule fails the Taste Standard automatically.
+
+Concretely:
+
+- Cula opens with the NPC's name plus a self-identification or address-form. Examples in current canon: *"Crab. I'm Cula."* / *"Mr. Murrow. I was told you'd have the Sikorska file."* / *"Mr. Whimsy. Cula, Pig & Swine."* / *"Good morning, Mrs. Sikorska. Dr. A. Cula."*
+- The NPC acknowledges Cula by name or honorific before any task hand-off.
+- Any state whose trigger gates only on inventory or quest flags (e.g. `chapter1.has_law_binder == true`) must additionally check the corresponding `met_<npc>` flag, or be preceded in JSON order by a state that does. Otherwise a player who satisfies the inventory condition before ever speaking to the NPC will skip the introduction beat. The dialogue runner picks the first state in JSON order whose trigger evaluates true (`scripts/autoload/dialogue_runner.gd`), so JSON-order priority is a legitimate defence — but explicit `met_<npc>` clauses on the later states are preferred for self-documentation.
+- When the canonical first-meeting and a parallel inventory hand-off can both legitimately happen on first contact (e.g. Cula acquires the procedural binder before ever speaking to Crab), author a *fused* state that does both at once. Do not let an inventory-handoff line stand as the first word spoken between Cula and the NPC.
+
+Carve-out: purely transactional NPCs (counter staff, vendors, ticket sellers) where the order itself *is* the social opening. The barista's *"Black coffee."* satisfies this rule because ordering at a counter is the recognised first move; no name exchange is expected.
+
+Authoring acceptance: when adding or modifying states for an NPC with an introduction beat, verify that no later state can fire while `met_<npc> == false`. As of phase-7, NPCs with introduction beats are: `pig`, `murrow`, `crab`, `whimsy`, `asia`, `halina`. Future chapter NPCs that recur or carry standalone identity inherit this rule; the transactional carve-out applies only to one-shot service interactions.
+
 ## Stack invariants (never violate)
 
 - Godot 4.6.2, GDScript only. No C#, no GDExtension, no third-party engine plugins without human approval.

@@ -119,7 +119,7 @@ pig-swine-rpg/
       judgments.json                # Casebook entries
       argument_opponents.json       # opposing arguments by chapter
     art/
-      sprites/                     # NPC sprites, 32×48 default
+      sprites/                     # NPC sprites, 64×64 default
       portraits/                   # 64×64 dialogue busts
       tiles/                       # tilesets
       palettes.tres
