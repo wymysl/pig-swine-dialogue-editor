@@ -1,0 +1,474 @@
+[gd_scene load_steps=43 format=3]
+
+[ext_resource type="Script" path="res://scripts/systems/minigames/coffee_brewing.gd" id="1_script"]
+[ext_resource type="AudioStreamWAV" path="res://audio/minigames/coffee/coffee_note_hit.wav" id="2_note_hit"]
+[ext_resource type="AudioStreamWAV" path="res://audio/minigames/coffee/coffee_note_perfect.wav" id="3_note_perfect"]
+[ext_resource type="AudioStreamWAV" path="res://audio/minigames/coffee/coffee_note_miss.wav" id="4_note_miss"]
+[ext_resource type="AudioStreamWAV" path="res://audio/minigames/coffee/coffee_pour_start.wav" id="5_pour_start"]
+[ext_resource type="AudioStreamWAV" path="res://audio/minigames/coffee/coffee_pour_loop.wav" id="6_pour_loop"]
+[ext_resource type="AudioStreamWAV" path="res://audio/minigames/coffee/coffee_pour_release_good.wav" id="7_pour_release"]
+[ext_resource type="AudioStreamWAV" path="res://audio/minigames/coffee/espresso_hiss.wav" id="8_espresso_hiss"]
+[ext_resource type="AudioStreamWAV" path="res://audio/minigames/coffee/coffee_success.wav" id="9_success"]
+[ext_resource type="AudioStreamWAV" path="res://audio/minigames/coffee/coffee_failure.wav" id="10_failure"]
+[ext_resource type="AudioStreamWAV" path="res://audio/minigames/coffee/coffee_machine_objects.wav" id="11_machine_objects"]
+[ext_resource type="AudioStreamWAV" path="res://audio/minigames/coffee/stamp_caffeinated.wav" id="12_stamp"]
+[ext_resource type="Texture2D" path="res://art/minigames/coffee/coffee_machine_idle.png" id="art_machine_idle"]
+[ext_resource type="Texture2D" path="res://art/minigames/coffee/coffee_machine_gurgle.png" id="art_machine_gurgle"]
+[ext_resource type="Texture2D" path="res://art/minigames/coffee/coffee_machine_happy.png" id="art_machine_happy"]
+[ext_resource type="Texture2D" path="res://art/minigames/coffee/coffee_machine_angry.png" id="art_machine_angry"]
+[ext_resource type="Texture2D" path="res://art/minigames/coffee/coffee_cup_empty.png" id="art_cup_empty"]
+[ext_resource type="Texture2D" path="res://art/minigames/coffee/coffee_cup_fill_01.png" id="art_cup_fill_01"]
+[ext_resource type="Texture2D" path="res://art/minigames/coffee/coffee_cup_fill_02.png" id="art_cup_fill_02"]
+[ext_resource type="Texture2D" path="res://art/minigames/coffee/coffee_cup_fill_03.png" id="art_cup_fill_03"]
+[ext_resource type="Texture2D" path="res://art/minigames/coffee/prompt_bean.png" id="art_prompt_bean"]
+[ext_resource type="Texture2D" path="res://art/minigames/coffee/prompt_milk.png" id="art_prompt_milk"]
+[ext_resource type="Texture2D" path="res://art/minigames/coffee/prompt_sugar.png" id="art_prompt_sugar"]
+[ext_resource type="Texture2D" path="res://art/minigames/coffee/prompt_file.png" id="art_prompt_file"]
+[ext_resource type="Texture2D" path="res://art/minigames/coffee/prompt_mug.png" id="art_prompt_mug"]
+[ext_resource type="Texture2D" path="res://art/minigames/coffee/prompt_stamp.png" id="art_prompt_stamp"]
+[ext_resource type="Texture2D" path="res://art/minigames/coffee/timing_line.png" id="art_timing_line"]
+[ext_resource type="Texture2D" path="res://art/minigames/coffee/meter_brew_bg.png" id="art_meter_brew_bg"]
+[ext_resource type="Texture2D" path="res://art/minigames/coffee/meter_brew_fill.png" id="art_meter_brew_fill"]
+[ext_resource type="Texture2D" path="res://art/minigames/coffee/meter_bitter_bg.png" id="art_meter_bitter_bg"]
+[ext_resource type="Texture2D" path="res://art/minigames/coffee/meter_bitter_fill.png" id="art_meter_bitter_fill"]
+[ext_resource type="Texture2D" path="res://art/minigames/coffee/puff_offended.png" id="art_puff_offended"]
+[ext_resource type="Texture2D" path="res://art/minigames/coffee/result_stamp_admitted.png" id="art_stamp_admitted"]
+[ext_resource type="Texture2D" path="res://art/minigames/coffee/result_stamp_objected.png" id="art_stamp_objected"]
+[ext_resource type="Texture2D" path="res://art/minigames/coffee/sparkle.png" id="art_sparkle"]
+
+[sub_resource type="Animation" id="Animation_machine_idle"]
+resource_name = "machine_idle"
+length = 1.0
+loop_mode = 1
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("BackgroundPanel/CoffeeMachineSprite:texture")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [ExtResource("art_machine_idle")]
+}
+
+[sub_resource type="Animation" id="Animation_machine_gurgle"]
+resource_name = "machine_gurgle"
+length = 0.3
+loop_mode = 0
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("BackgroundPanel/CoffeeMachineSprite:texture")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.3),
+"transitions": PackedFloat32Array(1, 1),
+"update": 1,
+"values": [ExtResource("art_machine_gurgle"), ExtResource("art_machine_idle")]
+}
+
+[sub_resource type="Animation" id="Animation_machine_happy"]
+resource_name = "machine_happy"
+length = 0.5
+loop_mode = 0
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("BackgroundPanel/CoffeeMachineSprite:texture")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.5),
+"transitions": PackedFloat32Array(1, 1),
+"update": 1,
+"values": [ExtResource("art_machine_happy"), ExtResource("art_machine_idle")]
+}
+
+[sub_resource type="Animation" id="Animation_machine_angry"]
+resource_name = "machine_angry"
+length = 0.4
+loop_mode = 0
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("BackgroundPanel/CoffeeMachineSprite:texture")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.4),
+"transitions": PackedFloat32Array(1, 1),
+"update": 1,
+"values": [ExtResource("art_machine_angry"), ExtResource("art_machine_idle")]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("BackgroundPanel/CoffeeMachineSprite:rotation")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0, 0.1, 0.2, 0.3, 0.4),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1),
+"update": 0,
+"values": [0.0, 0.0698, -0.0698, 0.0698, 0.0]
+}
+
+[sub_resource type="Animation" id="Animation_result_reveal"]
+resource_name = "result_reveal"
+length = 0.3
+loop_mode = 0
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("BackgroundPanel/ResultPanel:modulate")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.3),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [Color(1, 1, 1, 0), Color(1, 1, 1, 1)]
+}
+
+[sub_resource type="Animation" id="Animation_stamp_impact"]
+resource_name = "stamp_impact"
+length = 0.15
+loop_mode = 0
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("BackgroundPanel/ResultPanel/StampAdmitted:scale")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.15),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [Vector2(1.3, 1.3), Vector2(1, 1)]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("BackgroundPanel/ResultPanel/StampObjected:scale")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0, 0.15),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [Vector2(1.3, 1.3), Vector2(1, 1)]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_coffee"]
+_data = {
+&"machine_idle": SubResource("Animation_machine_idle"),
+&"machine_gurgle": SubResource("Animation_machine_gurgle"),
+&"machine_happy": SubResource("Animation_machine_happy"),
+&"machine_angry": SubResource("Animation_machine_angry"),
+&"result_reveal": SubResource("Animation_result_reveal"),
+&"stamp_impact": SubResource("Animation_stamp_impact")
+}
+
+[node name="CoffeeBrewingRoot" type="CanvasLayer"]
+process_mode = 3
+script = ExtResource("1_script")
+audio_streams = {
+"note_hit": ExtResource("2_note_hit"),
+"note_perfect": ExtResource("3_note_perfect"),
+"note_miss": ExtResource("4_note_miss"),
+"pour_start": ExtResource("5_pour_start"),
+"pour_loop": ExtResource("6_pour_loop"),
+"pour_release_good": ExtResource("7_pour_release"),
+"espresso_hiss": ExtResource("8_espresso_hiss"),
+"success": ExtResource("9_success"),
+"failure": ExtResource("10_failure"),
+"machine_objects": ExtResource("11_machine_objects"),
+"stamp_caffeinated": ExtResource("12_stamp")
+}
+
+[node name="BackgroundPanel" type="ColorRect" parent="."]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.08, 0.06, 0.1, 0.95)
+
+[node name="CoffeeMachineSprite" type="Sprite2D" parent="BackgroundPanel"]
+position = Vector2(160, 300)
+texture = ExtResource("art_machine_idle")
+offset = Vector2(0, -64)
+
+[node name="CupSprite" type="Sprite2D" parent="BackgroundPanel"]
+position = Vector2(160, 480)
+texture = ExtResource("art_cup_empty")
+offset = Vector2(0, -32)
+
+[node name="TimingTrackRoot" type="Control" parent="BackgroundPanel"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Lane0" type="ColorRect" parent="BackgroundPanel/TimingTrackRoot"]
+layout_mode = 0
+offset_left = 430.0
+offset_top = 80.0
+offset_right = 520.0
+offset_bottom = 430.0
+color = Color(0.15, 0.15, 0.2, 0.5)
+
+[node name="Lane1" type="ColorRect" parent="BackgroundPanel/TimingTrackRoot"]
+layout_mode = 0
+offset_left = 530.0
+offset_top = 80.0
+offset_right = 620.0
+offset_bottom = 430.0
+color = Color(0.15, 0.15, 0.2, 0.5)
+
+[node name="Lane2" type="ColorRect" parent="BackgroundPanel/TimingTrackRoot"]
+layout_mode = 0
+offset_left = 630.0
+offset_top = 80.0
+offset_right = 720.0
+offset_bottom = 430.0
+color = Color(0.15, 0.15, 0.2, 0.5)
+
+[node name="Lane3" type="ColorRect" parent="BackgroundPanel/TimingTrackRoot"]
+layout_mode = 0
+offset_left = 730.0
+offset_top = 80.0
+offset_right = 820.0
+offset_bottom = 430.0
+color = Color(0.15, 0.15, 0.2, 0.5)
+
+[node name="TimingLine" type="Sprite2D" parent="BackgroundPanel"]
+position = Vector2(625, 400)
+scale = Vector2(51.25, 0.104)
+texture = ExtResource("art_timing_line")
+modulate = Color(0.9, 0.75, 0.3, 0.9)
+
+[node name="PromptSpawner" type="Node2D" parent="BackgroundPanel"]
+
+[node name="BrewQualityMeter" type="Label" parent="BackgroundPanel"]
+layout_mode = 0
+offset_left = 900.0
+offset_top = 150.0
+offset_right = 1200.0
+offset_bottom = 180.0
+text = ""
+
+[node name="BrewQualityBg" type="Sprite2D" parent="BackgroundPanel/BrewQualityMeter"]
+position = Vector2(0, 0)
+centered = false
+texture = ExtResource("art_meter_brew_bg")
+
+[node name="BrewQualityFill" type="Sprite2D" parent="BackgroundPanel/BrewQualityMeter"]
+position = Vector2(0, 0)
+centered = false
+texture = ExtResource("art_meter_brew_fill")
+region_enabled = true
+region_rect = Rect2(0, 0, 240, 24)
+
+[node name="ValueLabel" type="Label" parent="BackgroundPanel/BrewQualityMeter"]
+layout_mode = 0
+offset_right = 240.0
+offset_bottom = 24.0
+text = "Brew Quality"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="BitternessMeter" type="Label" parent="BackgroundPanel"]
+layout_mode = 0
+offset_left = 900.0
+offset_top = 200.0
+offset_right = 1200.0
+offset_bottom = 230.0
+text = ""
+
+[node name="BitternessBg" type="Sprite2D" parent="BackgroundPanel/BitternessMeter"]
+position = Vector2(0, 0)
+centered = false
+texture = ExtResource("art_meter_bitter_bg")
+
+[node name="BitternessFill" type="Sprite2D" parent="BackgroundPanel/BitternessMeter"]
+position = Vector2(0, 0)
+centered = false
+texture = ExtResource("art_meter_bitter_fill")
+region_enabled = true
+region_rect = Rect2(0, 0, 240, 24)
+
+[node name="ValueLabel" type="Label" parent="BackgroundPanel/BitternessMeter"]
+layout_mode = 0
+offset_right = 240.0
+offset_bottom = 24.0
+text = "Bitterness"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="ComboLabel" type="Label" parent="BackgroundPanel"]
+layout_mode = 0
+offset_left = 900.0
+offset_top = 250.0
+offset_right = 1200.0
+offset_bottom = 280.0
+text = ""
+
+[node name="PhaseLabel" type="Label" parent="BackgroundPanel"]
+layout_mode = 0
+offset_left = 540.0
+offset_top = 30.0
+offset_right = 740.0
+offset_bottom = 70.0
+text = "READY"
+horizontal_alignment = 1
+
+[node name="ResultPanel" type="ColorRect" parent="BackgroundPanel"]
+visible = false
+layout_mode = 0
+offset_left = 340.0
+offset_top = 200.0
+offset_right = 940.0
+offset_bottom = 520.0
+color = Color(0.1, 0.1, 0.15, 0.95)
+
+[node name="GradeLabel" type="Label" parent="BackgroundPanel/ResultPanel"]
+layout_mode = 0
+offset_left = 40.0
+offset_top = 40.0
+offset_right = 560.0
+offset_bottom = 80.0
+text = "Grade: -"
+horizontal_alignment = 1
+
+[node name="BuffLabel" type="Label" parent="BackgroundPanel/ResultPanel"]
+layout_mode = 0
+offset_left = 40.0
+offset_top = 100.0
+offset_right = 560.0
+offset_bottom = 140.0
+text = "Status: -"
+horizontal_alignment = 1
+
+[node name="DetailLabel" type="Label" parent="BackgroundPanel/ResultPanel"]
+layout_mode = 0
+offset_left = 40.0
+offset_top = 160.0
+offset_right = 560.0
+offset_bottom = 200.0
+text = ""
+horizontal_alignment = 1
+
+[node name="StampAdmitted" type="Sprite2D" parent="BackgroundPanel/ResultPanel"]
+visible = false
+position = Vector2(480, 100)
+texture = ExtResource("art_stamp_admitted")
+
+[node name="StampObjected" type="Sprite2D" parent="BackgroundPanel/ResultPanel"]
+visible = false
+position = Vector2(480, 100)
+texture = ExtResource("art_stamp_objected")
+
+[node name="DismissHint" type="Label" parent="BackgroundPanel/ResultPanel"]
+layout_mode = 0
+offset_left = 40.0
+offset_top = 250.0
+offset_right = 560.0
+offset_bottom = 280.0
+text = "[E] to continue"
+horizontal_alignment = 1
+
+[node name="CharacterReactionPortrait" type="Sprite2D" parent="BackgroundPanel"]
+position = Vector2(160, 160)
+
+[node name="SparkleEffect" type="CPUParticles2D" parent="BackgroundPanel"]
+emitting = false
+amount = 6
+lifetime = 0.4
+one_shot = true
+explosiveness = 0.9
+texture = ExtResource("art_sparkle")
+direction = Vector2(0, -1)
+spread = 45.0
+gravity = Vector2(0, 20)
+initial_velocity_min = 40.0
+initial_velocity_max = 80.0
+scale_amount_min = 0.5
+scale_amount_max = 1.5
+color = Color(0.9, 0.75, 0.3, 1.0)
+
+[node name="PauseLayer" type="CanvasLayer" parent="."]
+visible = false
+process_mode = 3
+layer = 100
+
+[node name="Backdrop" type="ColorRect" parent="PauseLayer"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 0.55)
+
+[node name="Panel" type="ColorRect" parent="PauseLayer"]
+offset_left = 440.0
+offset_top = 145.0
+offset_right = 840.0
+offset_bottom = 575.0
+color = Color(0.1, 0.1, 0.15, 0.98)
+
+[node name="TitleLabel" type="Label" parent="PauseLayer/Panel"]
+layout_mode = 0
+offset_left = 40.0
+offset_top = 34.0
+offset_right = 360.0
+offset_bottom = 74.0
+horizontal_alignment = 1
+
+[node name="SlowerNotesToggle" type="CheckBox" parent="PauseLayer/Panel"]
+layout_mode = 0
+offset_left = 56.0
+offset_top = 112.0
+offset_right = 344.0
+offset_bottom = 152.0
+
+[node name="SlowerNotesNextRunLabel" type="Label" parent="PauseLayer/Panel"]
+layout_mode = 0
+offset_left = 104.0
+offset_top = 150.0
+offset_right = 344.0
+offset_bottom = 178.0
+
+[node name="WiderTimingToggle" type="CheckBox" parent="PauseLayer/Panel"]
+layout_mode = 0
+offset_left = 56.0
+offset_top = 200.0
+offset_right = 344.0
+offset_bottom = 240.0
+
+[node name="SingleButtonToggle" type="CheckBox" parent="PauseLayer/Panel"]
+layout_mode = 0
+offset_left = 56.0
+offset_top = 266.0
+offset_right = 344.0
+offset_bottom = 306.0
+
+[node name="ResumeButton" type="Button" parent="PauseLayer/Panel"]
+layout_mode = 0
+offset_left = 120.0
+offset_top = 352.0
+offset_right = 280.0
+offset_bottom = 392.0
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="."]
+libraries = {
+&"": SubResource("AnimationLibrary_coffee")
+}
+autoplay = "machine_idle"
+
+[node name="AudioStreamPlayer" type="AudioStreamPlayer" parent="."]
