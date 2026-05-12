@@ -1,0 +1,41 @@
+{
+    "version": 1,
+    "_comment_scope": "Coffee Brewing — player-facing strings for the runtime mini-game UI. The engine (scripts/systems/minigames/coffee_brewing.gd) now reads the pause_* keys for the accessibility pause panel. Phase labels ('GRIND', 'POUR', 'SERVE'), result-panel text, and stamp lines are still hard-coded inside _update_phase_label() and _show_result(); the remaining keys establish the data contract for that follow-up. See PROPOSAL_coffee_engine_followups.md.",
+    "_comment_keying": "Top-level keys are the three render slots: phase_labels (PhaseLabel text per phase), phase_flavor (one-line legend below the phase, displayed during play), result_lines (ResultPanel.DetailLabel text, keyed by chapter1.coffee_buff), result_stamps (Result panel stamp impression, keyed by whether the final stamp prompt was hit or missed). The buff key 'over_caffeinated' covers both D-grade (procedural_mud) and F-grade (machine_objects) outcomes — the engine reports one buff value either way per coffee_brewing.gd::_compute_grade.",
+    "phase_labels": {
+        "grind": "Grind.",
+        "pour": "Pour.",
+        "serve": "Serve."
+    },
+    "phase_flavor": {
+        "grind": "Grinding beans. Please avoid creating procedural dust.",
+        "pour": "Pour steadily. The court dislikes surprises, and so does milk.",
+        "serve": "Serve the cup. Try not to alarm the rubber stamp."
+    },
+    "result_lines": {
+        "procedurally_alert_plus": "Coffee admitted into evidence.",
+        "procedurally_alert": "Brew served out of time but accepted in the interests of justice.",
+        "caffeinated": "Caffeine level disproportionate but not fatal.",
+        "over_caffeinated": "Machine objects."
+    },
+    "result_stamps": {
+        "hit": "STAMPED: CAFFEINATED",
+        "missed": "STAMPED: QUESTIONABLE"
+    },
+    "intro_title": "Court Coffee",
+    "intro_instructions": "Hit A or D when icons reach the line. Hold E during the pour. Press E on the final stamp.",
+    "intro_start_hint": "[E] to start",
+    "keyhint_lane_left": "A",
+    "keyhint_lane_right": "D",
+    "keyhint_lane_up": "W",
+    "keyhint_lane_down": "S",
+    "keyhint_pour": "[E] hold",
+    "keyhint_stamp": "[E]",
+    "keyhint_quit": "[Esc] pause",
+    "pause_title": "Pause",
+    "pause_resume": "Resume",
+    "pause_toggle_slower_notes": "Slower notes",
+    "pause_toggle_wider_timing": "Wider timing",
+    "pause_toggle_single_button": "Single-button",
+    "pause_applies_next_run": "Applies next run"
+}

@@ -1,4 +1,4 @@
-[gd_scene load_steps=43 format=3]
+[gd_scene load_steps=49 format=3]
 
 [ext_resource type="Script" path="res://scripts/systems/minigames/coffee_brewing.gd" id="1_script"]
 [ext_resource type="AudioStreamWAV" path="res://audio/minigames/coffee/coffee_note_hit.wav" id="2_note_hit"]
@@ -35,6 +35,11 @@
 [ext_resource type="Texture2D" path="res://art/minigames/coffee/result_stamp_admitted.png" id="art_stamp_admitted"]
 [ext_resource type="Texture2D" path="res://art/minigames/coffee/result_stamp_objected.png" id="art_stamp_objected"]
 [ext_resource type="Texture2D" path="res://art/minigames/coffee/sparkle.png" id="art_sparkle"]
+[ext_resource type="Texture2D" path="res://art/portraits/barista/perfect.png" id="portrait_barista_perfect"]
+[ext_resource type="Texture2D" path="res://art/portraits/barista/good.png" id="portrait_barista_good"]
+[ext_resource type="Texture2D" path="res://art/portraits/barista/okay.png" id="portrait_barista_okay"]
+[ext_resource type="Texture2D" path="res://art/portraits/barista/bad.png" id="portrait_barista_bad"]
+[ext_resource type="Texture2D" path="res://art/portraits/barista/machine_objects.png" id="portrait_barista_machine_objects"]
 
 [sub_resource type="Animation" id="Animation_machine_idle"]
 resource_name = "machine_idle"
@@ -162,12 +167,30 @@ tracks/1/keys = {
 "values": [Vector2(1.3, 1.3), Vector2(1, 1)]
 }
 
+[sub_resource type="Animation" id="Animation_phase_label_pulse"]
+resource_name = "phase_label_pulse"
+length = 0.25
+loop_mode = 0
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("BackgroundPanel/PhaseLabel:scale")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.25),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [Vector2(1.4, 1.4), Vector2(1, 1)]
+}
+
 [sub_resource type="AnimationLibrary" id="AnimationLibrary_coffee"]
 _data = {
 &"machine_idle": SubResource("Animation_machine_idle"),
 &"machine_gurgle": SubResource("Animation_machine_gurgle"),
 &"machine_happy": SubResource("Animation_machine_happy"),
 &"machine_angry": SubResource("Animation_machine_angry"),
+&"phase_label_pulse": SubResource("Animation_phase_label_pulse"),
 &"result_reveal": SubResource("Animation_result_reveal"),
 &"stamp_impact": SubResource("Animation_stamp_impact")
 }
@@ -321,12 +344,88 @@ text = ""
 
 [node name="PhaseLabel" type="Label" parent="BackgroundPanel"]
 layout_mode = 0
-offset_left = 540.0
-offset_top = 30.0
-offset_right = 740.0
-offset_bottom = 70.0
-text = "READY"
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -160.0
+offset_top = 598.0
+offset_right = 160.0
+offset_bottom = 646.0
+pivot_offset = Vector2(160, 24)
+theme_override_font_sizes/font_size = 38
+text = "Grind"
 horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="KeyHintRow" type="HBoxContainer" parent="BackgroundPanel"]
+layout_mode = 0
+offset_left = 280.0
+offset_top = 664.0
+offset_right = 1000.0
+offset_bottom = 704.0
+theme_override_constants/separation = 24
+alignment = 1
+
+[node name="HintLeft" type="Label" parent="BackgroundPanel/KeyHintRow"]
+visible = false
+layout_mode = 2
+modulate = Color(1, 1, 1, 0.6)
+theme_override_font_sizes/font_size = 20
+text = "A"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="HintRight" type="Label" parent="BackgroundPanel/KeyHintRow"]
+visible = false
+layout_mode = 2
+modulate = Color(1, 1, 1, 0.6)
+theme_override_font_sizes/font_size = 20
+text = "D"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="HintUp" type="Label" parent="BackgroundPanel/KeyHintRow"]
+visible = false
+layout_mode = 2
+modulate = Color(1, 1, 1, 0.6)
+theme_override_font_sizes/font_size = 20
+text = "W"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="HintDown" type="Label" parent="BackgroundPanel/KeyHintRow"]
+visible = false
+layout_mode = 2
+modulate = Color(1, 1, 1, 0.6)
+theme_override_font_sizes/font_size = 20
+text = "S"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="HintPour" type="Label" parent="BackgroundPanel/KeyHintRow"]
+visible = false
+layout_mode = 2
+modulate = Color(1, 1, 1, 0.6)
+theme_override_font_sizes/font_size = 20
+text = "[E] hold"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="HintStamp" type="Label" parent="BackgroundPanel/KeyHintRow"]
+visible = false
+layout_mode = 2
+modulate = Color(1, 1, 1, 0.6)
+theme_override_font_sizes/font_size = 20
+text = "[E]"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="HintQuit" type="Label" parent="BackgroundPanel/KeyHintRow"]
+layout_mode = 2
+modulate = Color(1, 1, 1, 0.6)
+theme_override_font_sizes/font_size = 20
+text = "[Esc] pause"
+horizontal_alignment = 1
+vertical_alignment = 1
 
 [node name="ResultPanel" type="ColorRect" parent="BackgroundPanel"]
 visible = false
@@ -383,8 +482,53 @@ offset_bottom = 280.0
 text = "[E] to continue"
 horizontal_alignment = 1
 
+[node name="IntroCard" type="ColorRect" parent="BackgroundPanel"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.08, 0.06, 0.1, 0.9)
+
+[node name="TitleLabel" type="Label" parent="BackgroundPanel/IntroCard"]
+layout_mode = 0
+offset_left = 340.0
+offset_top = 190.0
+offset_right = 940.0
+offset_bottom = 250.0
+theme_override_font_sizes/font_size = 48
+text = "Court Coffee"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="InstructionsLabel" type="Label" parent="BackgroundPanel/IntroCard"]
+layout_mode = 0
+offset_left = 290.0
+offset_top = 310.0
+offset_right = 990.0
+offset_bottom = 420.0
+theme_override_font_sizes/font_size = 24
+text = "Hit A or D when icons reach the line. Hold E during the pour. Press E on the final stamp."
+horizontal_alignment = 1
+vertical_alignment = 1
+autowrap_mode = 2
+
+[node name="StartHintLabel" type="Label" parent="BackgroundPanel/IntroCard"]
+layout_mode = 0
+offset_left = 440.0
+offset_top = 480.0
+offset_right = 840.0
+offset_bottom = 520.0
+modulate = Color(1, 1, 1, 0.7)
+theme_override_font_sizes/font_size = 20
+text = "[E] to start"
+horizontal_alignment = 1
+vertical_alignment = 1
+
 [node name="CharacterReactionPortrait" type="Sprite2D" parent="BackgroundPanel"]
+visible = false
 position = Vector2(160, 160)
+texture = ExtResource("portrait_barista_good")
 
 [node name="SparkleEffect" type="CPUParticles2D" parent="BackgroundPanel"]
 emitting = false

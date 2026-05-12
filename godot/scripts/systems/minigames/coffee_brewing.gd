@@ -74,6 +74,18 @@ const CUP_TEXTURES: Array = [
 	preload("res://art/minigames/coffee/coffee_cup_fill_03.png"),
 ]
 
+## Barista reaction portraits keyed by the `buff` string returned by
+## _compute_grade(). F-grade case is handled in code — see _show_result().
+const BUFF_TO_PORTRAIT: Dictionary = {
+	"procedurally_alert_plus": preload("res://art/portraits/barista/perfect.png"),
+	"procedurally_alert":      preload("res://art/portraits/barista/good.png"),
+	"caffeinated":             preload("res://art/portraits/barista/okay.png"),
+	"over_caffeinated":        preload("res://art/portraits/barista/bad.png"),
+}
+const PORTRAIT_MACHINE_OBJECTS: Texture2D = preload("res://art/portraits/barista/machine_objects.png")
+const BITTER_FOAM_TEXTURE: Texture2D = preload("res://art/minigames/coffee/bitter_foam.png")
+const PUFF_OFFENDED_TEXTURE: Texture2D = preload("res://art/minigames/coffee/puff_offended.png")
+
 ## Visual-meter ranges. Brew quality maxes a bar at the S-grade threshold;
 ## bitterness maxes the bar before it can dominate brew quality. Pure HUD —
 ## judgment + grading math still use the raw _brew_quality / _bitterness.
@@ -84,7 +96,7 @@ const METER_FILL_WIDTH: float = 240.0
 const METER_FILL_HEIGHT: float = 24.0
 
 ## Phase enum.
-enum Phase { READY, GRIND, POUR, SERVE, RESULT, EXIT }
+enum Phase { INTRO, READY, GRIND, POUR, SERVE, RESULT, EXIT }
 
 ## Grade order for best_grade comparison.
 const GRADE_ORDER: Dictionary = { "S": 6, "A": 5, "B": 4, "C": 3, "D": 2, "F": 1, "": 0 }
@@ -99,7 +111,7 @@ var _okay_window: float = TUTORIAL_OKAY_WINDOW
 ## -----------------------------------------------------------------------
 ## Runtime state
 ## -----------------------------------------------------------------------
-var _phase: int = Phase.READY
+var _phase: int = Phase.INTRO
 var _phase_time: float = 0.0
 var _beat_time: float = 0.0
 
@@ -149,6 +161,7 @@ var _result_panel: Control
 var _result_grade_label: Label
 var _result_buff_label: Label
 var _result_detail_label: Label
+var _result_dismiss_hint: Label
 var _timing_line: Sprite2D
 var _lanes: Array[ColorRect] = []
 var _prompt_spawner: Node2D
@@ -163,6 +176,20 @@ var _wider_timing_toggle: CheckBox
 var _single_button_toggle: CheckBox
 var _slower_notes_note_label: Label
 var _resume_button: Button
+var _reaction_portrait: Sprite2D
+var _machine_sprite: Sprite2D
+var _intro_card: ColorRect
+var _intro_title: Label
+var _intro_instructions: Label
+var _intro_start_hint: Label
+var _hint_left: Label
+var _hint_right: Label
+var _hint_up: Label
+var _hint_down: Label
+var _hint_pour: Label
+var _hint_stamp: Label
+var _hint_quit: Label
+var _keyhint_stamp_default: String = ""
 
 
 func _ready() -> void:
@@ -171,11 +198,13 @@ func _ready() -> void:
 
 	_cache_nodes()
 	_load_coffee_text()
+	_apply_intro_text()
+	_apply_key_hint_text()
 	_load_accessibility_settings()
 	_apply_pause_text()
 	_sync_pause_toggles()
 	_load_pattern()
-	_start_phase(Phase.GRIND)
+	_start_phase(Phase.INTRO)
 
 
 func _cache_nodes() -> void:
@@ -190,6 +219,7 @@ func _cache_nodes() -> void:
 	_result_grade_label = get_node_or_null("BackgroundPanel/ResultPanel/GradeLabel") as Label
 	_result_buff_label = get_node_or_null("BackgroundPanel/ResultPanel/BuffLabel") as Label
 	_result_detail_label = get_node_or_null("BackgroundPanel/ResultPanel/DetailLabel") as Label
+	_result_dismiss_hint = get_node_or_null("BackgroundPanel/ResultPanel/DismissHint") as Label
 	_timing_line = get_node_or_null("BackgroundPanel/TimingLine") as Sprite2D
 	_prompt_spawner = get_node_or_null("BackgroundPanel/PromptSpawner") as Node2D
 	_audio_player = get_node_or_null("AudioStreamPlayer") as AudioStreamPlayer
@@ -203,6 +233,19 @@ func _cache_nodes() -> void:
 	_single_button_toggle = get_node_or_null("PauseLayer/Panel/SingleButtonToggle") as CheckBox
 	_slower_notes_note_label = get_node_or_null("PauseLayer/Panel/SlowerNotesNextRunLabel") as Label
 	_resume_button = get_node_or_null("PauseLayer/Panel/ResumeButton") as Button
+	_reaction_portrait = get_node_or_null("BackgroundPanel/CharacterReactionPortrait") as Sprite2D
+	_machine_sprite = get_node_or_null("BackgroundPanel/CoffeeMachineSprite") as Sprite2D
+	_intro_card = get_node_or_null("BackgroundPanel/IntroCard") as ColorRect
+	_intro_title = get_node_or_null("BackgroundPanel/IntroCard/TitleLabel") as Label
+	_intro_instructions = get_node_or_null("BackgroundPanel/IntroCard/InstructionsLabel") as Label
+	_intro_start_hint = get_node_or_null("BackgroundPanel/IntroCard/StartHintLabel") as Label
+	_hint_left = get_node_or_null("BackgroundPanel/KeyHintRow/HintLeft") as Label
+	_hint_right = get_node_or_null("BackgroundPanel/KeyHintRow/HintRight") as Label
+	_hint_up = get_node_or_null("BackgroundPanel/KeyHintRow/HintUp") as Label
+	_hint_down = get_node_or_null("BackgroundPanel/KeyHintRow/HintDown") as Label
+	_hint_pour = get_node_or_null("BackgroundPanel/KeyHintRow/HintPour") as Label
+	_hint_stamp = get_node_or_null("BackgroundPanel/KeyHintRow/HintStamp") as Label
+	_hint_quit = get_node_or_null("BackgroundPanel/KeyHintRow/HintQuit") as Label
 
 	var track_root: Control = get_node_or_null("BackgroundPanel/TimingTrackRoot") as Control
 	if track_root:
@@ -242,8 +285,45 @@ func _load_coffee_text() -> void:
 		_coffee_text = parsed
 
 
-func _coffee_text_value(key: String) -> String:
-	return str(_coffee_text.get(key, ""))
+func _coffee_text_value(key: String, fallback: String = "") -> String:
+	return str(_coffee_text.get(key, fallback))
+
+
+func _phase_label_text(phase_key: String, flat_key: String, fallback: String) -> String:
+	var flat_value: String = _coffee_text_value(flat_key, "")
+	if not flat_value.is_empty():
+		return flat_value
+	var phase_labels = _coffee_text.get("phase_labels", {})
+	if phase_labels is Dictionary:
+		return str(phase_labels.get(phase_key, fallback))
+	return fallback
+
+
+func _apply_intro_text() -> void:
+	if _intro_title:
+		_intro_title.text = _coffee_text_value("intro_title", _intro_title.text)
+	if _intro_instructions:
+		_intro_instructions.text = _coffee_text_value("intro_instructions", _intro_instructions.text)
+	if _intro_start_hint:
+		_intro_start_hint.text = _coffee_text_value("intro_start_hint", _intro_start_hint.text)
+
+
+func _apply_key_hint_text() -> void:
+	if _hint_left:
+		_hint_left.text = _coffee_text_value("keyhint_lane_left", _hint_left.text)
+	if _hint_right:
+		_hint_right.text = _coffee_text_value("keyhint_lane_right", _hint_right.text)
+	if _hint_up:
+		_hint_up.text = _coffee_text_value("keyhint_lane_up", _hint_up.text)
+	if _hint_down:
+		_hint_down.text = _coffee_text_value("keyhint_lane_down", _hint_down.text)
+	if _hint_pour:
+		_hint_pour.text = _coffee_text_value("keyhint_pour", _hint_pour.text)
+	if _hint_stamp:
+		_keyhint_stamp_default = _coffee_text_value("keyhint_stamp", _hint_stamp.text)
+		_hint_stamp.text = _keyhint_stamp_default
+	if _hint_quit:
+		_hint_quit.text = _coffee_text_value("keyhint_quit", _hint_quit.text)
 
 
 func _apply_pause_text() -> void:
@@ -259,6 +339,46 @@ func _apply_pause_text() -> void:
 		_slower_notes_note_label.text = _coffee_text_value("pause_applies_next_run")
 	if _resume_button:
 		_resume_button.text = _coffee_text_value("pause_resume")
+
+
+func _set_hint_visible(label: Label, should_show: bool) -> void:
+	if label:
+		label.visible = should_show
+
+
+func _update_key_hints(phase: int) -> void:
+	_set_hint_visible(_hint_left, false)
+	_set_hint_visible(_hint_right, false)
+	_set_hint_visible(_hint_up, false)
+	_set_hint_visible(_hint_down, false)
+	_set_hint_visible(_hint_pour, false)
+	_set_hint_visible(_hint_stamp, false)
+	_set_hint_visible(_hint_quit, false)
+
+	if _hint_stamp:
+		_hint_stamp.text = _keyhint_stamp_default
+
+	match phase:
+		Phase.INTRO:
+			_set_hint_visible(_hint_quit, true)
+		Phase.READY:
+			_set_hint_visible(_hint_quit, true)
+		Phase.GRIND:
+			_set_hint_visible(_hint_left, true)
+			_set_hint_visible(_hint_right, true)
+			_set_hint_visible(_hint_up, _lane_count >= 4)
+			_set_hint_visible(_hint_down, _lane_count >= 4)
+			_set_hint_visible(_hint_quit, true)
+		Phase.POUR:
+			_set_hint_visible(_hint_pour, true)
+			_set_hint_visible(_hint_quit, true)
+		Phase.SERVE:
+			_set_hint_visible(_hint_stamp, true)
+			_set_hint_visible(_hint_quit, true)
+		Phase.RESULT:
+			if _hint_stamp and _result_dismiss_hint:
+				_hint_stamp.text = _result_dismiss_hint.text
+			_set_hint_visible(_hint_stamp, true)
 
 
 func _coffee_accessibility_settings() -> Dictionary:
@@ -501,21 +621,36 @@ func _start_phase(phase: int) -> void:
 	_pour_active = false
 	_pour_handled = false
 
+	if _intro_card:
+		_intro_card.visible = phase == Phase.INTRO
+	if _phase_label:
+		_phase_label.visible = phase != Phase.INTRO
+
 	match phase:
+		Phase.INTRO:
+			_current_notes = []
+			_update_phase_label("")
+		Phase.READY:
+			_current_notes = []
+			_update_phase_label("")
 		Phase.GRIND:
 			_current_notes = _phases_data.get("grind", [])
-			_update_phase_label("GRIND")
+			_update_phase_label(_phase_label_text("grind", "phase_grind_label", "Grind"))
 		Phase.POUR:
 			_current_notes = _phases_data.get("pour", [])
-			_update_phase_label("POUR")
+			_update_phase_label(_phase_label_text("pour", "phase_pour_label", "Pour"))
 		Phase.SERVE:
 			_current_notes = _phases_data.get("serve", [])
-			_update_phase_label("SERVE")
+			_update_phase_label(_phase_label_text("serve", "phase_serve_label", "Serve"))
 		Phase.RESULT:
 			_current_notes = []
 			_show_result()
 		Phase.EXIT:
 			_exit_minigame()
+
+	_update_key_hints(phase)
+	if phase == Phase.GRIND or phase == Phase.POUR or phase == Phase.SERVE:
+		_play_anim("phase_label_pulse")
 
 
 func _update_phase_label(text: String) -> void:
@@ -556,7 +691,7 @@ func _play_anim(anim_name: String) -> void:
 ## -----------------------------------------------------------------------
 
 func _process(delta: float) -> void:
-	if _pause_open or _phase == Phase.RESULT or _phase == Phase.EXIT or _phase == Phase.READY:
+	if _pause_open or _phase == Phase.INTRO or _phase == Phase.RESULT or _phase == Phase.EXIT or _phase == Phase.READY:
 		return
 
 	_phase_time += delta
@@ -712,6 +847,13 @@ func _unhandled_input(event: InputEvent) -> void:
 	if _pause_open:
 		return
 
+	## Intro card dismiss.
+	if _phase == Phase.INTRO:
+		if event.is_action_pressed("interact"):
+			get_viewport().set_input_as_handled()
+			_start_phase(Phase.GRIND)
+		return
+
 	## Result panel dismiss.
 	if _phase == Phase.RESULT:
 		if event.is_action_pressed("interact"):
@@ -776,6 +918,7 @@ func _try_judge_lane(lane: int) -> void:
 		_combo = 0
 		_play("note_miss")
 		_play_anim("machine_angry")
+		_spawn_fade_sprite(PUFF_OFFENDED_TEXTURE, _coffee_machine_position())
 		return
 
 	## Check lane match.
@@ -785,6 +928,7 @@ func _try_judge_lane(lane: int) -> void:
 		_combo = 0
 		_play("note_miss")
 		_play_anim("machine_angry")
+		_spawn_fade_sprite(PUFF_OFFENDED_TEXTURE, _coffee_machine_position())
 		return
 
 	## Judge timing.
@@ -814,6 +958,7 @@ func _try_judge_single_button() -> void:
 		_combo = 0
 		_play("note_miss")
 		_play_anim("machine_angry")
+		_spawn_fade_sprite(PUFF_OFFENDED_TEXTURE, _coffee_machine_position())
 		return
 
 	var judgment: String = _get_judgment(best_diff)
@@ -864,7 +1009,7 @@ func _timing_window_scale() -> float:
 	return 1.0
 
 
-func _register_judgment(judgment: String, _note_data: Dictionary) -> void:
+func _register_judgment(judgment: String, note_data: Dictionary) -> void:
 	match judgment:
 		"perfect":
 			_brew_quality += SCORE_PERFECT
@@ -894,6 +1039,7 @@ func _register_judgment(judgment: String, _note_data: Dictionary) -> void:
 			_misses += 1
 			_play("note_miss")
 			_play_anim("machine_angry")
+			_spawn_fade_sprite(BITTER_FOAM_TEXTURE, _note_position_or_timing_line(note_data))
 
 	if _combo > _max_combo:
 		_max_combo = _combo
@@ -1028,6 +1174,18 @@ func _show_result() -> void:
 		_stamp_objected.scale = Vector2(1, 1)
 		_stamp_objected.visible = grade_str == "F"
 
+	## Barista reaction portrait keyed by buff (F-grade overrides to machine_objects).
+	if _reaction_portrait:
+		var buff_str: String = str(result.get("buff", ""))
+		var portrait_tex: Texture2D = null
+		if grade_str == "F":
+			portrait_tex = PORTRAIT_MACHINE_OBJECTS
+		else:
+			portrait_tex = BUFF_TO_PORTRAIT.get(buff_str)
+		if portrait_tex:
+			_reaction_portrait.texture = portrait_tex
+			_reaction_portrait.visible = true
+
 	if grade_str == "F":
 		_play("failure")
 	else:
@@ -1093,6 +1251,42 @@ func _exit_minigame() -> void:
 	## Unpause and free.
 	get_tree().paused = false
 	queue_free()
+
+
+## -----------------------------------------------------------------------
+## Visual feedback helpers (miss splat, wrong-input puff)
+## -----------------------------------------------------------------------
+
+func _spawn_fade_sprite(texture: Texture2D, at_position: Vector2, duration: float = 0.45) -> void:
+	if texture == null:
+		return
+	var sprite := Sprite2D.new()
+	sprite.texture = texture
+	sprite.position = at_position
+	sprite.z_index = 5
+	if _prompt_spawner:
+		_prompt_spawner.add_child(sprite)
+	else:
+		add_child(sprite)
+	var tween := create_tween()
+	tween.tween_property(sprite, "modulate:a", 0.0, duration)
+	tween.tween_callback(sprite.queue_free)
+
+
+func _note_position_or_timing_line(note_data: Dictionary) -> Vector2:
+	var lane: int = int(note_data.get("lane", 0))
+	var lane_x: float = 475.0 + float(lane) * 100.0
+	var timing_y: float = 400.0
+	var node = note_data.get("node")
+	if node is Node2D and is_instance_valid(node):
+		return (node as Node2D).position
+	return Vector2(lane_x, timing_y)
+
+
+func _coffee_machine_position() -> Vector2:
+	if _machine_sprite and is_instance_valid(_machine_sprite):
+		return _machine_sprite.position + Vector2(0, -60)
+	return Vector2(160, 240)
 
 
 ## -----------------------------------------------------------------------

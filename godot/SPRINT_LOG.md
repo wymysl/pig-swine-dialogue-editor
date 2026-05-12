@@ -640,3 +640,49 @@ Acceptance:
 - Web export not re-run this session: the only files touched were the minigame scene and its script; export validity is the same as Session 23's clean export.
 
 Visual acceptance is delegated to human playtest per brief; the underlying art-wiring contract (machine swap by judgment, cup ladder by brew quality, fill bars by ratio, stamp on result) is in place.
+
+---
+
+**Session 25 - 2026-05-12 - Code - Coffee minigame portrait + miss-feedback wiring (follow-up to Session 16 "Human action needed").**
+Closed the two outstanding visual gaps from Session 16's Coffee Brewing wiring: the `CharacterReactionPortrait` slot was empty and never updated, and the `bitter_foam.png` / `puff_offended.png` sprites existed on disk but never spawned. Wiring only; the barista portraits remain the geometric placeholders Session 16 produced — when the AI-generated portraits land in `art/portraits/barista/`, no further code change will be required.
+
+Scene changes (`scenes/minigames/coffee_brewing.tscn`):
+- Registered 5 new Texture2D `ext_resource`s (`portrait_barista_perfect`, `portrait_barista_good`, `portrait_barista_okay`, `portrait_barista_bad`, `portrait_barista_machine_objects`) and bumped `load_steps` 43 → 48.
+- `CharacterReactionPortrait` (existing `Sprite2D` at `position = (160, 160)`) now declares `texture = ExtResource("portrait_barista_good")` as a sane neutral default and `visible = false` — the script flips it on at result reveal.
+
+Script changes (`scripts/systems/minigames/coffee_brewing.gd`):
+- Added `BUFF_TO_PORTRAIT` dictionary keyed by the `buff` string returned from `_compute_grade()` (`procedurally_alert_plus` → perfect, `procedurally_alert` → good, `caffeinated` → okay, `over_caffeinated` → bad). The F-grade case overrides to `PORTRAIT_MACHINE_OBJECTS` regardless of buff (since the F path uses `over_caffeinated` as buff but should show the machine-refuses-service portrait per `minigames.txt` §Character reactions).
+- Added `BITTER_FOAM_TEXTURE` and `PUFF_OFFENDED_TEXTURE` top-level preloads alongside the new portrait consts.
+- Cached new node refs `_reaction_portrait` and `_machine_sprite` in `_cache_nodes()` alongside the existing references.
+- `_show_result()` now selects and shows the portrait after the existing stamp-selection block.
+- Added private helpers `_spawn_fade_sprite()` (one-shot Sprite2D parented under `_prompt_spawner`, `z_index = 5`, tween-fades `modulate:a` 1 → 0 over 0.45s then `queue_free`s), `_note_position_or_timing_line()` (returns the note's current sprite position if still alive, else falls back to lane center / timing-line Y), and `_coffee_machine_position()` (returns `_machine_sprite.position + (0, -60)` above the machine head).
+- `_register_judgment()` "miss" branch now also calls `_spawn_fade_sprite(BITTER_FOAM_TEXTURE, _note_position_or_timing_line(note_data))`. The parameter was renamed from `_note_data` to `note_data` (previously prefixed `_` to suppress an unused-arg warning; now used).
+- Each of the three `_wrong_hits += 1` call sites (two in `_try_judge_lane()` — no-note-in-range and wrong-lane — and one in `_try_judge_single_button()`) now also calls `_spawn_fade_sprite(PUFF_OFFENDED_TEXTURE, _coffee_machine_position())`.
+
+Brief deviation: the brief asked for the bitter-foam spawn to be added both inside `_register_judgment()` "miss" and at the missed-note site in `_check_missed_notes()`. The latter calls `_register_judgment("miss", note_data)`, so adding the line there as well would double-fire. The spawn lives in `_register_judgment` only, covering both the keypress-induced miss and the scrolled-past miss paths.
+
+Files changed: `scenes/minigames/coffee_brewing.tscn`, `scripts/systems/minigames/coffee_brewing.gd`. No other scenes, no test files, no save-schema files, no asset PNGs touched. Save schema still at v10.
+
+Acceptance:
+- `godot --headless --path godot --script tests/test_smoke.gd --log-file /tmp/coffee_v2_smoke.log` → EXIT 0.
+- `godot --headless --path godot --script tests/test_runner.gd --log-file /tmp/coffee_v2_runner.log` → EXIT 0.
+- Ad-hoc probe instantiating `res://scenes/minigames/coffee_brewing.tscn` confirmed the portrait node loads with `texture = good.png` and `visible = false`; probe script deleted after use, tests/ untouched.
+- No new GDScript parser warnings.
+- Web export not re-run: scope is identical to Session 24 (same two files).
+
+Visual acceptance delegated to human playtest: on result reveal, the barista portrait matching the buff (or `machine_objects` on F) appears beside the stamps; on every Miss, a `bitter_foam` splat appears at the missed prompt's position and fades; on every Wrong input, a `puff_offended` cloud appears above the coffee machine and fades. The portraits on disk are still Session 16's geometric placeholders — a future portrait-asset swap will land automatically.
+
+---
+
+**Session 26 - 2026-05-12 - Code - Coffee minigame first-play UX legibility.**
+Added a data-driven first-play intro card, an explicit `Phase.INTRO` gate before the coffee rhythm sequence, a larger center-bottom phase label with pulse animation, and a phase-aware bottom key-hint row. Files touched for implementation: `data/minigames/coffee_text.json`, `scenes/minigames/coffee_brewing.tscn`, `scripts/systems/minigames/coffee_brewing.gd`. Existing `phase_labels` JSON keys were reused rather than duplicating phase-label text under new top-level keys; the existing JSON comment about phase labels remains untouched because this pass was additions-only for that file.
+
+Verification:
+- `jq empty godot/data/minigames/coffee_text.json` -> EXIT 0.
+- `godot --headless --path godot --scene res://scenes/minigames/coffee_brewing.tscn --quit-after 1 --log-file /tmp/coffee_ux_scene.log` -> EXIT 0.
+- `godot --headless --path godot --script tests/test_smoke.gd --log-file /tmp/ux_smoke.log` -> EXIT 0.
+- `godot --headless --path godot --script tests/test_runner.gd --log-file /tmp/ux_runner.log` -> EXIT 0.
+- `godot --headless --path godot --script tests/test_save_migration_v9_v10.gd --log-file /tmp/v9v10.log` -> EXIT 0; test passes 6/6, with the existing resource-cleanup warnings at process exit.
+- `godot --headless --path godot --script tests/test_coffee_brewing.gd --log-file /tmp/ux_coffee.log` -> EXIT 1; T1-T7 and T10 pass, T8/T9 fail because the new INTRO phase changes the test's direct timing assumptions. Test left untouched per brief; deferred to the parallel coffee test update.
+
+Deferred: human playtest should confirm the new overlay and hints read clearly in motion. No mechanics, save schema, art assets, audio, or test files were changed.

@@ -1,0 +1,138 @@
+{
+    "patterns": {
+        "chapter1_court_coffee": {
+            "id": "chapter1_court_coffee",
+            "display_name": "Court Coffee",
+            "difficulty": "tutorial",
+            "bpm": 86,
+            "duration": 22.0,
+            "lanes": 2,
+            "notes": [
+                {"time": 3.0, "lane": 0, "icon": "bean", "kind": "tap"},
+                {"time": 4.2, "lane": 1, "icon": "bean", "kind": "tap"},
+                {"time": 5.4, "lane": 0, "icon": "bean", "kind": "tap"},
+                {"time": 6.8, "lane": 1, "icon": "bean", "kind": "tap"},
+                {"time": 8.2, "lane": 0, "icon": "sugar", "kind": "tap"},
+                {"time": 9.4, "lane": 1, "icon": "sugar", "kind": "tap"},
+                {"time": 10.6, "lane": 0, "icon": "bean", "kind": "tap"},
+                {"time": 13.0, "lane": 1, "icon": "sugar", "kind": "tap"},
+                {"time": 14.0, "lane": 0, "icon": "bean", "kind": "tap"},
+                {"time": 15.0, "lane": 1, "icon": "bean", "kind": "tap"},
+                {"time": 16.2, "lane": 0, "icon": "sugar", "kind": "tap"},
+                {"time": 17.4, "lane": 1, "icon": "bean", "kind": "tap"},
+                {"time": 18.4, "lane": 0, "icon": "bean", "kind": "tap"},
+                {"time": 19.2, "lane": 1, "icon": "sugar", "kind": "tap"},
+                {"time": 20.5, "lane": 0, "icon": "stamp", "kind": "stamp"}
+            ],
+            "pour_events": [
+                {"start_time": 11.0, "target_start": 11.8, "target_end": 12.5}
+            ],
+            "final_stamp": {"time": 20.5}
+        },
+        "cafe_smooth_coffee": {
+            "id": "cafe_smooth_coffee",
+            "display_name": "Smooth Coffee",
+            "difficulty": "tutorial",
+            "bpm": 90,
+            "duration": 22.0,
+            "lanes": 2,
+            "notes": [
+                {"time": 3.2, "lane": 1, "icon": "bean", "kind": "tap"},
+                {"time": 4.5, "lane": 0, "icon": "bean", "kind": "tap"},
+                {"time": 5.6, "lane": 1, "icon": "bean", "kind": "tap"},
+                {"time": 6.8, "lane": 0, "icon": "sugar", "kind": "tap"},
+                {"time": 8.0, "lane": 1, "icon": "bean", "kind": "tap"},
+                {"time": 9.2, "lane": 0, "icon": "sugar", "kind": "tap"},
+                {"time": 10.4, "lane": 1, "icon": "bean", "kind": "tap"},
+                {"time": 13.2, "lane": 0, "icon": "bean", "kind": "tap"},
+                {"time": 14.4, "lane": 1, "icon": "sugar", "kind": "tap"},
+                {"time": 15.4, "lane": 0, "icon": "bean", "kind": "tap"},
+                {"time": 16.4, "lane": 1, "icon": "sugar", "kind": "tap"},
+                {"time": 17.2, "lane": 0, "icon": "bean", "kind": "tap"},
+                {"time": 18.2, "lane": 1, "icon": "bean", "kind": "tap"},
+                {"time": 19.0, "lane": 0, "icon": "sugar", "kind": "tap"},
+                {"time": 20.2, "lane": 1, "icon": "stamp", "kind": "stamp"}
+            ],
+            "pour_events": [
+                {"start_time": 11.0, "target_start": 11.6, "target_end": 12.4}
+            ],
+            "final_stamp": {"time": 20.2}
+        },
+        "office_standard_coffee": {
+            "id": "office_standard_coffee",
+            "display_name": "Office Coffee",
+            "difficulty": "normal",
+            "bpm": 100,
+            "duration": 27.0,
+            "lanes": 4,
+            "notes": [
+                {"time": 3.0, "lane": 0, "icon": "bean", "kind": "tap"},
+                {"time": 4.0, "lane": 2, "icon": "bean", "kind": "tap"},
+                {"time": 5.0, "lane": 1, "icon": "sugar", "kind": "tap"},
+                {"time": 6.0, "lane": 3, "icon": "bean", "kind": "tap"},
+                {"time": 7.2, "lane": 0, "icon": "milk", "kind": "tap"},
+                {"time": 8.2, "lane": 2, "icon": "bean", "kind": "tap"},
+                {"time": 9.0, "lane": 1, "icon": "file", "kind": "tap"},
+                {"time": 10.0, "lane": 3, "icon": "sugar", "kind": "tap"},
+                {"time": 11.0, "lane": 0, "icon": "bean", "kind": "tap"},
+                {"time": 14.0, "lane": 2, "icon": "milk", "kind": "tap"},
+                {"time": 15.0, "lane": 1, "icon": "bean", "kind": "tap"},
+                {"time": 16.0, "lane": 3, "icon": "sugar", "kind": "tap"},
+                {"time": 17.0, "lane": 0, "icon": "file", "kind": "tap"},
+                {"time": 18.0, "lane": 2, "icon": "bean", "kind": "tap"},
+                {"time": 19.0, "lane": 1, "icon": "milk", "kind": "tap"},
+                {"time": 20.0, "lane": 3, "icon": "bean", "kind": "tap"},
+                {"time": 21.0, "lane": 0, "icon": "sugar", "kind": "tap"},
+                {"time": 22.0, "lane": 2, "icon": "file", "kind": "tap"},
+                {"time": 23.0, "lane": 1, "icon": "bean", "kind": "tap"},
+                {"time": 23.8, "lane": 3, "icon": "milk", "kind": "tap"},
+                {"time": 24.6, "lane": 0, "icon": "bean", "kind": "tap"},
+                {"time": 25.5, "lane": 2, "icon": "stamp", "kind": "stamp"}
+            ],
+            "pour_events": [
+                {"start_time": 12.0, "target_start": 12.6, "target_end": 13.3}
+            ],
+            "final_stamp": {"time": 25.5}
+        },
+        "office_panic_coffee": {
+            "id": "office_panic_coffee",
+            "display_name": "Panic Coffee",
+            "difficulty": "normal",
+            "bpm": 108,
+            "duration": 27.0,
+            "lanes": 4,
+            "notes": [
+                {"time": 3.0, "lane": 1, "icon": "bean", "kind": "tap"},
+                {"time": 4.0, "lane": 3, "icon": "bean", "kind": "tap"},
+                {"time": 5.0, "lane": 0, "icon": "sugar", "kind": "tap"},
+                {"time": 6.0, "lane": 2, "icon": "milk", "kind": "tap"},
+                {"time": 7.0, "lane": 1, "icon": "bean", "kind": "tap"},
+                {"time": 8.0, "lane": 3, "icon": "file", "kind": "tap"},
+                {"time": 9.0, "lane": 0, "icon": "bean", "kind": "tap"},
+                {"time": 10.0, "lane": 2, "icon": "sugar", "kind": "tap"},
+                {"time": 11.0, "lane": 1, "icon": "milk", "kind": "tap"},
+                {"time": 14.0, "lane": 3, "icon": "bean", "kind": "tap"},
+                {"time": 15.0, "lane": 0, "icon": "file", "kind": "tap"},
+                {"time": 16.0, "lane": 2, "icon": "bean", "kind": "tap"},
+                {"time": 17.0, "lane": 1, "icon": "sugar", "kind": "tap"},
+                {"time": 18.0, "lane": 3, "icon": "milk", "kind": "tap"},
+                {"time": 19.0, "lane": 0, "icon": "bean", "kind": "tap"},
+                {"time": 20.0, "lane": 2, "icon": "file", "kind": "tap"},
+                {"time": 20.8, "lane": 1, "icon": "bean", "kind": "tap"},
+                {"time": 21.5, "lane": 3, "icon": "sugar", "kind": "tap"},
+                {"time": 22.0, "lane": 0, "icon": "milk", "kind": "tap"},
+                {"time": 22.0, "lane": 2, "icon": "bean", "kind": "tap"},
+                {"time": 22.8, "lane": 1, "icon": "file", "kind": "tap"},
+                {"time": 23.4, "lane": 3, "icon": "bean", "kind": "tap"},
+                {"time": 23.4, "lane": 0, "icon": "sugar", "kind": "tap"},
+                {"time": 24.0, "lane": 2, "icon": "milk", "kind": "tap"},
+                {"time": 24.6, "lane": 1, "icon": "bean", "kind": "tap"},
+                {"time": 25.5, "lane": 3, "icon": "stamp", "kind": "stamp"}
+            ],
+            "pour_events": [
+                {"start_time": 12.0, "target_start": 12.5, "target_end": 13.2}
+            ],
+            "final_stamp": {"time": 25.5}
+        }
+    }
+}
