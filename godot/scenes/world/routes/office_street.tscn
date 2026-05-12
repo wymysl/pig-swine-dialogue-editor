@@ -1,32 +1,42 @@
-[gd_scene load_steps=6 format=3 uid="uid://office_street_001"]
+[gd_scene format=3]
 
 [ext_resource type="Script" path="res://scripts/actors/player.gd" id="1_player"]
 [ext_resource type="Script" path="res://scripts/actors/door.gd" id="2_door"]
 [ext_resource type="SpriteFrames" path="res://art/sprites/cula/cula_sprite_frames.tres" id="3_cula_frames"]
 
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_1"]
-size = Vector2(24, 24)
-
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_2"]
 size = Vector2(48, 16)
 
-[node name="OfficeStreet" type="Node2D"]
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_1"]
+size = Vector2(24, 24)
 
-[node name="Floor" type="ColorRect" parent="."]
-offset_left = 0.0
-offset_top = 0.0
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_t7h76"]
+size = Vector2(960, 16)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_bso4j"]
+size = Vector2(960, 16)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_uipt3"]
+size = Vector2(16, 640)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_t344o"]
+size = Vector2(16, 640)
+
+[node name="OfficeStreet" type="Node2D" unique_id=1803482466]
+
+[node name="Floor" type="ColorRect" parent="." unique_id=1656640189]
 offset_right = 960.0
 offset_bottom = 640.0
 color = Color(0.18, 0.22, 0.28, 1)
 
-[node name="DoorIndicator" type="ColorRect" parent="."]
+[node name="DoorIndicator" type="ColorRect" parent="." unique_id=143868402]
 offset_left = 456.0
 offset_top = 256.0
 offset_right = 504.0
 offset_bottom = 272.0
 color = Color(0.08, 0.08, 0.12, 1)
 
-[node name="FrontDoor" type="Area2D" parent="."]
+[node name="FrontDoor" type="Area2D" parent="." unique_id=2002665854]
 position = Vector2(480, 264)
 collision_layer = 0
 collision_mask = 2
@@ -34,28 +44,68 @@ script = ExtResource("2_door")
 door_id = "office_front_door"
 target_scene = "res://scenes/interiors/pig_swine_office.tscn"
 target_spawn_id = "StreetSpawn"
-required_flag = ""
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="FrontDoor"]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="FrontDoor" unique_id=2120902228]
 shape = SubResource("RectangleShape2D_2")
 
-[node name="OfficeSpawn" type="Node2D" parent="."]
+[node name="OfficeSpawn" type="Node2D" parent="." unique_id=282351275]
 position = Vector2(480, 304)
 
-[node name="Player" type="CharacterBody2D" parent="."]
+[node name="Player" type="CharacterBody2D" parent="." unique_id=624004415]
 position = Vector2(480, 400)
 collision_layer = 2
-collision_mask = 1
 script = ExtResource("1_player")
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Player"]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Player" unique_id=489872544]
+position = Vector2(0, 24)
 shape = SubResource("RectangleShape2D_1")
 
-[node name="Visual" type="AnimatedSprite2D" parent="Player"]
+[node name="Visual" type="AnimatedSprite2D" parent="Player" unique_id=1772147733]
 position = Vector2(0, -8)
 sprite_frames = ExtResource("3_cula_frames")
 animation = &"idle_front"
 
-[node name="Camera2D" type="Camera2D" parent="Player"]
+[node name="Camera2D" type="Camera2D" parent="Player" unique_id=2145807978]
 position_smoothing_enabled = true
 position_smoothing_speed = 8.0
+
+[node name="CafeDoorIndicator" type="ColorRect" parent="." unique_id=758619548]
+offset_left = 176.0
+offset_top = 256.0
+offset_right = 224.0
+offset_bottom = 272.0
+color = Color(0.08, 0.08, 0.12, 1)
+
+[node name="CafeDoor" type="Area2D" parent="." unique_id=168081816]
+position = Vector2(200, 264)
+collision_layer = 0
+collision_mask = 2
+script = ExtResource("2_door")
+door_id = "street_to_cafe"
+target_scene = "res://scenes/interiors/cafe_paragraf.tscn"
+target_spawn_id = "CafeSpawn"
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="CafeDoor" unique_id=772068219]
+shape = SubResource("RectangleShape2D_2")
+
+[node name="CafeSpawn" type="Node2D" parent="." unique_id=709907963]
+position = Vector2(200, 304)
+
+[node name="Walls" type="StaticBody2D" parent="." unique_id=884197458]
+collision_mask = 0
+
+[node name="Top" type="CollisionShape2D" parent="Walls" unique_id=1504605018]
+position = Vector2(480, -8)
+shape = SubResource("RectangleShape2D_t7h76")
+
+[node name="Bottom" type="CollisionShape2D" parent="Walls" unique_id=1572954701]
+position = Vector2(480, 648)
+shape = SubResource("RectangleShape2D_bso4j")
+
+[node name="Left" type="CollisionShape2D" parent="Walls" unique_id=2111926347]
+position = Vector2(-8, 320)
+shape = SubResource("RectangleShape2D_uipt3")
+
+[node name="Right" type="CollisionShape2D" parent="Walls" unique_id=189555934]
+position = Vector2(968, 320)
+shape = SubResource("RectangleShape2D_t344o")

@@ -11,8 +11,20 @@ anchor_left = 0.0
 anchor_top = 1.0
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_top = -120.0
+offset_top = -160.0
 offset_bottom = 0.0
+visible = false
+
+[node name="PortraitRect" type="TextureRect" parent="Panel"]
+anchor_left = 0.0
+anchor_top = 1.0
+anchor_right = 0.0
+anchor_bottom = 1.0
+offset_left = 4.0
+offset_top = -200.0
+offset_right = 204.0
+offset_bottom = 0.0
+stretch_mode = 4
 visible = false
 
 [node name="SpeakerLabel" type="Label" parent="Panel"]
@@ -20,22 +32,34 @@ anchor_left = 0.0
 anchor_top = 0.0
 anchor_right = 1.0
 anchor_bottom = 0.0
-offset_left = 16.0
-offset_top = 8.0
+offset_left = 220.0
+offset_top = 10.0
 offset_right = -16.0
-offset_bottom = 32.0
+offset_bottom = 40.0
 text = ""
-theme_override_font_sizes/font_size = 14
+theme_override_font_sizes/font_size = 21
 
 [node name="TextLabel" type="Label" parent="Panel"]
 anchor_left = 0.0
 anchor_top = 0.0
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_left = 16.0
-offset_top = 36.0
+offset_left = 220.0
+offset_top = 48.0
 offset_right = -16.0
 offset_bottom = -8.0
 text = ""
 autowrap_mode = 3
-theme_override_font_sizes/font_size = 13
+theme_override_font_sizes/font_size = 20
+
+[node name="OptionsVBox" type="VBoxContainer" parent="Panel"]
+anchor_left = 0.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 220.0
+offset_top = -90.0
+offset_right = -16.0
+offset_bottom = -8.0
+theme_override_constants/separation = 2
+visible = false
