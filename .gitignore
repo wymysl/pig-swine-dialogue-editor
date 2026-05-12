@@ -7,3 +7,35 @@ godot/exports/web/index.wasm
 godot/exports/web/index.pck
 godot/exports/web/index.js
 godot/exports/web/*.png
+
+# Visual Smoke Tests
+godot/test_output/visual_smoke/*
+!godot/test_output/visual_smoke/reference/
+!godot/test_output/visual_smoke/.gitkeep
+
+# Scratch / one-off exploratory scripts at godot/ root.
+# Real scripts live under godot/scripts/. Anything matching these
+# patterns at the top level of godot/ is throwaway tooling.
+# The trailing .gd* glob also catches .gd.uid and .gd.import companions.
+godot/debug_*.gd*
+godot/check_*.gd*
+godot/inspect_*.gd*
+godot/ascii_*.gd*
+godot/scratch_*.gd*
+godot/print_*.gd*
+godot/bounds.gd*
+godot/resize_*.gd*
+godot/remove_*.gd*
+godot/scale_*.gd*
+godot/test_node.gd*
+godot/test_patrol.gd*
+godot/test_tex.gd*
+godot/test_office.tscn
+godot/_recover_office.gd*
+
+# Backup files (spec stage backups, dialogue voice-reference backups)
+*.bak
+
+# Stray screenshots dumped into the scenes folder
+godot/scenes/Screenshot*.png
+godot/scenes/Screenshot*.png.import
