@@ -94,6 +94,18 @@ shape = SubResource("RectangleShape2D_3")
 position = Vector2(0, -8)
 sprite_frames = ExtResource("frames_whimsy")
 
+[node name="Barista" type="Area2D" parent="."]
+position = Vector2(300, 140)
+collision_layer = 4
+collision_mask = 2
+script = ExtResource("3_npc")
+npc_id = "barista"
+display_name = "Barista"
+npc_color = Color(0.78, 0.62, 0.42, 1)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Barista"]
+shape = SubResource("RectangleShape2D_3")
+
 [node name="Walls" type="StaticBody2D" parent="." unique_id=1092545414]
 collision_mask = 0
 
