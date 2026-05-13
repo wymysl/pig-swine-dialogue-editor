@@ -41,7 +41,7 @@
             "trigger": "chapter1.met_murrow && !chapter1.has_law_binder",
             "_comment": "State 3 — Murrow met; binder not yet collected; point toward the archive and the procedural binder.",
             "lines": [
-                "You're looking for the procedural binder. I tried lifting it once and briefly saw another dimension."
+                "You're looking for the procedural binder? I tried lifting it once and briefly saw another dimension."
             ],
             "tags": [
                 "hint_state",
