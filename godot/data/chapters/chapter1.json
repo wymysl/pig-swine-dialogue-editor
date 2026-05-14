@@ -22,12 +22,12 @@
     { "key": "chapter1.court_won_procedural_reset", "default": false, "set_by": "judge_district_ch1.json remedy_round_3_<stance> on_dismiss" },
 
     { "key": "chapter1.beat13_complete", "default": false, "set_by": "Beat 13 office payoff close" },
-    { "key": "chapter1.received_swine_postcard", "default": false, "set_by": "Beat 14 postcard arrival trigger" },
-    { "key": "chapter1.postcard_asia_announced", "default": false, "set_by": "postcard_swine_ch1.json asia_address_label on_dismiss (when wired)" },
-    { "key": "chapter1.postcard_readaloud_cue_shown", "default": false, "set_by": "postcard_swine_ch1.json pig_readaloud_cue on_dismiss (when wired)" },
-    { "key": "chapter1.postcard_body_read", "default": false, "set_by": "postcard_swine_ch1.json pig_readaloud_body on_dismiss (when wired)" },
-    { "key": "chapter1.pig_postcard_reaction_shown", "default": false, "set_by": "postcard_swine_ch1.json pig_postcard_reaction on_dismiss (when wired)" },
-    { "key": "chapter1.whimsy_postcard_deflection_shown", "default": false, "set_by": "postcard_swine_ch1.json whimsy_archaic_deflection on_dismiss (when wired)" },
+    { "key": "chapter1.received_swine_postcard", "default": false, "set_by": "Beat 14 postcard arrival trigger / postcard_swine_ch1.json asia_address_label on_dismiss" },
+    { "key": "chapter1.postcard_asia_announced", "default": false, "set_by": "postcard_swine_ch1.json asia_address_label on_dismiss" },
+    { "key": "chapter1.postcard_readaloud_cue_shown", "default": false, "set_by": "postcard_swine_ch1.json pig_readaloud_cue on_dismiss" },
+    { "key": "chapter1.postcard_body_read", "default": false, "set_by": "postcard_swine_ch1.json pig_readaloud_body on_dismiss" },
+    { "key": "chapter1.pig_postcard_reaction_shown", "default": false, "set_by": "postcard_swine_ch1.json pig_postcard_reaction on_dismiss" },
+    { "key": "chapter1.whimsy_postcard_deflection_shown", "default": false, "set_by": "postcard_swine_ch1.json whimsy_archaic_deflection on_dismiss" },
     { "key": "chapter1.complete", "default": false, "set_by": "postcard_swine_ch1.json chapter_close on_dismiss" },
 
     { "key": "badges.day_one_survivor", "default": false, "set_by": "postcard_swine_ch1.json chapter_close award_badge action" },

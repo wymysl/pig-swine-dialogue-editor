@@ -2,8 +2,13 @@ extends CanvasLayer
 ## ClientStanceMenu — Beat 7 interview-tone picker.
 ## Sole writer: Code role (see AGENTS.md §File ownership).
 ##
+## Retired Session 27 (2026-05-13): the active path now uses
+## halina.json::client_meeting_intro with DialogueBox-rendered chain:true
+## options. This script is retained as a rollback/debug artifact and is not
+## referenced by the current scene wiring.
+##
 ## Modal three-button prompt that captures Cula's interview tone for the
-## Beat 8 Halina meeting. The choice writes
+## Beat 8 Halina meeting if manually instantiated. The choice writes
 ## `State.data.chapter1.client_meeting_stance` to one of:
 ##   "sympathetic" — lead with how she's holding up
 ##   "blunt_procedural" — lead with the timeline

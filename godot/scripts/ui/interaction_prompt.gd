@@ -3,11 +3,11 @@ extends Node2D
 ## (anchor node, player). Top-level so its position is computed in
 ## global space rather than relative to its parent's transform.
 ##
-## Why "above the higher of the two"? Sprites at 64×64 native put the
-## character's head ~20px above center, so a fixed offset above the anchor
-## risks overlapping the player's head when the player approaches from above.
-## Computing position from the higher of the two clears both heads regardless
-## of approach direction.
+## Why "above the higher of the two"? Character visuals extend above their
+## node origin, so a fixed offset above the anchor risks overlapping the
+## player's head when the player approaches from above. Computing position
+## from the higher of the two clears both heads regardless of approach
+## direction.
 ##
 ## Anchor node:
 ##   By default the anchor is the parent (the NPC node owning this prompt).

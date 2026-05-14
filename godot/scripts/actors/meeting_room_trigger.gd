@@ -7,12 +7,12 @@ extends Area2D
 ## the trigger area, evaluates three exclusive outcomes:
 ##
 ##   A. recruited_whimsy && halina_arrived && !halina_met && client_meeting_stance == ""
-##      → dispatch meeting_room_stance.json (a one-state dialogue with an
-##        in-box option list). The dialogue box renders the three choices
-##        under the prompt; player picks; runner writes
-##        chapter1.client_meeting_stance via the options handler.
+##      → dispatch halina.json's client_meeting_intro state. The dialogue box
+##        renders the three choices on a dedicated Cula page; player picks;
+##        DialogueRunner writes chapter1.client_meeting_stance and chains into
+##        the first response state.
 ##        Subscribed to Signals.chapter1_flag_changed("client_meeting_stance",
-##        ...) to disable the boundary and chain into halina.json.
+##        ...) to disable the boundary once the option commits.
 ##
 ##   B. recruited_whimsy && halina_arrived && !halina_met && client_meeting_stance != ""
 ##      → boundary is already disabled (stance was committed previously),
@@ -33,9 +33,7 @@ extends Area2D
 ## the inspector if the scene structure changes.
 @export var boundary_path: NodePath = NodePath("../MeetingRoomBoundary")
 
-## NPC ids dispatched through the dialogue runner.
-const STANCE_DIALOGUE_ID: String = "meeting_room_stance"
-const STANCE_DIALOGUE_SPEAKER: String = "Cula"
+## NPC id dispatched through the dialogue runner.
 const HALINA_NPC_ID: String = "halina"
 const HALINA_DISPLAY_NAME: String = "Mrs. Sikorska"
 
@@ -46,8 +44,8 @@ var _awaiting_stance_commit: bool = false
 func _ready() -> void:
 	body_entered.connect(_on_body_entered)
 	body_exited.connect(_on_body_exited)
-	## Listen for the stance write so we can unlock the boundary and
-	## chain into halina.json the moment the option commits.
+	## Listen for the stance write so we can unlock the boundary the moment
+	## the option commits.
 	var sigs = get_node_or_null("/root/Signals")
 	if sigs and sigs.has_signal("chapter1_flag_changed"):
 		sigs.chapter1_flag_changed.connect(_on_chapter1_flag_changed)
@@ -74,7 +72,7 @@ func _on_body_entered(body: Node2D) -> void:
 		return
 	var stance: String = str(ch1.get("client_meeting_stance", ""))
 	if stance == "":
-		_dispatch_stance_dialogue()
+		_dispatch_halina_intro_dialogue()
 	else:
 		_dispatch_halina_dialogue()
 	_dispatched_this_entry = true
@@ -87,26 +85,24 @@ func _on_body_exited(body: Node2D) -> void:
 		_dispatched_this_entry = false
 
 
-## _dispatch_stance_dialogue — emit dialogue_requested for the stance
-## dialogue. DialogueRunner picks the single matching state, emits
-## dialogue_line_ready (the prompt) and dialogue_options_ready (the
-## three choices). DialogueBox renders the choice list under the
-## prompt; the player commits via interact (E).
+## _dispatch_halina_intro_dialogue — emit dialogue_requested for Halina's
+## intro state. DialogueRunner picks client_meeting_intro, emits the intro
+## lines and dialogue_options_ready for the three opening approaches.
 ##
-## We set _awaiting_stance_commit so _on_chapter1_flag_changed knows
-## to chain into halina.json once the stance write fires.
-func _dispatch_stance_dialogue() -> void:
+## We set _awaiting_stance_commit so _on_chapter1_flag_changed knows to
+## unlock the boundary once the stance write fires. DialogueRunner itself
+## handles the chain into the next Halina state.
+func _dispatch_halina_intro_dialogue() -> void:
 	_awaiting_stance_commit = true
 	var sigs = get_node_or_null("/root/Signals")
 	if sigs:
-		sigs.dialogue_requested.emit(STANCE_DIALOGUE_ID, STANCE_DIALOGUE_SPEAKER)
+		sigs.dialogue_requested.emit(HALINA_NPC_ID, HALINA_DISPLAY_NAME)
 
 
 ## _on_chapter1_flag_changed — chain hook for the stance-commit path.
 ## When the runner writes client_meeting_stance from the option pick,
-## this fires synchronously; we disable the boundary and queue the
-## Halina dialogue dispatch. Skipping when not awaiting prevents
-## misfires from unrelated chapter1 flag changes.
+## this fires synchronously; we disable the boundary. Skipping when not
+## awaiting prevents misfires from unrelated chapter1 flag changes.
 func _on_chapter1_flag_changed(flag_name: String, _value) -> void:
 	if not _awaiting_stance_commit:
 		return
@@ -114,11 +110,8 @@ func _on_chapter1_flag_changed(flag_name: String, _value) -> void:
 		return
 	_awaiting_stance_commit = false
 	_disable_boundary()
-	## The dialogue box is still open when this fires (option_committed
-	## emits BEFORE dismiss). Defer the halina dispatch one idle frame
-	## so the box has time to close — otherwise dialogue_line_ready for
-	## halina would arrive while the box is mid-dismiss.
-	call_deferred("_dispatch_halina_dialogue")
+	## DialogueRunner's chain:true option flow will immediately request the
+	## next Halina state. This trigger only owns the room boundary.
 
 
 ## _dispatch_halina_dialogue — fire halina.json's client_meeting_<stance>

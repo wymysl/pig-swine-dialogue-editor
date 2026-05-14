@@ -7,15 +7,16 @@ extends Node
 ##               asia_hint_states_ch1.json's V1.A states into the "asia"
 ##               catalogue entry. The legacy data/asia_hints.json was
 ##               retired in Chapter 1 Phase A.3 (see asia_hints.json.bak).
-##   On Signals.dialogue_requested(npc_id) — picks the best matching line and
-##               emits Signals.dialogue_line_ready(speaker, line).
+##   On Signals.dialogue_requested(npc_id) — picks the best matching state and
+##               emits Signals.dialogue_line_ready(speaker, npc_id, lines).
 ##
 ## Trigger evaluation:
-##   Each state entry may have a "trigger" string of &&-separated clauses.
+##   Each state entry may have a "trigger" string of &&-separated clauses,
+##   with optional || groups for simple alternatives.
 ##   Clause format:  "chapter1.met_pig == true"
 ##                   "chapter1.met_murrow != false"
 ##   LHS is a dotted path into State.data. RHS is compared as a string.
-##   All clauses must pass for the state entry to match.
+##   All clauses in one && group must pass; any || group may match.
 ##
 ## Selection priority:
 ##   1. First state whose trigger evaluates to true (in JSON order).
@@ -33,6 +34,8 @@ extends Node
 ##   String entries use the owning NPC's display name (the display_name arg
 ##   passed to _on_dialogue_requested). Backward compatibility: string-only
 ##   states are unaffected.
+##   A whole state may also declare "speaker": "asia" to make plain-string
+##   lines in that state use a different default speaker and portrait.
 
 const DIALOGUES_DIR: String = "res://data/dialogues/"
 ## Chapter 1 Phase A.3: V1.A canonical Asia hint surface. States merged
@@ -57,6 +60,30 @@ var _active_state_mutations: Array = []
 var _active_options_write_path: String = ""
 var _active_options_present: bool = false
 
+## _active_options_choices — the full choices Array from the current options block.
+## Stored so _on_dialogue_option_committed can read each choice's trust_delta.
+var _active_options_choices: Array = []
+
+## _active_trust_path — dotted State.data path to increment when the committed
+## choice carries a trust_delta. Set from options.trust_path; empty if not declared.
+var _active_trust_path: String = ""
+
+## Chain state — set when the matched state's options block carries "chain": true.
+## On option commit the runner suppresses dismiss and immediately re-fires
+## dialogue_requested for the same NPC so the box transitions to the next state.
+var _active_chain: bool = false
+
+## _active_once_state_id — id of a "once": true state that just matched.
+## Persisted to State.data.dialogue_states_seen on dismiss / commit so the
+## same state cannot match a second time. Empty string when the active state
+## is not once-flagged. Must be appended BEFORE chain re-fire so the chain
+## walk skips the same state on the second pass.
+var _active_once_state_id: String = ""
+
+## Last-request cache — needed to re-fire the request during a chain.
+var _last_npc_id: String = ""
+var _last_display_name: String = ""
+
 ## _character_registry — map of character_id -> display name String.
 var _character_registry: Dictionary = {}
 
@@ -72,6 +99,20 @@ func _ready() -> void:
 	_load_all_dialogues()
 
 func _on_dialogue_dismissed() -> void:
+	## "once": true bookkeeping runs unconditionally — a once-state with no
+	## on_dismiss actions still needs to be recorded as seen, otherwise the
+	## next request would re-fire it.
+	if _active_once_state_id != "":
+		_mark_once_seen(_active_once_state_id)
+		_active_once_state_id = ""
+	_apply_mutations()
+
+
+## _apply_mutations — processes the on_dismiss mutation queue. Handles
+## "set" (dotted path write), "award_badge", and "unlock_route" actions.
+## Clears the queue after processing. Called by both _on_dialogue_dismissed
+## and _on_dialogue_option_committed to avoid duplicating the loop.
+func _apply_mutations() -> void:
 	if _active_state_mutations.is_empty():
 		return
 	var state_node = get_node_or_null("/root/State")
@@ -88,7 +129,6 @@ func _on_dialogue_dismissed() -> void:
 				if sigs and sigs.has_signal("chapter1_flag_changed"):
 					sigs.chapter1_flag_changed.emit(flag_name, val)
 		elif mut is Dictionary and mut.has("award_badge"):
-			## Chapter 1 Phase A.2 — award a badge.
 			## Contract: badge_id must already exist in State.data.badges
 			## (declared in State.reset_state() / save migration). Unknown
 			## ids are rejected with a warning to keep the schema authoritative.
@@ -101,7 +141,6 @@ func _on_dialogue_dismissed() -> void:
 			else:
 				push_warning("DialogueRunner: award_badge unknown badge_id '%s'; declare it in State.reset_state().badges first" % badge_id)
 		elif mut is Dictionary and mut.has("unlock_route"):
-			## Chapter 1 Phase A.2 — unlock a route.
 			## Same contract as award_badge: route_id must be pre-declared.
 			var route_id: String = str(mut["unlock_route"])
 			if state_node.data.has("routes_unlocked") and state_node.data["routes_unlocked"] is Dictionary \
@@ -112,6 +151,7 @@ func _on_dialogue_dismissed() -> void:
 			else:
 				push_warning("DialogueRunner: unlock_route unknown route_id '%s'; declare it in State.reset_state().routes_unlocked first" % route_id)
 	_active_state_mutations.clear()
+
 
 ## _on_dialogue_option_committed — fired by DialogueBox when the player
 ## picks an option from an in-dialogue choice list. Writes the picked
@@ -131,38 +171,62 @@ func _on_dialogue_option_committed(value: Variant) -> void:
 			var flag_name: String = _active_options_write_path.substr(9)
 			sigs.chapter1_flag_changed.emit(flag_name, value)
 
-	## Fire the matched state's on_dismiss block (handles award_badge,
-	## unlock_route, additional set actions). _on_dialogue_dismissed runs
-	## the same loop, so reuse it by hand-emitting dialogue_dismissed and
-	## relying on the existing path — except that would double-fire if the
-	## box also emits dismiss. Cleaner: run the block here, clear the
-	## queue, leave the dismiss handler to short-circuit on empty queue.
-	if state_node != null and not _active_state_mutations.is_empty():
-		for mut in _active_state_mutations:
-			if mut is Dictionary and mut.has("set") and mut.has("value"):
-				var path = mut["set"] as String
-				var val = mut["value"]
-				_set_state_value(state_node.data, path, val)
-				if path.begins_with("chapter1.") and sigs and sigs.has_signal("chapter1_flag_changed"):
-					var fn = path.substr(9)
-					sigs.chapter1_flag_changed.emit(fn, val)
-			elif mut is Dictionary and mut.has("award_badge"):
-				var badge_id: String = str(mut["award_badge"])
-				if state_node.data.has("badges") and state_node.data["badges"] is Dictionary \
-						and state_node.data["badges"].has(badge_id):
-					state_node.data["badges"][badge_id] = true
-					if sigs and sigs.has_signal("badge_awarded"):
-						sigs.badge_awarded.emit(badge_id)
-			elif mut is Dictionary and mut.has("unlock_route"):
-				var route_id: String = str(mut["unlock_route"])
-				if state_node.data.has("routes_unlocked") and state_node.data["routes_unlocked"] is Dictionary \
-						and state_node.data["routes_unlocked"].has(route_id):
-					state_node.data["routes_unlocked"][route_id] = true
-					if sigs and sigs.has_signal("route_unlocked"):
-						sigs.route_unlocked.emit(route_id)
-	_active_state_mutations.clear()
+	## Trust delta: if the options block declared a trust_path and the committed
+	## choice carries a non-zero trust_delta, add it to the trust counter now —
+	## before the chain re-fires — so the next state's trigger sees the updated value.
+	if _active_trust_path != "" and state_node != null:
+		var delta: int = 0
+		for c in _active_options_choices:
+			if c is Dictionary and c.get("value", null) == value:
+				delta = int(c.get("trust_delta", 0))
+				break
+		if delta != 0:
+			var current_trust: Variant = _resolve_path(_active_trust_path)
+			if current_trust is int or current_trust is float:
+				var new_trust: int = int(current_trust) + delta
+				_set_state_value(state_node.data, _active_trust_path, new_trust)
+				if _active_trust_path.begins_with("chapter1.") and sigs and sigs.has_signal("chapter1_flag_changed"):
+					sigs.chapter1_flag_changed.emit(_active_trust_path.substr(9), new_trust)
+
+	## Fire the matched state's on_dismiss block (award_badge, unlock_route,
+	## set actions). Clears the queue so the subsequent dialogue_dismissed
+	## handler short-circuits on empty queue.
+	_apply_mutations()
 	_active_options_present = false
 	_active_options_write_path = ""
+	_active_options_choices = []
+	_active_trust_path = ""
+	## "once": true bookkeeping — MUST happen before the chain re-fire so the
+	## same once-state cannot match a second time on the same walk.
+	if _active_once_state_id != "":
+		_mark_once_seen(_active_once_state_id)
+		_active_once_state_id = ""
+	## Chain: if the committed state had "chain": true, signal the box to suppress
+	## its dismiss, then immediately re-fire dialogue for the same NPC so the
+	## next matching state loads without closing the panel.
+	if _active_chain:
+		_active_chain = false
+		var sigs_chain = _signals()
+		if sigs_chain and sigs_chain.has_signal("dialogue_chain_start"):
+			sigs_chain.dialogue_chain_start.emit()
+		_on_dialogue_requested(_last_npc_id, _last_display_name)
+
+
+## _mark_once_seen — append state_id to State.data.dialogue_states_seen if
+## absent. No-op when State autoload is missing (headless --script mode) or
+## the field is mistyped. Save migration v12 guarantees the array exists.
+func _mark_once_seen(state_id: String) -> void:
+	if state_id == "":
+		return
+	var state_node = get_node_or_null("/root/State")
+	if state_node == null:
+		return
+	if not state_node.data.has("dialogue_states_seen") \
+			or not state_node.data["dialogue_states_seen"] is Array:
+		state_node.data["dialogue_states_seen"] = []
+	var seen: Array = state_node.data["dialogue_states_seen"]
+	if not seen.has(state_id):
+		seen.append(state_id)
 
 
 func _set_state_value(data: Dictionary, path: String, value: Variant) -> void:
@@ -209,7 +273,7 @@ func _load_character_registry() -> void:
 	for key in parsed:
 		if not key.begins_with("_"):
 			_character_registry[key] = str(parsed[key])
-	print("DialogueRunner: loaded %d character registry entries" % _character_registry.size())
+
 
 
 ## _resolve_speaker — returns the display name for a character_id.
@@ -234,6 +298,13 @@ func _load_all_dialogues() -> void:
 		if not dir.current_is_dir() and fname.ends_with(".json"):
 			if fname == ASIA_HINT_STATES_FILENAME:
 				## Skipped — loaded explicitly to merge into "asia".
+				fname = dir.get_next()
+				continue
+			## Skip non-canonical variants: rewrites, v2 candidates, and the
+			## legacy empty dialogues.json. These sit in the dialogues dir as
+			## staging / archival files and must not enter the catalogue.
+			if fname.contains("_rewrite") or fname.contains("_v2") \
+					or fname == "dialogues.json":
 				fname = dir.get_next()
 				continue
 			var npc_id: String = fname.get_basename()
@@ -270,7 +341,7 @@ func _merge_asia_hint_states() -> void:
 			"states": v1a_states.duplicate(),
 			"idle_flavor": [],
 		}
-		print("DialogueRunner: installed V1.A asia hint states (no asia.json present)")
+
 		return
 
 	var asia_entry: Dictionary = _catalogue["asia"]
@@ -282,7 +353,7 @@ func _merge_asia_hint_states() -> void:
 		merged.append(s)
 	asia_entry["states"] = merged
 	_catalogue["asia"] = asia_entry
-	print("DialogueRunner: merged %d V1.A hint states into 'asia' (now %d total)" % [v1a_states.size(), merged.size()])
+
 
 
 func _load_file(npc_id: String, path: String) -> void:
@@ -297,10 +368,14 @@ func _load_file(npc_id: String, path: String) -> void:
 		push_error("DialogueRunner: JSON parse failed for " + path)
 		return
 	_catalogue[npc_id] = parsed
-	print("DialogueRunner: loaded dialogue for '%s'" % npc_id)
+
 
 
 func _on_dialogue_requested(npc_id: String, display_name: String) -> void:
+	## Cache for chain: if this state has "chain":true options, the runner
+	## will re-fire dialogue_requested for the same NPC after the commit.
+	_last_npc_id = npc_id
+	_last_display_name = display_name
 	if not _catalogue.has(npc_id):
 		push_warning("DialogueRunner: no dialogue data for npc_id='%s'" % npc_id)
 		var sigs_fb = _signals()
@@ -311,22 +386,48 @@ func _on_dialogue_requested(npc_id: String, display_name: String) -> void:
 	var data: Dictionary = _catalogue[npc_id]
 	var speaker: String = display_name
 
+	## Resolve the persistent seen-states array once per walk so the loop
+	## can short-circuit any state already fired with "once": true.
+	var seen_states: Array = []
+	var state_node_for_seen = get_node_or_null("/root/State")
+	if state_node_for_seen != null \
+			and state_node_for_seen.data.has("dialogue_states_seen") \
+			and state_node_for_seen.data["dialogue_states_seen"] is Array:
+		seen_states = state_node_for_seen.data["dialogue_states_seen"]
+
 	## Try each state entry in order.
 	var states: Array = data.get("states", [])
 	for entry in states:
+		var entry_id: String = str(entry.get("id", ""))
+		## "once": true skip — a state that has already fired is invisible to
+		## the runner so the loop falls through to the next-matching state
+		## (and ultimately idle_flavor if nothing else matches).
+		if bool(entry.get("once", false)) and entry_id != "" and seen_states.has(entry_id):
+			continue
 		var trigger: String = entry.get("trigger", "")
 		if _evaluate_trigger(trigger):
-			_active_state_mutations = entry.get("on_dismiss", [])
+			var raw_mutations: Array = entry.get("on_dismiss", [])
+			_active_state_mutations = raw_mutations.duplicate(true)
+			_active_once_state_id = entry_id if bool(entry.get("once", false)) else ""
 			var lines: Array = _extract_lines(entry)
+			var state_speaker_id: String = str(entry.get("speaker", ""))
+			var emit_speaker: String = speaker
+			var emit_npc_id: String = npc_id
+			if state_speaker_id != "":
+				emit_speaker = _resolve_speaker(state_speaker_id, speaker)
+				emit_npc_id = state_speaker_id
 			var sigs2 = _signals()
 			if sigs2:
-				sigs2.dialogue_line_ready.emit(speaker, npc_id, lines)
+				sigs2.dialogue_line_ready.emit(emit_speaker, emit_npc_id, lines)
 			## Inline-option flow (Chapter 1 Phase B polish). If the state
 			## carries an `options` block, emit the choices for the dialogue
 			## box to render under the prompt line. The box returns
 			## dialogue_option_committed(value) when the player picks.
 			_active_options_write_path = ""
 			_active_options_present = false
+			_active_options_choices = []
+			_active_trust_path = ""
+			_active_chain = false
 			if entry.has("options") and entry["options"] is Dictionary:
 				var opts: Dictionary = entry["options"]
 				var write_path: String = str(opts.get("write_path", ""))
@@ -334,8 +435,18 @@ func _on_dialogue_requested(npc_id: String, display_name: String) -> void:
 				if write_path != "" and choices.size() > 0:
 					_active_options_write_path = write_path
 					_active_options_present = true
+					_active_options_choices = choices
+					_active_trust_path = str(opts.get("trust_path", ""))
+					## "chain": true — after option commit, runner re-fires the
+					## next matching state for this NPC without closing the box.
+					_active_chain = opts.get("chain", false)
 					if sigs2 and sigs2.has_signal("dialogue_options_ready"):
 						sigs2.dialogue_options_ready.emit(write_path, choices)
+			## Signal handlers may run synchronously while a chained state is being
+			## loaded. Re-assert the matched state's dismiss mutations after the
+			## line/options notifications so the state now on screen owns the next
+			## dialogue_dismissed event.
+			_active_state_mutations = raw_mutations.duplicate(true)
 			return
 
 	## Fall back to idle_flavor (random).
@@ -383,14 +494,29 @@ func _extract_lines(entry: Dictionary) -> Array:
 	return [FALLBACK_LINE]
 
 
-## _evaluate_trigger — returns true if every clause in the trigger string passes.
+## _evaluate_trigger — returns true if the trigger string passes. Supports
+## simple OR-of-ANDs expressions:
+##   a && b
+##   a || b
+##   a && b || c && d
 ## An empty trigger always passes (unconditional match).
 func _evaluate_trigger(trigger: String) -> bool:
 	if trigger.strip_edges() == "":
 		return true
-	var clauses: Array = trigger.split("&&")
+	var groups: Array = trigger.split("||")
+	for raw_group in groups:
+		if _evaluate_and_group(str(raw_group).strip_edges()):
+			return true
+	return false
+
+
+func _evaluate_and_group(group: String) -> bool:
+	if group == "":
+		push_warning("DialogueRunner: empty OR group in trigger")
+		return false
+	var clauses: Array = group.split("&&")
 	for raw_clause in clauses:
-		var clause: String = raw_clause.strip_edges()
+		var clause: String = str(raw_clause).strip_edges()
 		if not _evaluate_clause(clause):
 			return false
 	return true
@@ -402,13 +528,23 @@ func _evaluate_trigger(trigger: String) -> bool:
 ##   "!path"          → resolves path, returns NOT truthy
 ##   "path == rhs"    → string comparison after _to_compare_str normalisation
 ##   "path != rhs"    → string comparison, inverted
+##   "path >= rhs"    → numeric (int) comparison
+##   "path <= rhs"    → numeric (int) comparison
 ## LHS is a dotted key path into State.data. The bare-truthiness shapes
 ## were added in Chapter 1 Phase A.3 to support V1.A Asia hint triggers
 ## ("!chapter1.pig_revealed_crisis", "chapter1.recruited_whimsy && !chapter1.halina_met").
+## >= / <= were added in Session 29 for the Halina trust meter tier checks.
 func _evaluate_clause(clause: String) -> bool:
 	var op: String = ""
 	var parts: PackedStringArray
-	if clause.contains("!="):
+	## >= and <= must be detected before == / != to avoid partial-match confusion.
+	if clause.contains(">="):
+		op = ">="
+		parts = clause.split(">=", false, 1)
+	elif clause.contains("<="):
+		op = "<="
+		parts = clause.split("<=", false, 1)
+	elif clause.contains("!="):
 		op = "!="
 		parts = clause.split("!=", false, 1)
 	elif clause.contains("=="):
@@ -440,7 +576,16 @@ func _evaluate_clause(clause: String) -> bool:
 		push_warning("DialogueRunner: unresolved path '%s' in clause '%s'" % [lhs_path, clause])
 		return false
 
-	## Normalise both sides to string for comparison.
+	## Numeric comparison for >= / <=.
+	if op == ">=" or op == "<=":
+		var actual_int: int = int(str(actual))
+		var expected_int: int = int(rhs_raw.strip_edges())
+		if op == ">=":
+			return actual_int >= expected_int
+		else:
+			return actual_int <= expected_int
+
+	## Normalise both sides to string for == / != comparison.
 	var actual_str: String = _to_compare_str(actual)
 	var expected_str: String = _to_compare_str(rhs_raw)
 

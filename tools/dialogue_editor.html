@@ -1,0 +1,2931 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Pig &amp; Swine — Dialogue Editor</title>
+<style>
+  :root {
+    --bg: #000;
+    --text: #f0f0f0;
+    --dim: #666;
+    --accent: #aaa;
+    --divider: #1a1a1a;
+    --hover: #0a0a0a;
+    --modified: #c9a227;
+    --speaker: #888;
+    /* Consequence highlight palette: green for reachable, red for excluded.
+       Field-wide background tint + 4px left stripe in the matching strong tone. */
+    --highlight-reach-bg: rgba(76, 175, 80, 0.18);
+    --highlight-reach-stripe: #4caf50;
+    --highlight-excl-bg: rgba(244, 67, 54, 0.12);
+    --highlight-excl-stripe: #f44336;
+  }
+  body.light {
+    --bg: #ffffff;
+    --text: #0a0a0a;
+    --dim: #777777;
+    --accent: #444444;
+    --divider: #e2e2e2;
+    --hover: #f4f4f4;
+    --modified: #9a6600;
+    --speaker: #555555;
+    --highlight-reach-bg: rgba(46, 125, 50, 0.10);
+    --highlight-reach-stripe: #2e7d32;
+    --highlight-excl-bg: rgba(198, 40, 40, 0.07);
+    --highlight-excl-stripe: #c62828;
+  }
+  * { box-sizing: border-box; }
+  html, body { height: 100%; margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'American Typewriter', 'Courier New', Courier, monospace;
+    font-size: 15px;
+    line-height: 1.55;
+    overflow: hidden;
+  }
+  ::selection { background: #333; color: #fff; }
+  body.light ::selection { background: #d0d0d0; color: #000; }
+
+  #app {
+    display: grid;
+    grid-template-rows: 32px 1fr 22px;
+    height: 100vh;
+  }
+
+  /* TOP BAR */
+  #topbar {
+    border-bottom: 1px solid var(--divider);
+    padding: 0 14px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    font-size: 12px;
+    color: var(--dim);
+    letter-spacing: 0.04em;
+  }
+  #topbar .title {
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--accent);
+  }
+  #topbar button {
+    background: none;
+    color: var(--text);
+    border: 1px solid var(--divider);
+    padding: 3px 10px;
+    font-family: inherit;
+    font-size: 12px;
+    letter-spacing: 0.04em;
+    cursor: pointer;
+    text-transform: lowercase;
+  }
+  #topbar button:hover:not(:disabled) { border-color: var(--text); }
+  #topbar button:disabled { color: var(--dim); cursor: default; }
+  #current-file { margin-left: auto; color: var(--text); font-size: 12px; }
+  #dirty-indicator {
+    color: var(--modified);
+    margin-left: 8px;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+  }
+
+  /* MAIN GRID */
+  #main {
+    display: grid;
+    grid-template-columns: 240px 1fr;
+    height: 100%;
+    overflow: hidden;
+  }
+
+  /* SIDEBAR */
+  #sidebar {
+    border-right: 1px solid var(--divider);
+    overflow-y: auto;
+    padding: 10px 0;
+  }
+  .file-item {
+    padding: 5px 14px;
+    cursor: pointer;
+    color: var(--text);
+    font-size: 13px;
+    border-left: 2px solid transparent;
+  }
+  .file-item:hover { background: var(--hover); }
+  .file-item.active {
+    background: #e0e0e0;
+    border-left-color: var(--accent);
+    color: #000000;
+  }
+  body.light .file-item.active {
+    background: #2a2a2a;
+    color: #ffffff;
+  }
+  .file-item.dirty::after {
+    content: ' •';
+    color: var(--modified);
+  }
+  .sidebar-section {
+    color: var(--dim);
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    padding: 12px 14px 4px;
+  }
+
+  /* CONTENT */
+  #content {
+    overflow-y: auto;
+    padding: 20px 32px 80px;
+  }
+  #empty {
+    color: var(--dim);
+    line-height: 1.7;
+    max-width: 580px;
+  }
+  #empty kbd {
+    color: var(--text);
+    border: 1px solid var(--divider);
+    padding: 1px 6px;
+    font-family: inherit;
+    font-size: 12px;
+    border-radius: 0;
+  }
+  #empty p { margin: 0 0 12px; }
+
+  .npc-header {
+    font-size: 18px;
+    letter-spacing: 0.04em;
+    color: var(--text);
+    margin: 0 0 8px;
+  }
+  .npc-meta {
+    color: var(--dim);
+    font-size: 11px;
+    margin-bottom: 24px;
+    letter-spacing: 0.04em;
+  }
+
+  .section-header {
+    color: var(--accent);
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    margin: 26px 0 12px;
+    padding-bottom: 4px;
+    border-bottom: 1px solid var(--divider);
+  }
+
+  /* STATE CARDS */
+  .state-card {
+    margin-bottom: 22px;
+    border-left: 1px solid var(--divider);
+    padding: 0 0 6px 14px;
+  }
+  .state-id-row {
+    color: var(--dim);
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-bottom: 6px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .state-id { color: var(--accent); }
+  .state-id-input {
+    background: var(--bg);
+    color: var(--accent);
+    border: 1px solid transparent;
+    font-family: inherit;
+    font-size: 11px;
+    padding: 2px 6px;
+    outline: none;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    min-width: 220px;
+  }
+  .state-id-input:hover,
+  .state-id-input:focus {
+    border-color: var(--divider);
+    color: var(--text);
+  }
+  .state-card.consequence-excluded .state-id-input {
+    color: var(--highlight-excl-stripe);
+    text-decoration: line-through;
+  }
+  .state-card.consequence-highlight.consequence-excluded .state-id-input {
+    color: var(--accent);
+    text-decoration: none;
+  }
+  .state-once {
+    margin-left: auto;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 10px;
+    color: var(--dim);
+    cursor: pointer;
+    user-select: none;
+  }
+  .state-once input[type="checkbox"] { margin: 0; cursor: pointer; }
+  .state-once.active { color: var(--accent); }
+  .state-move-actions {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-left: 8px;
+  }
+  .state-move-btn {
+    background: none;
+    border: 1px solid var(--divider);
+    color: var(--dim);
+    font-family: inherit;
+    font-size: 11px;
+    padding: 0 7px;
+    cursor: pointer;
+    letter-spacing: 0;
+    line-height: 18px;
+  }
+  .state-move-btn:hover:not(:disabled) { color: var(--text); border-color: var(--text); }
+  .state-move-btn:disabled { opacity: 0.3; cursor: default; }
+  .state-position-label {
+    font-size: 10px;
+    color: var(--dim);
+    font-family: inherit;
+    letter-spacing: 0.04em;
+    min-width: 42px;
+    text-align: right;
+    text-transform: none;
+  }
+  .state-position-slider {
+    width: 100px;
+    margin: 0;
+    cursor: pointer;
+    accent-color: var(--accent);
+  }
+  .state-position-slider:disabled { opacity: 0.3; cursor: default; }
+
+  .conditions {
+    color: var(--dim);
+    font-size: 11px;
+    margin-bottom: 10px;
+    cursor: pointer;
+    user-select: none;
+    white-space: pre-wrap;
+    word-break: break-word;
+  }
+  .conditions:hover { color: var(--text); }
+  .conditions-detail {
+    display: none;
+    color: var(--dim);
+    font-size: 11px;
+    padding: 4px 0 8px 14px;
+    border-left: 1px dashed var(--divider);
+    margin-bottom: 8px;
+    white-space: pre-wrap;
+  }
+  .conditions-detail.open { display: block; }
+
+  /* LINES */
+  .line-row {
+    display: flex;
+    align-items: flex-start;
+    margin-bottom: 4px;
+    gap: 10px;
+  }
+  .speaker-tag {
+    color: var(--speaker);
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    min-width: 64px;
+    padding-top: 6px;
+    flex-shrink: 0;
+    text-align: right;
+  }
+  .speaker-select {
+    color: var(--speaker);
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    min-width: 64px;
+    padding-top: 6px;
+    flex-shrink: 0;
+    text-align: right;
+    cursor: pointer;
+    user-select: none;
+    outline: none;
+  }
+  .speaker-select:hover,
+  .speaker-select:focus { color: var(--text); }
+
+  .speaker-menu {
+    background: var(--bg);
+    border: 1px solid var(--divider);
+    font-family: inherit;
+    font-size: 11px;
+    letter-spacing: 0.06em;
+    z-index: 100;
+    min-width: 110px;
+    padding: 2px 0;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+    user-select: none;
+  }
+  .speaker-menu-item {
+    padding: 4px 12px;
+    cursor: pointer;
+    color: var(--text);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+  .speaker-menu-item:hover { background: var(--hover); }
+  .speaker-menu-item.current { color: var(--accent); }
+  .speaker-menu-item.custom {
+    border-top: 1px solid var(--divider);
+    margin-top: 2px;
+    color: var(--dim);
+  }
+  .speaker-menu-item.custom:hover { color: var(--text); }
+  .add-line-btn {
+    background: none;
+    border: none;
+    color: var(--dim);
+    font-family: inherit;
+    font-size: 11px;
+    cursor: pointer;
+    padding: 4px 0 4px 74px;
+    margin: 0;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    text-align: left;
+    display: block;
+    width: 100%;
+  }
+  .add-line-btn:hover { color: var(--text); }
+
+  /* DRAG HANDLE + LINE ACTIONS (REORDER, INSERT, REMOVE) */
+  .lines-container { display: block; }
+  .drag-handle {
+    cursor: grab;
+    color: var(--dim);
+    font-size: 14px;
+    user-select: none;
+    padding: 4px 4px 0 0;
+    flex-shrink: 0;
+    width: 16px;
+    text-align: center;
+    line-height: 1;
+  }
+  .drag-handle:hover { color: var(--text); }
+  .drag-handle:active { cursor: grabbing; }
+  .line-row.dragging { opacity: 0.4; }
+  .line-row.drop-target-above { box-shadow: inset 0 2px 0 var(--accent); }
+  .line-row.drop-target-below { box-shadow: inset 0 -2px 0 var(--accent); }
+  .line-row-actions {
+    display: flex;
+    gap: 2px;
+    opacity: 0;
+    transition: opacity 0.1s;
+    flex-shrink: 0;
+  }
+  .line-row:hover .line-row-actions,
+  .choice-row:hover .line-row-actions,
+  .choice-row:focus-within .line-row-actions { opacity: 1; }
+  .line-action-btn {
+    background: none;
+    border: none;
+    color: var(--dim);
+    font-family: inherit;
+    font-size: 12px;
+    cursor: pointer;
+    padding: 4px 6px;
+    text-transform: none;
+    letter-spacing: 0;
+  }
+  .line-action-btn:hover { color: var(--text); }
+  .line-action-btn.danger:hover { color: var(--modified); }
+  .line-edit {
+    flex: 1;
+    background: var(--bg);
+    color: var(--text);
+    border: 1px solid transparent;
+    font-family: inherit;
+    font-size: 15px;
+    line-height: 1.55;
+    resize: none;
+    padding: 4px 8px;
+    min-height: 28px;
+    outline: none;
+    overflow: hidden;
+    width: 100%;
+  }
+  .line-edit:hover { background: var(--hover); }
+  .line-edit:focus {
+    border-color: var(--divider);
+    background: var(--hover);
+  }
+
+  /* OPTIONS / CHOICES */
+  .options-block {
+    margin: 8px 0 0 64px;
+    padding-left: 12px;
+    border-left: 1px dashed var(--divider);
+  }
+  .options-header {
+    color: var(--dim);
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-bottom: 6px;
+  }
+  .choice-row {
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+    margin-bottom: 4px;
+  }
+  .choice-value {
+    color: var(--dim);
+    font-size: 11px;
+    min-width: 140px;
+    padding-top: 6px;
+    flex-shrink: 0;
+    letter-spacing: 0.04em;
+  }
+  .choice-value::before { content: '→ '; color: var(--accent); }
+  .choice-value {
+    /* override: when the cell holds an input, drop the top padding and let
+       the "→" sit next to the input. */
+    padding-top: 0;
+    display: flex;
+    align-items: center;
+    gap: 0;
+  }
+  .choice-value-input {
+    flex: 1;
+    background: var(--bg);
+    color: var(--accent);
+    border: 1px solid transparent;
+    font-family: inherit;
+    font-size: 11px;
+    padding: 3px 4px;
+    outline: none;
+    letter-spacing: 0.04em;
+    min-width: 0;
+  }
+  .choice-value-input:hover,
+  .choice-value-input:focus { border-color: var(--divider); color: var(--text); }
+  .choice-consequence-badge {
+    background: var(--bg);
+    color: var(--dim);
+    border: 1px solid var(--divider);
+    font-family: inherit;
+    font-size: 10px;
+    padding: 2px 6px;
+    cursor: pointer;
+    letter-spacing: 0.04em;
+    flex-shrink: 0;
+  }
+  .choice-consequence-badge:hover:not(:disabled) { color: var(--text); border-color: var(--text); }
+  .choice-consequence-badge:disabled { opacity: 0.4; cursor: default; }
+  .choice-consequence-badge.pinned {
+    color: var(--accent);
+    border-color: var(--accent);
+    background: var(--hover);
+  }
+  .choice-consequences {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    padding: 2px 0 6px 162px;
+  }
+  .choice-consequence-chip {
+    background: var(--bg);
+    color: var(--dim);
+    border: 1px solid var(--divider);
+    font-family: inherit;
+    font-size: 10px;
+    padding: 1px 5px;
+    cursor: pointer;
+    letter-spacing: 0.04em;
+  }
+  .choice-consequence-chip:hover { color: var(--text); border-color: var(--text); }
+  .state-card.consequence-highlight {
+    background: var(--highlight-reach-bg);
+    box-shadow: inset 4px 0 0 var(--highlight-reach-stripe);
+  }
+  .state-card.consequence-excluded {
+    background: var(--highlight-excl-bg);
+    box-shadow: inset 4px 0 0 var(--highlight-excl-stripe);
+  }
+  .state-card.consequence-excluded .state-id {
+    text-decoration: line-through;
+    color: var(--highlight-excl-stripe);
+  }
+  /* When a card is both reachable AND excluded across multiple pins,
+     reachable wins (the filter logic in applyPinnedHighlight enforces this,
+     but defend with CSS specificity too). */
+  .state-card.consequence-highlight.consequence-excluded {
+    background: var(--highlight-reach-bg);
+    box-shadow: inset 4px 0 0 var(--highlight-reach-stripe);
+  }
+  .state-card.consequence-highlight.consequence-excluded .state-id {
+    text-decoration: none;
+    color: var(--accent);
+  }
+  .state-card.consequence-flash {
+    animation: cflash 0.9s ease-out;
+  }
+  @keyframes cflash {
+    0% { background: var(--hover); }
+    100% { background: transparent; }
+  }
+  .options-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 14px;
+    margin-bottom: 8px;
+    align-items: center;
+  }
+  .options-meta label {
+    color: var(--dim);
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .options-meta input[type="text"] {
+    background: var(--bg);
+    color: var(--text);
+    border: 1px solid var(--divider);
+    font-family: inherit;
+    font-size: 12px;
+    padding: 3px 6px;
+    outline: none;
+    min-width: 200px;
+    text-transform: none;
+    letter-spacing: normal;
+  }
+  .options-meta input[type="text"]:focus { border-color: var(--accent); }
+  .options-meta input[type="checkbox"] {
+    margin: 0;
+    cursor: pointer;
+  }
+  .choice-trust-delta {
+    background: var(--bg);
+    color: var(--text);
+    border: 1px solid var(--divider);
+    font-family: inherit;
+    font-size: 12px;
+    padding: 3px 6px;
+    outline: none;
+    width: 56px;
+    flex-shrink: 0;
+    text-align: right;
+  }
+  .choice-trust-delta:focus { border-color: var(--accent); }
+
+  /* BOTTOM BAR */
+  #bottombar {
+    border-top: 1px solid var(--divider);
+    padding: 2px 14px;
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    font-size: 11px;
+    color: var(--dim);
+    letter-spacing: 0.04em;
+  }
+  #bottombar .right { margin-left: auto; }
+
+  /* SCROLLBARS */
+  ::-webkit-scrollbar { width: 10px; height: 10px; }
+  ::-webkit-scrollbar-track { background: var(--bg); }
+  ::-webkit-scrollbar-thumb { background: var(--divider); }
+  ::-webkit-scrollbar-thumb:hover { background: var(--accent); }
+
+  /* CONDITIONS EDITOR */
+  .conditions-editor { margin-bottom: 12px; }
+  .conditions-header {
+    color: var(--dim);
+    font-size: 11px;
+    cursor: pointer;
+    user-select: none;
+    white-space: pre-wrap;
+    word-break: break-word;
+    padding: 2px 0;
+  }
+  .conditions-header:hover { color: var(--text); }
+  .conditions-toggle { display: inline-block; width: 14px; }
+  .conditions-label {
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    margin-right: 8px;
+  }
+  .conditions-preview { color: var(--dim); }
+  .conditions-body {
+    padding: 6px 0 6px 14px;
+    border-left: 1px dashed var(--divider);
+    margin: 4px 0 8px;
+  }
+  .conditions-section { margin-bottom: 10px; }
+  .conditions-section-header {
+    color: var(--dim);
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-bottom: 4px;
+  }
+  .clause-row, .action-row {
+    display: flex;
+    gap: 6px;
+    margin-bottom: 4px;
+    align-items: center;
+  }
+  .clause-path, .clause-op, .clause-value,
+  .action-type, .action-path, .action-value {
+    background: var(--bg);
+    color: var(--text);
+    border: 1px solid var(--divider);
+    font-family: inherit;
+    font-size: 12px;
+    padding: 3px 6px;
+    outline: none;
+  }
+  .clause-path:focus, .clause-op:focus, .clause-value:focus,
+  .action-type:focus, .action-path:focus, .action-value:focus {
+    border-color: var(--accent);
+  }
+  .clause-path, .action-path { min-width: 200px; flex: 1; }
+  .clause-op, .action-type { min-width: 80px; }
+  .clause-value, .action-value { min-width: 100px; flex: 1; }
+  .clause-remove, .action-remove {
+    background: none;
+    border: 1px solid var(--divider);
+    color: var(--dim);
+    font-family: inherit;
+    font-size: 11px;
+    padding: 0 6px;
+    cursor: pointer;
+    width: 24px;
+    height: 22px;
+  }
+  .clause-remove:hover, .action-remove:hover {
+    color: var(--modified);
+    border-color: var(--modified);
+  }
+  .add-clause-btn, .add-action-btn {
+    background: none;
+    border: none;
+    color: var(--dim);
+    font-family: inherit;
+    font-size: 11px;
+    cursor: pointer;
+    padding: 2px 0;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    text-align: left;
+  }
+  .add-clause-btn:hover, .add-action-btn:hover { color: var(--text); }
+
+  /* FLAG CHIPS / STATE-FLAGS FOOTER */
+  .state-flags {
+    margin-top: 12px;
+    padding-top: 6px;
+    border-top: 1px dashed var(--divider);
+    font-size: 11px;
+    color: var(--dim);
+    word-break: break-word;
+    line-height: 1.7;
+  }
+  .flag-chip {
+    display: inline-block;
+    color: var(--accent);
+    cursor: pointer;
+    margin-right: 10px;
+    border-bottom: 1px dotted transparent;
+  }
+  .flag-chip:hover {
+    color: var(--text);
+    border-bottom-color: var(--text);
+  }
+
+  /* SIDEBAR FILTER */
+  .sidebar-filter {
+    padding: 8px 14px 4px;
+    border-bottom: 1px solid var(--divider);
+    margin-bottom: 6px;
+  }
+  .sidebar-filter input {
+    background: var(--bg);
+    color: var(--text);
+    border: 1px solid var(--divider);
+    font-family: inherit;
+    font-size: 12px;
+    padding: 4px 6px;
+    width: 100%;
+    outline: none;
+    box-sizing: border-box;
+  }
+  .sidebar-filter input:focus { border-color: var(--accent); }
+  .sidebar-filter .filter-clear {
+    color: var(--dim);
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    cursor: pointer;
+    padding: 4px 0 0;
+    display: none;
+  }
+  .sidebar-filter .filter-clear.active { display: inline-block; }
+  .sidebar-filter .filter-clear:hover { color: var(--text); }
+
+  /* STATE FILTER HIGHLIGHTS */
+  .state-card.flag-match {
+    border-left-color: var(--accent);
+    border-left-width: 2px;
+  }
+  .state-card.flag-dim { opacity: 0.3; }
+</style>
+</head>
+<body>
+<div id="app">
+  <div id="topbar">
+    <span class="title">Dialogue Editor</span>
+    <button id="open-btn">open folder</button>
+    <button id="save-btn" disabled>save</button>
+    <button id="save-all-btn" disabled>save all</button>
+    <button id="refresh-flags-btn" title="re-scan flag namespace from loaded files">refresh flags</button>
+    <button id="clear-pins-btn" title="unpin all consequence highlights" style="display: none;">clear pins (0)</button>
+    <button id="theme-btn" title="toggle theme">light</button>
+    <span id="current-file"></span>
+    <span id="dirty-indicator" style="display: none;">unsaved</span>
+  </div>
+  <div id="main">
+    <div id="sidebar">
+      <div class="sidebar-filter">
+        <input id="flag-filter-input" type="text" placeholder="filter by flag..." list="flag-list" autocomplete="off" />
+        <span id="flag-filter-clear" class="filter-clear">× clear</span>
+        <datalist id="flag-list"></datalist>
+      </div>
+      <div class="sidebar-section">Files</div>
+      <div id="file-list"></div>
+    </div>
+    <div id="content">
+      <div id="empty">
+        <p><kbd>open folder</kbd> &amp; pick the directory containing the dialogue JSON files
+        (typically <kbd>godot/data/dialogues/</kbd>).</p>
+        <p>Files appear in the left pane. Click one to edit. Speaker tags, trigger
+        conditions, and on_dismiss flags appear as read-only context. Click
+        <kbd>conditions</kbd> on any state to expand the detail.</p>
+        <p>Editable: line text, choice text, idle-flavor lines. Schema fields are
+        preserved bit-identical on save.</p>
+        <p>Save (<kbd>⌘S</kbd> / <kbd>Ctrl-S</kbd>) writes back to the original file
+        on disk. Folder access uses the File System Access API — Chrome and Edge
+        support it on macOS; Safari and Firefox do not yet (you'll see a folder
+        picker error).</p>
+      </div>
+    </div>
+  </div>
+  <div id="bottombar">
+    <span id="stat-states">—</span>
+    <span id="stat-lines">—</span>
+    <span class="right" id="stat-folder"></span>
+  </div>
+</div>
+<script>
+'use strict';
+
+const hasFSA = 'showDirectoryPicker' in window;
+let dirHandle = null;
+let files = {}; // filename -> { handle, json, dirty }
+let currentFile = null;
+let knownSpeakers = []; // populated by collectSpeakers() after each folder load
+let flagPaths = [];     // populated by harvestFlagPaths() after each folder load
+let currentFlagFilter = '';
+let storedDirHandle = null; // restored from IDB on page load if previously picked
+
+const $ = sel => document.querySelector(sel);
+
+// -------- THEME --------
+
+const themeBtn = $('#theme-btn');
+function applyTheme(mode) {
+  if (mode === 'light') {
+    document.body.classList.add('light');
+    themeBtn.textContent = 'dark';
+  } else {
+    document.body.classList.remove('light');
+    themeBtn.textContent = 'light';
+  }
+}
+applyTheme(localStorage.getItem('dialogue-editor-theme') || 'dark');
+themeBtn.addEventListener('click', () => {
+  const next = document.body.classList.contains('light') ? 'dark' : 'light';
+  applyTheme(next);
+  try { localStorage.setItem('dialogue-editor-theme', next); } catch (e) {}
+});
+
+const clearPinsBtn = document.getElementById('clear-pins-btn');
+if (clearPinsBtn) {
+  clearPinsBtn.addEventListener('click', () => {
+    clearAllPinnedConsequences();
+  });
+}
+
+// -------- IDB / FOLDER AUTO-RESTORE --------
+
+function idbOpen() {
+  return new Promise((resolve, reject) => {
+    const req = indexedDB.open('dialogue-editor', 1);
+    req.onupgradeneeded = (e) => {
+      const db = e.target.result;
+      if (!db.objectStoreNames.contains('handles')) db.createObjectStore('handles');
+    };
+    req.onsuccess = (e) => resolve(e.target.result);
+    req.onerror = (e) => reject(e.target.error);
+  });
+}
+async function idbGet(key) {
+  try {
+    const db = await idbOpen();
+    return await new Promise((resolve, reject) => {
+      const tx = db.transaction('handles', 'readonly');
+      const req = tx.objectStore('handles').get(key);
+      req.onsuccess = () => resolve(req.result);
+      req.onerror = () => reject(req.error);
+    });
+  } catch (e) { return null; }
+}
+async function idbSet(key, value) {
+  try {
+    const db = await idbOpen();
+    return await new Promise((resolve, reject) => {
+      const tx = db.transaction('handles', 'readwrite');
+      tx.objectStore('handles').put(value, key);
+      tx.oncomplete = () => resolve();
+      tx.onerror = () => reject(tx.error);
+    });
+  } catch (e) { console.warn('IDB write failed:', e); }
+}
+
+async function tryAutoRestore() {
+  if (!hasFSA) return;
+  const stored = await idbGet('dirHandle');
+  if (!stored) return;
+  storedDirHandle = stored;
+  try {
+    const permission = await stored.queryPermission({ mode: 'readwrite' });
+    if (permission === 'granted') {
+      dirHandle = stored;
+      await loadAllFiles();
+      renderSidebar();
+      updateBottomBar();
+    }
+  } catch (e) {
+    console.warn('Auto-restore queryPermission failed:', e);
+  }
+  updateRestoreButton();
+}
+
+function updateRestoreButton() {
+  const openBtn = $('#open-btn');
+  if (!openBtn) return;
+  if (storedDirHandle && !dirHandle) {
+    openBtn.textContent = `restore: ${storedDirHandle.name}`;
+    openBtn.title = 'click to restore your last folder (Chrome will ask for permission)';
+  } else if (dirHandle) {
+    openBtn.textContent = 'change folder';
+    openBtn.title = 'pick a different folder';
+  } else {
+    openBtn.textContent = 'open folder';
+    openBtn.title = '';
+  }
+}
+
+// -------- FILE LOADING --------
+
+$('#open-btn').addEventListener('click', async () => {
+  if (!hasFSA) {
+    alert('This browser does not support directory access. Use Chrome or Edge.');
+    return;
+  }
+  try {
+    // If we have a stored handle waiting for permission, try that first
+    if (storedDirHandle && !dirHandle) {
+      try {
+        const permission = await storedDirHandle.requestPermission({ mode: 'readwrite' });
+        if (permission === 'granted') {
+          dirHandle = storedDirHandle;
+          await loadAllFiles();
+          renderSidebar();
+          updateBottomBar();
+          updateRestoreButton();
+          return;
+        }
+      } catch (e) {
+        console.warn('Restore failed, falling back to picker:', e);
+      }
+    }
+    // Fresh pick
+    const picked = await window.showDirectoryPicker({ mode: 'readwrite' });
+    dirHandle = picked;
+    storedDirHandle = picked;
+    idbSet('dirHandle', picked);
+    await loadAllFiles();
+    renderSidebar();
+    updateBottomBar();
+    updateRestoreButton();
+  } catch (e) {
+    if (e.name !== 'AbortError') {
+      console.error(e);
+      alert('Could not open folder: ' + e.message);
+    }
+  }
+});
+
+async function loadAllFiles() {
+  files = {};
+  for await (const entry of dirHandle.values()) {
+    if (entry.kind === 'file' && entry.name.endsWith('.json')) {
+      try {
+        const file = await entry.getFile();
+        const text = await file.text();
+        const json = JSON.parse(text);
+        // Heuristic: dialogue file shape
+        if (
+          json && typeof json === 'object' &&
+          (Array.isArray(json.states) || Array.isArray(json.idle_flavor) || json.npc_id)
+        ) {
+          files[entry.name] = { handle: entry, json, dirty: false };
+        }
+      } catch (e) {
+        console.warn(`Skipping ${entry.name}: ${e.message}`);
+      }
+    }
+  }
+  $('#stat-folder').textContent = dirHandle.name + ' / ' + Object.keys(files).length + ' file(s)';
+  knownSpeakers = collectSpeakers();
+  flagPaths = harvestFlagPaths();
+  refreshFlagList();
+}
+
+function collectSpeakers() {
+  const set = new Set();
+  for (const f of Object.values(files)) {
+    if (f.json && f.json.npc_id) set.add(f.json.npc_id);
+    if (f.json && Array.isArray(f.json.states)) {
+      for (const s of f.json.states) {
+        if (Array.isArray(s.lines)) {
+          for (const l of s.lines) {
+            if (l && typeof l === 'object' && l.speaker) set.add(l.speaker);
+          }
+        }
+      }
+    }
+  }
+  return Array.from(set).sort();
+}
+
+// -------- FLAGS / FILTER / TRIGGER PARSING --------
+
+function harvestFlagPaths() {
+  const paths = new Set();
+  for (const f of Object.values(files)) {
+    if (f.json && Array.isArray(f.json.states)) {
+      for (const s of f.json.states) {
+        if (s.trigger) {
+          for (const m of s.trigger.matchAll(/\b(\w+(?:\.\w+)+)/g)) paths.add(m[1]);
+        }
+        if (Array.isArray(s.on_dismiss)) {
+          for (const a of s.on_dismiss) if (a.set) paths.add(a.set);
+        }
+        if (s.options && s.options.write_path) paths.add(s.options.write_path);
+        if (s.options && s.options.trust_path) paths.add(s.options.trust_path);
+      }
+    }
+  }
+  return Array.from(paths).sort();
+}
+
+function collectStateFlags(state) {
+  const flags = new Set();
+  if (state.trigger) {
+    for (const m of state.trigger.matchAll(/\b(\w+(?:\.\w+)+)/g)) flags.add(m[1]);
+  }
+  if (Array.isArray(state.on_dismiss)) {
+    for (const a of state.on_dismiss) if (a.set) flags.add(a.set);
+  }
+  if (state.options && state.options.write_path) flags.add(state.options.write_path);
+  if (state.options && state.options.trust_path) flags.add(state.options.trust_path);
+  return Array.from(flags).sort();
+}
+
+function parseTrigger(trigger) {
+  if (!trigger || !trigger.trim()) return [];
+  return trigger.split('&&').map(s => s.trim()).filter(s => s).map(parseClause);
+}
+
+function parseClause(s) {
+  // Order matters: detect >= / <= before == / != so the '=' in those operators
+  // does not partial-match. Mirrors dialogue_runner.gd:_evaluate_clause.
+  const geMatch = s.match(/^(.+?)\s*>=\s*(.+)$/);
+  if (geMatch) return { path: geMatch[1].trim(), op: '>=', value: parseNumeric(geMatch[2].trim()) };
+  const leMatch = s.match(/^(.+?)\s*<=\s*(.+)$/);
+  if (leMatch) return { path: leMatch[1].trim(), op: '<=', value: parseNumeric(leMatch[2].trim()) };
+  const eqMatch = s.match(/^(.+?)\s*==\s*(.+)$/);
+  const neqMatch = s.match(/^(.+?)\s*!=\s*(.+)$/);
+  if (eqMatch) return { path: eqMatch[1].trim(), op: '==', value: parseValue(eqMatch[2].trim()) };
+  if (neqMatch) return { path: neqMatch[1].trim(), op: '!=', value: parseValue(neqMatch[2].trim()) };
+  if (s.startsWith('!')) return { path: s.slice(1).trim(), op: 'falsy', value: null };
+  return { path: s.trim(), op: 'truthy', value: null };
+}
+
+function parseValue(s) {
+  if ((s.startsWith("'") && s.endsWith("'")) || (s.startsWith('"') && s.endsWith('"'))) {
+    return s.slice(1, -1);
+  }
+  if (s === 'true') return true;
+  if (s === 'false') return false;
+  return s;
+}
+
+function parseNumeric(s) {
+  // Engine evaluates >= / <= against int(actual) vs int(rhs); accept any
+  // integer-coercible RHS and fall back to 0 for garbage.
+  const n = parseInt(s, 10);
+  return Number.isFinite(n) ? n : 0;
+}
+
+function serializeTrigger(clauses) {
+  return clauses.map(c => {
+    if (c.op === '>=' || c.op === '<=') {
+      // Numeric comparison — emit a bare integer with no quotes so the engine's
+      // int(rhs_raw.strip_edges()) cast succeeds.
+      const n = (typeof c.value === 'number') ? c.value : parseNumeric(String(c.value));
+      return `${c.path} ${c.op} ${n}`;
+    } else if (c.op === '==' || c.op === '!=') {
+      const val = (typeof c.value === 'boolean') ? String(c.value) : `'${c.value}'`;
+      return `${c.path} ${c.op} ${val}`;
+    } else if (c.op === 'falsy') {
+      return `!${c.path}`;
+    } else {
+      return c.path;
+    }
+  }).join(' && ');
+}
+
+function refreshFlagList() {
+  const flagList = $('#flag-list');
+  if (!flagList) return;
+  flagList.innerHTML = '';
+  for (const p of flagPaths) {
+    const opt = document.createElement('option');
+    opt.value = p;
+    flagList.appendChild(opt);
+  }
+}
+
+function refreshPathSelects() {
+  document.querySelectorAll('.clause-path, .action-path').forEach(sel => {
+    const cur = sel.value;
+    const cls = sel.className;
+    sel.innerHTML = '';
+    const seen = new Set(flagPaths);
+    if (cur && cur !== '__custom_path__') seen.add(cur);
+    for (const p of Array.from(seen).sort()) {
+      const opt = document.createElement('option');
+      opt.value = p;
+      opt.textContent = p;
+      if (p === cur) opt.selected = true;
+      sel.appendChild(opt);
+    }
+    const customOpt = document.createElement('option');
+    customOpt.value = '__custom_path__';
+    customOpt.textContent = '+ other...';
+    sel.appendChild(customOpt);
+    if (cur && cur !== '__custom_path__') sel.value = cur;
+    sel.className = cls;
+  });
+}
+
+function setFlagFilter(flag) {
+  currentFlagFilter = flag;
+  const input = $('#flag-filter-input');
+  if (input) input.value = flag;
+  applyFlagFilter();
+}
+
+function applyFlagFilter() {
+  const filter = currentFlagFilter.trim();
+  document.querySelectorAll('.state-card').forEach(card => {
+    card.classList.remove('flag-match', 'flag-dim');
+    if (!filter) return;
+    const flags = (card.dataset.flags || '').split(',').filter(x => x);
+    if (flags.includes(filter)) card.classList.add('flag-match');
+    else card.classList.add('flag-dim');
+  });
+  if (filter) {
+    const firstMatch = document.querySelector('.state-card.flag-match');
+    if (firstMatch) firstMatch.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+  const clearBtn = $('#flag-filter-clear');
+  if (clearBtn) clearBtn.classList.toggle('active', !!filter);
+}
+
+function renderStateFlags(state) {
+  const flags = collectStateFlags(state);
+  const footer = document.createElement('div');
+  footer.className = 'state-flags';
+  if (!flags.length) {
+    footer.style.display = 'none';
+    return footer;
+  }
+  for (const f of flags) {
+    const chip = document.createElement('span');
+    chip.className = 'flag-chip';
+    chip.textContent = f;
+    chip.addEventListener('click', (e) => {
+      e.stopPropagation();
+      setFlagFilter(f);
+    });
+    footer.appendChild(chip);
+  }
+  return footer;
+}
+
+// -------- SIDEBAR --------
+
+function renderSidebar() {
+  const list = $('#file-list');
+  list.innerHTML = '';
+  const names = Object.keys(files).sort();
+  for (const name of names) {
+    const div = document.createElement('div');
+    div.className = 'file-item';
+    if (name === currentFile) div.classList.add('active');
+    if (files[name].dirty) div.classList.add('dirty');
+    div.textContent = name.replace(/\.json$/, '');
+    div.addEventListener('click', () => selectFile(name));
+    list.appendChild(div);
+  }
+}
+
+function selectFile(name) {
+  currentFile = name;
+  renderSidebar();
+  renderContent();
+  $('#current-file').textContent = name;
+  $('#save-btn').disabled = !files[name].dirty;
+  updateDirty();
+  updateBottomBar();
+}
+
+// -------- RENDER --------
+
+function renderContent() {
+  const content = $('#content');
+  content.innerHTML = '';
+  // Re-render rebuilds state cards from scratch, so any pinned downstream
+  // highlights are orphaned. Clear pin state and any lingering highlight.
+  pinnedConsequences = [];
+  updateClearPinsButton();
+  if (!currentFile) return;
+  const { json } = files[currentFile];
+  const defaultSpeaker = json.npc_id || 'npc';
+
+  // NPC header
+  const npcHeader = document.createElement('div');
+  npcHeader.className = 'npc-header';
+  npcHeader.textContent = (json.npc_id || currentFile.replace(/\.json$/, ''));
+  content.appendChild(npcHeader);
+
+  const meta = document.createElement('div');
+  meta.className = 'npc-meta';
+  let metaText = currentFile;
+  if (json.version != null) metaText += ` · version ${json.version}`;
+  if (Array.isArray(json.states)) metaText += ` · ${json.states.length} state(s)`;
+  if (Array.isArray(json.idle_flavor)) metaText += ` · ${json.idle_flavor.length} idle line(s)`;
+  meta.textContent = metaText;
+  content.appendChild(meta);
+
+  // States — wrapped in a container so add-state can rebuild without
+  // re-rendering the whole NPC content area.
+  if (Array.isArray(json.states)) {
+    const sh = document.createElement('div');
+    sh.className = 'section-header';
+    sh.textContent = 'States';
+    content.appendChild(sh);
+
+    const statesContainer = document.createElement('div');
+    statesContainer.className = 'states-container';
+    content.appendChild(statesContainer);
+
+    function rebuildStates(focusIdx) {
+      statesContainer.innerHTML = '';
+      // Pins reference state ids that may or may not still exist after a
+      // rebuild; safest to drop them on add/duplicate to avoid orphans.
+      pinnedConsequences = [];
+      updateClearPinsButton();
+      json.states.forEach((state, stateIdx) => {
+        statesContainer.appendChild(renderState(state, stateIdx, defaultSpeaker, rebuildStates));
+      });
+      if (focusIdx != null) {
+        const cards = statesContainer.querySelectorAll('.state-card');
+        if (cards[focusIdx]) {
+          cards[focusIdx].scrollIntoView({ behavior: 'smooth', block: 'center' });
+          const idInputEl = cards[focusIdx].querySelector('.state-id-input');
+          if (idInputEl) {
+            idInputEl.focus();
+            idInputEl.select();
+          }
+        }
+      }
+    }
+    rebuildStates();
+
+    const addStateBtn = document.createElement('button');
+    addStateBtn.className = 'add-line-btn';
+    addStateBtn.textContent = '+ add state';
+    addStateBtn.title = 'append a new empty state (id, trigger, one empty line)';
+    addStateBtn.addEventListener('click', () => {
+      // Default shape: empty id (user fills in), empty trigger, single
+      // empty line. Engine accepts this; first save round-trip preserves it.
+      json.states.push({ id: '', trigger: '', lines: [''] });
+      markDirty();
+      rebuildStates(json.states.length - 1);
+    });
+    content.appendChild(addStateBtn);
+  }
+
+  // Idle flavor — reorderable, insertable, removable
+  if (Array.isArray(json.idle_flavor)) {
+    const sh = document.createElement('div');
+    sh.className = 'section-header';
+    sh.textContent = 'Idle flavor';
+    content.appendChild(sh);
+
+    const idleContainer = document.createElement('div');
+    idleContainer.className = 'lines-container';
+    content.appendChild(idleContainer);
+
+    const idleFactory = () => '';
+
+    function rebuildIdleLines(focusIdx) {
+      idleContainer.innerHTML = '';
+      json.idle_flavor.forEach((line, idx) => {
+        const row = renderLineRow(json.idle_flavor, idx, defaultSpeaker, false, rebuildIdleLines, idleFactory);
+        idleContainer.appendChild(row);
+      });
+      updateBottomBar();
+      if (focusIdx != null) {
+        const rows = idleContainer.querySelectorAll('.line-row');
+        if (rows[focusIdx]) {
+          const ta = rows[focusIdx].querySelector('.line-edit');
+          if (ta) { ta.focus(); autoResize(ta); }
+        }
+      }
+    }
+    rebuildIdleLines();
+
+    const addIdleBtn = document.createElement('button');
+    addIdleBtn.className = 'add-line-btn';
+    addIdleBtn.textContent = '+ add idle line';
+    addIdleBtn.addEventListener('click', () => {
+      json.idle_flavor.push(idleFactory());
+      markDirty();
+      rebuildIdleLines(json.idle_flavor.length - 1);
+    });
+    content.appendChild(addIdleBtn);
+  }
+
+  // Auto-size all textareas after the DOM is inserted
+  requestAnimationFrame(() => {
+    document.querySelectorAll('.line-edit').forEach(autoResize);
+  });
+}
+
+function renderState(state, stateIdx, defaultSpeaker, rebuildStates) {
+  const card = document.createElement('div');
+  card.className = 'state-card';
+  card.dataset.flags = collectStateFlags(state).join(',');
+  card.dataset.stateId = state.id || `state-${stateIdx}`;
+
+  // ID row — id is editable so new states can be named in place and existing
+  // states can be split/renamed (e.g. r0_response_low → r0_response_blunt).
+  const idRow = document.createElement('div');
+  idRow.className = 'state-id-row';
+  const idInput = document.createElement('input');
+  idInput.className = 'state-id-input';
+  idInput.type = 'text';
+  idInput.value = state.id || '';
+  idInput.placeholder = `state ${stateIdx}`;
+  idInput.spellcheck = false;
+  let lastKnownId = state.id || '';
+  idInput.addEventListener('input', () => {
+    const newId = idInput.value;
+    // Any consequence pins keyed by the previous id are now stale.
+    if (lastKnownId) {
+      pinnedConsequences = pinnedConsequences.filter(p => p.stateId !== lastKnownId);
+      updateClearPinsButton();
+    }
+    state.id = newId;
+    card.dataset.stateId = newId || `state-${stateIdx}`;
+    lastKnownId = newId;
+    markDirty();
+  });
+  idRow.appendChild(idInput);
+
+  // "fires once" toggle — writes state.once = true / deletes the field on
+  // uncheck. Engine: states with once: true that match are added to
+  // State.data.dialogue_states_seen on dismiss and skipped on subsequent
+  // walks (see dialogue_runner.gd, SAVE_VERSION 12).
+  const onceLabel = document.createElement('label');
+  onceLabel.className = 'state-once';
+  if (state.once === true) onceLabel.classList.add('active');
+  onceLabel.title = 'fires once per save — after dismiss/commit, the runner falls through to the next-matching state';
+  const onceCheck = document.createElement('input');
+  onceCheck.type = 'checkbox';
+  onceCheck.checked = state.once === true;
+  onceCheck.addEventListener('change', () => {
+    if (onceCheck.checked) {
+      state.once = true;
+      onceLabel.classList.add('active');
+    } else {
+      delete state.once;
+      onceLabel.classList.remove('active');
+    }
+    markDirty();
+  });
+  onceLabel.appendChild(onceCheck);
+  onceLabel.appendChild(document.createTextNode('fires once'));
+  idRow.appendChild(onceLabel);
+
+  // State controls: insert-above + position slider. Slider replaces the
+  // previous ↑/↓ buttons — for any move >1 step it's faster. The position
+  // is committed on slider release (`change`), not `input`, to avoid
+  // re-rendering during the drag.
+  if (rebuildStates && currentFile) {
+    const json = files[currentFile].json;
+    const total = json.states.length;
+    const moveActions = document.createElement('div');
+    moveActions.className = 'state-move-actions';
+
+    const insertAboveBtn = document.createElement('button');
+    insertAboveBtn.className = 'state-move-btn';
+    insertAboveBtn.textContent = '+↑';
+    insertAboveBtn.title = 'insert a new empty state above this one';
+    insertAboveBtn.addEventListener('click', () => {
+      json.states.splice(stateIdx, 0, { id: '', trigger: '', lines: [''] });
+      markDirty();
+      rebuildStates(stateIdx);  // the newly inserted state sits at the old stateIdx
+    });
+    moveActions.appendChild(insertAboveBtn);
+
+    const posLabel = document.createElement('span');
+    posLabel.className = 'state-position-label';
+    posLabel.textContent = `${stateIdx + 1} / ${total}`;
+    moveActions.appendChild(posLabel);
+
+    const slider = document.createElement('input');
+    slider.className = 'state-position-slider';
+    slider.type = 'range';
+    slider.min = '0';
+    slider.max = String(Math.max(0, total - 1));
+    slider.step = '1';
+    slider.value = String(stateIdx);
+    slider.disabled = total <= 1;
+    slider.title = 'drag to reposition this state in the list (commits on release)';
+    // Live preview the target index in the label while dragging.
+    slider.addEventListener('input', () => {
+      const target = parseInt(slider.value, 10);
+      posLabel.textContent = `${target + 1} / ${total}`;
+    });
+    // Commit on release.
+    slider.addEventListener('change', () => {
+      const target = parseInt(slider.value, 10);
+      if (!Number.isFinite(target) || target === stateIdx) {
+        posLabel.textContent = `${stateIdx + 1} / ${total}`;
+        return;
+      }
+      const [moved] = json.states.splice(stateIdx, 1);
+      json.states.splice(target, 0, moved);
+      markDirty();
+      rebuildStates(target);
+    });
+    moveActions.appendChild(slider);
+
+    idRow.appendChild(moveActions);
+  }
+
+  card.appendChild(idRow);
+
+  // Conditions editor (accordion, editable)
+  let flagsFooter;
+  const conditionsEl = renderConditionsEditor(state, card, () => {
+    if (flagsFooter && flagsFooter.parentNode) {
+      const newFooter = renderStateFlags(state);
+      flagsFooter.parentNode.replaceChild(newFooter, flagsFooter);
+      flagsFooter = newFooter;
+    }
+  });
+  if (conditionsEl) card.appendChild(conditionsEl);
+
+  // Lines (array form) — reorderable, insertable, removable
+  if (Array.isArray(state.lines)) {
+    const linesContainer = document.createElement('div');
+    linesContainer.className = 'lines-container';
+    card.appendChild(linesContainer);
+
+    const lineFactory = () => ({ speaker: defaultSpeaker, text: '' });
+
+    function rebuildStateLines(focusIdx) {
+      linesContainer.innerHTML = '';
+      state.lines.forEach((line, lineIdx) => {
+        const row = renderLineRow(state.lines, lineIdx, defaultSpeaker, true, rebuildStateLines, lineFactory);
+        linesContainer.appendChild(row);
+      });
+      updateBottomBar();
+      if (focusIdx != null) {
+        const rows = linesContainer.querySelectorAll('.line-row');
+        if (rows[focusIdx]) {
+          const ta = rows[focusIdx].querySelector('.line-edit');
+          if (ta) { ta.focus(); autoResize(ta); }
+        }
+      }
+    }
+    rebuildStateLines();
+
+    const addBtn = document.createElement('button');
+    addBtn.className = 'add-line-btn';
+    addBtn.textContent = '+ add line';
+    addBtn.addEventListener('click', () => {
+      state.lines.push(lineFactory());
+      markDirty();
+      rebuildStateLines(state.lines.length - 1);
+    });
+    card.appendChild(addBtn);
+  }
+  // Single-line form (not reorderable — only one line by definition)
+  else if (typeof state.line === 'string') {
+    const row = renderLineRow(state, 'line', defaultSpeaker, false);
+    card.appendChild(row);
+  }
+
+  // Options / choices
+  if (state.options && Array.isArray(state.options.choices)) {
+    const opts = state.options;
+    const optBlock = document.createElement('div');
+    optBlock.className = 'options-block';
+
+    const oh = document.createElement('div');
+    oh.className = 'options-header';
+    oh.textContent = 'Choices';
+    optBlock.appendChild(oh);
+
+    // Meta row: write_path (state-flag to set from choice.value),
+    // trust_path (counter to apply choice.trust_delta to),
+    // chain (keep box open and re-fire dialogue on commit).
+    // Empty / false values are deleted from JSON to avoid emitting noise on
+    // states that don't use the trust meter or chaining.
+    const meta = document.createElement('div');
+    meta.className = 'options-meta';
+
+    function makePathField(labelText, key) {
+      const lbl = document.createElement('label');
+      lbl.textContent = labelText;
+      const input = document.createElement('input');
+      input.type = 'text';
+      input.setAttribute('list', 'flag-list');
+      input.value = opts[key] || '';
+      input.placeholder = '(none)';
+      input.addEventListener('input', () => {
+        const v = input.value.trim();
+        if (v) opts[key] = v;
+        else delete opts[key];
+        markDirty();
+      });
+      lbl.appendChild(input);
+      return lbl;
+    }
+
+    meta.appendChild(makePathField('write_path', 'write_path'));
+    meta.appendChild(makePathField('trust_path', 'trust_path'));
+
+    const chLabel = document.createElement('label');
+    chLabel.textContent = 'chain';
+    const chCheck = document.createElement('input');
+    chCheck.type = 'checkbox';
+    chCheck.checked = !!opts.chain;
+    chCheck.title = 'Re-fire dialogue for the same NPC after commit (keeps box open).';
+    chCheck.addEventListener('change', () => {
+      if (chCheck.checked) opts.chain = true;
+      else delete opts.chain;
+      markDirty();
+    });
+    chLabel.appendChild(chCheck);
+    meta.appendChild(chLabel);
+
+    optBlock.appendChild(meta);
+
+    // Choices container — rebuilt on add / delete / reorder. Each pass
+    // re-runs the consequence scan so chips and the →N badge reflect the
+    // current trigger landscape.
+    const choicesContainer = document.createElement('div');
+    choicesContainer.className = 'choices-container';
+    optBlock.appendChild(choicesContainer);
+
+    const choiceFactory = () => ({ text: '', value: '' });
+
+    function rebuildChoices(focusIdx) {
+      choicesContainer.innerHTML = '';
+      opts.choices.forEach((_choice, choiceIdx) => {
+        const row = renderChoiceRow(state, opts, choiceIdx, rebuildChoices, choiceFactory);
+        choicesContainer.appendChild(row);
+        const targets = findChoiceConsequences(state, opts.choices[choiceIdx], opts);
+        if (targets.length > 0) {
+          choicesContainer.appendChild(renderChoiceConsequences(targets));
+        }
+      });
+      requestAnimationFrame(() => {
+        choicesContainer.querySelectorAll('.line-edit').forEach(autoResize);
+      });
+      if (focusIdx != null) {
+        const rows = choicesContainer.querySelectorAll('.choice-row');
+        if (rows[focusIdx]) {
+          const valInput = rows[focusIdx].querySelector('.choice-value-input');
+          if (valInput) valInput.focus();
+        }
+      }
+    }
+    rebuildChoices();
+
+    const addBtn = document.createElement('button');
+    addBtn.className = 'add-line-btn';
+    addBtn.textContent = '+ add choice';
+    addBtn.addEventListener('click', () => {
+      opts.choices.push(choiceFactory());
+      markDirty();
+      rebuildChoices(opts.choices.length - 1);
+    });
+    optBlock.appendChild(addBtn);
+
+    card.appendChild(optBlock);
+  }
+
+  // State flags footer (clickable chips → filter)
+  flagsFooter = renderStateFlags(state);
+  card.appendChild(flagsFooter);
+
+  return card;
+}
+
+function renderConditionsEditor(state, card, onConditionsChange) {
+  const wrap = document.createElement('div');
+  wrap.className = 'conditions-editor';
+
+  const header = document.createElement('div');
+  header.className = 'conditions-header';
+  const toggle = document.createElement('span');
+  toggle.className = 'conditions-toggle';
+  toggle.textContent = '▸';
+  const label = document.createElement('span');
+  label.className = 'conditions-label';
+  label.textContent = 'conditions';
+  const preview = document.createElement('span');
+  preview.className = 'conditions-preview';
+  function updatePreview() {
+    let p = state.trigger || '(no trigger — always fires)';
+    if (p.length > 100) p = p.slice(0, 100) + '...';
+    preview.textContent = p;
+  }
+  updatePreview();
+  header.appendChild(toggle);
+  header.appendChild(label);
+  header.appendChild(preview);
+
+  const body = document.createElement('div');
+  body.className = 'conditions-body';
+  body.style.display = 'none';
+
+  function notifyChanged() {
+    if (card) card.dataset.flags = collectStateFlags(state).join(',');
+    if (onConditionsChange) onConditionsChange();
+    applyFlagFilter();
+  }
+
+  function buildPathSelect(currentPath, onPick) {
+    const sel = document.createElement('select');
+    sel.className = 'clause-path';
+    const seen = new Set(flagPaths);
+    if (currentPath) seen.add(currentPath);
+    for (const p of Array.from(seen).sort()) {
+      const opt = document.createElement('option');
+      opt.value = p;
+      opt.textContent = p;
+      if (p === currentPath) opt.selected = true;
+      sel.appendChild(opt);
+    }
+    const customOpt = document.createElement('option');
+    customOpt.value = '__custom_path__';
+    customOpt.textContent = '+ other...';
+    sel.appendChild(customOpt);
+    sel.addEventListener('change', () => {
+      if (sel.value === '__custom_path__') {
+        const custom = prompt('Flag path (e.g. chapter1.met_pig):', currentPath || '');
+        if (custom && custom.trim()) {
+          const trimmed = custom.trim();
+          if (!flagPaths.includes(trimmed)) {
+            flagPaths.push(trimmed);
+            flagPaths.sort();
+            refreshFlagList();
+          }
+          onPick(trimmed, true);
+        } else {
+          sel.value = currentPath || (flagPaths[0] || '');
+        }
+      } else {
+        onPick(sel.value, false);
+      }
+    });
+    return sel;
+  }
+
+  // ---- Trigger section ----
+  const trigSection = document.createElement('div');
+  trigSection.className = 'conditions-section';
+  const trigHeader = document.createElement('div');
+  trigHeader.className = 'conditions-section-header';
+  trigHeader.textContent = 'when (trigger)';
+  trigSection.appendChild(trigHeader);
+  const clauseList = document.createElement('div');
+  clauseList.className = 'clause-list';
+  let clauses = parseTrigger(state.trigger);
+
+  function commitTrigger() {
+    state.trigger = serializeTrigger(clauses);
+    updatePreview();
+    markDirty();
+    notifyChanged();
+  }
+
+  function rebuildClauses() {
+    clauseList.innerHTML = '';
+    clauses.forEach((clause, i) => {
+      clauseList.appendChild(buildClauseRow(clause, i));
+    });
+  }
+
+  function buildClauseRow(clause, idx) {
+    const row = document.createElement('div');
+    row.className = 'clause-row';
+    const pathSel = buildPathSelect(clause.path, (newPath, isCustom) => {
+      clauses[idx].path = newPath;
+      if (isCustom) rebuildClauses();
+      commitTrigger();
+    });
+    row.appendChild(pathSel);
+
+    const opSel = document.createElement('select');
+    opSel.className = 'clause-op';
+    for (const op of ['==', '!=', '>=', '<=', 'truthy', 'falsy']) {
+      const opt = document.createElement('option');
+      opt.value = op;
+      opt.textContent = op;
+      if (op === clause.op) opt.selected = true;
+      opSel.appendChild(opt);
+    }
+    opSel.addEventListener('change', () => {
+      const prevOp = clauses[idx].op;
+      clauses[idx].op = opSel.value;
+      if (opSel.value === 'truthy' || opSel.value === 'falsy') {
+        clauses[idx].value = null;
+      } else if (opSel.value === '>=' || opSel.value === '<=') {
+        // Coerce any inherited string/bool value to an integer so the next
+        // serialize emits a bare number.
+        clauses[idx].value = (typeof clauses[idx].value === 'number')
+          ? clauses[idx].value
+          : parseNumeric(String(clauses[idx].value ?? 0));
+      } else if ((prevOp === '>=' || prevOp === '<=') && (opSel.value === '==' || opSel.value === '!=')) {
+        // Coming from numeric — keep the number but cast to string for the
+        // text-based == / != value input.
+        clauses[idx].value = String(clauses[idx].value ?? '');
+      }
+      rebuildClauses();
+      commitTrigger();
+    });
+    row.appendChild(opSel);
+
+    if (clause.op === '>=' || clause.op === '<=') {
+      const valInput = document.createElement('input');
+      valInput.className = 'clause-value';
+      valInput.type = 'number';
+      valInput.step = '1';
+      valInput.value = (typeof clause.value === 'number') ? String(clause.value) : '0';
+      valInput.placeholder = '0';
+      valInput.addEventListener('input', () => {
+        const n = parseInt(valInput.value, 10);
+        clauses[idx].value = Number.isFinite(n) ? n : 0;
+        commitTrigger();
+      });
+      row.appendChild(valInput);
+    } else if (clause.op === '==' || clause.op === '!=') {
+      const valInput = document.createElement('input');
+      valInput.className = 'clause-value';
+      valInput.type = 'text';
+      valInput.value = clause.value !== null && clause.value !== undefined ? String(clause.value) : '';
+      valInput.placeholder = 'value';
+      valInput.addEventListener('input', () => {
+        const v = valInput.value.trim();
+        if (v === 'true') clauses[idx].value = true;
+        else if (v === 'false') clauses[idx].value = false;
+        else clauses[idx].value = v;
+        commitTrigger();
+      });
+      row.appendChild(valInput);
+    } else {
+      const spacer = document.createElement('div');
+      spacer.style.flex = '1';
+      row.appendChild(spacer);
+    }
+
+    const remove = document.createElement('button');
+    remove.className = 'clause-remove';
+    remove.textContent = '✕';
+    remove.title = 'remove clause';
+    remove.addEventListener('click', () => {
+      clauses.splice(idx, 1);
+      rebuildClauses();
+      commitTrigger();
+    });
+    row.appendChild(remove);
+    return row;
+  }
+
+  rebuildClauses();
+  trigSection.appendChild(clauseList);
+  const addClauseBtn = document.createElement('button');
+  addClauseBtn.className = 'add-clause-btn';
+  addClauseBtn.textContent = '+ add clause';
+  addClauseBtn.addEventListener('click', () => {
+    clauses.push({ path: flagPaths[0] || '', op: '==', value: true });
+    rebuildClauses();
+    commitTrigger();
+  });
+  trigSection.appendChild(addClauseBtn);
+  body.appendChild(trigSection);
+
+  // ---- On_dismiss section ----
+  const odSection = document.createElement('div');
+  odSection.className = 'conditions-section';
+  const odHeader = document.createElement('div');
+  odHeader.className = 'conditions-section-header';
+  odHeader.textContent = 'on dismiss';
+  odSection.appendChild(odHeader);
+  const actionList = document.createElement('div');
+  actionList.className = 'action-list';
+
+  function ensureOnDismiss() {
+    if (!Array.isArray(state.on_dismiss)) state.on_dismiss = [];
+    return state.on_dismiss;
+  }
+  function commitActions() {
+    if (Array.isArray(state.on_dismiss) && state.on_dismiss.length === 0) delete state.on_dismiss;
+    markDirty();
+    notifyChanged();
+  }
+  function rebuildActions() {
+    actionList.innerHTML = '';
+    const od = state.on_dismiss || [];
+    od.forEach((action, i) => actionList.appendChild(buildActionRow(action, i)));
+  }
+
+  function buildActionRow(action, idx) {
+    const row = document.createElement('div');
+    row.className = 'action-row';
+
+    let currentType = 'set';
+    if (action.set !== undefined) currentType = 'set';
+    else if (action.award_badge !== undefined) currentType = 'award_badge';
+    else if (action.unlock_route !== undefined) currentType = 'unlock_route';
+
+    const typeSel = document.createElement('select');
+    typeSel.className = 'action-type';
+    for (const t of ['set', 'award_badge', 'unlock_route']) {
+      const opt = document.createElement('option');
+      opt.value = t;
+      opt.textContent = t;
+      if (t === currentType) opt.selected = true;
+      typeSel.appendChild(opt);
+    }
+    typeSel.addEventListener('change', () => {
+      const newType = typeSel.value;
+      const od = ensureOnDismiss();
+      if (newType === 'set') od[idx] = { set: flagPaths[0] || '', value: true };
+      else if (newType === 'award_badge') od[idx] = { award_badge: '' };
+      else if (newType === 'unlock_route') od[idx] = { unlock_route: '' };
+      rebuildActions();
+      commitActions();
+    });
+    row.appendChild(typeSel);
+
+    if (currentType === 'set') {
+      const pathSel = buildPathSelect(action.set, (newPath, isCustom) => {
+        ensureOnDismiss()[idx].set = newPath;
+        if (isCustom) rebuildActions();
+        commitActions();
+      });
+      pathSel.className = 'action-path';
+      row.appendChild(pathSel);
+      const valInput = document.createElement('input');
+      valInput.className = 'action-value';
+      valInput.type = 'text';
+      valInput.value = action.value !== undefined ? String(action.value) : '';
+      valInput.placeholder = 'value';
+      valInput.addEventListener('input', () => {
+        const v = valInput.value.trim();
+        let parsed;
+        if (v === 'true') parsed = true;
+        else if (v === 'false') parsed = false;
+        else parsed = v;
+        ensureOnDismiss()[idx].value = parsed;
+        commitActions();
+      });
+      row.appendChild(valInput);
+    } else if (currentType === 'award_badge') {
+      const valInput = document.createElement('input');
+      valInput.className = 'action-value';
+      valInput.type = 'text';
+      valInput.value = action.award_badge || '';
+      valInput.placeholder = 'badge id';
+      valInput.style.flex = '2';
+      valInput.addEventListener('input', () => {
+        ensureOnDismiss()[idx].award_badge = valInput.value.trim();
+        commitActions();
+      });
+      row.appendChild(valInput);
+    } else if (currentType === 'unlock_route') {
+      const valInput = document.createElement('input');
+      valInput.className = 'action-value';
+      valInput.type = 'text';
+      valInput.value = action.unlock_route || '';
+      valInput.placeholder = 'route id';
+      valInput.style.flex = '2';
+      valInput.addEventListener('input', () => {
+        ensureOnDismiss()[idx].unlock_route = valInput.value.trim();
+        commitActions();
+      });
+      row.appendChild(valInput);
+    }
+
+    const remove = document.createElement('button');
+    remove.className = 'action-remove';
+    remove.textContent = '✕';
+    remove.title = 'remove action';
+    remove.addEventListener('click', () => {
+      ensureOnDismiss().splice(idx, 1);
+      rebuildActions();
+      commitActions();
+    });
+    row.appendChild(remove);
+    return row;
+  }
+
+  rebuildActions();
+  odSection.appendChild(actionList);
+  const addActionBtn = document.createElement('button');
+  addActionBtn.className = 'add-action-btn';
+  addActionBtn.textContent = '+ add action';
+  addActionBtn.addEventListener('click', () => {
+    ensureOnDismiss().push({ set: flagPaths[0] || '', value: true });
+    rebuildActions();
+    commitActions();
+  });
+  odSection.appendChild(addActionBtn);
+  body.appendChild(odSection);
+
+  header.addEventListener('click', () => {
+    const isOpen = body.style.display !== 'none';
+    body.style.display = isOpen ? 'none' : '';
+    toggle.textContent = isOpen ? '▸' : '▾';
+  });
+  wrap.appendChild(header);
+  wrap.appendChild(body);
+  return wrap;
+}
+
+let activeSpeakerMenu = null;
+function closeSpeakerMenu() {
+  if (activeSpeakerMenu) {
+    activeSpeakerMenu.remove();
+    activeSpeakerMenu = null;
+    document.removeEventListener('mousedown', outsideSpeakerHandler);
+  }
+}
+function outsideSpeakerHandler(e) {
+  if (activeSpeakerMenu && !activeSpeakerMenu.contains(e.target)) {
+    closeSpeakerMenu();
+  }
+}
+
+function renderSpeakerSelect(currentSpeaker, onChange) {
+  const el = document.createElement('div');
+  el.className = 'speaker-select';
+  el.textContent = currentSpeaker.toUpperCase() + ':';
+  el.tabIndex = 0;
+  el.title = 'click to change speaker';
+
+  let speakerNow = currentSpeaker;
+  function commit(newSpeaker) {
+    speakerNow = newSpeaker;
+    el.textContent = newSpeaker.toUpperCase() + ':';
+    onChange(newSpeaker);
+  }
+
+  el.addEventListener('click', (e) => {
+    e.stopPropagation();
+    closeSpeakerMenu();
+    const menu = document.createElement('div');
+    menu.className = 'speaker-menu';
+    const rect = el.getBoundingClientRect();
+    menu.style.position = 'fixed';
+    menu.style.top = (rect.bottom + 2) + 'px';
+    menu.style.left = rect.left + 'px';
+    const seen = new Set(knownSpeakers);
+    seen.add(speakerNow);
+    for (const sp of Array.from(seen).sort()) {
+      const item = document.createElement('div');
+      item.className = 'speaker-menu-item';
+      if (sp === speakerNow) item.classList.add('current');
+      item.textContent = sp.toUpperCase();
+      item.addEventListener('click', (ev) => {
+        ev.stopPropagation();
+        commit(sp);
+        closeSpeakerMenu();
+      });
+      menu.appendChild(item);
+    }
+    const customItem = document.createElement('div');
+    customItem.className = 'speaker-menu-item custom';
+    customItem.textContent = '+ OTHER...';
+    customItem.addEventListener('click', (ev) => {
+      ev.stopPropagation();
+      closeSpeakerMenu();
+      const custom = prompt('Speaker id (e.g. cula, pig, halina):', speakerNow);
+      if (custom && custom.trim()) {
+        const trimmed = custom.trim().toLowerCase();
+        if (!knownSpeakers.includes(trimmed)) {
+          knownSpeakers.push(trimmed);
+          knownSpeakers.sort();
+        }
+        commit(trimmed);
+      }
+    });
+    menu.appendChild(customItem);
+    document.body.appendChild(menu);
+    activeSpeakerMenu = menu;
+    setTimeout(() => {
+      document.addEventListener('mousedown', outsideSpeakerHandler);
+    }, 0);
+  });
+
+  return el;
+}
+
+function renderLineRow(parent, key, defaultSpeaker, editableSpeaker, rebuildContainer, newLineFactory) {
+  const row = document.createElement('div');
+  row.className = 'line-row';
+
+  const line = parent[key];
+  let speaker = defaultSpeaker;
+  let text = '';
+  if (typeof line === 'string') {
+    text = line;
+  } else if (line && typeof line === 'object') {
+    speaker = line.speaker || defaultSpeaker;
+    text = line.text || '';
+  }
+
+  // Drag handle (reorder) — only if rebuildContainer was supplied
+  if (rebuildContainer) {
+    const handle = document.createElement('span');
+    handle.className = 'drag-handle';
+    handle.textContent = '≡';
+    handle.draggable = true;
+    handle.title = 'drag to reorder';
+    handle.addEventListener('dragstart', (e) => {
+      e.dataTransfer.effectAllowed = 'move';
+      e.dataTransfer.setData('text/plain', String(key));
+      e.dataTransfer.setDragImage(row, 0, 0);
+      row.classList.add('dragging');
+    });
+    handle.addEventListener('dragend', () => {
+      row.classList.remove('dragging');
+      document.querySelectorAll('.line-row.drop-target-above, .line-row.drop-target-below').forEach(r => {
+        r.classList.remove('drop-target-above', 'drop-target-below');
+      });
+    });
+    row.appendChild(handle);
+
+    row.addEventListener('dragover', (e) => {
+      e.preventDefault();
+      e.dataTransfer.dropEffect = 'move';
+      const rect = row.getBoundingClientRect();
+      const above = e.clientY < rect.top + rect.height / 2;
+      row.classList.toggle('drop-target-above', above);
+      row.classList.toggle('drop-target-below', !above);
+    });
+    row.addEventListener('dragleave', (e) => {
+      if (!row.contains(e.relatedTarget)) {
+        row.classList.remove('drop-target-above', 'drop-target-below');
+      }
+    });
+    row.addEventListener('drop', (e) => {
+      e.preventDefault();
+      const sourceIdx = parseInt(e.dataTransfer.getData('text/plain'));
+      row.classList.remove('drop-target-above', 'drop-target-below');
+      if (isNaN(sourceIdx)) return;
+      const rect = row.getBoundingClientRect();
+      const above = e.clientY < rect.top + rect.height / 2;
+      let targetIdx = key + (above ? 0 : 1);
+      if (sourceIdx === targetIdx || sourceIdx + 1 === targetIdx) return;
+      const [moved] = parent.splice(sourceIdx, 1);
+      if (sourceIdx < targetIdx) targetIdx--;
+      parent.splice(targetIdx, 0, moved);
+      markDirty();
+      rebuildContainer();
+    });
+  }
+
+  // Speaker (select or read-only tag)
+  if (editableSpeaker) {
+    const speakerSelect = renderSpeakerSelect(speaker, (newSpeaker) => {
+      const cur = parent[key];
+      if (typeof cur === 'string') {
+        parent[key] = { speaker: newSpeaker, text: cur };
+      } else if (cur && typeof cur === 'object') {
+        cur.speaker = newSpeaker;
+      }
+      markDirty();
+    });
+    row.appendChild(speakerSelect);
+  } else {
+    const speakerEl = document.createElement('div');
+    speakerEl.className = 'speaker-tag';
+    speakerEl.textContent = speaker + ':';
+    row.appendChild(speakerEl);
+  }
+
+  // Textarea
+  const textarea = document.createElement('textarea');
+  textarea.className = 'line-edit';
+  textarea.value = text;
+  textarea.rows = 1;
+  textarea.spellcheck = true;
+  textarea.addEventListener('input', () => {
+    const cur = parent[key];
+    if (typeof cur === 'string') {
+      parent[key] = textarea.value;
+    } else if (cur && typeof cur === 'object') {
+      cur.text = textarea.value;
+    }
+    autoResize(textarea);
+    markDirty();
+  });
+  // Enter (no modifiers) → insert a new line directly below this one and
+  // focus it. Shift+Enter still produces a literal newline inside the line
+  // text (engine supports multi-line bubbles). Only intercept when the
+  // container is rebuildable; single-line states (state.line as string) keep
+  // default Enter behavior so newlines can be authored without conversion.
+  if (rebuildContainer) {
+    textarea.addEventListener('keydown', (e) => {
+      if (e.key !== 'Enter' || e.shiftKey || e.ctrlKey || e.metaKey || e.altKey) return;
+      e.preventDefault();
+      const newLine = newLineFactory ? newLineFactory() : '';
+      parent.splice(key + 1, 0, newLine);
+      markDirty();
+      rebuildContainer(key + 1);
+    });
+  }
+  row.appendChild(textarea);
+
+  // Row actions (insert-above + remove) — only if rebuildContainer was supplied
+  if (rebuildContainer) {
+    const actions = document.createElement('div');
+    actions.className = 'line-row-actions';
+
+    const insertAbove = document.createElement('button');
+    insertAbove.className = 'line-action-btn';
+    insertAbove.textContent = '+↑';
+    insertAbove.title = 'insert line above';
+    insertAbove.addEventListener('click', () => {
+      const newLine = newLineFactory ? newLineFactory() : '';
+      parent.splice(key, 0, newLine);
+      markDirty();
+      rebuildContainer(key);
+    });
+    actions.appendChild(insertAbove);
+
+    const removeBtn = document.createElement('button');
+    removeBtn.className = 'line-action-btn danger';
+    removeBtn.textContent = '✕';
+    removeBtn.title = 'delete line';
+    removeBtn.addEventListener('click', () => {
+      parent.splice(key, 1);
+      markDirty();
+      rebuildContainer();
+    });
+    actions.appendChild(removeBtn);
+
+    row.appendChild(actions);
+  }
+
+  return row;
+}
+
+function autoResize(ta) {
+  ta.style.height = 'auto';
+  ta.style.height = (ta.scrollHeight + 2) + 'px';
+}
+
+function escapeHtml(s) {
+  return String(s).replace(/[&<>"']/g, c => ({
+    '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+  }[c]));
+}
+
+// -------- CHOICE ROW + CONSEQUENCE ENGINE --------
+
+// Active pins: any number of (stateId, choiceIdx) pairs whose downstream
+// targets stay highlighted between hovers. The highlight on screen is the
+// union of every pin's targets. Cleared on file switch and on full re-render.
+// Layered pins let the author preview a multi-step decision path by pinning
+// one choice per options block along the chain.
+let pinnedConsequences = []; // [{ stateId, choiceIdx, targets: [stateId, ...] }]
+
+function renderChoiceRow(state, opts, choiceIdx, rebuildContainer, choiceFactory) {
+  const choice = opts.choices[choiceIdx];
+  const row = document.createElement('div');
+  row.className = 'choice-row';
+
+  // Drag handle — reorders within opts.choices, mirrors renderLineRow.
+  const handle = document.createElement('span');
+  handle.className = 'drag-handle';
+  handle.textContent = '≡';
+  handle.draggable = true;
+  handle.title = 'drag to reorder';
+  handle.addEventListener('dragstart', (e) => {
+    e.dataTransfer.effectAllowed = 'move';
+    e.dataTransfer.setData('text/plain', String(choiceIdx));
+    e.dataTransfer.setDragImage(row, 0, 0);
+    row.classList.add('dragging');
+  });
+  handle.addEventListener('dragend', () => {
+    row.classList.remove('dragging');
+    document.querySelectorAll('.choice-row.drop-target-above, .choice-row.drop-target-below').forEach(r => {
+      r.classList.remove('drop-target-above', 'drop-target-below');
+    });
+  });
+  row.appendChild(handle);
+
+  row.addEventListener('dragover', (e) => {
+    e.preventDefault();
+    e.dataTransfer.dropEffect = 'move';
+    const rect = row.getBoundingClientRect();
+    const above = e.clientY < rect.top + rect.height / 2;
+    row.classList.toggle('drop-target-above', above);
+    row.classList.toggle('drop-target-below', !above);
+  });
+  row.addEventListener('dragleave', (e) => {
+    if (!row.contains(e.relatedTarget)) {
+      row.classList.remove('drop-target-above', 'drop-target-below');
+    }
+  });
+  row.addEventListener('drop', (e) => {
+    e.preventDefault();
+    const sourceIdx = parseInt(e.dataTransfer.getData('text/plain'));
+    row.classList.remove('drop-target-above', 'drop-target-below');
+    if (isNaN(sourceIdx)) return;
+    const rect = row.getBoundingClientRect();
+    const above = e.clientY < rect.top + rect.height / 2;
+    let targetIdx = choiceIdx + (above ? 0 : 1);
+    if (sourceIdx === targetIdx || sourceIdx + 1 === targetIdx) return;
+    const [moved] = opts.choices.splice(sourceIdx, 1);
+    if (sourceIdx < targetIdx) targetIdx--;
+    opts.choices.splice(targetIdx, 0, moved);
+    // Drop invalidates any choice-index-based pin in this options block.
+    // Structural change (reorder / insert / delete / Enter-new) invalidates
+    // any choice-index-based pins on this state; drop them all.
+    pinnedConsequences = pinnedConsequences.filter(p => p.stateId !== state.id);
+    updateClearPinsButton();
+    markDirty();
+    rebuildContainer();
+  });
+
+  // Value cell — "→" prefix + editable input.
+  const valCell = document.createElement('div');
+  valCell.className = 'choice-value';
+  const valInput = document.createElement('input');
+  valInput.className = 'choice-value-input';
+  valInput.type = 'text';
+  valInput.value = choice.value != null ? String(choice.value) : '';
+  valInput.placeholder = 'value';
+  valInput.title = 'choice.value — written to options.write_path on commit';
+  valInput.addEventListener('input', () => {
+    opts.choices[choiceIdx].value = valInput.value;
+    markDirty();
+  });
+  // Re-scan consequences after value edit — in place, so focus is preserved
+  // and the next click (e.g. into the textarea) is not orphaned by a rebuild.
+  valInput.addEventListener('change', () => refreshConsequences());
+  valCell.appendChild(valInput);
+  row.appendChild(valCell);
+
+  // Text textarea.
+  const textarea = document.createElement('textarea');
+  textarea.className = 'line-edit';
+  textarea.value = choice.text || '';
+  textarea.rows = 1;
+  textarea.spellcheck = true;
+  textarea.addEventListener('input', () => {
+    opts.choices[choiceIdx].text = textarea.value;
+    autoResize(textarea);
+    markDirty();
+  });
+  // Enter (no modifiers) → insert a new choice directly below this one and
+  // focus it. Shift+Enter still produces a literal newline inside the text.
+  textarea.addEventListener('keydown', (e) => {
+    if (e.key !== 'Enter' || e.shiftKey || e.ctrlKey || e.metaKey || e.altKey) return;
+    e.preventDefault();
+    opts.choices.splice(choiceIdx + 1, 0, choiceFactory ? choiceFactory() : { text: '', value: '' });
+    // Structural change (reorder / insert / delete / Enter-new) invalidates
+    // any choice-index-based pins on this state; drop them all.
+    pinnedConsequences = pinnedConsequences.filter(p => p.stateId !== state.id);
+    updateClearPinsButton();
+    markDirty();
+    rebuildContainer(choiceIdx + 1);
+  });
+  row.appendChild(textarea);
+
+  // trust_delta numeric input.
+  const tdInput = document.createElement('input');
+  tdInput.className = 'choice-trust-delta';
+  tdInput.type = 'number';
+  tdInput.step = '1';
+  tdInput.value = (typeof choice.trust_delta === 'number') ? String(choice.trust_delta) : '';
+  tdInput.placeholder = 'Δ';
+  tdInput.title = 'trust_delta — added to options.trust_path on commit';
+  tdInput.addEventListener('input', () => {
+    const raw = tdInput.value.trim();
+    if (raw === '') {
+      delete opts.choices[choiceIdx].trust_delta;
+    } else {
+      const n = parseInt(raw, 10);
+      opts.choices[choiceIdx].trust_delta = Number.isFinite(n) ? n : 0;
+    }
+    markDirty();
+  });
+  row.appendChild(tdInput);
+
+  // Consequence badge — →N count, click to pin downstream highlight.
+  // `targets` is mutated in place by refreshConsequences so the hover/focus
+  // handlers (which captured this array reference) see the latest set after
+  // value edits without needing to be re-attached.
+  const targets = findChoiceConsequences(state, choice, opts);
+  const badge = document.createElement('button');
+  badge.className = 'choice-consequence-badge';
+  badge.dataset.choiceIdx = String(choiceIdx);
+  badge.textContent = '→ ' + targets.length;
+  badge.disabled = targets.length === 0;
+  badge.title = targets.length === 0
+    ? 'no downstream state matches this choice'
+    : `pin / unpin highlight on ${targets.length} downstream state(s)`;
+  if (isPinnedConsequence(state, choiceIdx)) badge.classList.add('pinned');
+  badge.addEventListener('click', (e) => {
+    e.preventDefault();
+    togglePinnedConsequence(state.id, choiceIdx, targets);
+  });
+  row.appendChild(badge);
+
+  // Refresh consequences in-place after value (or trust_delta) edits. Mutates
+  // `targets` so the closure-captured arrays in hover handlers, the pin
+  // store, and the chips sibling all see the same new set without rebuilding
+  // the choice row — which would otherwise orphan focus and clear highlight
+  // mid-edit.
+  function refreshConsequences() {
+    const fresh = findChoiceConsequences(state, opts.choices[choiceIdx], opts);
+    targets.length = 0;
+    for (const t of fresh) targets.push(t);
+    badge.textContent = '→ ' + targets.length;
+    badge.disabled = targets.length === 0;
+    badge.title = targets.length === 0
+      ? 'no downstream state matches this choice'
+      : `pin / unpin highlight on ${targets.length} downstream state(s)`;
+    const nextSib = row.nextElementSibling;
+    const hasChipsSib = nextSib
+      && nextSib.classList
+      && nextSib.classList.contains('choice-consequences');
+    if (targets.length > 0) {
+      const chips = renderChoiceConsequences(targets);
+      if (hasChipsSib) nextSib.replaceWith(chips);
+      else row.parentNode.insertBefore(chips, row.nextSibling);
+    } else if (hasChipsSib) {
+      nextSib.remove();
+    }
+    // If this choice is currently pinned, the pin's stored target list must
+    // also be refreshed so the highlight reflects the new set.
+    for (const p of pinnedConsequences) {
+      if (p.stateId === state.id && p.choiceIdx === choiceIdx) {
+        p.targets = targets.slice();
+      }
+    }
+    applyPinnedHighlight();
+  }
+
+  // Hover OR focus inside the row → ephemeral highlight. Focus has absolute
+  // priority: while any other choice-row's input is focused, mouse-hover on
+  // this row does NOT switch the highlight. The focused row keeps its
+  // targets shown until focus moves away.
+  function isAnotherRowFocused() {
+    const f = document.activeElement;
+    if (!f || !f.closest) return false;
+    const focusedRow = f.closest('.choice-row');
+    return !!(focusedRow && focusedRow !== row);
+  }
+  function highlightOnIfPossible() {
+    if (hasAnyPinnedConsequence()) return;
+    if (isAnotherRowFocused()) return;
+    applyEphemeralHighlight(state, opts, choiceIdx, targets);
+  }
+  function highlightOffIfPossible() {
+    if (hasAnyPinnedConsequence()) return;
+    if (row.contains(document.activeElement)) return;
+    if (row.matches(':hover')) return;
+    // Don't clear when another choice-row owns the focus — that row's
+    // highlight is the active one and will be cleared on its own focusout.
+    if (isAnotherRowFocused()) return;
+    clearAllConsequenceHighlights();
+  }
+  row.addEventListener('mouseenter', highlightOnIfPossible);
+  row.addEventListener('mouseleave', highlightOffIfPossible);
+  row.addEventListener('focusin', highlightOnIfPossible);
+  row.addEventListener('focusout', (e) => {
+    // Focus moving to another input inside this same row is not a leave.
+    if (e.relatedTarget && row.contains(e.relatedTarget)) return;
+    highlightOffIfPossible();
+  });
+
+  // Row actions: insert-above + delete.
+  const actions = document.createElement('div');
+  actions.className = 'line-row-actions';
+  const insertAbove = document.createElement('button');
+  insertAbove.className = 'line-action-btn';
+  insertAbove.textContent = '+↑';
+  insertAbove.title = 'insert choice above';
+  insertAbove.addEventListener('click', () => {
+    opts.choices.splice(choiceIdx, 0, choiceFactory ? choiceFactory() : { text: '', value: '' });
+    // Structural change (reorder / insert / delete / Enter-new) invalidates
+    // any choice-index-based pins on this state; drop them all.
+    pinnedConsequences = pinnedConsequences.filter(p => p.stateId !== state.id);
+    updateClearPinsButton();
+    markDirty();
+    rebuildContainer(choiceIdx);
+  });
+  actions.appendChild(insertAbove);
+  const removeBtn = document.createElement('button');
+  removeBtn.className = 'line-action-btn danger';
+  removeBtn.textContent = '✕';
+  removeBtn.title = 'delete choice';
+  removeBtn.addEventListener('click', () => {
+    opts.choices.splice(choiceIdx, 1);
+    // Structural change (reorder / insert / delete / Enter-new) invalidates
+    // any choice-index-based pins on this state; drop them all.
+    pinnedConsequences = pinnedConsequences.filter(p => p.stateId !== state.id);
+    updateClearPinsButton();
+    markDirty();
+    rebuildContainer();
+  });
+  actions.appendChild(removeBtn);
+  row.appendChild(actions);
+
+  return row;
+}
+
+// Renders the chip row of downstream-state links beneath a choice.
+function renderChoiceConsequences(targetIds) {
+  const wrap = document.createElement('div');
+  wrap.className = 'choice-consequences';
+  for (const tid of targetIds) {
+    const chip = document.createElement('button');
+    chip.className = 'choice-consequence-chip';
+    chip.textContent = '→ ' + tid;
+    chip.title = 'scroll to ' + tid;
+    chip.addEventListener('click', (e) => {
+      e.preventDefault();
+      scrollToStateCard(tid);
+    });
+    wrap.appendChild(chip);
+  }
+  return wrap;
+}
+
+// Returns the set of state ids in the current file that are plausible
+// immediate-next states after this choice commits. Algorithm:
+//   1. Build the post-commit "knownFacts" model from source.trigger plus the
+//      commit (opts.write_path = choice.value; trust_path bumped by Δ).
+//   2. For each candidate target X, walk its clauses:
+//        - If known: check direct contradiction (e.g. fact == false vs c == true).
+//        - If unknown: use default-value reasoning (bool → false; string → '';
+//          int → 0; trust_path treated as always-consistent because the
+//          cumulative trust value isn't simulated).
+//   3. INCLUDE X only if (a) it has no contradictions, AND (b) at least one
+//      of its clauses references write_path / trust_path / a flag also
+//      named in source.trigger — i.e. the commit could plausibly move the
+//      world toward X. This filters out unrelated states.
+// This catches both direct branches (write_path == value) and fallback
+// branches (e.g. r0_response_low for halina), and excludes states that
+// require prerequisites the commit can't satisfy.
+function findChoiceConsequences(state, choice, opts) {
+  if (!currentFile) return [];
+  const json = files[currentFile].json;
+  if (!Array.isArray(json.states)) return [];
+  const writePath = opts.write_path || null;
+  const trustPath = opts.trust_path || null;
+  const choiceValue = (choice.value != null) ? String(choice.value) : '';
+  const sourceId = state.id;
+
+  // Build known-fact model from source trigger.
+  const sourceClauses = parseTrigger(state.trigger || '');
+  const knownFacts = Object.create(null);
+  for (const c of sourceClauses) knownFacts[c.path] = c;
+  // The commit overrides write_path with the chosen value.
+  if (writePath) {
+    knownFacts[writePath] = { path: writePath, op: '==', value: choiceValue };
+  }
+  const sourceFlags = new Set(sourceClauses.map(c => c.path));
+
+  // Forward-ordering heuristic: dialogue files list states in flow order,
+  // and the engine walks them top-to-first-match. Targets BEFORE the source
+  // are effectively in the past — exclude them. (If this excludes a
+  // legitimate looping target, reordering the JSON resolves it.)
+  const sourceIdx = json.states.indexOf(state);
+
+  // Exact post-commit trust value, when knowable.
+  // Only at the FIRST state in the file that declares this options.trust_path
+  // can we assume pre-commit trust = 0 (no prior state could have touched it).
+  // At that one state we evaluate `trust_path >= N` / `<= N` clauses
+  // precisely against post_trust = choice.trust_delta. At later states the
+  // trust may have been bumped by prior commits we don't simulate, so we
+  // fall back to "always consistent" — small over-inclusion but no false
+  // exclusion of legitimate paths.
+  let postTrust = null;
+  if (trustPath
+      && !sourceFlags.has(trustPath)
+      && isFirstStateUsingTrustPath(state, trustPath, json)) {
+    postTrust = (typeof choice.trust_delta === 'number') ? choice.trust_delta : 0;
+  }
+
+  const out = [];
+  for (let i = 0; i < json.states.length; i++) {
+    const x = json.states[i];
+    if (!x.trigger || !x.id || x.id === sourceId) continue;
+    if (sourceIdx >= 0 && i < sourceIdx) continue;
+    const xClauses = parseTrigger(x.trigger);
+    let contradicted = false;
+    let referencesRelevant = false;
+    for (const c of xClauses) {
+      if (writePath && c.path === writePath) referencesRelevant = true;
+      if (trustPath && c.path === trustPath) referencesRelevant = true;
+      if (sourceFlags.has(c.path)) referencesRelevant = true;
+      const isTrustPath = trustPath && c.path === trustPath;
+      if (clauseContradicted(c, knownFacts[c.path], isTrustPath, postTrust)) {
+        contradicted = true;
+        break;
+      }
+    }
+    if (!contradicted && referencesRelevant) out.push(x.id);
+  }
+  return out;
+}
+
+// True iff `state` is the first entry in json.states whose options.trust_path
+// equals `trustPath`. Used to detect the trust-meter entry point, where
+// pre-commit trust is provably 0.
+function isFirstStateUsingTrustPath(state, trustPath, json) {
+  if (!trustPath || !Array.isArray(json.states)) return false;
+  for (const s of json.states) {
+    if (!s.options || s.options.trust_path !== trustPath) continue;
+    return s === state;
+  }
+  return false;
+}
+
+// Returns true iff target clause c contradicts the known fact (or, when no
+// fact is known, the default value for c.path). `postTrust`, when a number,
+// is the exact post-commit value for the source's trust_path — used to
+// evaluate trust_path clauses precisely at the trust-meter entry state.
+function clauseContradicted(c, fact, isTrustPath, postTrust) {
+  if (fact) {
+    // Both sides equality with literal values — strict mismatch.
+    if (fact.op === '==' && c.op === '==' && !consequenceValEq(fact.value, c.value)) return true;
+    if (fact.op === '==' && c.op === '!=' && consequenceValEq(fact.value, c.value)) return true;
+    if (fact.op === '==' && c.op === 'truthy' && !consequenceTruthy(fact.value)) return true;
+    if (fact.op === '==' && c.op === 'falsy' && consequenceTruthy(fact.value)) return true;
+    // Other combinations (>=/<= against ==, etc.) — not asserted to contradict.
+    return false;
+  }
+  if (isTrustPath) {
+    // Exact post-commit trust known (trust-meter entry state) → evaluate
+    // numeric clauses precisely. This is what lets blunt_procedural (Δ+0)
+    // at halina intro correctly exclude r0_response_high (>= 2).
+    if (typeof postTrust === 'number') {
+      if (c.op === '>=') return postTrust < c.value;
+      if (c.op === '<=') return postTrust > c.value;
+      if (c.op === '==') return postTrust !== c.value;
+      if (c.op === '!=') return postTrust === c.value;
+    }
+    // Otherwise stay conservative; trust could have been bumped by prior
+    // commits we don't simulate.
+    return false;
+  }
+  // No fact. Use default-value reasoning.
+  if (c.op === '==') {
+    // Default value is falsy (false, '', or 0). Anything truthy contradicts.
+    return consequenceTruthy(c.value);
+  }
+  if (c.op === '!=') {
+    return !consequenceTruthy(c.value);
+  }
+  if (c.op === 'truthy') return true;   // default is falsy
+  if (c.op === 'falsy') return false;   // default matches falsy
+  if (c.op === '>=') return c.value > 0;
+  if (c.op === '<=') return c.value < 0;
+  return false;
+}
+
+function consequenceValEq(a, b) {
+  // parseValue can produce string, boolean, or number. Compare permissively
+  // so '1' == 1 and 'true' == true (these forms appear in mixed dialogue JSON).
+  if (a === b) return true;
+  return String(a) === String(b);
+}
+
+function consequenceTruthy(v) {
+  if (v === false || v === '' || v === 0 || v == null) return false;
+  if (v === 'false' || v === '0') return false;
+  return true;
+}
+
+// Apply two parallel highlight sets to state cards in the DOM:
+//   reachable: states this commit / pin set could lead to → green field-wide
+//   excluded:  states that OTHER choices in the same options block(s) would
+//              lead to, that this commit will lock out → red field-wide
+// Reachable always wins when a state is in both sets (the caller pre-filters,
+// and the CSS also defends with a higher-specificity rule).
+function setHighlightSets(reachable, excluded) {
+  clearAllConsequenceHighlights();
+  for (const tid of reachable) {
+    const sel = `.state-card[data-state-id="${cssEscapeId(tid)}"]`;
+    document.querySelectorAll(sel).forEach(c => c.classList.add('consequence-highlight'));
+  }
+  for (const tid of excluded) {
+    const sel = `.state-card[data-state-id="${cssEscapeId(tid)}"]`;
+    document.querySelectorAll(sel).forEach(c => c.classList.add('consequence-excluded'));
+  }
+}
+
+function clearAllConsequenceHighlights() {
+  document.querySelectorAll('.state-card.consequence-highlight, .state-card.consequence-excluded').forEach(c => {
+    c.classList.remove('consequence-highlight');
+    c.classList.remove('consequence-excluded');
+  });
+}
+
+// Backwards-compat shim — older callers passed a single targets array; map to
+// "only reachable, no excluded." Used by scrollToStateCard / refresh paths
+// that don't care about excluded.
+function setConsequenceHighlight(targetIds) {
+  setHighlightSets(targetIds || [], []);
+}
+
+function clearConsequenceHighlight() {
+  clearAllConsequenceHighlights();
+}
+
+// Compute the excluded set for a single (state, choiceIdx): the targets of
+// every OTHER choice in this state's options block, minus this choice's own
+// targets. "Other choices would lead here; this choice locks them out."
+function computeExcludedForChoice(state, opts, choiceIdx) {
+  if (!opts || !Array.isArray(opts.choices)) return [];
+  const myTargets = new Set(findChoiceConsequences(state, opts.choices[choiceIdx], opts));
+  const excluded = new Set();
+  for (let i = 0; i < opts.choices.length; i++) {
+    if (i === choiceIdx) continue;
+    const others = findChoiceConsequences(state, opts.choices[i], opts);
+    for (const t of others) {
+      if (!myTargets.has(t)) excluded.add(t);
+    }
+  }
+  return Array.from(excluded);
+}
+
+// Apply ephemeral (hover / focus) highlight for a single choice: green for
+// the choice's targets, red for states locked out by this choice.
+function applyEphemeralHighlight(state, opts, choiceIdx, reachable) {
+  const excluded = computeExcludedForChoice(state, opts, choiceIdx);
+  setHighlightSets(reachable, excluded);
+}
+
+function togglePinnedConsequence(stateId, choiceIdx, targets) {
+  const idx = pinnedConsequences.findIndex(p => p.stateId === stateId && p.choiceIdx === choiceIdx);
+  if (idx >= 0) {
+    pinnedConsequences.splice(idx, 1);
+  } else {
+    // Snapshot the targets array so later in-place updates don't bleed in.
+    pinnedConsequences.push({ stateId, choiceIdx, targets: targets.slice() });
+  }
+  syncPinnedBadges();
+  applyPinnedHighlight();
+  updateClearPinsButton();
+}
+
+// Compute reachable + excluded sets across all pinned choices, then apply.
+// reachable = union of every pinned choice's targets.
+// excluded  = union of (other choices' targets) per pinned options block,
+//             minus reachable (a state that is reachable by ANY pin wins).
+function applyPinnedHighlight() {
+  if (pinnedConsequences.length === 0) {
+    clearAllConsequenceHighlights();
+    return;
+  }
+  const reachable = new Set();
+  const excluded = new Set();
+  for (const p of pinnedConsequences) {
+    for (const t of p.targets) reachable.add(t);
+    const state = findStateById(p.stateId);
+    if (!state || !state.options || !Array.isArray(state.options.choices)) continue;
+    const opts = state.options;
+    for (let i = 0; i < opts.choices.length; i++) {
+      if (i === p.choiceIdx) continue;
+      const others = findChoiceConsequences(state, opts.choices[i], opts);
+      for (const t of others) excluded.add(t);
+    }
+  }
+  // Reachable wins on conflict.
+  for (const r of reachable) excluded.delete(r);
+  setHighlightSets(Array.from(reachable), Array.from(excluded));
+}
+
+function findStateById(stateId) {
+  if (!currentFile) return null;
+  const json = files[currentFile].json;
+  if (!Array.isArray(json.states)) return null;
+  for (const s of json.states) {
+    if (s.id === stateId) return s;
+  }
+  return null;
+}
+
+// Re-paint the .pinned class on every choice-consequence-badge so it matches
+// the current pinned set. Called after any pin add/remove and after a
+// renderState rebuild (so freshly-rendered badges reflect existing pins).
+function syncPinnedBadges() {
+  document.querySelectorAll('.choice-consequence-badge.pinned').forEach(b => b.classList.remove('pinned'));
+  for (const p of pinnedConsequences) {
+    const sel = `.state-card[data-state-id="${cssEscapeId(p.stateId)}"] .choice-consequence-badge[data-choice-idx="${p.choiceIdx}"]`;
+    const badge = document.querySelector(sel);
+    if (badge) badge.classList.add('pinned');
+  }
+}
+
+function isPinnedConsequence(state, choiceIdx) {
+  return pinnedConsequences.some(p => p.stateId === state.id && p.choiceIdx === choiceIdx);
+}
+
+function hasAnyPinnedConsequence() {
+  return pinnedConsequences.length > 0;
+}
+
+function clearAllPinnedConsequences() {
+  pinnedConsequences = [];
+  syncPinnedBadges();
+  clearConsequenceHighlight();
+  updateClearPinsButton();
+}
+
+function updateClearPinsButton() {
+  const btn = document.getElementById('clear-pins-btn');
+  if (!btn) return;
+  if (pinnedConsequences.length === 0) {
+    btn.style.display = 'none';
+  } else {
+    btn.style.display = '';
+    btn.textContent = `clear pins (${pinnedConsequences.length})`;
+  }
+}
+
+function scrollToStateCard(stateId) {
+  const sel = `.state-card[data-state-id="${cssEscapeId(stateId)}"]`;
+  const card = document.querySelector(sel);
+  if (!card) return;
+  card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  card.classList.add('consequence-flash');
+  setTimeout(() => card.classList.remove('consequence-flash'), 900);
+}
+
+function cssEscapeId(s) {
+  if (window.CSS && typeof window.CSS.escape === 'function') return window.CSS.escape(String(s));
+  return String(s).replace(/(["\\])/g, '\\$1');
+}
+
+// -------- DIRTY / SAVE --------
+
+function markDirty() {
+  if (!currentFile) return;
+  files[currentFile].dirty = true;
+  $('#save-btn').disabled = false;
+  $('#save-all-btn').disabled = !Object.values(files).some(f => f.dirty);
+  updateDirty();
+  renderSidebar();
+}
+
+function updateDirty() {
+  const di = $('#dirty-indicator');
+  if (currentFile && files[currentFile].dirty) {
+    di.style.display = '';
+  } else {
+    di.style.display = 'none';
+  }
+}
+
+function updateBottomBar() {
+  if (!currentFile) {
+    $('#stat-states').textContent = '—';
+    $('#stat-lines').textContent = '—';
+    return;
+  }
+  const json = files[currentFile].json;
+  const stateCount = Array.isArray(json.states) ? json.states.length : 0;
+  let lineCount = 0;
+  if (Array.isArray(json.states)) {
+    for (const s of json.states) {
+      if (Array.isArray(s.lines)) lineCount += s.lines.length;
+      else if (typeof s.line === 'string') lineCount += 1;
+      if (s.options && Array.isArray(s.options.choices)) lineCount += s.options.choices.length;
+    }
+  }
+  if (Array.isArray(json.idle_flavor)) lineCount += json.idle_flavor.length;
+  $('#stat-states').textContent = stateCount + ' state(s)';
+  $('#stat-lines').textContent = lineCount + ' line(s)';
+}
+
+async function saveFile(name) {
+  const f = files[name];
+  if (!f || !f.dirty) return;
+  const text = JSON.stringify(f.json, null, 4) + '\n';
+  try {
+    const writable = await f.handle.createWritable();
+    await writable.write(text);
+    await writable.close();
+    f.dirty = false;
+  } catch (e) {
+    alert(`Save failed for ${name}: ${e.message}`);
+    console.error(e);
+    throw e;
+  }
+}
+
+$('#save-btn').addEventListener('click', async () => {
+  if (!currentFile) return;
+  await saveFile(currentFile);
+  $('#save-btn').disabled = true;
+  $('#save-all-btn').disabled = !Object.values(files).some(f => f.dirty);
+  updateDirty();
+  renderSidebar();
+});
+
+$('#save-all-btn').addEventListener('click', async () => {
+  for (const name of Object.keys(files)) {
+    if (files[name].dirty) {
+      try { await saveFile(name); } catch (e) { return; }
+    }
+  }
+  $('#save-btn').disabled = true;
+  $('#save-all-btn').disabled = true;
+  updateDirty();
+  renderSidebar();
+});
+
+// Keyboard: Cmd/Ctrl+S
+window.addEventListener('keydown', (e) => {
+  if ((e.metaKey || e.ctrlKey) && e.key === 's') {
+    e.preventDefault();
+    if (e.shiftKey) {
+      if (!$('#save-all-btn').disabled) $('#save-all-btn').click();
+    } else {
+      if (!$('#save-btn').disabled) $('#save-btn').click();
+    }
+  }
+});
+
+// Warn on unload if anything dirty
+window.addEventListener('beforeunload', (e) => {
+  if (Object.values(files).some(f => f.dirty)) {
+    e.preventDefault();
+    e.returnValue = '';
+    return '';
+  }
+});
+
+// Filter input wiring
+const filterInput = $('#flag-filter-input');
+const filterClear = $('#flag-filter-clear');
+if (filterInput) {
+  filterInput.addEventListener('input', () => {
+    currentFlagFilter = filterInput.value;
+    applyFlagFilter();
+  });
+}
+if (filterClear) {
+  filterClear.addEventListener('click', () => {
+    if (filterInput) filterInput.value = '';
+    currentFlagFilter = '';
+    applyFlagFilter();
+  });
+}
+
+// Refresh flag namespace
+const refreshFlagsBtn = $('#refresh-flags-btn');
+if (refreshFlagsBtn) {
+  refreshFlagsBtn.addEventListener('click', () => {
+    flagPaths = harvestFlagPaths();
+    refreshFlagList();
+    refreshPathSelects();
+    const original = refreshFlagsBtn.textContent;
+    refreshFlagsBtn.textContent = `refreshed (${flagPaths.length})`;
+    refreshFlagsBtn.disabled = true;
+    setTimeout(() => {
+      refreshFlagsBtn.textContent = original;
+      refreshFlagsBtn.disabled = false;
+    }, 1200);
+  });
+}
+
+// Try restoring last-used folder (silent if permission already granted; otherwise updates button to "restore: <name>")
+tryAutoRestore();
+
+// Ctrl/Cmd+I in any line textarea: wrap or unwrap the selection with [i]...[/i]
+const ITALIC_OPEN = '[i]';
+const ITALIC_CLOSE = '[/i]';
+document.addEventListener('keydown', (e) => {
+  if (!(e.metaKey || e.ctrlKey)) return;
+  if (e.altKey || e.shiftKey) return;
+  if (e.key !== 'i' && e.key !== 'I') return;
+  const target = e.target;
+  if (!target || !target.classList || !target.classList.contains('line-edit')) return;
+  e.preventDefault();
+  toggleItalic(target);
+});
+
+function toggleItalic(textarea) {
+  const start = textarea.selectionStart;
+  const end = textarea.selectionEnd;
+  const value = textarea.value;
+  const selected = value.slice(start, end);
+  const beforeOpen = value.slice(Math.max(0, start - ITALIC_OPEN.length), start);
+  const afterClose = value.slice(end, end + ITALIC_CLOSE.length);
+
+  let newValue, newStart, newEnd;
+  if (beforeOpen === ITALIC_OPEN && afterClose === ITALIC_CLOSE) {
+    // Caret/selection sits inside an existing [i]...[/i] — strip the wrappers
+    newValue = value.slice(0, start - ITALIC_OPEN.length) + selected + value.slice(end + ITALIC_CLOSE.length);
+    newStart = start - ITALIC_OPEN.length;
+    newEnd = end - ITALIC_OPEN.length;
+  } else if (
+    selected.startsWith(ITALIC_OPEN) &&
+    selected.endsWith(ITALIC_CLOSE) &&
+    selected.length >= ITALIC_OPEN.length + ITALIC_CLOSE.length
+  ) {
+    // Selection itself includes the wrappers — strip them
+    const inner = selected.slice(ITALIC_OPEN.length, selected.length - ITALIC_CLOSE.length);
+    newValue = value.slice(0, start) + inner + value.slice(end);
+    newStart = start;
+    newEnd = start + inner.length;
+  } else {
+    // Wrap selection (or insert empty wrap at the cursor)
+    newValue = value.slice(0, start) + ITALIC_OPEN + selected + ITALIC_CLOSE + value.slice(end);
+    newStart = start + ITALIC_OPEN.length;
+    newEnd = end + ITALIC_OPEN.length;
+  }
+
+  textarea.value = newValue;
+  textarea.setSelectionRange(newStart, newEnd);
+  textarea.dispatchEvent(new Event('input', { bubbles: true }));
+}
+</script>
+</body>
+</html>

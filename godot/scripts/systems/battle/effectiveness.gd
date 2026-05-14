@@ -6,8 +6,13 @@
 ## to one of five narrative buckets: super_effective, effective, not_very_effective,
 ## no_effect, backfires.
 ##
-## This is a SKELETON. The agreed math is here; the wiring to taxonomy assertions
-## and the GUT tests are TODO and must be written before the resolver ships.
+## The agreed math is here. Tag-taxonomy validation is implemented against the
+## closed list in data/tag_taxonomy.json (see validate_against_taxonomy below).
+## Headless tests live in tests/test_effectiveness.gd (resolve buckets, backfire,
+## taxonomy validation). The resolver itself is not yet wired into
+## battle_controller.gd — that controller currently consumes pre-computed
+## "effectiveness" string buckets from court_round JSON via
+## bucket_to_force_multiplier() rather than calling resolve() live.
 
 class_name Effectiveness
 extends RefCounted
@@ -105,12 +110,39 @@ static func bucket_to_force_multiplier(bucket: String) -> float:
 ## Validate that every tag id used is in the closed taxonomy at
 ## data/tag_taxonomy.json. Called once at battle start; not per-move.
 ##
-## TODO: implement against the loaded taxonomy. Pseudocode:
+## @param tags     Dictionary[String, float] — the weighted tag set to validate.
+## @param taxonomy Dictionary — parsed contents of data/tag_taxonomy.json. The
+##                 union of taxonomy.article_tags, taxonomy.principle_tags, and
+##                 taxonomy.context_tags is the closed set; any tag not in that
+##                 union triggers a push_error and a false return. Documentation
+##                 keys (any key starting with "_") are ignored.
+## @return         true if every tag is in the union; false on the first miss.
 ##
-##   for tag in move.tags.keys():
-##       assert(taxonomy.has_tag(tag), "unknown tag: " + tag)
-static func validate_against_taxonomy(_tags: Dictionary, _taxonomy: Dictionary) -> bool:
-    return true  # placeholder
+## On failure, push_error names the offending tag so the JSON author can fix
+## the source. Caller decides whether to halt the battle (recommended) or
+## downgrade gracefully.
+static func validate_against_taxonomy(tags: Dictionary, taxonomy: Dictionary) -> bool:
+    var known: Dictionary = _flatten_taxonomy(taxonomy)
+    for tag in tags:
+        if not known.has(tag):
+            push_error("Effectiveness: unknown tag '%s' (not in tag_taxonomy.json)" % tag)
+            return false
+    return true
+
+
+## Internal: build the union of all real tag ids in the taxonomy as a Dictionary
+## (used as a Set). Skips any key beginning with "_" (documentation fields like
+## _doc, _owner).
+static func _flatten_taxonomy(taxonomy: Dictionary) -> Dictionary:
+    var out: Dictionary = {}
+    for section_name in ["article_tags", "principle_tags", "context_tags"]:
+        var section: Dictionary = taxonomy.get(section_name, {})
+        for key in section:
+            var k: String = String(key)
+            if k.begins_with("_"):
+                continue
+            out[k] = true
+    return out
 
 
 # --- internal --------------------------------------------------------------

@@ -49,6 +49,11 @@ var _default_speaker: String = ""
 ## Used for portrait lookup on plain-string lines. Never changes mid-dialogue.
 var _default_npc_id: String = ""
 
+## _chain_pending — set true by _on_dialogue_chain_start when the runner signals
+## that the committed option will immediately load the next state. The option-
+## commit path checks this flag and skips _dismiss_box() so the panel stays open.
+var _chain_pending: bool = false
+
 ## In-dialogue option state (Chapter 1 Phase B polish).
 ## When dialogue_options_ready fires alongside dialogue_line_ready, the
 ## options sit pending until the player reaches the last line of the
@@ -70,6 +75,8 @@ func _ready() -> void:
 		sigs.dialogue_line_ready.connect(_on_dialogue_line_ready)
 		if sigs.has_signal("dialogue_options_ready"):
 			sigs.dialogue_options_ready.connect(_on_dialogue_options_ready)
+		if sigs.has_signal("dialogue_chain_start"):
+			sigs.dialogue_chain_start.connect(_on_dialogue_chain_start)
 	_panel.visible = false
 	_options_vbox.visible = false
 	_build_portrait_cache()
@@ -88,12 +95,10 @@ func _ready() -> void:
 func _build_portrait_cache() -> void:
 	var file = FileAccess.open("res://data/character_registry.json", FileAccess.READ)
 	if file == null:
-		print("PORTRAIT: registry file not found")
 		return
 	var parsed = JSON.parse_string(file.get_as_text())
 	file.close()
 	if not parsed is Dictionary:
-		print("PORTRAIT: registry parse failed")
 		return
 	## Collect alias ids so pass 1 skips them — they have no portrait file of their own.
 	var aliases = parsed.get("_portrait_aliases", {})
@@ -106,12 +111,11 @@ func _build_portrait_cache() -> void:
 			continue
 		var path: String = PORTRAIT_PATH % char_id
 		if not ResourceLoader.exists(path):
-			print("PORTRAIT: missing %s" % char_id)
 			continue
 		var tex = load(path) as Texture2D
 		if tex:
 			_portrait_cache[char_id] = tex
-			print("PORTRAIT: cached %s" % char_id)
+
 	## Pass 2 — resolve _portrait_aliases: copy texture references so alias ids
 	## display the same portrait as their target without needing a separate file.
 	if aliases is Dictionary:
@@ -119,10 +123,8 @@ func _build_portrait_cache() -> void:
 			var target_id: String = str(aliases[alias_id])
 			if _portrait_cache.has(target_id):
 				_portrait_cache[alias_id] = _portrait_cache[target_id]
-				print("PORTRAIT: alias %s → %s" % [alias_id, target_id])
 			else:
-				print("PORTRAIT: alias %s target '%s' not in cache" % [alias_id, target_id])
-
+				push_warning("DialogueBox: portrait alias '%s' target '%s' not in cache" % [alias_id, target_id])
 
 ## _set_portrait — displays a cached portrait by character_id.
 ## Silently hides the portrait rect if no portrait was loaded for that id.
@@ -133,6 +135,13 @@ func _set_portrait(character_id: String) -> void:
 	else:
 		_portrait.texture = null
 		_portrait.visible = false
+
+
+## _on_dialogue_chain_start — fired by DialogueRunner synchronously before it
+## calls _on_dialogue_requested during a chain. Sets _chain_pending so the
+## option-commit path in _unhandled_input skips _dismiss_box().
+func _on_dialogue_chain_start() -> void:
+	_chain_pending = true
 
 
 func _on_dialogue_line_ready(speaker: String, npc_id: String, lines: Array) -> void:
@@ -158,37 +167,68 @@ func _on_dialogue_line_ready(speaker: String, npc_id: String, lines: Array) -> v
 
 ## _on_dialogue_options_ready — fired by DialogueRunner immediately after
 ## dialogue_line_ready when the matched state has an `options` block.
-## Stashes choices; rendering happens when the player advances to the
-## last line (in _show_page).
+## Stashes choices. Rendering happens on a dedicated "Cula speaks" page
+## (see _show_options_page) that the player reaches by advancing past the
+## last line of state.lines.
 func _on_dialogue_options_ready(write_path: String, choices: Array) -> void:
 	_options_pending = choices
 	_options_write_path = write_path
 	_options_selected_idx = 0
-	## If we're already on the last line (single-line option states do
-	## happen — e.g. one prompt + options), render now.
-	if _lines.size() > 0 and _current_line_idx == _lines.size() - 1:
-		_render_options()
 
 
 ## _render_options — builds option Labels under the prompt text.
 ## Re-buildable; clears existing children before populating. Selected
 ## option uses OPTION_COLOR_SELECTED (red); others use OPTION_COLOR_NORMAL.
+## Font size matches the dialogue text label so options read as Cula's lines,
+## not as a separate UI register. Falls back to 20 (the .tscn default) if
+## the theme query returns 0.
 func _render_options() -> void:
 	if _options_pending.is_empty():
 		return
 	## Tear down any previous option labels.
 	for child in _options_vbox.get_children():
 		child.queue_free()
+	var match_size: int = _text_label.get_theme_font_size("font_size")
+	if match_size <= 0:
+		match_size = 20
 	for i in range(_options_pending.size()):
 		var choice = _options_pending[i]
 		var label := Label.new()
 		label.text = "  " + str(choice.get("text", ""))
-		label.add_theme_font_size_override("font_size", 13)
+		label.add_theme_font_size_override("font_size", match_size)
 		label.add_theme_color_override("font_color", OPTION_COLOR_NORMAL)
 		_options_vbox.add_child(label)
 	_options_vbox.visible = true
 	_options_active = true
 	_highlight_selected_option()
+
+
+## _show_options_page — renders the options as a dedicated page with the
+## player character's portrait and name in place of whoever spoke the last
+## line. Triggered when the player advances past the final entry in
+## state.lines and the state carries an options block.
+##
+## Layout: Cula's portrait left, "Dr. A. Cula" speaker label top, blank
+## text label, option list below. Pressing interact again on this page
+## commits the highlighted option (handled in _unhandled_input's
+## _options_active branch).
+func _show_options_page() -> void:
+	_speaker_label.text = _player_display_name()
+	_set_portrait("cula")
+	_text_label.text = ""
+	_text_label.visible_characters = -1
+	_is_typing = false
+	_render_options()
+
+
+## _player_display_name — Cula's display name from the registry, used by
+## the options page. Falls back to the canonical "Dr. A. Cula" if the
+## runner is missing or the registry doesn't carry the "cula" id.
+func _player_display_name() -> String:
+	var runner = get_node_or_null("/root/DialogueRunner")
+	if runner and runner.has_method("_resolve_speaker"):
+		return runner._resolve_speaker("cula", "Dr. A. Cula")
+	return "Dr. A. Cula"
 
 
 ## _highlight_selected_option — recolors all option labels based on
@@ -236,12 +276,11 @@ func _show_page() -> void:
 	_type_accumulator = 0.0
 	_is_typing = true
 
-	## Render options on the final page if any were stashed for this state.
-	if _current_line_idx == _lines.size() - 1 and not _options_pending.is_empty():
-		_render_options()
-	else:
-		_options_vbox.visible = false
-		_options_active = false
+	## Options never share a page with a dialogue line — they get their own
+	## "Cula speaks" page reached by advancing past the last line. Hide any
+	## stale options that may be lingering from a chain transition.
+	_options_vbox.visible = false
+	_options_active = false
 
 
 func _process(delta: float) -> void:
@@ -289,36 +328,53 @@ func _unhandled_input(event: InputEvent) -> void:
 				_is_typing = false
 				_text_label.visible_characters = -1
 				return
-			## Commit the selected option, then dismiss the box.
+			## Commit the selected option. dialogue_option_committed is handled
+			## synchronously by DialogueRunner; if the state had "chain": true,
+			## the runner emits dialogue_chain_start (setting _chain_pending) and
+			## immediately loads the next state before we reach _dismiss_box().
 			var picked = _options_pending[_options_selected_idx]
 			var value = picked.get("value", null)
 			var sigs_opt = get_node_or_null("/root/Signals")
 			if sigs_opt and sigs_opt.has_signal("dialogue_option_committed"):
 				sigs_opt.dialogue_option_committed.emit(value)
+			if _chain_pending:
+				## Runner already loaded the next state into the box via dialogue_line_ready.
+				## Clear the flag and leave the panel open.
+				_chain_pending = false
+				return
 			_dismiss_box()
 			return
 
-	## Default flow: advance pages or dismiss.
+	## Default flow: advance pages, transition to options page, or dismiss.
 	if event.is_action_pressed("interact"):
 		get_viewport().set_input_as_handled()
 		if _is_typing:
+			## First press during typewriter: reveal the full line instantly.
+			## Do NOT dismiss or emit signals — the player sees the complete
+			## text and presses E again to advance.
 			_is_typing = false
 			_text_label.visible_characters = -1
+			return
+		_current_line_idx += 1
+		if _current_line_idx < _lines.size():
+			_show_page()
+			return
+		elif not _options_pending.is_empty() and not _options_active:
+			## Past the last line, options exist → show the player-choice
+			## page (Cula's portrait + the option list). The next interact
+			## commits in the _options_active branch above.
+			_show_options_page()
+			return
 		else:
-			_current_line_idx += 1
-			if _current_line_idx < _lines.size():
-				_show_page()
-			else:
-				_dismiss_box()
+			_dismiss_box()
 			var sigs = get_node_or_null("/root/Signals")
 			if sigs:
 				sigs.dialogue_dismissed.emit()
 
 
 ## _dismiss_box — common close logic. Hides panel, unpauses tree, fires
-## dialogue_ended. dialogue_dismissed is fired by the caller (the
-## option-commit path emits it before dismissing; the normal advance
-## path emits it after this returns).
+## dialogue_ended. The normal close path emits dialogue_dismissed after this
+## returns; option commits are handled directly by DialogueRunner.
 func _dismiss_box() -> void:
 	_panel.visible = false
 	_options_vbox.visible = false

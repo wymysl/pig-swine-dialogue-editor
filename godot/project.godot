@@ -26,6 +26,10 @@ Signals="*res://scripts/autoload/signals.gd"
 Casebook="*res://scripts/autoload/casebook.gd"
 DialogueRunner="*res://scripts/autoload/dialogue_runner.gd"
 
+[debug]
+
+debug/file_logging/enable_file_logging=false
+
 [display]
 
 window/size/viewport_width=1280
@@ -33,7 +37,6 @@ window/size/viewport_height=720
 window/size/window_width_override=2560
 window/size/window_height_override=1440
 window/stretch/mode="canvas_items"
-window/stretch/scale_mode="fractional"
 
 [input]
 
@@ -90,7 +93,3 @@ sprint={
 textures/canvas_textures/default_texture_filter=0
 renderer/rendering_method="gl_compatibility"
 renderer/rendering_method.mobile="gl_compatibility"
-
-[debug]
-
-debug/file_logging/enable_file_logging=false

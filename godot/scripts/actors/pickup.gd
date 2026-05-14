@@ -7,22 +7,20 @@ extends Area2D
 @export var state_flag_path: String = ""
 @export var pickup_line: String = ""
 
+const ITEMS_PATH: String = "res://data/items.json"
+
 var _player_inside: bool = false
 var _prompt: Node
 
 func _ready() -> void:
-	if not state_flag_path.is_empty():
-		var state_node = get_node_or_null("/root/State")
-		var parts = state_flag_path.split(".")
-		if parts.size() == 2 and state_node:
-			var chapter = state_node.data.get(parts[0], {})
-			if chapter.get(parts[1], false):
-				queue_free()
-				return
-				
+	_apply_item_catalogue_data()
+	if _is_already_collected():
+		queue_free()
+		return
+
 	body_entered.connect(_on_body_entered)
 	body_exited.connect(_on_body_exited)
-	
+
 	if not has_node("Visual"):
 		var visual := ColorRect.new()
 		visual.name = "Visual"
@@ -32,7 +30,7 @@ func _ready() -> void:
 		visual.offset_right = 8.0
 		visual.offset_bottom = 8.0
 		add_child(visual)
-		
+
 	var has_shape = false
 	for child in get_children():
 		if child is CollisionShape2D:
@@ -44,7 +42,7 @@ func _ready() -> void:
 		rect.size = Vector2(40.0, 40.0)
 		shape.shape = rect
 		add_child(shape)
-		
+
 	var prompt_scene = load("res://scenes/ui/interaction_prompt.tscn")
 	if prompt_scene:
 		_prompt = prompt_scene.instantiate()
@@ -55,20 +53,14 @@ func _unhandled_input(event: InputEvent) -> void:
 		return
 	if event.is_action_pressed("interact"):
 		get_viewport().set_input_as_handled()
-		
-		if not state_flag_path.is_empty():
-			var state_node = get_node_or_null("/root/State")
-			var parts = state_flag_path.split(".")
-			if parts.size() == 2 and state_node:
-				if state_node.data.has(parts[0]):
-					state_node.data[parts[0]][parts[1]] = true
-					
+		_write_state_flag()
+
 		var sigs = get_node_or_null("/root/Signals")
 		if sigs:
 			sigs.item_picked_up.emit(item_id, display_name)
 			if not pickup_line.is_empty():
 				sigs.dialogue_line_ready.emit("", "", [pickup_line])
-				
+
 		queue_free()
 
 func _on_body_entered(body: Node2D) -> void:
@@ -82,3 +74,92 @@ func _on_body_exited(body: Node2D) -> void:
 		_player_inside = false
 		if _prompt:
 			_prompt.hide_prompt()
+
+
+func _apply_item_catalogue_data() -> void:
+	if item_id.is_empty():
+		return
+	var item_data: Dictionary = _load_item_data(item_id)
+	if item_data.is_empty():
+		return
+	display_name = str(item_data.get("display_name", display_name))
+	state_flag_path = str(item_data.get("state_flag", state_flag_path))
+	pickup_line = str(item_data.get("pickup_line", pickup_line))
+
+
+func _load_item_data(id: String) -> Dictionary:
+	if not FileAccess.file_exists(ITEMS_PATH):
+		push_warning("Pickup: items catalogue missing: " + ITEMS_PATH)
+		return {}
+	var file := FileAccess.open(ITEMS_PATH, FileAccess.READ)
+	if file == null:
+		push_warning("Pickup: cannot open items catalogue: " + ITEMS_PATH)
+		return {}
+	var parsed = JSON.parse_string(file.get_as_text())
+	file.close()
+	if parsed == null or not parsed is Dictionary:
+		push_warning("Pickup: items catalogue JSON parse failed: " + ITEMS_PATH)
+		return {}
+	var raw_items = parsed.get("items", {})
+	if not raw_items is Dictionary:
+		push_warning("Pickup: items catalogue missing 'items' dictionary")
+		return {}
+	var items: Dictionary = raw_items
+	if not items.has(id) or not items[id] is Dictionary:
+		push_warning("Pickup: item_id '%s' missing from items catalogue" % id)
+		return {}
+	return items[id]
+
+
+func _is_already_collected() -> bool:
+	if state_flag_path.is_empty():
+		return false
+	var current_value = _read_state_value(state_flag_path)
+	if current_value is bool:
+		return current_value
+	if current_value is String:
+		return current_value != "" and (current_value == item_id or state_flag_path == "chapter1.bonus_evidence_collected")
+	return false
+
+
+func _write_state_flag() -> void:
+	if state_flag_path.is_empty():
+		return
+	var state_node = get_node_or_null("/root/State")
+	var parts = state_flag_path.split(".")
+	if parts.size() != 2 or state_node == null:
+		return
+	var top: String = parts[0]
+	var key: String = parts[1]
+	if not state_node.data.has(top) or not state_node.data[top] is Dictionary:
+		return
+	var target: Dictionary = state_node.data[top]
+	if not target.has(key):
+		return
+	var value = _pickup_state_value(target[key])
+	target[key] = value
+	if top == "chapter1":
+		var sigs = get_node_or_null("/root/Signals")
+		if sigs and sigs.has_signal("chapter1_flag_changed"):
+			sigs.chapter1_flag_changed.emit(key, value)
+
+
+func _read_state_value(path: String):
+	var state_node = get_node_or_null("/root/State")
+	var parts = path.split(".")
+	if parts.size() != 2 or state_node == null:
+		return null
+	var top: String = parts[0]
+	var key: String = parts[1]
+	if not state_node.data.has(top) or not state_node.data[top] is Dictionary:
+		return null
+	var target: Dictionary = state_node.data[top]
+	if not target.has(key):
+		return null
+	return target[key]
+
+
+func _pickup_state_value(current_value):
+	if current_value is String:
+		return item_id
+	return true

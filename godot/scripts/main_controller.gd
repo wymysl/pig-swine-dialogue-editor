@@ -14,7 +14,6 @@ var transition: Node  ## typed as Node; runtime type is RoomTransition
 
 
 func _ready() -> void:
-	print("Pig & Swine RPG v", VERSION, " — engine ready.")
 	transition = $RoomTransition
 	transition.set_scene_slot($CurrentScene)
 	_boot_initial_scene()

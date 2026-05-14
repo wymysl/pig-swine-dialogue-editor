@@ -125,7 +125,6 @@ script = ExtResource("6_cklam")
 item_id = "rights_memo"
 display_name = "Rights Memo"
 state_flag_path = "chapter1.has_rights_memo"
-pickup_line = "A dusty memo concerning suspect rights."
 
 [node name="Music" type="AudioStreamPlayer" parent="." unique_id=1006733989]
 process_mode = 3
