@@ -379,19 +379,21 @@ NPC visibility in interior scenes keys off the `State.data.chapter1` flag bag vi
 **Flag semantic ownership.** "Owner" means *the system that writes the flag*; everything else only reads. Adding or renaming an owner without an explicit migration step is a schema bug.
 
 - **Phase 7 / sprint 3 baseline** (booleans, default `false`; `court_outcome` is a string, default `""`): `met_pig`, `pig_revealed_crisis`, `met_murrow`, `met_crab`, `met_whimsy`, `has_law_binder`, `has_rights_memo`, `recruited_crab`, `recruited_whimsy`, `coffee_tutorial_seen`, `court_ready`, `entered_court`, `court_outcome`, `met_asia`, `met_asia_via_behind`, `viewed_family_photo`. Owners: respective NPC dialogues (`asia.json`, `cula.json`, etc.), pickup interactions, and the existing court orchestration.
-- **Beat 7-8 client meeting.** `halina_met`, `client_fee_agreed`, `bonus_evidence_collected` (string enum: `wojcik_witness_statement` / `return_to_sender_slip` / `lease_1962_inheritance_1987`), `cardiologist_plant_landed` — all owned by `halina.json` `client_meeting_<stance>` `on_dismiss`. `client_meeting_stance` (string enum: `sympathetic` / `blunt_procedural` / `technical`) is owned by the Beat 7 stance-pick UI (Phase B.1, not yet built). `halina_arrived` is owned by the engine's Beat-7-close handler (Phase B.2).
+- **Beat 7-8 client meeting.** `halina_met`, `client_fee_agreed`, `bonus_evidence_collected` (string enum: `wojcik_witness_statement` / `return_to_sender_slip` / `lease_1962_inheritance_1987`), `cardiologist_plant_landed` — all owned by `halina.json` client-meeting `on_dismiss` states. `client_meeting_stance` (string enum: `sympathetic` / `blunt_procedural` / `technical`) is owned by `halina.json` `client_meeting_intro`'s inline option block. `halina_arrived` is owned by Asia's Beat-7-close announcement.
 - **Beat 9 archive research.** `archive_research_complete` — flag declared now so V1.A Asia state 8 dispatches; owner is the Beat 9 dialogue (not yet authored).
 - **Beat 12 court rounds.** `casebook_judge_state` (string enum: `round_1_open` / `round_1_react` / `round_2_open` / `round_2_react` / `round_3_open` / `round_3_remedy`) is owned by the casebook engine's Beat-12 round orchestration. `court_won_procedural_reset` is owned by `judge_district_ch1.json` `remedy_round_3_<stance>` `on_dismiss`.
-- **Beat 13-14 payoff + postcard.** `beat13_complete` is owned by the Beat-13 close handler. `received_swine_postcard` is owned by the Beat-14 postcard arrival trigger. The five progression flags (`postcard_asia_announced`, `postcard_readaloud_cue_shown`, `postcard_body_read`, `pig_postcard_reaction_shown`, `whimsy_postcard_deflection_shown`) and `complete` are owned by `postcard_swine_ch1.json` state `on_dismiss` arrays.
+- **Beat 13-14 payoff + postcard.** `beat13_complete` is owned by the Beat-13 close handler. `received_swine_postcard` is owned by the Beat-14 postcard arrival trigger / first postcard beat. The five progression flags (`postcard_asia_announced`, `postcard_readaloud_cue_shown`, `postcard_body_read`, `pig_postcard_reaction_shown`, `whimsy_postcard_deflection_shown`) and `complete` are owned by `postcard_swine_ch1.json` state `on_dismiss` arrays.
 - **Badges.** `State.data.badges.day_one_survivor` — owned by `postcard_swine_ch1.json` `chapter_close` `award_badge` action. The DialogueRunner rejects unknown badge ids; declare a new badge in `State.reset_state().badges` AND the v7→v8 (or later) migration before referencing it from JSON.
 - **Routes unlocked.** `State.data.routes_unlocked.{residential, business_district, court_plaza}` — owned by `postcard_swine_ch1.json` `chapter_close` `unlock_route` actions. Same declaration contract as badges.
 
-**Dialogue trigger syntax supported by `DialogueRunner._evaluate_clause`:**
+**Dialogue trigger syntax supported by `DialogueRunner._evaluate_trigger`:**
 
 - `path == value` / `path != value` (string comparison after lowercasing; quoted RHS strings work).
+- `path >= number` / `path <= number` (integer comparison).
 - `path` (bare) — passes when the resolved value is truthy.
-- `!path` — passes when the resolved value is falsy or missing.
-- Clauses combined with `&&` (logical AND). `||` is **not** supported and will warn; current usage in `judge_district_ch1.json` `open_round` predates this rule and will need either an engine extension or per-round trigger duplication when Phase C wires court rounds.
+- `!path` — passes when the resolved value is falsy. Missing paths warn and fail; declare new state keys in `State.reset_state()` and save migrations before referencing them.
+- Clauses combine with `&&` (logical AND). Simple `||` groups are supported as OR-of-ANDs, e.g. `a && b || c && d`. Parentheses are not supported.
+- A state-level `"speaker": "asia"` overrides the default speaker/portrait for plain-string lines in that state. Per-line `{ "speaker": "...", "text": "..." }` dictionaries still override individual pages.
 
 **Dialogue option schema (in-box choice picker).**
 
@@ -426,7 +428,7 @@ The Beat 8 client meeting takes place inside `pig_swine_office.tscn` in the `Mee
 
 `MeetingRoomBoundary` (`StaticBody2D`) — a 768×16 wall along the south edge of `MeetingFloor` (y = 392). Blocks the player from crossing into the meeting area until `client_meeting_stance != ""`. `meeting_room_trigger.gd` disables its `CollisionShape2D` on stance commit and on scene-load if a stance is already persisted (save/load mid-meeting).
 
-`MeetingRoomEntryTrigger` (`Area2D` + `meeting_room_trigger.gd`) — a 768×40 sensor strip just south of the boundary (y = 360). On `body_entered`, evaluates the gating: if preconditions met and stance unset, spawns `client_stance_menu.tscn`; if stance set and meeting unheld, emits `Signals.dialogue_requested("halina", "Mrs. Sikorska")` (DialogueRunner picks the correct `client_meeting_<stance>` branch). Post-`halina_met`, the trigger is a no-op.
+`MeetingRoomEntryTrigger` (`Area2D` + `meeting_room_trigger.gd`) — a 768×40 sensor strip just south of the boundary (y = 360). On `body_entered`, evaluates the gating: if preconditions are met and stance is unset, emits `Signals.dialogue_requested("halina", "Mrs. Sikorska")` so `halina.json`'s `client_meeting_intro` inline options pick the stance and chain into round 0. Once a stance exists and the meeting is unheld, the same request resumes the matching Halina meeting state. Post-`halina_met`, the trigger is a no-op.
 
 ## Asia Beat 7-close announcement (Option A)
 

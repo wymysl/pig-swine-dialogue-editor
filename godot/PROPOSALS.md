@@ -129,6 +129,50 @@ The load-bearing design move is the Phase 1 → Phase 2 carry-over. If the carry
 
 ---
 
+## 11. Narrative arc structure — five spines and a five-act shape
+
+The chapter content in `story.txt` is largely written, but the structural relationship between chapters has been implicit until now. Cowork conversation 2026-05-12 produced an explicit shape that names what each chapter is doing and what the inter-chapter spine carries. **Recommendation: KEEP the existing chapter content; DEVELOP the structural framing in `style_canon.txt` and (eventually) `story.txt` so the arc is legible to the writer who picks up phase-7 voice work.**
+
+Five spines run in parallel at different rates:
+
+**Episodic plot (Rumpole / Mortimer).** Case per chapter, each self-contained with a clear win or weak-win. The player can stop at any chapter break and feel they've seen something complete.
+
+**Mystery (Tokarczuk re-traversal).** What's actually going on with the firm's finances and Mr. Pig's framing. The "we're broke" planting in Ch1, the Beat 11 ledger rupture in Ch3, the Ch4 family-photo retraversal, the Ch5 incomplete resolution (Murrow closes the ledger; the player infers).
+
+**Moral question per chapter (Dekalog).** Each chapter centers one moral question the case forces.
+
+- Ch1 — *Does procedure suffice?* The Sikorska procedural reset wins the case; the harm doesn't unmake itself. The Ch4 corridor sighting (see below) earns the question retroactively.
+- Ch2 — *Do the firm's universal principles survive contact with someone who can pay for them?* (Plotek's first detention visit.)
+- Ch3 — *What does voluntary austerity owe imposed poverty?* (The Assigned Case: Kacper — 19, homeless, ex foster-care — runs concurrent with Beat 11 ledger glimpse and STUB founding. The class blind spot named in §9 thematic reframe lands here in plot form: the firm glimpses its hidden reserve while Cula defends someone whose poverty is not chosen.)
+- Ch4 — *What does the firm owe — clients, juniors, itself?* (Family-photo retraversal + Swine's return + Sikorska corridor.)
+- Ch5 — *Does the firm deserve to survive?* (Final Hearing. The answer is never asserted.)
+
+**Character (Kundera).** Cula moves from outsider precision to inside-the-firm complicity. The three-branch ending is computed from accumulated flags. The juniors lock in their stance-trio positions by Ch2 and develop across chapters in what they reveal; backstory is not the engine. Mr. Pig's half-right idealism unravels without collapsing.
+
+**Surface comedy (Mrożek).** The firm's day-to-day procedural absurdity continues throughout. Maritime metaphors, the printer running joke, the Tram 17 Oracle, Asia's transit-system practical warmth. The texture that keeps the moral spine from going heavy.
+
+**The act-shape that emerges:**
+
+- **Act I (Ch1) — Arrival.** Cula joins the firm. Procedure wins. The "broke" framing is planted.
+- **Act II (Ch2) — Test.** Plotek introduces moral pressure. The juniors take stances.
+- **Act III (Ch3) — Inversion.** The Assigned Case: Kacper (19, homeless, ex foster-care; ex officio appointment; *areszt śledczy* visit with stance choice). Mid-game structural inflection runs concurrent — the ledger glimpse ruptures the player's understanding of the firm's "we're broke" framing while Cula is defending someone whose poverty is involuntary. STUB founding. Night register.
+- **Act IV (Ch4) — Retraversal.** Earlier spaces and characters seen again with new meaning. The mystery clicks into place. Cula's ending crystallizes. Sikorska corridor sighting (see below).
+- **Act V (Ch5) — Hearing.** Final Casebook battle. Three-branch ending. Murrow closes the ledger. No catharsis, no exposure-payoff.
+
+The structural fingerprint of the inspirations (per `style_canon.txt` §9): a Tokarczuk shape (re-traversal at III/IV) with a Kundera ending (irony, three branches, no catharsis), Hrabal voice running through Mr. Pig's interiority, Mrożek surface comedy, a Dekalog moral spine, and a Rumpole episodic structure.
+
+**Sikorska Ch4 corridor sighting — texture.** The plant exists in canon (Ch1 Beat 8 epigram *"You go to a lawyer like you go to a doctor: too late"*; `cardiologist_plant_landed` flag; "recolors at Ch4 corridor sighting" references at `story.txt` lines 608, 640, 1164). What the scene should land: Cula encounters Halina in the district-court corridor between hearings. She is visibly worse than in Ch1 — the eviction action continued past the procedural reset (appeal, remand, or follow-up petition; phase-7 voice work picks the specific procedural posture). She talks about her cardiologist. The Ch1 epigram is referenced again, this time with the second half (the doctor) live. She does not blame the firm. The procedural reset was real. The harm continued anyway. Cula's reaction: silent, observational, Kundera-essayist register. He stays in the corridor and does not speak.
+
+**Tram 17 Oracle.** The recurring chorus NPC on Marszałkowska. Function, geographic-joke note, sketch lines per chapter, and restraint rule are codified in `style_canon.txt` §8 ("The Tram 17 Oracle (recurring chorus NPC)") — one cryptic line per chapter mapped to the moral question above.
+
+**Character voice — literary-register pushes.** Per-character pushes mapping each cast member to a literary register (Cula → Kundera, Mr. Pig → Hrabal, Murrow → Mrożek, Crab → stance-trio technical, Whimsy → Rumpole, Asia → Tokarczuk/Duszejko, Mr. Swine → Ch5 load-bearing sincerity) are added inline to `style_canon.txt` §2 "Voice references" as "Inspirations push" bullets per character.
+
+**Status.** Proposed 2026-05-12 in Cowork. Codification distributed across files this session: this proposal (structural framing), `style_canon.txt` §2 per-character inline pushes, `style_canon.txt` §8 new Tram 17 Oracle sub-section. No `story.txt` edit yet — the act-shape and Sikorska corridor texture are decisions awaiting a dedicated editorial session to fold into `story.txt` per the existing pattern.
+
+**Pre-work.** None blocking. The structure can be referenced as-is. The eventual `story.txt` editorial pass should: (a) add an "Arc structure" header section near the top of `story.txt` naming the five-act shape and moral questions; (b) flesh out the Ch4 Sikorska corridor sighting scene at beat level using the texture above; (c) place the Tram 17 Oracle encounter in the world-text of Marszałkowska routes.
+
+---
+
 ## Status (post-approval, 2026-05-04)
 
 User approved all proposals. Language decision: **English version first; Polish translation may follow.**
@@ -145,6 +189,7 @@ User approved all proposals. Language decision: **English version first; Polish 
 | 8 | Spec gaps: save slots, court-loss, tutorial visibility, language, accessibility | **DONE** | All five settled in `PLAN.md` §Standing decisions and `AGENTS.md` §Stack invariants. Language: English-first. |
 | 9 | Thematic reframe (crisis of values as the spine) | **PENDING** | Decisions captured in `../narrative_revision/00_decisions.md`. Phased methodology in chat; bible-writing and chapter-audit phases not yet started. No `.txt` edits yet. |
 | 10 | Court Round splits into two phases (witness → closing); load-bearing fact-flag carry-over; `witness_cooperation` counter for Phase 1 | **PENDING** | Proposed 2026-05-12 (Cowork). Requires `data/court_rounds/_schema.md` sketch before Code starts vertical-slice step 4. `battle_mechanics.txt` edit deferred per existing pattern. |
+| 11 | Narrative arc structure: five spines + five-act shape with moral-question-per-chapter mapping; Sikorska Ch4 corridor texture; Tram 17 Oracle chorus on Marszałkowska | **PENDING** | Proposed 2026-05-12 (Cowork). Codification split this session: §11 here (structural framing), `style_canon.txt` §2 inline per-character pushes, `style_canon.txt` §8 Tram 17 Oracle sub-section. `story.txt` edits deferred per existing pattern. |
 
 ## Pending work, prioritized
 
