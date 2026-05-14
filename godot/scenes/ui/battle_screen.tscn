@@ -1,0 +1,63 @@
+[gd_scene format=3]
+
+[node name="root" type="CanvasLayer" unique_id=2062423556]
+
+[node name="PhaseLabel" type="Label" parent="." unique_id=1194272889]
+anchors_preset = -1
+anchor_left = 0.5
+anchor_top = 0.1
+anchor_right = 0.5
+anchor_bottom = 0.1
+offset_left = -100.0
+offset_right = 100.0
+offset_bottom = 30.0
+text = "Phase 1 — Fact-Finding"
+
+[node name="JudgeSpeechBox" type="PanelContainer" parent="." unique_id=1609743497]
+anchors_preset = -1
+anchor_top = 0.05
+anchor_right = 1.0
+anchor_bottom = 0.05
+offset_top = 50.0
+offset_bottom = 150.0
+
+[node name="WitnessSpeechBox" type="PanelContainer" parent="." unique_id=1975584232]
+anchors_preset = -1
+anchor_top = 0.2
+anchor_right = 1.0
+anchor_bottom = 0.2
+offset_top = 150.0
+offset_bottom = 280.0
+
+[node name="CooperationBar" type="ProgressBar" parent="." unique_id=384762380]
+anchors_preset = -1
+anchor_left = 0.05
+anchor_top = 0.35
+anchor_right = 0.5
+anchor_bottom = 0.38
+max_value = 10.0
+value = 10.0
+
+[node name="PatienceBar" type="ProgressBar" parent="." unique_id=2119148882]
+anchors_preset = -1
+anchor_left = 0.5
+anchor_top = 0.35
+anchor_right = 0.95
+anchor_bottom = 0.38
+max_value = 10.0
+value = 10.0
+
+[node name="OptionsContainer" type="VBoxContainer" parent="." unique_id=272742693]
+anchors_preset = -1
+anchor_top = 0.4
+anchor_right = 1.0
+anchor_bottom = 0.85
+offset_top = 300.0
+
+[node name="ResultOverlay" type="PanelContainer" parent="." unique_id=2004195443]
+visible = false
+anchors_preset = -1
+anchor_left = 0.2
+anchor_top = 0.3
+anchor_right = 0.8
+anchor_bottom = 0.7

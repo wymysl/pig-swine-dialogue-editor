@@ -521,9 +521,7 @@
         {
             "id": "post_meeting_ch1",
             "trigger": "chapter1.halina_met == true",
-            "lines": [
-                "Thank you again, Dr. A. Cula. I will be available if anything is needed before Friday."
-            ],
+            "line": "Thank you again, Dr. A. Cula. I will be available if anything is needed before Friday.",
             "_comment_ch4_scope": "TODO: Chapter-4 corridor sighting (β reappearance) is out of scope for this file. Wire a ch4-triggered state when the Ch4 voice pack is authored. The corridor sighting is approximately five lines; see narrative_revision/bibles/halina_sikorska.md §Chapter 4 for the line-shape inventory."
         }
     ],

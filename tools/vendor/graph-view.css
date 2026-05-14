@@ -1,0 +1,648 @@
+  /* ============ VIEW TOGGLE ============ */
+  .view-toggle {
+    display: inline-flex;
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 2px;
+    gap: 1px;
+  }
+  .view-toggle-btn {
+    background: transparent;
+    border: 1px solid transparent !important;
+    color: var(--dim);
+    font-size: 11.5px;
+    padding: 3px 9px !important;
+    border-radius: 4px;
+    cursor: pointer;
+    font-family: inherit;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    transition: color 0.12s, background 0.12s;
+  }
+  .view-toggle-btn:hover { color: var(--text); background: transparent !important; }
+  .view-toggle-btn.active {
+    background: var(--bg) !important;
+    color: var(--accent);
+    box-shadow: 0 1px 2px rgba(0,0,0,0.15);
+  }
+  .view-toggle-btn svg { opacity: 0.85; flex-shrink: 0; }
+  .view-toggle-btn.active svg { opacity: 1; }
+
+  /* ============ MAIN GRID & PANES ============ */
+  #content-pane {
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    background: var(--bg);
+  }
+  #content-pane #content { flex: 1; overflow-y: auto; padding: 28px 40px 120px; }
+  #graph-pane {
+    background: var(--bg);
+    position: relative;
+    overflow: hidden;
+    min-width: 0;
+    border-left: 1px solid var(--border);
+  }
+  #split-divider {
+    width: 6px;
+    background: transparent;
+    cursor: col-resize;
+    position: relative;
+    flex-shrink: 0;
+    z-index: 3;
+  }
+  #split-divider::before {
+    content: '';
+    position: absolute;
+    left: 2px; right: 2px; top: 0; bottom: 0;
+    background: var(--border);
+    transition: background 0.15s;
+  }
+  #split-divider:hover::before,
+  #split-divider.dragging::before { background: var(--accent); }
+  body.is-resizing { cursor: col-resize; user-select: none; }
+  body.is-resizing * { cursor: col-resize !important; }
+
+  /* Mode switching via #main classes */
+  #main {
+    grid-template-columns: 268px minmax(0, var(--linear-frac, 55fr)) 0 minmax(0, var(--graph-frac, 45fr));
+    transition: grid-template-columns 0.18s ease;
+  }
+  /* Anchor each child to its grid column explicitly. Without this, when a
+     pane is `display: none` (the view-linear / view-graph branches below),
+     grid auto-placement collapses subsequent children leftward and the
+     visible pane lands in the wrong column. Discovered during integration —
+     fold the fix in here so re-bundlers don't drop it. */
+  #main > #sidebar       { grid-column: 1; }
+  #main > #content-pane  { grid-column: 2; }
+  #main > #split-divider { grid-column: 3; }
+  #main > #graph-pane    { grid-column: 4; }
+  #main.view-split { grid-template-columns: 268px minmax(0, var(--linear-frac, 55fr)) 6px minmax(0, var(--graph-frac, 45fr)); }
+  #main.view-linear { grid-template-columns: 268px minmax(0, 1fr) 0 0; }
+  #main.view-linear #split-divider,
+  #main.view-linear #graph-pane { display: none; }
+  #main.view-graph { grid-template-columns: 268px 0 0 minmax(0, 1fr); }
+  #main.view-graph #split-divider,
+  #main.view-graph #content-pane { display: none; }
+  #main.view-graph #graph-pane { border-left: none; }
+
+  /* ============ GRAPH PANE ============ */
+  .graph-canvas {
+    position: absolute;
+    inset: 0;
+    /* Scrollable so the user can navigate via native scrollbars in addition
+       to mouse-drag pan. Viewport sized to scaled content bounds (set by
+       applyTransform in graph-view.js). */
+    overflow: auto;
+    background:
+      radial-gradient(circle at 1px 1px, var(--border) 1px, transparent 1px) 0 0 / 24px 24px,
+      var(--bg);
+    cursor: grab;
+  }
+  body.light .graph-canvas {
+    background:
+      radial-gradient(circle at 1px 1px, rgba(170, 160, 140, 0.35) 1px, transparent 1px) 0 0 / 24px 24px,
+      var(--bg);
+  }
+  .graph-canvas.panning { cursor: grabbing; }
+  .graph-viewport {
+    position: absolute;
+    left: 0; top: 0;
+    width: 0; height: 0;
+    transform-origin: 0 0;
+  }
+  .graph-edges {
+    position: absolute;
+    pointer-events: none;
+    overflow: visible;
+    color: var(--accent);
+  }
+  .graph-edges .gedge {
+    fill: none;
+    stroke: var(--accent);
+    stroke-width: 1.5;
+    opacity: 0.7;
+    pointer-events: stroke;
+    cursor: pointer;
+    transition: opacity 0.15s, stroke-width 0.15s;
+  }
+  .graph-edges .gedge:hover {
+    stroke-width: 2.5;
+    opacity: 1;
+  }
+  .graph-edges .gedge.gedge-trust-gated {
+    stroke-dasharray: 5 4;
+  }
+  .graph-edges .gedge.gedge-excluded {
+    stroke: var(--highlight-excl-stripe);
+    stroke-width: 1;
+    stroke-dasharray: 2 3;
+    opacity: 0.5;
+  }
+  .graph-edges .gedge.dim { opacity: 0.12; }
+  .graph-edges .gedge-label {
+    pointer-events: none;
+    opacity: 0.92;
+    transition: opacity 0.15s;
+  }
+  .graph-edges .gedge-label.dim { opacity: 0.15; }
+  .graph-edges .gedge-label rect {
+    fill: var(--bg);
+    stroke: var(--border);
+    stroke-width: 0.5;
+  }
+  .graph-edges .gedge-label text {
+    fill: var(--text);
+    font-family: var(--font-ui);
+    font-size: 9.5px;
+    letter-spacing: 0;
+  }
+  .graph-edges .gedge-delta rect {
+    fill: var(--accent-soft);
+    stroke: var(--modified);
+    stroke-width: 0.5;
+  }
+  .graph-edges .gedge-delta text {
+    fill: var(--modified);
+    font-family: var(--font-mono);
+    font-size: 9.5px;
+    font-weight: 600;
+  }
+
+  /* ✕ edge delete button — hidden by default, shown via .visible class
+     while the user hovers the edge path or the button itself. Cursor is
+     pointer-events: auto on the button only (the parent labels-group has
+     pointer-events:none for the regular labels). */
+  .graph-edges .gedge-delete-btn {
+    pointer-events: auto;
+    cursor: pointer;
+    opacity: 0;
+    transition: opacity 0.12s ease, transform 0.12s ease;
+  }
+  .graph-edges .gedge-delete-btn.visible {
+    opacity: 1;
+  }
+  .graph-edges .gedge-delete-btn circle {
+    fill: var(--bg);
+    stroke: var(--danger, #c44);
+    stroke-width: 1.2;
+  }
+  .graph-edges .gedge-delete-btn text {
+    fill: var(--danger, #c44);
+    font-family: var(--font-ui);
+    font-size: 11px;
+    font-weight: 700;
+    pointer-events: none;
+    user-select: none;
+  }
+  .graph-edges .gedge-delete-btn:hover circle {
+    fill: var(--danger, #c44);
+  }
+  .graph-edges .gedge-delete-btn:hover text {
+    fill: var(--bg);
+  }
+
+  .graph-nodes {
+    position: absolute;
+    left: 0; top: 0;
+    pointer-events: none;
+  }
+  .gnode {
+    position: absolute;
+    left: 0; top: 0;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 8px 10px;
+    pointer-events: auto;
+    cursor: pointer;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.18);
+    transition: border-color 0.15s, box-shadow 0.15s, transform 0.18s ease, opacity 0.15s;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    overflow: hidden;
+    will-change: transform;
+  }
+  body.light .gnode { box-shadow: 0 1px 3px rgba(60,50,30,0.08); }
+  .gnode:hover {
+    border-color: var(--border-strong);
+    box-shadow: 0 3px 10px rgba(0,0,0,0.25);
+    z-index: 2;
+  }
+  body.light .gnode:hover { box-shadow: 0 3px 10px rgba(60,50,30,0.14); }
+  .gnode.selected {
+    border-color: var(--accent);
+    border-width: 2px;
+    padding: 7px 9px;
+    box-shadow: 0 0 0 4px var(--accent-soft), 0 4px 12px rgba(0,0,0,0.25);
+    z-index: 3;
+  }
+  .gnode.dim { opacity: 0.28; }
+  .gnode.flash { animation: gnode-flash 0.9s ease-out; }
+  @keyframes gnode-flash {
+    0% { background: var(--accent-soft); border-color: var(--accent); }
+    100% { background: var(--surface); }
+  }
+
+  /* Node body */
+  .gnode-row {
+    display: flex;
+    align-items: baseline;
+    gap: 6px;
+    min-width: 0;
+  }
+  .gnode-id {
+    color: var(--accent);
+    font-family: var(--font-mono);
+    font-size: 11.5px;
+    font-weight: 500;
+    flex: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    min-width: 0;
+  }
+  .gnode-role {
+    color: var(--dim);
+    font-family: var(--font-ui);
+    font-size: 9px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    background: var(--surface-2);
+    padding: 1px 5px;
+    border-radius: 3px;
+    flex-shrink: 0;
+  }
+  .gnode[data-role="entry"] .gnode-role { color: var(--accent); background: var(--accent-soft); }
+  .gnode[data-role="question"] .gnode-role { color: var(--text-2); }
+  .gnode[data-role="terminal"] .gnode-role { color: var(--danger); background: var(--danger-soft); }
+  .gnode-preview {
+    color: var(--text-2);
+    font-family: var(--font-mono);
+    font-size: 10.5px;
+    line-height: 1.35;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    word-break: break-word;
+    flex: 1;
+    min-height: 0;
+  }
+  .gnode-meta {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    color: var(--dim);
+    font-family: var(--font-mono);
+    font-size: 10px;
+  }
+  .gnode-meta-item { white-space: nowrap; }
+  .gnode-meta-once { color: var(--accent); }
+
+  /* ✕ delete button — top-right corner, fades in on node hover.
+     Pointer-events shifts when shown so it can be clicked without re-stealing
+     the node click handler (button handles its own propagation). */
+  .gnode-delete {
+    position: absolute;
+    top: 4px;
+    right: 4px;
+    width: 18px;
+    height: 18px;
+    padding: 0;
+    line-height: 1;
+    font-size: 11px;
+    font-family: var(--font-ui);
+    color: var(--dim);
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: 3px;
+    cursor: pointer;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.12s ease, color 0.12s, border-color 0.12s, background 0.12s;
+    z-index: 5;
+  }
+  .gnode:hover .gnode-delete,
+  .gnode.selected .gnode-delete {
+    opacity: 0.85;
+    pointer-events: auto;
+  }
+  .gnode-delete:hover {
+    opacity: 1;
+    color: var(--danger);
+    border-color: var(--danger);
+    background: var(--danger-soft, var(--surface-2));
+  }
+  .gnode.external .gnode-delete { display: none; }
+
+  /* External-reference placeholder node */
+  .gnode.external {
+    background: var(--bg);
+    border-style: dashed;
+    border-color: var(--border-strong);
+    padding: 8px 10px;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .gnode.external:hover { border-color: var(--text-2); }
+  .gnode.external .gnode-id { color: var(--dim); font-style: italic; }
+  .gnode.external .gnode-ext-badge {
+    color: var(--dim);
+    font-family: var(--font-ui);
+    font-size: 9px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    padding: 1px 5px;
+    border: 1px solid var(--border);
+    border-radius: 3px;
+    flex-shrink: 0;
+  }
+
+  /* Graph overlay (search, tooltip, hint, empty) */
+  .graph-overlay {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+  }
+  .graph-overlay > * { pointer-events: auto; }
+  .graph-overlay [hidden] { display: none !important; }
+  .graph-hint {
+    position: absolute;
+    left: 14px;
+    bottom: 14px;
+    color: var(--mute);
+    font-size: 10.5px;
+    font-family: var(--font-mono);
+    background: var(--surface);
+    border: 1px solid var(--border);
+    padding: 5px 10px;
+    border-radius: 5px;
+    opacity: 0.85;
+    pointer-events: none;
+  }
+  .graph-hint kbd {
+    color: var(--text);
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: 3px;
+    padding: 0 4px;
+    font-family: var(--font-mono);
+    font-size: 9.5px;
+    margin: 0 1px;
+  }
+  .graph-search {
+    position: absolute;
+    top: 14px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--surface);
+    border: 1px solid var(--border-strong);
+    border-radius: 8px;
+    padding: 6px 10px;
+    box-shadow: var(--shadow-lg);
+    z-index: 10;
+  }
+  .graph-search input {
+    background: transparent;
+    border: none;
+    outline: none;
+    color: var(--text);
+    font-family: var(--font-mono);
+    font-size: 12px;
+    width: 220px;
+  }
+  .graph-search input::placeholder { color: var(--mute); }
+  .graph-search-close {
+    color: var(--mute);
+    font-size: 10px;
+    font-family: var(--font-mono);
+    text-transform: uppercase;
+    cursor: pointer;
+    border: 1px solid var(--border);
+    padding: 1px 5px;
+    border-radius: 3px;
+  }
+  .graph-search-close:hover { color: var(--accent); border-color: var(--accent); }
+  .graph-tooltip {
+    position: absolute;
+    background: var(--surface);
+    border: 1px solid var(--border-strong);
+    color: var(--text);
+    padding: 5px 9px;
+    font-size: 11.5px;
+    font-family: var(--font-mono);
+    border-radius: 5px;
+    box-shadow: var(--shadow-md);
+    pointer-events: none;
+    max-width: 320px;
+    line-height: 1.4;
+    z-index: 9;
+  }
+  .graph-empty {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: var(--mute);
+    pointer-events: none;
+  }
+  .graph-empty-icon {
+    font-family: var(--font-display);
+    font-size: 56px;
+    color: var(--border-strong);
+    line-height: 1;
+    margin-bottom: 8px;
+  }
+  .graph-empty-text {
+    font-family: var(--font-ui);
+    font-size: 12px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  /* ============ PIN DRAG (Phase 2) ============ */
+  /* One pin per choice on a question node, anchored at the BOTTOM edge
+     (vertical layout). Positions distribute via inline left: ((i+1) / (n+1))
+     * 100% set by JS. */
+  .gnode-pin {
+    position: absolute;
+    bottom: -4px;
+    width: 9px;
+    height: 9px;
+    margin-left: -4.5px;
+    border-radius: 50%;
+    background: var(--accent);
+    border: 1px solid var(--bg);
+    opacity: 0.7;
+    cursor: grab;
+    z-index: 4;
+    transition: opacity 0.12s ease, transform 0.12s ease;
+    touch-action: none;
+  }
+  .gnode:hover .gnode-pin,
+  .gnode.selected .gnode-pin { opacity: 0.9; }
+  .gnode-pin:hover {
+    opacity: 1;
+    transform: scale(1.5);
+  }
+  .gnode-pin.dragging {
+    cursor: grabbing;
+    opacity: 1;
+    transform: scale(1.6);
+    box-shadow: 0 0 0 4px var(--accent-soft, rgba(212, 168, 74, 0.22));
+  }
+
+  /* Body cursor flips to grabbing while a drag is in progress so it reads
+     consistently even when the cursor leaves the originating pin. */
+  body.pin-dragging,
+  body.pin-dragging * { cursor: grabbing !important; }
+
+  /* Transient SVG overlay that hosts the drag-line. Sized to the canvas;
+     pointer-events: none so the line never intercepts hit-tests. */
+  .graph-drag-svg {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 6;
+    overflow: visible;
+  }
+  .pin-drag-line {
+    stroke: var(--accent);
+    stroke-width: 2;
+    stroke-dasharray: 5 4;
+    opacity: 0.75;
+    fill: none;
+  }
+
+  /* Target node states during drag. candidate-drop = valid; invalid-drop =
+     hover-rejected (toast on release explains why). */
+  .gnode.candidate-drop {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+    box-shadow: 0 0 0 4px var(--accent-soft, rgba(212, 168, 74, 0.18));
+  }
+  .gnode.invalid-drop {
+    outline: 1px dashed var(--danger);
+    outline-offset: 2px;
+    opacity: 0.65;
+  }
+
+  /* "+ new state here" ghost label that follows the cursor when over the
+     empty canvas during a drag. */
+  .scaffold-ghost {
+    position: absolute;
+    pointer-events: none;
+    z-index: 7;
+    padding: 4px 8px;
+    background: var(--bg);
+    color: var(--accent);
+    border: 1px dashed var(--accent);
+    border-radius: 4px;
+    font-family: var(--font-ui);
+    font-size: 11px;
+    letter-spacing: 0.04em;
+    white-space: nowrap;
+  }
+
+  /* Confirmation popover shown when the user drops a pin on an existing
+     node. Lives in the graph overlay (NOT inside the viewport) so it
+     does not pan/zoom with the rest of the canvas. */
+  .amend-popover {
+    position: absolute;
+    z-index: 12;
+    min-width: 320px;
+    max-width: 480px;
+    padding: 12px 14px;
+    background: var(--bg);
+    border: 1px solid var(--accent);
+    border-radius: 6px;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.35);
+    font-family: var(--font-ui);
+    font-size: 12px;
+    color: var(--text);
+    /* .graph-overlay disables pointer events to let pan/hover fall through.
+       The popover is interactive — re-enable here. */
+    pointer-events: auto;
+  }
+  body.light .amend-popover { box-shadow: 0 6px 20px rgba(0, 0, 0, 0.16); }
+  .amend-popover .popover-title {
+    font-size: 12px;
+    color: var(--text);
+    margin-bottom: 8px;
+  }
+  .amend-popover .popover-title code {
+    color: var(--accent);
+    font-family: var(--font-mono, monospace);
+    font-size: 11px;
+  }
+  .amend-popover .popover-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    margin: 4px 0;
+  }
+  .amend-popover .popover-label {
+    flex: 0 0 70px;
+    font-size: 9px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--mute, var(--dim));
+    padding-top: 2px;
+  }
+  .amend-popover .popover-trigger {
+    flex: 1;
+    font-family: var(--font-mono, monospace);
+    font-size: 11px;
+    color: var(--text);
+    background: var(--surface-2, transparent);
+    border: 1px solid var(--border, var(--divider));
+    border-radius: 3px;
+    padding: 3px 6px;
+    word-break: break-word;
+  }
+  .amend-popover .popover-trigger-new {
+    color: var(--accent);
+    border-color: var(--accent);
+  }
+  .amend-popover .popover-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 6px;
+    margin-top: 12px;
+  }
+  .amend-popover .popover-btn {
+    font-family: var(--font-ui);
+    font-size: 11px;
+    padding: 4px 12px;
+    border: 1px solid var(--border, var(--divider));
+    background: transparent;
+    color: var(--text);
+    cursor: pointer;
+    border-radius: 3px;
+  }
+  .amend-popover .popover-btn:hover { border-color: var(--accent); color: var(--accent); }
+  .amend-popover .popover-btn-primary {
+    background: var(--accent);
+    color: var(--bg);
+    border-color: var(--accent);
+  }
+  .amend-popover .popover-btn-primary:hover {
+    filter: brightness(1.1);
+    color: var(--bg);
+  }

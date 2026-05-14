@@ -1,0 +1,400 @@
+  /* ============ SIMULATOR (modal) ============ */
+  /* Loaded by tools/vendor/simulator.js. Reuses host CSS variables. */
+  .sim-modal {
+    position: fixed;
+    inset: 0;
+    z-index: 9000;
+    display: flex;
+    align-items: stretch;
+    justify-content: stretch;
+    font-family: var(--font-ui);
+  }
+  .sim-backdrop {
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.55);
+  }
+  body.light .sim-backdrop { background: rgba(20, 18, 12, 0.35); }
+  .sim-shell {
+    position: relative;
+    margin: 32px auto;
+    width: min(1080px, calc(100% - 64px));
+    max-height: calc(100vh - 64px);
+    display: flex;
+    flex-direction: column;
+    background: var(--bg);
+    color: var(--text);
+    border: 1px solid var(--accent);
+    border-radius: 8px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.45);
+    overflow: hidden;
+  }
+  body.light .sim-shell { box-shadow: 0 20px 60px rgba(0, 0, 0, 0.18); }
+
+  .sim-titlebar {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 14px;
+    border-bottom: 1px solid var(--border, var(--divider));
+    background: var(--surface-2, transparent);
+  }
+  .sim-title {
+    flex: 1;
+    font-size: 12px;
+    color: var(--text);
+    letter-spacing: 0.04em;
+  }
+  .sim-title .sim-file {
+    color: var(--accent);
+    font-family: var(--font-mono, monospace);
+    font-size: 11px;
+  }
+  .sim-hint {
+    font-size: 10px;
+    color: var(--mute, var(--dim));
+    letter-spacing: 0.06em;
+  }
+  /* Transient "saved" banner shown briefly in the titlebar after each
+     successful inline commit. Starts hidden; .sim-saved-show fades it in,
+     and a JS timer removes the class after ~1.2s to fade back out. */
+  .sim-saved-caption {
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--accent);
+    border: 1px solid var(--accent);
+    border-radius: 3px;
+    padding: 1px 7px;
+    margin-left: 4px;
+    opacity: 0;
+    transform: translateY(-2px);
+    transition: opacity 0.18s ease, transform 0.18s ease;
+    pointer-events: none;
+  }
+  .sim-saved-caption.sim-saved-show {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  .sim-btn {
+    background: transparent;
+    color: var(--text);
+    border: 1px solid var(--border, var(--divider));
+    border-radius: 3px;
+    font-family: var(--font-ui);
+    font-size: 11px;
+    padding: 3px 10px;
+    cursor: pointer;
+  }
+  .sim-btn:hover { border-color: var(--accent); color: var(--accent); }
+  .sim-btn-primary {
+    background: var(--accent);
+    color: var(--bg);
+    border-color: var(--accent);
+  }
+  .sim-btn-primary:hover { filter: brightness(1.08); color: var(--bg); }
+  .sim-btn-close {
+    padding: 3px 10px;
+    font-size: 14px;
+    line-height: 1;
+  }
+  .sim-btn:disabled {
+    opacity: 0.35;
+    cursor: default;
+    border-color: var(--border, var(--divider));
+    color: var(--mute, var(--dim));
+    background: transparent;
+  }
+  .sim-btn:disabled:hover { color: var(--mute, var(--dim)); border-color: var(--border, var(--divider)); }
+
+  /* Click-to-edit on .sim-speaker / .sim-text. Hover shows the affordance;
+     active edit gets a stronger border. */
+  .sim-editable { cursor: text; border-radius: 2px; }
+  .sim-editable:hover {
+    background: var(--surface-2, transparent);
+    outline: 1px dashed var(--border, var(--divider));
+    outline-offset: 2px;
+  }
+  .sim-editing {
+    background: var(--bg) !important;
+    outline: 1px solid var(--accent) !important;
+    outline-offset: 2px;
+    cursor: text;
+  }
+  .sim-speaker.sim-editing,
+  .sim-text.sim-editing { color: var(--text); }
+
+  /* Speaker dropdown shown while editing the speaker field. Inherits the
+     simulator's font and accent colors so it blends with the surrounding
+     line. The select is right-aligned to match the static .sim-speaker. */
+  .sim-speaker-select {
+    background: var(--bg);
+    color: var(--accent);
+    border: 1px solid var(--accent);
+    border-radius: 3px;
+    font-family: var(--font-mono, monospace);
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    padding: 1px 4px;
+    cursor: pointer;
+  }
+  .sim-speaker-select:focus { outline: none; box-shadow: 0 0 0 2px var(--accent-soft, rgba(212, 168, 74, 0.22)); }
+
+  .sim-body {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 280px;
+    min-height: 0;
+    height: 100%;
+    overflow: hidden;
+  }
+
+  .sim-scene {
+    overflow-y: auto;
+    padding: 18px 22px 22px;
+    min-height: 320px;
+  }
+  .sim-state-head {
+    margin-bottom: 14px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--border, var(--divider));
+  }
+  .sim-state-id {
+    font-family: var(--font-mono, monospace);
+    color: var(--accent);
+    font-size: 12px;
+    letter-spacing: 0.04em;
+  }
+  .sim-lines {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 18px;
+  }
+  .sim-line {
+    display: grid;
+    grid-template-columns: 110px minmax(0, 1fr);
+    gap: 12px;
+    align-items: baseline;
+    padding: 2px 6px;
+    border-radius: 3px;
+  }
+  /* Mirrors the linear editor's .line-row.modified: 3px accent stripe on the
+     left edge + a soft accent tint, so changed-unsaved lines stand out the
+     same way in the simulator's playback. */
+  .sim-line.sim-line-modified {
+    box-shadow: inset 3px 0 0 var(--accent);
+    background: var(--accent-soft, rgba(212, 168, 74, 0.18));
+  }
+  /* Inline edit no longer uses ✓/✗ buttons — Enter commits, Esc reverts,
+     and blur commits silently. A transient .sim-saved-caption confirms. */
+  .sim-line-empty { color: var(--mute, var(--dim)); font-style: italic; }
+  .sim-speaker {
+    color: var(--accent);
+    font-family: var(--font-mono, monospace);
+    font-size: 10px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    text-align: right;
+  }
+  .sim-text {
+    color: var(--text);
+    font-size: 14px;
+    line-height: 1.45;
+  }
+  .sim-text em { color: var(--text); font-style: italic; opacity: 0.85; }
+
+  .sim-choices {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-top: 12px;
+    padding-top: 12px;
+    border-top: 1px dashed var(--border, var(--divider));
+  }
+  .sim-choice {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 12px;
+    background: transparent;
+    border: 1px solid var(--border, var(--divider));
+    border-radius: 3px;
+    color: var(--text);
+    font-family: var(--font-ui);
+    font-size: 13px;
+    text-align: left;
+    cursor: pointer;
+    transition: border-color 0.1s, background 0.1s;
+  }
+  .sim-choice:hover,
+  .sim-choice.sim-choice-selected {
+    border-color: var(--accent);
+    background: var(--surface-2, transparent);
+  }
+  .sim-choice-marker {
+    color: var(--accent);
+    font-size: 10px;
+    opacity: 0;
+  }
+  .sim-choice.sim-choice-selected .sim-choice-marker { opacity: 1; }
+  .sim-choice-text {
+    flex: 1;
+    min-width: 0;
+    color: var(--text);
+    line-height: 1.4;
+  }
+  .sim-choice-delta {
+    font-family: var(--font-mono, monospace);
+    font-size: 10px;
+    color: var(--modified, var(--accent));
+    padding: 2px 5px;
+    border: 1px solid var(--modified, var(--accent));
+    border-radius: 2px;
+  }
+  .sim-choice-val {
+    font-family: var(--font-mono, monospace);
+    font-size: 10px;
+    color: var(--mute, var(--dim));
+    letter-spacing: 0.04em;
+  }
+
+  .sim-advance { margin-top: 16px; }
+  .sim-btn-advance { padding: 6px 14px; font-size: 12px; }
+
+  .sim-empty {
+    padding: 36px 12px;
+    text-align: center;
+    color: var(--mute, var(--dim));
+  }
+  .sim-empty-h {
+    font-size: 12px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+  .sim-empty-sub { font-size: 11px; }
+
+  /* OBSERVER PANE */
+  .sim-observer {
+    border-left: 1px solid var(--border, var(--divider));
+    overflow-y: auto;
+    padding: 18px 16px;
+    background: var(--surface-2, transparent);
+    font-size: 11px;
+    color: var(--text);
+  }
+  .sim-obs-section { margin-bottom: 18px; }
+  .sim-obs-h {
+    font-size: 9px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--mute, var(--dim));
+    margin-bottom: 6px;
+  }
+  .sim-obs-trust {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    padding: 8px 10px;
+    background: var(--bg);
+    border: 1px solid var(--border, var(--divider));
+    border-radius: 3px;
+  }
+  .sim-obs-trust b {
+    font-size: 18px;
+    color: var(--accent);
+    font-family: var(--font-mono, monospace);
+  }
+  .sim-obs-trust small {
+    margin-left: auto;
+    font-family: var(--font-mono, monospace);
+    font-size: 9px;
+    color: var(--mute, var(--dim));
+  }
+
+  .sim-visited {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+  .sim-visited-item {
+    display: flex;
+    align-items: baseline;
+    gap: 6px;
+    padding: 3px 6px;
+    border-radius: 2px;
+  }
+  .sim-visited-item code {
+    font-family: var(--font-mono, monospace);
+    font-size: 10px;
+    color: var(--text);
+    word-break: break-all;
+  }
+  .sim-visited-step {
+    flex: 0 0 22px;
+    font-family: var(--font-mono, monospace);
+    font-size: 9px;
+    color: var(--mute, var(--dim));
+    text-align: right;
+  }
+  .sim-visited-item.sim-visited-current { background: var(--surface-3, var(--surface-2)); }
+  .sim-visited-item.sim-visited-current code { color: var(--accent); }
+  .sim-visited-empty { color: var(--mute, var(--dim)); font-style: italic; }
+
+  .sim-flags {
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+  }
+  .sim-flag {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 8px;
+    padding: 2px 6px;
+    border-bottom: 1px solid var(--border, var(--divider));
+  }
+  .sim-flag code {
+    font-family: var(--font-mono, monospace);
+    font-size: 9px;
+    color: var(--mute, var(--dim));
+    word-break: break-all;
+  }
+  .sim-flag b {
+    font-family: var(--font-mono, monospace);
+    font-size: 10px;
+    color: var(--text);
+  }
+  .sim-flags-empty { color: var(--mute, var(--dim)); font-style: italic; padding: 4px 0; }
+
+  /* Graph-trail integration (optional — module sets sim-visited / sim-current
+     classes on .gnode elements while the simulator is open). */
+  .gnode.sim-visited {
+    outline: 1px dashed var(--accent);
+    outline-offset: 2px;
+  }
+  .gnode.sim-current {
+    outline: 2px solid var(--accent);
+    outline-offset: 3px;
+    box-shadow: 0 0 0 5px var(--accent-soft, rgba(212, 168, 74, 0.22));
+  }
+
+  /* Per-state "▶" play button inside the state-id row. */
+  .state-play-btn {
+    background: transparent;
+    color: var(--mute, var(--dim));
+    border: 1px solid var(--border, var(--divider));
+    border-radius: 3px;
+    font-size: 11px;
+    padding: 0 7px;
+    line-height: 18px;
+    cursor: pointer;
+    margin-right: 8px;
+  }
+  .state-play-btn:hover { color: var(--accent); border-color: var(--accent); }
+
+  /* Topbar play button (matches existing topbar button shape). */
+  #play-btn { /* host adds id="play-btn" */ }

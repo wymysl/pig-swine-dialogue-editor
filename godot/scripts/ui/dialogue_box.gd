@@ -185,8 +185,13 @@ func _on_dialogue_options_ready(write_path: String, choices: Array) -> void:
 func _render_options() -> void:
 	if _options_pending.is_empty():
 		return
-	## Tear down any previous option labels.
+	## Tear down any previous option labels. Use remove_child + queue_free
+	## (not queue_free alone) so get_children() reflects the removal this
+	## frame — otherwise _highlight_selected_option below indexes stale
+	## labels left over from a previous state's options page and reads
+	## past the end of the new _options_pending array.
 	for child in _options_vbox.get_children():
+		_options_vbox.remove_child(child)
 		child.queue_free()
 	var match_size: int = _text_label.get_theme_font_size("font_size")
 	if match_size <= 0:
@@ -233,9 +238,12 @@ func _player_display_name() -> String:
 
 ## _highlight_selected_option — recolors all option labels based on
 ## the current _options_selected_idx. Called after each nav input.
+## Iterates min(children, _options_pending) so a stray queued-free label
+## can't index past the end of the choices array.
 func _highlight_selected_option() -> void:
 	var children: Array = _options_vbox.get_children()
-	for i in range(children.size()):
+	var limit: int = min(children.size(), _options_pending.size())
+	for i in range(limit):
 		var label = children[i]
 		if label is Label:
 			if i == _options_selected_idx:

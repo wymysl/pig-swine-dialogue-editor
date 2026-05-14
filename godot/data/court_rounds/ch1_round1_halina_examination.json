@@ -1,0 +1,97 @@
+{
+  "_doc": "Chapter 1, Round 1 — Phase 1 fact-finding. Cula examines Halina on key facts supporting the procedural-breach (defective service) argument. Witness_cooperation resource; fact-flags gate Phase 2 citations.",
+  "version": 1,
+  "chapter": 1,
+  "round_number": 1,
+  "round_label": "Round 1 — Address Knowledge",
+
+  "phase_1": {
+    "_doc": "Fact-finding block. Cula has 3-4 turns to press Halina on: (a) how long she lived there, (b) whether landlord communicated address change, (c) where she actually received notice (if at all). Each press option sets a fact-flag.",
+
+    "witness_name": "Halina Sikorska",
+    "opening_prompt": "Dr. A. Cula, you have the opportunity to examine the witness on matters of fact.",
+    "witness_cooperation_budget": 10,
+    "witness_cooperation_initial": 10,
+
+    "press_options": [
+      {
+        "id": "press_tenancy_length",
+        "display_text": "How long have you lived in that apartment?",
+        "witness_cooperation_cost": 2,
+        "fact_flag_on_success": "ch1_halina_long_tenancy_established",
+        "halina_response": "Twenty-three years. Since 1962. My family has always lived there.",
+        "follow_up": "The tenancy is continuous. No gap. No break.",
+        "flavor": "Halina's voice steadies. This is the core of it."
+      },
+      {
+        "id": "press_address_change",
+        "display_text": "Did the landlord ever tell you the street number was changing?",
+        "witness_cooperation_cost": 3,
+        "fact_flag_on_success": "ch1_landlord_no_notice_of_renumbering",
+        "halina_response": "Never. Not a word. One day the postman said the old address was no good. I found out by accident.",
+        "follow_up": "No official notice. No letter from the landlord. Discovery, not disclosure.",
+        "flavor": "Halina's hand tightens."
+      },
+      {
+        "id": "press_eviction_notice_receipt",
+        "display_text": "Where did the eviction notice go? Did you ever see it?",
+        "witness_cooperation_cost": 2,
+        "fact_flag_on_success": "ch1_notice_delivered_to_wrong_address",
+        "halina_response": "To number seven on the old street. Not my house. I never saw it. The postman tried to find number seven-after-renumbering, gave up, and left it with someone else.",
+        "follow_up": "Notice went to a place that was not her home. She had no way to know it existed.",
+        "flavor": "The procedural breach narrows to a point."
+      },
+      {
+        "id": "press_prior_knowledge_of_case",
+        "display_text": "What warning did you have that you might be evicted?",
+        "witness_cooperation_cost": 2,
+        "fact_flag_on_success": "ch1_halina_no_prior_warning",
+        "halina_response": "None. The first I knew was the bailiff at the door, three weeks after the hearing where I could not appear.",
+        "follow_up": "She had no notice of a hearing. She could not attend a proceeding she did not know existed.",
+        "flavor": "The trap closes."
+      }
+    ],
+
+    "witness_cooperation_thresholds": {
+      "full_victory_floor": 4,
+      "weak_victory_floor": 2,
+      "no_progress_floor": 0,
+      "_doc": "If witness_cooperation remaining >= 4, player unlocks all fact-flags and enters Phase 2 with maximum citations available. 2–3: weak facts, limited citations. Below 2: minimal facts, Phase 2 is an uphill climb."
+    }
+  },
+
+  "phase_2": {
+    "_doc": "Closing argument block (skeleton). Judge counter-questions gate by Phase 1 fact-flags. Available citations keyed to established facts.",
+    "judge_role": "District Court judge",
+    "judge_opening": "Counsel, you have the opportunity for closing remarks.",
+
+    "counter_questions": [
+      {
+        "id": "counter_service_form",
+        "requires_fact_flag": "ch1_notice_delivered_to_wrong_address",
+        "judge_text": "The file records service to the old address. The form was satisfied.",
+        "principle_citations_available": ["service_of_process", "procedural_fairness"],
+        "effectiveness_notes": "Player must cite a judgment with service_of_process + procedural_fairness tags to be super-effective. service_of_process alone is only effective."
+      },
+      {
+        "id": "counter_landlord_communication",
+        "requires_fact_flag": "ch1_landlord_no_notice_of_renumbering",
+        "judge_text": "The landlord had no obligation to advise the tenant of municipal address changes.",
+        "principle_citations_available": ["individual_assessment", "procedural_fairness"],
+        "effectiveness_notes": "Counter-argument leans on margin_of_appreciation. Player must establish that landlord's silence + service failure together violate fair-hearing rights."
+      }
+    ],
+
+    "victory_branches": {
+      "full_victory_condition": "phase_1_fact_flags_count >= 4 AND judge_counter_questions_defeated >= 2",
+      "weak_victory_condition": "phase_1_fact_flags_count >= 2 AND judge_counter_questions_defeated >= 1",
+      "_doc": "Full victory unlocks the procedural reprieve. Weak victory gives the reprieve but the case outcome is marked as weaker for Ch2 reputation flags."
+    }
+  },
+
+  "completion_flags": {
+    "chapter1_round1_attempted": true,
+    "chapter1_round1_facts_established": "depends on witness_cooperation at Phase 1 end",
+    "_doc": "Fact-flags survive into chapter1.json quest state and gate Phase 2 citations at runtime."
+  }
+}
