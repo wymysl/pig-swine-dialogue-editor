@@ -1,81 +1,61 @@
 {
     "version": 2,
     "npc_id": "pig",
-    "_comment_v1_4_coffee": "V1.4 (2026-05-12): two coffee_reaction_* states added per minigames.txt §Character reactions §Mr. Pig. Gated on chapter1.coffee_buff and chapter1.met_pig per the design brief. Additional clause !chapter1.entered_court so coffee reactions stop firing once the court scene begins (post-court the player is hearing case-outcome material, not coffee remarks). Reactions are placed BEFORE has_binder_and_memo because that state's broad gate (has_law_binder && has_rights_memo) would otherwise win priority for the entire post-recruit window. JSON-order priority is the runner's only mechanism for resolving multiple matches.",
     "states": [
         {
-            "id": "first_meeting",
-            "trigger": "chapter1.met_pig == false",
+            "id": "pig_first_meeting",
+            "trigger": "!chapter1.met_pig",
             "lines": [
                 "It would appear that we are...",
-                {
-                    "speaker": "cula",
-                    "text": "Mr. Pig. Good morning."
-                },
+                {"speaker": "cula", "text": "Mr. Pig. Good morning."},
                 "Dr. A. Cula! Welcome. You arrive during, well... a moment.",
                 "Let me assure you first: the firm is not bankrupt. Bankruptcy requires paperwork, and our paperwork is currently underwater along with the rest of us.",
                 "The rent is six weeks overdue.",
                 "Six weeks under the surface. The landlord knocks on the hull. Politely. The polite knock is somehow worse than a loud one.",
                 "Can a firm sail while six weeks underwater? I have asked myself this. The honest answer appears to be yes, on momentum.",
                 "So. We float. In the way that boats with leaks float, which is to say, less every morning.",
-                {
-                    "speaker": "cula",
-                    "text": "Six weeks. Understood."
-                },
+                {"speaker": "cula", "text": "Six weeks. Understood."},
                 "Anyway. I'm digressing. This is your first day, and we need you to start immediately. We have a case to take care of.",
                 "Mr. Murrow has the folder. Mr. Murrow knows the— ask Mr. Murrow.",
-                {
-                    "speaker": "cula",
-                    "text": "I'll find him."
-                }
+                {"speaker": "cula", "text": "I'll find him."}
             ],
             "on_dismiss": [
-                {
-                    "set": "chapter1.met_pig",
-                    "value": true
-                },
-                {
-                    "set": "chapter1.pig_revealed_crisis",
-                    "value": true
-                }
+                {"set": "chapter1.met_pig", "value": true},
+                {"set": "chapter1.pig_revealed_crisis", "value": true}
             ]
         },
         {
             "id": "post_meeting_pre_murrow",
-            "trigger": "chapter1.met_pig == true && chapter1.met_murrow == false",
-            "line": "Yes. Mr. Murrow. As I said. Apologies for the noise. Please don't forget to bill this conversation under \"Business Development\"."
+            "trigger": "chapter1.met_pig == true && !chapter1.met_murrow",
+            "lines": ["Yes. Mr. Murrow. As I said. Apologies for the noise. Please don't forget to bill this conversation under \"Business Development\"."]
         },
         {
             "id": "met_murrow_pre_binder",
-            "trigger": "chapter1.met_murrow == true && chapter1.has_law_binder == false",
-            "line": "The procedural binder is in the archive, unless it has finally achieved sentience and crawled below deck."
+            "trigger": "chapter1.met_murrow == true && !chapter1.has_law_binder",
+            "lines": ["The procedural binder is in the archive, unless it has finally achieved sentience and crawled below deck."]
         },
         {
             "id": "has_binder_only",
-            "trigger": "chapter1.has_law_binder == true && chapter1.has_rights_memo == false",
-            "line": "The procedural binder. Good. Half the picture is better than none, though in court the other half tends to matter."
+            "trigger": "chapter1.has_law_binder == true && !chapter1.has_rights_memo",
+            "lines": ["The procedural binder. Good. Half the picture is better than none, though in court the other half tends to matter."]
         },
         {
-            "id": "coffee_reaction_perfect",
-            "trigger": "chapter1.coffee_buff == \"procedurally_alert_plus\" && chapter1.met_pig == true && !chapter1.entered_court",
+            "id": "pig_coffee_reaction_perfect",
+            "trigger": "chapter1.coffee_buff == 'procedurally_alert_plus' && chapter1.met_pig == true && !chapter1.entered_court",
             "_comment": "V1.4 coffee reaction — S-grade. Voice draft from minigames.txt §Character reactions §Mr. Pig Perfect ('Can we sell this? No, wait, can we bill it?'), Taste-Standard pass adds the opening address per Pig's existing exclamatory cadence.",
-            "line": "Dr. A. Cula! Can we sell this? No — better — can we bill it?"
+            "lines": ["Dr. A. Cula! Can we sell this? No — better — can we bill it?"]
         },
         {
-            "id": "coffee_reaction_bad",
-            "trigger": "chapter1.coffee_buff == \"over_caffeinated\" && chapter1.met_pig == true && !chapter1.entered_court",
+            "id": "pig_coffee_reaction_bad",
+            "trigger": "chapter1.coffee_buff == 'over_caffeinated' && chapter1.met_pig == true && !chapter1.entered_court",
             "_comment": "V1.4 coffee reaction — D/F-grade. Voice draft from minigames.txt §Character reactions §Mr. Pig Bad ('That coffee smells like our accounts.'). Reads alongside the firm's existing six-weeks-underwater crisis joke.",
-            "line": "Dr. A. Cula. That coffee smells like our accounts."
+            "lines": ["Dr. A. Cula. That coffee smells like our accounts."]
         },
         {
             "id": "has_binder_and_memo",
             "trigger": "chapter1.has_law_binder == true && chapter1.has_rights_memo == true",
-            "line": "The binder and the memo. I would say I am proud, but pride requires a moment of stillness and we do not currently have one."
+            "lines": ["The binder and the memo. I would say I am proud, but pride requires a moment of stillness and we do not currently have one."]
         }
     ],
-    "idle_flavor": [
-        "For the first time today, the ship is not actively sinking. It is merely making exploratory gurgling noises.",
-        "Has anyone seen my optimism? It was here this morning.",
-        "We cannot sail into court with a hole in the hull and optimism as our only oar."
-    ]
+    "idle_flavor": ["For the first time today, the ship is not actively sinking. It is merely making exploratory gurgling noises.", "Has anyone seen my optimism? It was here this morning.", "We cannot sail into court with a hole in the hull and optimism as our only oar."]
 }

@@ -299,8 +299,8 @@ func _init() -> void:
 		"states": [
 			{
 				"id": "award_and_unlock",
-				"trigger": "chapter1.met_pig == false",
-				"line": "Chapter close.",
+				"trigger": "!chapter1.met_pig",
+				"lines": ["Chapter close."],
 				"on_dismiss": [
 					{ "set": "chapter1.complete", "value": true },
 					{ "award_badge": "day_one_survivor" },
@@ -312,7 +312,7 @@ func _init() -> void:
 			{
 				"id": "unknown_ids",
 				"trigger": "chapter1.met_pig == true",
-				"line": "Unknown ids.",
+				"lines": ["Unknown ids."],
 				"on_dismiss": [
 					{ "award_badge": "nonexistent_badge_xyz" },
 					{ "unlock_route": "nonexistent_route_xyz" }

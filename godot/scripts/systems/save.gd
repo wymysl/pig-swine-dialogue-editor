@@ -28,6 +28,16 @@ extends Node
 ##         barista.json coffee_retry_prompt options write_path) without a
 ##         State slot, so triggers / write_paths silently no-opped. Slot-only
 ##         fix; writer plumbing pending.
+##   14 — state-id namespacing: scrubs legacy collider ids from
+##         dialogue_states_seen. Seven state ids (`first_meeting`,
+##         `coffee_reaction_perfect`, `coffee_reaction_bad`,
+##         `coffee_reaction_perfect_recruited`, `coffee_reaction_bad_recruited`,
+##         `coffee_reaction_perfect_pre_recruit`, `coffee_reaction_bad_pre_recruit`)
+##         were duplicated across files; v14 renames them with NPC prefixes
+##         (e.g. `murrow_first_meeting`, `crab_coffee_reaction_perfect_recruited`)
+##         so once:true no longer cross-file-ghosts. No content uses once:true
+##         today; the scrub is defensive against any save authored against an
+##         early-adopter once-state.
 
 const SAVE_PATH: String = "user://save.json"
 
@@ -278,5 +288,34 @@ func migrate_save(saved_data: Dictionary, old_version: int) -> Dictionary:
 			ch1_v13["won_court"] = false
 		if not ch1_v13.has("coffee_retry_decision"):
 			ch1_v13["coffee_retry_decision"] = ""
+
+	## v13 -> v14: scrub legacy colliding state ids from dialogue_states_seen.
+	## Seven dialogue state ids that previously collided across files were
+	## renamed (`first_meeting` -> `murrow_first_meeting` / `pig_first_meeting`,
+	## the three coffee_reaction_* pairs, and the four coffee_reaction_*_recruit
+	## pairs). dialogue_states_seen is a flat Array<String>; a legacy collider
+	## id in a save could now mean either npc, so the safe migration is to drop
+	## it and let the new once-state fire fresh. No committed content uses
+	## once:true today, so real saves will have empty arrays — this is
+	## defensive against any early-adopter once-state save in flight.
+	if old_version < 14:
+		if not saved_data.has("dialogue_states_seen") \
+				or not saved_data["dialogue_states_seen"] is Array:
+			saved_data["dialogue_states_seen"] = []
+		var legacy_colliders: Array = [
+			"first_meeting",
+			"coffee_reaction_perfect",
+			"coffee_reaction_bad",
+			"coffee_reaction_perfect_recruited",
+			"coffee_reaction_bad_recruited",
+			"coffee_reaction_perfect_pre_recruit",
+			"coffee_reaction_bad_pre_recruit",
+		]
+		var seen: Array = saved_data["dialogue_states_seen"]
+		var kept: Array = []
+		for sid in seen:
+			if not legacy_colliders.has(str(sid)):
+				kept.append(sid)
+		saved_data["dialogue_states_seen"] = kept
 
 	return saved_data

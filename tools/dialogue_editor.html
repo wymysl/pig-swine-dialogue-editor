@@ -126,6 +126,20 @@
     content: ' •';
     color: var(--modified);
   }
+  .file-item.staging {
+    color: var(--dim);
+    font-style: italic;
+  }
+  .staging-badge {
+    margin-left: 6px;
+    font-size: 9px;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--dim);
+    border: 1px solid var(--divider);
+    padding: 0 4px;
+    border-radius: 2px;
+  }
   .sidebar-section {
     color: var(--dim);
     font-size: 10px;
@@ -948,6 +962,13 @@ $('#open-btn').addEventListener('click', async () => {
   }
 });
 
+// Files matching this filter are loaded by the runtime; everything else is
+// inert staging the editor still lets you open but visually marks as such.
+// Mirrors dialogue_runner.gd::_load_all_dialogues skip list.
+function isStagingFile(name) {
+  return name === 'dialogues.json' || name.includes('_rewrite') || name.includes('_v2');
+}
+
 async function loadAllFiles() {
   files = {};
   for await (const entry of dirHandle.values()) {
@@ -961,7 +982,7 @@ async function loadAllFiles() {
           json && typeof json === 'object' &&
           (Array.isArray(json.states) || Array.isArray(json.idle_flavor) || json.npc_id)
         ) {
-          files[entry.name] = { handle: entry, json, dirty: false };
+          files[entry.name] = { handle: entry, json, dirty: false, staging: isStagingFile(entry.name) };
         }
       } catch (e) {
         console.warn(`Skipping ${entry.name}: ${e.message}`);
@@ -1169,7 +1190,15 @@ function renderSidebar() {
     div.className = 'file-item';
     if (name === currentFile) div.classList.add('active');
     if (files[name].dirty) div.classList.add('dirty');
+    if (files[name].staging) div.classList.add('staging');
     div.textContent = name.replace(/\.json$/, '');
+    if (files[name].staging) {
+      const badge = document.createElement('span');
+      badge.className = 'staging-badge';
+      badge.textContent = 'inert';
+      badge.title = 'staging file — not loaded by dialogue_runner.gd';
+      div.appendChild(badge);
+    }
     div.addEventListener('click', () => selectFile(name));
     list.appendChild(div);
   }
@@ -1364,6 +1393,47 @@ function renderState(state, stateIdx, defaultSpeaker, rebuildStates) {
   onceLabel.appendChild(onceCheck);
   onceLabel.appendChild(document.createTextNode('fires once'));
   idRow.appendChild(onceLabel);
+
+  // State-level speaker override — picker writes state.speaker. Plain-string
+  // lines in this state are then spoken by the picked character_id
+  // (resolved via character_registry.json). Empty selection ("(default)")
+  // deletes the field; plain strings fall back to the npc-node display name.
+  const speakerLabel = document.createElement('label');
+  speakerLabel.className = 'state-once';
+  speakerLabel.title = 'state-level default speaker — overrides plain-string lines in this state. (default) means: use the calling NPC node\'s display_name.';
+  const speakerSelect = document.createElement('select');
+  speakerSelect.style.background = 'var(--bg)';
+  speakerSelect.style.color = 'var(--text)';
+  speakerSelect.style.border = '1px solid var(--divider)';
+  speakerSelect.style.fontFamily = 'inherit';
+  speakerSelect.style.fontSize = '10px';
+  speakerSelect.style.padding = '1px 4px';
+  function _rebuildSpeakerOptions() {
+    speakerSelect.innerHTML = '';
+    const defOpt = document.createElement('option');
+    defOpt.value = '';
+    defOpt.textContent = '(default)';
+    speakerSelect.appendChild(defOpt);
+    const seen = new Set(knownSpeakers);
+    if (state.speaker) seen.add(state.speaker);
+    for (const sp of Array.from(seen).sort()) {
+      const o = document.createElement('option');
+      o.value = sp;
+      o.textContent = sp;
+      speakerSelect.appendChild(o);
+    }
+    speakerSelect.value = state.speaker || '';
+  }
+  _rebuildSpeakerOptions();
+  speakerSelect.addEventListener('change', () => {
+    const v = speakerSelect.value;
+    if (v) state.speaker = v;
+    else delete state.speaker;
+    markDirty();
+  });
+  speakerLabel.appendChild(document.createTextNode('speaker:'));
+  speakerLabel.appendChild(speakerSelect);
+  idRow.appendChild(speakerLabel);
 
   // State controls: insert-above + position slider. Slider replaces the
   // previous ↑/↓ buttons — for any move >1 step it's faster. The position
@@ -1662,6 +1732,16 @@ function renderConditionsEditor(state, card, onConditionsChange) {
   trigHeader.className = 'conditions-section-header';
   trigHeader.textContent = 'when (trigger)';
   trigSection.appendChild(trigHeader);
+
+  // OR-of-AND triggers (e.g. judge_district_ch1.json:open_round) are not yet
+  // editable in the clause UI — the parser would mis-split the `||` into
+  // single broken clauses and silently corrupt the trigger on edit. Detect
+  // top-level `||` and switch to a read-only display so the trigger survives
+  // round-trip but can still be inspected. Authors needing to edit OR triggers
+  // do so directly in the JSON for now (verify_dialogue_roundtrip.js still
+  // asserts they round-trip cleanly).
+  const hasOrTopLevel = (state.trigger || '').includes('||');
+
   const clauseList = document.createElement('div');
   clauseList.className = 'clause-list';
   let clauses = parseTrigger(state.trigger);
@@ -1766,17 +1846,28 @@ function renderConditionsEditor(state, card, onConditionsChange) {
     return row;
   }
 
-  rebuildClauses();
-  trigSection.appendChild(clauseList);
-  const addClauseBtn = document.createElement('button');
-  addClauseBtn.className = 'add-clause-btn';
-  addClauseBtn.textContent = '+ add clause';
-  addClauseBtn.addEventListener('click', () => {
-    clauses.push({ path: flagPaths[0] || '', op: '==', value: true });
+  if (hasOrTopLevel) {
+    const ro = document.createElement('div');
+    ro.style.color = 'var(--dim)';
+    ro.style.fontSize = '11px';
+    ro.style.padding = '8px 0';
+    ro.style.whiteSpace = 'pre-wrap';
+    ro.style.fontFamily = 'inherit';
+    ro.textContent = state.trigger + '\n\n(OR-of-AND trigger — read-only in the conditions UI. Edit in JSON if needed.)';
+    trigSection.appendChild(ro);
+  } else {
     rebuildClauses();
-    commitTrigger();
-  });
-  trigSection.appendChild(addClauseBtn);
+    trigSection.appendChild(clauseList);
+    const addClauseBtn = document.createElement('button');
+    addClauseBtn.className = 'add-clause-btn';
+    addClauseBtn.textContent = '+ add clause';
+    addClauseBtn.addEventListener('click', () => {
+      clauses.push({ path: flagPaths[0] || '', op: '==', value: true });
+      rebuildClauses();
+      commitTrigger();
+    });
+    trigSection.appendChild(addClauseBtn);
+  }
   body.appendChild(trigSection);
 
   // ---- On_dismiss section ----
@@ -2783,10 +2874,104 @@ function updateBottomBar() {
   $('#stat-lines').textContent = lineCount + ' line(s)';
 }
 
+// -------- COMPACT-INLINE JSON SERIALIZER --------
+// Mirrors tools/migrate_phase2.py::serialize. Output must match the Python
+// serializer's byte output for the canonical corpus so verify_dialogue_roundtrip.js
+// passes byte-identical. Rules:
+//   • Strings/numbers/bools/null: JSON.stringify as-is.
+//   • Dicts: multi-line by default. Inline iff every value is primitive AND
+//     the compact serialization fits in INLINE_LIMIT chars.
+//   • Arrays: multi-line by default. Inline iff every element is primitive
+//     AND compact form fits in INLINE_LIMIT chars. Arrays of dicts always
+//     multi-line (with each dict element inlined if it fits the limit).
+//   • Output uses 4-space indent and `", "` / `": "` separators inside
+//     compact-inline objects.
+const INLINE_LIMIT = 300;
+
+function _isPrimitive(v) {
+  return v === null || typeof v === 'boolean' || typeof v === 'number' || typeof v === 'string';
+}
+
+function _allPrimitiveValues(o) {
+  if (Array.isArray(o)) return o.every(_isPrimitive);
+  if (o && typeof o === 'object') return Object.values(o).every(_isPrimitive);
+  return false;
+}
+
+function _compact(value) {
+  // JSON.stringify with replacer-free; then space out `:` and `,` to match
+  // the Python json.dumps(separators=(", ", ": ")) shape.
+  // We can't use the indent argument here because we want a single-line.
+  // Build it from a fresh stringify and then re-inject spaces.
+  // Easiest: walk the structure directly.
+  if (value === null || typeof value === 'boolean' || typeof value === 'number') {
+    return JSON.stringify(value);
+  }
+  if (typeof value === 'string') {
+    return JSON.stringify(value);
+  }
+  if (Array.isArray(value)) {
+    return '[' + value.map(_compact).join(', ') + ']';
+  }
+  if (typeof value === 'object') {
+    const entries = Object.entries(value).map(([k, v]) => `${JSON.stringify(k)}: ${_compact(v)}`);
+    return '{' + entries.join(', ') + '}';
+  }
+  throw new TypeError(`Cannot serialize ${typeof value}`);
+}
+
+function _serialize(value, level = 0, size = 4) {
+  const pad = ' '.repeat(level * size);
+  const childPad = ' '.repeat((level + 1) * size);
+
+  if (value === null || typeof value === 'boolean' || typeof value === 'number' || typeof value === 'string') {
+    return JSON.stringify(value);
+  }
+
+  if (Array.isArray(value)) {
+    if (value.length === 0) return '[]';
+    if (_allPrimitiveValues(value)) {
+      const inline = _compact(value);
+      if (inline.length <= INLINE_LIMIT) return inline;
+    }
+    const parts = value.map((item, i) => {
+      let entry;
+      if (item && typeof item === 'object' && !Array.isArray(item) && _allPrimitiveValues(item)) {
+        const inline = _compact(item);
+        entry = childPad + (inline.length <= INLINE_LIMIT ? inline : _serialize(item, level + 1, size));
+      } else {
+        entry = childPad + _serialize(item, level + 1, size);
+      }
+      return entry + (i < value.length - 1 ? ',' : '');
+    });
+    return '[\n' + parts.join('\n') + '\n' + pad + ']';
+  }
+
+  if (typeof value === 'object') {
+    const keys = Object.keys(value);
+    if (keys.length === 0) return '{}';
+    if (_allPrimitiveValues(value)) {
+      const inline = _compact(value);
+      if (inline.length <= INLINE_LIMIT) return inline;
+    }
+    const parts = keys.map((k, i) => {
+      const entry = `${childPad}${JSON.stringify(k)}: ${_serialize(value[k], level + 1, size)}`;
+      return entry + (i < keys.length - 1 ? ',' : '');
+    });
+    return '{\n' + parts.join('\n') + '\n' + pad + '}';
+  }
+
+  throw new TypeError(`Cannot serialize ${typeof value}`);
+}
+
+function serializeDialogue(json) {
+  return _serialize(json) + '\n';
+}
+
 async function saveFile(name) {
   const f = files[name];
   if (!f || !f.dirty) return;
-  const text = JSON.stringify(f.json, null, 4) + '\n';
+  const text = serializeDialogue(f.json);
   try {
     const writable = await f.handle.createWritable();
     await writable.write(text);

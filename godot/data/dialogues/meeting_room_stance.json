@@ -2,22 +2,17 @@
     "version": 1,
     "npc_id": "meeting_room_stance",
     "display_name": "Cula",
-    "_provenance": "Chapter 1 Phase B polish — replaces the standalone client_stance_menu.tscn modal with an in-dialogue option pick. The dialogue box renders the three choices under the prompt; the player picks with move_up/move_down + interact. Selected option renders in red (per dialogue_box.gd OPTION_COLOR_SELECTED).",
-    "_scope": "Retired Session 27 (2026-05-13). The active Beat 8 stance choice now lives in halina.json::client_meeting_intro with chain:true options. This file is kept as a dormant compatibility stub because the old scene NPC id may still exist during transition work.",
     "states": [
         {
             "id": "stance_pick",
-            "_comment_retired": "Retired Session 27 (2026-05-13). The stance choice now happens inside halina.json's client_meeting_intro state (chain:true options block). This state's trigger is set to an impossible condition so it never fires. The meeting_room_stance NPC in the scene can be left in place (idle_flavor is empty, so it produces the hardcoded '...' fallback if approached).",
-            "trigger": "chapter1.halina_met == true && chapter1.halina_met == false",
-            "lines": [
-                "How would you like to open with Mrs. Sikorska?"
-            ],
+            "trigger": "chapter1.client_meeting_stance == ''",
+            "lines": ["How would you like to open with Mrs. Sikorska?"],
             "options": {
                 "write_path": "chapter1.client_meeting_stance",
                 "choices": [
-                    { "text": "Lead with how she's holding up.", "value": "sympathetic" },
-                    { "text": "Lead with the timeline.",          "value": "blunt_procedural" },
-                    { "text": "Lead with the lease history.",     "value": "technical" }
+                    {"text": "Lead with how she's holding up.", "value": "sympathetic"},
+                    {"text": "Lead with the timeline.", "value": "blunt_procedural"},
+                    {"text": "Lead with the lease history.", "value": "technical"}
                 ]
             }
         }

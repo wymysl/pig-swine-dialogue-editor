@@ -5,24 +5,21 @@
         {
             "id": "state_binder",
             "trigger": "chapter1.has_law_binder == true",
-            "line": "Binder found."
+            "lines": ["Binder found."]
         },
         {
             "id": "state_false_flag",
-            "trigger": "chapter1.met_pig == false",
-            "line": "Pig has not been met.",
+            "trigger": "!chapter1.met_pig",
             "on_dismiss": [
-                { "set": "chapter1.met_pig", "value": true }
-            ]
+                {"set": "chapter1.met_pig", "value": true}
+            ],
+            "lines": ["Pig has not been met."]
         },
         {
             "id": "compound_trigger",
-            "trigger": "chapter1.met_pig == true && chapter1.met_murrow == false",
+            "trigger": "chapter1.met_pig == true && !chapter1.met_murrow",
             "lines": ["Met pig, not murrow.", "Page two."]
         }
     ],
-    "idle_flavor": [
-        "Idle line A.",
-        "Idle line B."
-    ]
+    "idle_flavor": ["Idle line A.", "Idle line B."]
 }

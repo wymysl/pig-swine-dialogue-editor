@@ -51,38 +51,61 @@ const FALLBACK_LINE: String = "..."
 
 ## _catalogue — map of npc_id -> parsed dialogue Dict.
 var _catalogue: Dictionary = {}
-var _active_state_mutations: Array = []
+## _known_speaker_ids — populated from character_registry.json. Used by
+## _validate_catalogue to flag unregistered speakers as load-time errors.
+var _known_speaker_ids: Dictionary = {}
 
-## Active options state — set when a matched state has an `options` block.
-## Cleared on option commit (or on dismiss if the player exits without
-## committing — though the dialogue box must always commit when options
-## are present, so this is defensive).
-var _active_options_write_path: String = ""
-var _active_options_present: bool = false
+## ActiveStateContext — the implicit state machine that lives between a
+## dialogue_requested and the next dismiss/commit pair, extracted from
+## what used to be nine separately-managed instance variables. One struct,
+## one lifecycle: `reset_for_walk()` at the top of every _on_dialogue_requested,
+## then the matched state populates its fields, then dismiss/commit consume them.
+##
+## Lifecycle invariants (preserved verbatim from the prior implementation):
+##   • `last_npc_id` / `last_display_name` are set BEFORE reset_for_walk so the
+##     chain re-fire can read them on commit.
+##   • `once_state_id` must be appended to State.data.dialogue_states_seen
+##     BEFORE the chain re-fire so the chain walk doesn't re-match the same
+##     once-state on its second pass.
+##   • `mutations` must be re-asserted (deep-duplicated) AFTER firing the
+##     dialogue_line_ready / dialogue_options_ready signals — handlers may
+##     run synchronously while a chained state is being loaded, and the
+##     state now on screen must own the next dismiss event.
+class ActiveStateContext:
+	var mutations: Array = []
+	var options_present: bool = false
+	var options_write_path: String = ""
+	## options.choices array — kept so _on_dialogue_option_committed can read
+	## the picked choice's trust_delta on commit.
+	var options_choices: Array = []
+	## State.data path the picked choice's trust_delta is added to. Empty
+	## string when the active state doesn't declare a trust meter.
+	var trust_path: String = ""
+	## True when the matched state's options block declared `chain: true`.
+	## Triggers the post-commit dialogue_requested re-fire.
+	var chain: bool = false
+	## State id of a `once: true` state that just matched. Appended to
+	## State.data.dialogue_states_seen on dismiss/commit.
+	var once_state_id: String = ""
+	## Last request cache — needed so the chain re-fire after a commit can
+	## re-call _on_dialogue_requested with the same npc/display arguments.
+	var last_npc_id: String = ""
+	var last_display_name: String = ""
 
-## _active_options_choices — the full choices Array from the current options block.
-## Stored so _on_dialogue_option_committed can read each choice's trust_delta.
-var _active_options_choices: Array = []
+	## reset_for_walk — clear per-walk state at the top of _on_dialogue_requested.
+	## last_npc_id / last_display_name are set BEFORE this call so the chain
+	## re-fire can read them; this only resets the fields that the new matched
+	## state will (re)populate.
+	func reset_for_walk() -> void:
+		mutations = []
+		options_present = false
+		options_write_path = ""
+		options_choices = []
+		trust_path = ""
+		chain = false
+		once_state_id = ""
 
-## _active_trust_path — dotted State.data path to increment when the committed
-## choice carries a trust_delta. Set from options.trust_path; empty if not declared.
-var _active_trust_path: String = ""
-
-## Chain state — set when the matched state's options block carries "chain": true.
-## On option commit the runner suppresses dismiss and immediately re-fires
-## dialogue_requested for the same NPC so the box transitions to the next state.
-var _active_chain: bool = false
-
-## _active_once_state_id — id of a "once": true state that just matched.
-## Persisted to State.data.dialogue_states_seen on dismiss / commit so the
-## same state cannot match a second time. Empty string when the active state
-## is not once-flagged. Must be appended BEFORE chain re-fire so the chain
-## walk skips the same state on the second pass.
-var _active_once_state_id: String = ""
-
-## Last-request cache — needed to re-fire the request during a chain.
-var _last_npc_id: String = ""
-var _last_display_name: String = ""
+var _ctx: ActiveStateContext = ActiveStateContext.new()
 
 ## _character_registry — map of character_id -> display name String.
 var _character_registry: Dictionary = {}
@@ -102,9 +125,9 @@ func _on_dialogue_dismissed() -> void:
 	## "once": true bookkeeping runs unconditionally — a once-state with no
 	## on_dismiss actions still needs to be recorded as seen, otherwise the
 	## next request would re-fire it.
-	if _active_once_state_id != "":
-		_mark_once_seen(_active_once_state_id)
-		_active_once_state_id = ""
+	if _ctx.once_state_id != "":
+		_mark_once_seen(_ctx.once_state_id)
+		_ctx.once_state_id = ""
 	_apply_mutations()
 
 
@@ -113,13 +136,13 @@ func _on_dialogue_dismissed() -> void:
 ## Clears the queue after processing. Called by both _on_dialogue_dismissed
 ## and _on_dialogue_option_committed to avoid duplicating the loop.
 func _apply_mutations() -> void:
-	if _active_state_mutations.is_empty():
+	if _ctx.mutations.is_empty():
 		return
 	var state_node = get_node_or_null("/root/State")
 	if state_node == null:
 		return
 	var sigs = get_node_or_null("/root/Signals")
-	for mut in _active_state_mutations:
+	for mut in _ctx.mutations:
 		if mut is Dictionary and mut.has("set") and mut.has("value"):
 			var path = mut["set"] as String
 			var val = mut["value"]
@@ -150,7 +173,7 @@ func _apply_mutations() -> void:
 					sigs.route_unlocked.emit(route_id)
 			else:
 				push_warning("DialogueRunner: unlock_route unknown route_id '%s'; declare it in State.reset_state().routes_unlocked first" % route_id)
-	_active_state_mutations.clear()
+	_ctx.mutations.clear()
 
 
 ## _on_dialogue_option_committed — fired by DialogueBox when the player
@@ -160,56 +183,58 @@ func _apply_mutations() -> void:
 ## run alongside the option write), then clears the active-mutation
 ## queue so the subsequent dialogue_dismissed handler short-circuits.
 func _on_dialogue_option_committed(value: Variant) -> void:
-	if not _active_options_present:
+	if not _ctx.options_present:
 		## No active options state — defensive no-op.
 		return
 	var state_node = get_node_or_null("/root/State")
 	var sigs = get_node_or_null("/root/Signals")
-	if state_node != null and _active_options_write_path != "":
-		_set_state_value(state_node.data, _active_options_write_path, value)
-		if _active_options_write_path.begins_with("chapter1.") and sigs and sigs.has_signal("chapter1_flag_changed"):
-			var flag_name: String = _active_options_write_path.substr(9)
+	if state_node != null and _ctx.options_write_path != "":
+		_set_state_value(state_node.data, _ctx.options_write_path, value)
+		if _ctx.options_write_path.begins_with("chapter1.") and sigs and sigs.has_signal("chapter1_flag_changed"):
+			var flag_name: String = _ctx.options_write_path.substr(9)
 			sigs.chapter1_flag_changed.emit(flag_name, value)
 
 	## Trust delta: if the options block declared a trust_path and the committed
 	## choice carries a non-zero trust_delta, add it to the trust counter now —
 	## before the chain re-fires — so the next state's trigger sees the updated value.
-	if _active_trust_path != "" and state_node != null:
+	if _ctx.trust_path != "" and state_node != null:
 		var delta: int = 0
-		for c in _active_options_choices:
+		for c in _ctx.options_choices:
 			if c is Dictionary and c.get("value", null) == value:
 				delta = int(c.get("trust_delta", 0))
 				break
 		if delta != 0:
-			var current_trust: Variant = _resolve_path(_active_trust_path)
+			var current_trust: Variant = _resolve_path(_ctx.trust_path)
 			if current_trust is int or current_trust is float:
 				var new_trust: int = int(current_trust) + delta
-				_set_state_value(state_node.data, _active_trust_path, new_trust)
-				if _active_trust_path.begins_with("chapter1.") and sigs and sigs.has_signal("chapter1_flag_changed"):
-					sigs.chapter1_flag_changed.emit(_active_trust_path.substr(9), new_trust)
+				_set_state_value(state_node.data, _ctx.trust_path, new_trust)
+				if _ctx.trust_path.begins_with("chapter1.") and sigs and sigs.has_signal("chapter1_flag_changed"):
+					sigs.chapter1_flag_changed.emit(_ctx.trust_path.substr(9), new_trust)
 
 	## Fire the matched state's on_dismiss block (award_badge, unlock_route,
 	## set actions). Clears the queue so the subsequent dialogue_dismissed
 	## handler short-circuits on empty queue.
 	_apply_mutations()
-	_active_options_present = false
-	_active_options_write_path = ""
-	_active_options_choices = []
-	_active_trust_path = ""
+	## Clear options-scoped fields. Don't touch last_npc_id / last_display_name —
+	## the chain re-fire below reads them.
+	_ctx.options_present = false
+	_ctx.options_write_path = ""
+	_ctx.options_choices = []
+	_ctx.trust_path = ""
 	## "once": true bookkeeping — MUST happen before the chain re-fire so the
 	## same once-state cannot match a second time on the same walk.
-	if _active_once_state_id != "":
-		_mark_once_seen(_active_once_state_id)
-		_active_once_state_id = ""
+	if _ctx.once_state_id != "":
+		_mark_once_seen(_ctx.once_state_id)
+		_ctx.once_state_id = ""
 	## Chain: if the committed state had "chain": true, signal the box to suppress
 	## its dismiss, then immediately re-fire dialogue for the same NPC so the
 	## next matching state loads without closing the panel.
-	if _active_chain:
-		_active_chain = false
+	if _ctx.chain:
+		_ctx.chain = false
 		var sigs_chain = _signals()
 		if sigs_chain and sigs_chain.has_signal("dialogue_chain_start"):
 			sigs_chain.dialogue_chain_start.emit()
-		_on_dialogue_requested(_last_npc_id, _last_display_name)
+		_on_dialogue_requested(_ctx.last_npc_id, _ctx.last_display_name)
 
 
 ## _mark_once_seen — append state_id to State.data.dialogue_states_seen if
@@ -273,6 +298,12 @@ func _load_character_registry() -> void:
 	for key in parsed:
 		if not key.begins_with("_"):
 			_character_registry[key] = str(parsed[key])
+			_known_speaker_ids[key] = true
+	## Portrait aliases are valid speaker ids too (registry uses them to share
+	## a portrait across two display names; both forms must validate).
+	if parsed.has("_portrait_aliases") and parsed["_portrait_aliases"] is Dictionary:
+		for alias_id in parsed["_portrait_aliases"]:
+			_known_speaker_ids[str(alias_id)] = true
 
 
 
@@ -318,6 +349,119 @@ func _load_all_dialogues() -> void:
 	## top of the priority list. V1.A's repeatable progression states append
 	## after them. Idle_flavor stays asia.json's (V1.A declares none).
 	_merge_asia_hint_states()
+
+	## Schema validation pass — see godot/data/dialogues/_schema.md §Validation.
+	## Fails loud with push_error on duplicate state ids, unknown speaker ids,
+	## unresolved flag paths, and content-shape violations.
+	_validate_catalogue()
+
+
+## _validate_catalogue — boot-time integrity check across the merged catalogue.
+## Replaces the silent-warning-and-continue model with loud push_error so that
+## typos, schema drift, and once:true collisions surface before they ship.
+## Contract documented in godot/data/dialogues/_schema.md §Validation.
+func _validate_catalogue() -> void:
+	var declared_paths: Dictionary = {}
+	var state_node = get_node_or_null("/root/State")
+	if state_node != null:
+		_flatten_state_paths(state_node.reset_state(), "", declared_paths)
+	else:
+		push_warning("DialogueRunner: State autoload missing during validation; flag-path resolution skipped.")
+
+	var seen_ids: Dictionary = {}  ## state_id -> npc_id (first file that declared it)
+	var path_re := RegEx.new()
+	## Matches dotted identifiers in trigger strings (chapter1.met_pig etc.).
+	## Quoted RHS values (e.g. 'over_caffeinated') contain no dots and so are
+	## not matched.
+	path_re.compile("\\b(\\w+(?:\\.\\w+)+)")
+
+	for npc_id in _catalogue:
+		var entry = _catalogue[npc_id]
+		if not entry is Dictionary:
+			continue
+		var states: Array = entry.get("states", [])
+		for st in states:
+			if not st is Dictionary:
+				continue
+			_validate_state(st, npc_id, seen_ids, declared_paths, path_re)
+
+
+func _validate_state(st: Dictionary, npc_id: String, seen_ids: Dictionary, declared_paths: Dictionary, path_re: RegEx) -> void:
+	var sid: String = str(st.get("id", ""))
+	## State-id uniqueness. Global across all dialogue files: dialogue_states_seen
+	## is a flat Array, so a colliding id makes once:true cross-file ghost.
+	if sid == "":
+		push_error("DialogueRunner: state in npc '%s' has no id." % npc_id)
+	elif seen_ids.has(sid):
+		push_error("DialogueRunner: duplicate state id '%s' (in '%s' and '%s'). State ids must be globally unique across all dialogue files." % [sid, seen_ids[sid], npc_id])
+	else:
+		seen_ids[sid] = npc_id
+
+	## Speaker references — state-level + per-line objects.
+	var st_speaker: String = str(st.get("speaker", ""))
+	if st_speaker != "" and not _known_speaker_ids.has(st_speaker):
+		push_error("DialogueRunner: unknown speaker id '%s' in state '%s' (npc '%s'). Add it to character_registry.json or fix the typo." % [st_speaker, sid, npc_id])
+	if st.has("lines") and st["lines"] is Array:
+		for ln in st["lines"]:
+			if ln is Dictionary and ln.has("speaker"):
+				var ls: String = str(ln["speaker"])
+				if ls != "" and not _known_speaker_ids.has(ls):
+					push_error("DialogueRunner: unknown speaker id '%s' in line of state '%s' (npc '%s')." % [ls, sid, npc_id])
+
+	## Trigger paths.
+	var trig: String = str(st.get("trigger", ""))
+	if trig != "" and not declared_paths.is_empty():
+		for m in path_re.search_all(trig):
+			var p: String = m.get_string(1)
+			if not declared_paths.has(p):
+				push_error("DialogueRunner: unresolved flag path '%s' in trigger of state '%s' (npc '%s'). Declare it in State.reset_state() or fix the typo." % [p, sid, npc_id])
+
+	## on_dismiss.set paths.
+	if st.has("on_dismiss") and st["on_dismiss"] is Array:
+		for mut in st["on_dismiss"]:
+			if mut is Dictionary and mut.has("set") and not declared_paths.is_empty():
+				var sp: String = str(mut["set"])
+				if not declared_paths.has(sp):
+					push_error("DialogueRunner: unresolved on_dismiss.set path '%s' in state '%s' (npc '%s')." % [sp, sid, npc_id])
+
+	## options paths.
+	if st.has("options") and st["options"] is Dictionary:
+		var opts: Dictionary = st["options"]
+		var wp: String = str(opts.get("write_path", ""))
+		if wp != "" and not declared_paths.is_empty() and not declared_paths.has(wp):
+			push_error("DialogueRunner: unresolved options.write_path '%s' in state '%s' (npc '%s')." % [wp, sid, npc_id])
+		var tp: String = str(opts.get("trust_path", ""))
+		if tp != "" and not declared_paths.is_empty() and not declared_paths.has(tp):
+			push_error("DialogueRunner: unresolved options.trust_path '%s' in state '%s' (npc '%s')." % [tp, sid, npc_id])
+
+	## Content shape — must have lines (>=1 entry), OR options.choices (>=1),
+	## OR silent:true. Singular `line: "x"` is no longer accepted; the Phase 2
+	## migration rewrote every singular line to a one-element lines array.
+	var has_lines: bool = st.has("lines") and st["lines"] is Array and (st["lines"] as Array).size() > 0
+	if st.has("line"):
+		push_error("DialogueRunner: state '%s' (npc '%s') uses the legacy `line: \"x\"` field. Convert to `lines: [\"x\"]` — see _schema.md." % [sid, npc_id])
+	var has_opts_choices: bool = false
+	if st.has("options") and st["options"] is Dictionary:
+		var choices = (st["options"] as Dictionary).get("choices", [])
+		has_opts_choices = choices is Array and (choices as Array).size() > 0
+	var is_silent: bool = bool(st.get("silent", false))
+	if not (has_lines or has_opts_choices or is_silent):
+		push_error("DialogueRunner: state '%s' (npc '%s') has no lines, no options.choices, and is not marked silent:true. Add content or set silent:true to declare deliberate silence." % [sid, npc_id])
+
+
+## _flatten_state_paths — walk State.reset_state()'s nested Dictionary into a
+## flat set of dotted paths. Used by _validate_catalogue to confirm every
+## flag path referenced by dialogue resolves to a real slot.
+func _flatten_state_paths(d: Variant, prefix: String, out: Dictionary) -> void:
+	if not d is Dictionary:
+		return
+	for k in d:
+		var key_s: String = str(k)
+		var sub: String = key_s if prefix == "" else (prefix + "." + key_s)
+		out[sub] = true
+		var v = d[k]
+		if v is Dictionary:
+			_flatten_state_paths(v, sub, out)
 
 
 func _merge_asia_hint_states() -> void:
@@ -374,8 +518,10 @@ func _load_file(npc_id: String, path: String) -> void:
 func _on_dialogue_requested(npc_id: String, display_name: String) -> void:
 	## Cache for chain: if this state has "chain":true options, the runner
 	## will re-fire dialogue_requested for the same NPC after the commit.
-	_last_npc_id = npc_id
-	_last_display_name = display_name
+	## Set BEFORE reset_for_walk so the chain re-fire can read them.
+	_ctx.last_npc_id = npc_id
+	_ctx.last_display_name = display_name
+	_ctx.reset_for_walk()
 	if not _catalogue.has(npc_id):
 		push_warning("DialogueRunner: no dialogue data for npc_id='%s'" % npc_id)
 		var sigs_fb = _signals()
@@ -407,8 +553,8 @@ func _on_dialogue_requested(npc_id: String, display_name: String) -> void:
 		var trigger: String = entry.get("trigger", "")
 		if _evaluate_trigger(trigger):
 			var raw_mutations: Array = entry.get("on_dismiss", [])
-			_active_state_mutations = raw_mutations.duplicate(true)
-			_active_once_state_id = entry_id if bool(entry.get("once", false)) else ""
+			_ctx.mutations = raw_mutations.duplicate(true)
+			_ctx.once_state_id = entry_id if bool(entry.get("once", false)) else ""
 			var lines: Array = _extract_lines(entry)
 			var state_speaker_id: String = str(entry.get("speaker", ""))
 			var emit_speaker: String = speaker
@@ -423,30 +569,25 @@ func _on_dialogue_requested(npc_id: String, display_name: String) -> void:
 			## carries an `options` block, emit the choices for the dialogue
 			## box to render under the prompt line. The box returns
 			## dialogue_option_committed(value) when the player picks.
-			_active_options_write_path = ""
-			_active_options_present = false
-			_active_options_choices = []
-			_active_trust_path = ""
-			_active_chain = false
 			if entry.has("options") and entry["options"] is Dictionary:
 				var opts: Dictionary = entry["options"]
 				var write_path: String = str(opts.get("write_path", ""))
 				var choices: Array = opts.get("choices", [])
 				if write_path != "" and choices.size() > 0:
-					_active_options_write_path = write_path
-					_active_options_present = true
-					_active_options_choices = choices
-					_active_trust_path = str(opts.get("trust_path", ""))
+					_ctx.options_write_path = write_path
+					_ctx.options_present = true
+					_ctx.options_choices = choices
+					_ctx.trust_path = str(opts.get("trust_path", ""))
 					## "chain": true — after option commit, runner re-fires the
 					## next matching state for this NPC without closing the box.
-					_active_chain = opts.get("chain", false)
+					_ctx.chain = opts.get("chain", false)
 					if sigs2 and sigs2.has_signal("dialogue_options_ready"):
 						sigs2.dialogue_options_ready.emit(write_path, choices)
 			## Signal handlers may run synchronously while a chained state is being
 			## loaded. Re-assert the matched state's dismiss mutations after the
 			## line/options notifications so the state now on screen owns the next
 			## dialogue_dismissed event.
-			_active_state_mutations = raw_mutations.duplicate(true)
+			_ctx.mutations = raw_mutations.duplicate(true)
 			return
 
 	## Fall back to idle_flavor (random).
@@ -465,16 +606,20 @@ func _on_dialogue_requested(npc_id: String, display_name: String) -> void:
 		sigs_hf.dialogue_line_ready.emit(speaker, npc_id, [FALLBACK_LINE])
 
 
-## _extract_lines — handles all dialogue JSON line formats:
-##   Simple:        { "line": "Text here." }
-##   String array:  { "lines": ["Line one.", "Line two."] }
-##   Asia hint:     { "hint": { "neutral": "Text.", ... } }
-##   Multi-speaker: { "lines": ["NPC speaks.", {"speaker": "cula", "text": "Cula responds."}, ...] }
+## _extract_lines — pulls the lines array from a matched state or idle entry.
 ##
-## Returns the raw lines array so the dialogue box can inspect each entry.
-## String entries are spoken by the owning NPC (caller supplies the display name).
-## Dict entries with "speaker"/"text" are spoken by the declared character_id
-## (resolved to a display name by the dialogue box via resolve_speaker or inline).
+## Canonical shape (per godot/data/dialogues/_schema.md):
+##   { "lines": [ "string", { "speaker": "<id>", "text": "..." }, ... ] }
+##
+## String entries are spoken by the state default speaker (state-level
+## `speaker` field, else the npc's display_name argument). Dict entries
+## with "speaker"/"text" are spoken by the declared character_id.
+##
+## A state may also declare `silent: true` to deliberately fire without
+## emitting any visible line (used as a placeholder for not-yet-authored
+## content; the runner emits [FALLBACK_LINE] so the dialogue box renders
+## the ellipsis filler). States with neither `lines` nor `silent: true`
+## are rejected at boot by _validate_catalogue and never reach this code.
 func _extract_lines(entry: Dictionary) -> Array:
 	if entry.has("lines"):
 		var val = entry["lines"]
@@ -482,15 +627,6 @@ func _extract_lines(entry: Dictionary) -> Array:
 			return val
 		elif val is String:
 			return [val]
-	if entry.has("line"):
-		return [entry["line"]]
-	if entry.has("hint") and entry["hint"] is Dictionary:
-		var hint: Dictionary = entry["hint"]
-		## Prefer "neutral", then first available key.
-		if hint.has("neutral"):
-			return [hint["neutral"]]
-		for key in hint:
-			return [hint[key]]
 	return [FALLBACK_LINE]
 
 

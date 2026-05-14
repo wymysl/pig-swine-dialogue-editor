@@ -4,19 +4,17 @@
     "states": [
         {
             "id": "test_multi",
-            "trigger": "chapter1.met_pig == false",
+            "trigger": "!chapter1.met_pig",
             "lines": [
                 "Owning NPC speaks first.",
-                { "speaker": "cula", "text": "Cula responds." },
+                {"speaker": "cula", "text": "Cula responds."},
                 "Owning NPC speaks again.",
-                { "speaker": "asia", "text": "Asia chimes in." }
+                {"speaker": "asia", "text": "Asia chimes in."}
             ],
             "on_dismiss": [
-                { "set": "chapter1.met_pig", "value": true }
+                {"set": "chapter1.met_pig", "value": true}
             ]
         }
     ],
-    "idle_flavor": [
-        "Multi-speaker idle line."
-    ]
+    "idle_flavor": ["Multi-speaker idle line."]
 }

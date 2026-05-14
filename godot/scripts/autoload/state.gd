@@ -2,7 +2,7 @@ extends Node
 ## State autoload — single writer. Owns all persistent game state and save/load.
 ## Migration required for every shape change (see AGENTS.md §Save migration policy).
 
-const SAVE_VERSION: int = 13
+const SAVE_VERSION: int = 14
 
 const TILE_SIZE := 64
 const CHAR_HEIGHT := 64
@@ -60,6 +60,16 @@ func _ready() -> void:
 ##          plumbing (PROPOSAL_coffee_engine_followups.md §1). The
 ##          acknowledgement-flag system that makes the retry prompt reachable
 ##          is still pending; v13 only removes the silent write-no-op floor.
+## State-id namespacing (SAVE_VERSION 14): seven dialogue state ids that
+##          collided across files were renamed with their owning npc as a
+##          prefix so that `once: true` (which keys on a flat global
+##          dialogue_states_seen Array) cannot ghost-skip a same-named state
+##          in another file. Save migration scrubs any legacy collider ids
+##          from dialogue_states_seen on load. No content currently sets
+##          once:true, so real saves will have empty arrays — the scrub is
+##          defensive coverage for early-adopter once-states authored before
+##          v14 landed. Rename map and rationale: see godot/PROPOSALS.md /
+##          godot/data/dialogues/_schema.md §Validation.
 func reset_state() -> Dictionary:
 	return {
 		## room_transition.gd: which scene is currently loaded.

@@ -1,0 +1,9 @@
+# cula — dialogue authoring notes
+
+Companion to `cula.json`. Authoring metadata extracted
+from the JSON in Phase 3 of the schema-cohesion refactor; the
+runtime never read these blocks, only authors did.
+
+## comment scope
+
+SCOPE NOTE — cula.json covers only environmental / player-triggered observations where Dr. A. Cula is an interactable object or ambient speaker (e.g., examine-interactables, one-shot world reactions). Lines where Cula is responding to NPCs during scripted encounters (Beat 1 arrival greeting to Mr. Pig, Beat 2 'Six weeks. Understood.' / 'I''ll find him.', Beat 3 Murrow exchange, Beat 5 Crab recruitment, Beat 7 Whimsy recruitment, Beat 8 readiness check) belong in the relevant NPC dialogue tree (pig.json, murrow.json, crab.json, whimsy.json) as player-response lines, or in a future scene-scripting system if one is introduced. As of sprint 7, no scene-staging system exists in the engine (godot/scripts/systems/ contains only dialogue_runner.gd, room_transition.gd, save.gd, and minigame subdirs); those scene-pair Cula lines are therefore out-of-scope for this file pending that system. See V1.1 pass 2 §Commit candidates, V1.2 pass 3 §Commit candidates, and V1.3 pass 3 for the full list of out-of-scope Cula lines.

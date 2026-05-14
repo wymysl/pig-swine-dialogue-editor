@@ -4,52 +4,40 @@
     "states": [
         {
             "id": "first_meeting_via_behind_counter",
-            "trigger": "chapter1.met_asia == false && chapter1.met_asia_via_behind == true",
+            "trigger": "!chapter1.met_asia && chapter1.met_asia_via_behind == true",
             "lines": [
                 "Excuse me, only employees are allowed... oh.",
                 "Of course. Dr. A. Cula, good morning! We've been expecting you.",
                 "Mr. Pig is at the case board. He'll want to say hello first.",
                 "Then, you'll want to pick up your blue folder. It's on the second pile from the left.",
-                {
-                    "speaker": "asia",
-                    "text": "The archive is through that door, and Mr. Murrow is in there with the case file whenever you're ready for him."
-                }
+                {"speaker": "asia", "text": "The archive is through that door, and Mr. Murrow is in there with the case file whenever you're ready for him."}
             ],
             "on_dismiss": [
-                {
-                    "set": "chapter1.met_asia",
-                    "value": true
-                }
+                {"set": "chapter1.met_asia", "value": true}
             ]
         },
         {
             "id": "first_welcome",
-            "trigger": "chapter1.met_asia == false",
+            "trigger": "!chapter1.met_asia",
             "lines": [
                 "Dr. A. Cula, good morning! We've been expecting you.",
                 "Mr. Pig is at the case board. He'll want to say hello first.",
                 "Then, you'll want to pick up your blue folder. It's on the second pile from the left.",
-                {
-                    "speaker": "asia",
-                    "text": "The archive is through that door, and Mr. Murrow is in there with the case file whenever you're ready for him."
-                }
+                {"speaker": "asia", "text": "The archive is through that door, and Mr. Murrow is in there with the case file whenever you're ready for him."}
             ],
             "on_dismiss": [
-                {
-                    "set": "chapter1.met_asia",
-                    "value": true
-                }
+                {"set": "chapter1.met_asia", "value": true}
             ]
         },
         {
             "id": "post_pig_pre_murrow",
-            "trigger": "chapter1.pig_revealed_crisis == true && chapter1.met_murrow == false",
-            "line": "Mr. Murrow will know what the case is actually about. Mr. Pig knows what it feels like, which is different and louder."
+            "trigger": "chapter1.pig_revealed_crisis == true && !chapter1.met_murrow",
+            "lines": ["Mr. Murrow will know what the case is actually about. Mr. Pig knows what it feels like, which is different and louder."]
         },
         {
             "id": "post_binder",
-            "trigger": "chapter1.has_law_binder == true && chapter1.recruited_crab == false",
-            "line": "You found it? Excellent. Please do not put it on my desk; the reception counter has not been load-tested."
+            "trigger": "chapter1.has_law_binder == true && !chapter1.recruited_crab",
+            "lines": ["You found it? Excellent. Please do not put it on my desk; the reception counter has not been load-tested."]
         }
     ],
     "idle_flavor": [

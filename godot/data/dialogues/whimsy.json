@@ -1,69 +1,66 @@
 {
     "version": 3,
     "npc_id": "whimsy",
-    "_comment_v1_4_coffee": "V1.4 (2026-05-12): four coffee_reaction_* states added per minigames.txt §Character reactions §Whimsy. Two outcomes (Perfect = procedurally_alert_plus; Bad = over_caffeinated), each in pre- and post-recruit variants per the design brief's address-form rule (Whimsy uses 'Cula' only after recruited_whimsy flips; pre-recruit uses 'Dr. A. Cula'). In normal play coffee_buff is only set after recruited_whimsy by definition (the minigame trigger requires it), so the pre-recruit variants are practically unreachable. They exist for completeness per the design brief. Reactions placed AFTER before_meeting; !entered_court scopes them to pre-court.",
     "states": [
         {
             "id": "before_meeting",
-            "trigger": "chapter1.met_whimsy == false",
+            "trigger": "!chapter1.met_whimsy",
             "lines": [
-                { "speaker": "cula", "text": "Mr. Whimsy. Cula, Pig & Swine. We need a second voice in court tomorrow." },
+                {"speaker": "cula", "text": "Mr. Whimsy. Cula, Pig & Swine. We need a second voice in court tomorrow."},
                 "Cula. Sit. Have you anything beyond procedural vibes, or am I to be recruited on atmosphere?",
-                { "speaker": "cula", "text": "Notice went to an address the client left two years ago. The objection is in the papers; the record does not show it. Hearing at fourteen hundred." },
+                {"speaker": "cula", "text": "Notice went to an address the client left two years ago. The objection is in the papers; the record does not show it. Hearing at fourteen hundred."},
                 "Ah. The fair-hearing doctrine, asked to do its gymnastics again. Notice to an address without a client. An objection present in paper and absent from the record. I have heard worse music.",
-                { "speaker": "cula", "text": "The Rights Memo." },
+                {"speaker": "cula", "text": "The Rights Memo."},
                 "Marginalia in espresso. Half the argument is already mine.",
                 "I propose. The fair-hearing argument can sing. The service defect gives it a throat. I will lend my voice tomorrow at fourteen hundred."
             ],
             "on_dismiss": [
-                { "set": "chapter1.met_whimsy", "value": true },
-                { "set": "chapter1.recruited_whimsy", "value": true }
+                {"set": "chapter1.met_whimsy", "value": true},
+                {"set": "chapter1.recruited_whimsy", "value": true}
             ]
         },
         {
             "id": "after_recruitment_client_upcoming",
             "trigger": "chapter1.recruited_whimsy == true && chapter1.recruited_crab == true && !chapter1.halina_arrived && !chapter1.entered_court",
             "_comment": "V1.5 post-recruitment progression. Gates on both recruited flags; fires while the client meeting is still pending. Whimsy registers the missing ingredient. Bare 'Cula' per AGENTS.md §Address forms (post-recruit).",
-            "line": "Cula. We have procedure and rhetoric. What we do not yet have is a client in the room. That tends to be useful."
+            "lines": ["Cula. We have procedure and rhetoric. What we do not yet have is a client in the room. That tends to be useful."]
         },
         {
             "id": "after_recruitment_court_ready",
-            "trigger": "chapter1.recruited_whimsy == true && chapter1.archive_research_complete == true && chapter1.court_ready == false && !chapter1.entered_court",
+            "trigger": "chapter1.recruited_whimsy == true && chapter1.archive_research_complete == true && !chapter1.court_ready && !chapter1.entered_court",
             "_comment": "V1.5 post-recruitment progression. Fires once archive research is complete and court_ready is still pending. Whimsy supplies the court-door framing from whimsy_ch01_019. Bare 'Cula' per AGENTS.md §Address forms.",
-            "line": "Cula. We are not asking the court for miracles. Merely a doorway through which the client may be heard."
+            "lines": ["Cula. We are not asking the court for miracles. Merely a doorway through which the client may be heard."]
         },
         {
             "id": "after_recruitment_idle",
             "trigger": "chapter1.recruited_whimsy == true && !chapter1.entered_court",
             "_comment": "V1.5 generic fallback repeat beat for post-recruitment Whimsy, pre-court. Fires when no more specific progression state matches. Voice from whimsy_global_024. Bare 'Cula' per AGENTS.md §Address forms.",
-            "line": "Cula. Somewhere nearby, a right is being reduced to administration. Let us be irritating about it."
+            "lines": ["Cula. Somewhere nearby, a right is being reduced to administration. Let us be irritating about it."]
         },
         {
-            "id": "coffee_reaction_perfect_recruited",
-            "trigger": "chapter1.coffee_buff == \"procedurally_alert_plus\" && chapter1.met_whimsy == true && chapter1.recruited_whimsy == true && !chapter1.entered_court",
+            "id": "whimsy_coffee_reaction_perfect_recruited",
+            "trigger": "chapter1.coffee_buff == 'procedurally_alert_plus' && chapter1.met_whimsy == true && chapter1.recruited_whimsy == true && !chapter1.entered_court",
             "_comment": "V1.4 coffee reaction — S-grade, post-recruit. Voice draft from minigames.txt §Character reactions §Whimsy Perfect ('Behold! A black-robed liquid of justice!'). Post-recruit Whimsy uses bare 'Cula' per AGENTS.md §Address forms. Single sanctioned em-dash for the declamation.",
-            "line": "Cula! Behold — a black-robed liquid of justice."
+            "lines": ["Cula! Behold — a black-robed liquid of justice."]
         },
         {
-            "id": "coffee_reaction_bad_recruited",
-            "trigger": "chapter1.coffee_buff == \"over_caffeinated\" && chapter1.met_whimsy == true && chapter1.recruited_whimsy == true && !chapter1.entered_court",
+            "id": "whimsy_coffee_reaction_bad_recruited",
+            "trigger": "chapter1.coffee_buff == 'over_caffeinated' && chapter1.met_whimsy == true && chapter1.recruited_whimsy == true && !chapter1.entered_court",
             "_comment": "V1.4 coffee reaction — D/F-grade, post-recruit. Voice verbatim from minigames.txt §Character reactions §Whimsy Bad ('A tragic brew, but tragedy has rights.').",
-            "line": "Cula. A tragic brew, but tragedy has rights."
+            "lines": ["Cula. A tragic brew, but tragedy has rights."]
         },
         {
-            "id": "coffee_reaction_perfect_pre_recruit",
-            "trigger": "chapter1.coffee_buff == \"procedurally_alert_plus\" && chapter1.met_whimsy == true && chapter1.recruited_whimsy == false && !chapter1.entered_court",
+            "id": "whimsy_coffee_reaction_perfect_pre_recruit",
+            "trigger": "chapter1.coffee_buff == 'procedurally_alert_plus' && chapter1.met_whimsy == true && !chapter1.recruited_whimsy && !chapter1.entered_court",
             "_comment": "V1.4 coffee reaction — S-grade, pre-recruit. Authored for completeness per the design brief; in normal play the coffee minigame trigger requires recruited_whimsy, so this branch is practically unreachable. Pre-recruit Whimsy uses 'Dr. A. Cula' per AGENTS.md §Address forms.",
-            "line": "Dr. A. Cula! Behold — a black-robed liquid of justice."
+            "lines": ["Dr. A. Cula! Behold — a black-robed liquid of justice."]
         },
         {
-            "id": "coffee_reaction_bad_pre_recruit",
-            "trigger": "chapter1.coffee_buff == \"over_caffeinated\" && chapter1.met_whimsy == true && chapter1.recruited_whimsy == false && !chapter1.entered_court",
+            "id": "whimsy_coffee_reaction_bad_pre_recruit",
+            "trigger": "chapter1.coffee_buff == 'over_caffeinated' && chapter1.met_whimsy == true && !chapter1.recruited_whimsy && !chapter1.entered_court",
             "_comment": "V1.4 coffee reaction — D/F-grade, pre-recruit. Same scope note as the perfect pre-recruit variant; pre-recruit Whimsy uses 'Dr. A. Cula' per AGENTS.md §Address forms.",
-            "line": "Dr. A. Cula. A tragic brew, but tragedy has rights."
+            "lines": ["Dr. A. Cula. A tragic brew, but tragedy has rights."]
         }
     ],
-    "idle_flavor": [
-        "A procedural argument without a metaphor is like coffee without water. Dry and slightly offensive."
-    ]
+    "idle_flavor": ["A procedural argument without a metaphor is like coffee without water. Dry and slightly offensive."]
 }
