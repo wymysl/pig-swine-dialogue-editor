@@ -2,7 +2,7 @@ extends Node
 ## State autoload — single writer. Owns all persistent game state and save/load.
 ## Migration required for every shape change (see AGENTS.md §Save migration policy).
 
-const SAVE_VERSION: int = 10
+const SAVE_VERSION: int = 13
 
 const TILE_SIZE := 64
 const CHAR_HEIGHT := 64
@@ -33,6 +33,33 @@ func _ready() -> void:
 ##          and top-level coffee{} dict for cross-chapter coffee state.
 ## Coffee Accessibility (SAVE_VERSION 10): settings.coffee_accessibility stores
 ##          mini-game assist toggles.
+## Halina Trust Meter (SAVE_VERSION 11): chapter1.halina_trust (int), halina_r0_done,
+##          halina_r1_choice, halina_r1_done, halina_r2_choice, halina_r2_done,
+##          halina_close_done, landlord_tip_received — drive the Beat 8 trust-
+##          tiered client meeting (see halina.json Session 29 restructure).
+## Dialogue once-states (SAVE_VERSION 12): top-level dialogue_states_seen — an
+##          Array[String] of state ids that have fired once already. Populated
+##          by dialogue_runner when a state declares "once": true. Subsequent
+##          matches against those state ids are skipped, and the runner falls
+##          through to the next-matching state. NPC-agnostic; ids must be
+##          unique across all dialogue files for the skip to behave correctly.
+## Dangling-flag declarations (SAVE_VERSION 13): two pre-existing bug fixes.
+##          chapter1.won_court (bool, default false): referenced by
+##          asia_hint_states_ch1.json states 10/11 ("hint_won_court",
+##          "hint_received_swine_postcard") but never declared, so the
+##          bare-truthiness clause `!chapter1.won_court` resolved to null in
+##          the runner and those states could never match. Owner: future
+##          court orchestration; set true on Chapter 1 court win. Sits
+##          alongside the existing court_outcome (string) and
+##          court_won_procedural_reset (bool) — won_court is the simpler
+##          gate for hint-state truthiness checks.
+##          chapter1.coffee_retry_decision (string, default ""): referenced
+##          by barista.json coffee_retry_prompt options write_path
+##          ("retry"/"accept"); _set_state_value silently no-opped because
+##          the slot did not exist. Owner: future coffee_brewing.gd retry
+##          plumbing (PROPOSAL_coffee_engine_followups.md §1). The
+##          acknowledgement-flag system that makes the retry prompt reachable
+##          is still pending; v13 only removes the silent write-no-op floor.
 func reset_state() -> Dictionary:
 	return {
 		## room_transition.gd: which scene is currently loaded.
@@ -68,11 +95,33 @@ func reset_state() -> Dictionary:
 			"bonus_evidence_collected": "",
 			"cardiologist_plant_landed": false,
 			"client_fee_agreed": false,
+			## Halina trust meter (SAVE_VERSION 11). halina_trust accumulates from
+			## trust_delta values on each options.choices entry during the meeting.
+			## halina_rN_choice guards re-fire during chain; halina_rN_done gates the
+			## next round. landlord_tip_received gates the post-close reveal state.
+			"halina_trust": 0,
+			"halina_r0_done": false,
+			"halina_r1_choice": "",
+			"halina_r1_done": false,
+			"halina_r2_choice": "",
+			"halina_r2_done": false,
+			"halina_close_done": false,
+			"landlord_tip_received": false,
 			## Beat 9 archive research.
 			"archive_research_complete": false,
 			## Beat 12 court rounds (string enum; see judge_district_ch1.json).
 			"casebook_judge_state": "",
 			"court_won_procedural_reset": false,
+			## Set true when the player wins the Chapter 1 court hearing.
+			## Referenced by asia_hint_states_ch1.json hint_won_court /
+			## hint_received_swine_postcard. Owner: future court orchestration.
+			"won_court": false,
+			## Player's choice in barista.json coffee_retry_prompt options
+			## ("retry" / "accept"). Owner: future coffee_brewing.gd retry
+			## plumbing. The acknowledgement-flag system needed to make the
+			## prompt actually reachable is pending — see
+			## PROPOSAL_coffee_engine_followups.md §1.
+			"coffee_retry_decision": "",
 			## Beat 13-14 payoff + postcard.
 			"beat13_complete": false,
 			"received_swine_postcard": false,
@@ -118,6 +167,11 @@ func reset_state() -> Dictionary:
 				"single_button": false,
 			},
 		},
+		## Dialogue state ids that have fired once. Populated by dialogue_runner
+		## when a state declares "once": true. Stored as Array[String] (no
+		## per-NPC scoping; state ids must be unique across all dialogue files
+		## for the skip to be reliable).
+		"dialogue_states_seen": [],
 	}
 
 func _unhandled_input(event: InputEvent) -> void:

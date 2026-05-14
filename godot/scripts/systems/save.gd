@@ -18,6 +18,16 @@ extends Node
 ##   9 — coffee brewing: chapter1.coffee_buff, chapter1.coffee_brew_grade,
 ##       top-level coffee{} dict for cross-chapter coffee state
 ##   10 — coffee accessibility settings: settings.coffee_accessibility
+##   11 — halina trust meter: chapter1.halina_trust, halina_r0_done,
+##         halina_r1_choice, halina_r1_done, halina_r2_choice, halina_r2_done,
+##         halina_close_done, landlord_tip_received
+##   12 — dialogue once-states: top-level dialogue_states_seen Array
+##   13 — dangling-flag declarations: chapter1.won_court (bool) and
+##         chapter1.coffee_retry_decision (string). Both were referenced by
+##         dialogue JSON (asia_hint_states_ch1.json states 10/11;
+##         barista.json coffee_retry_prompt options write_path) without a
+##         State slot, so triggers / write_paths silently no-opped. Slot-only
+##         fix; writer plumbing pending.
 
 const SAVE_PATH: String = "user://save.json"
 
@@ -221,5 +231,52 @@ func migrate_save(saved_data: Dictionary, old_version: int) -> Dictionary:
 		for key in accessibility_defaults:
 			if not coffee_accessibility.has(key):
 				coffee_accessibility[key] = accessibility_defaults[key]
+
+	## v10 -> v11: Halina trust meter — eight new chapter1 flags.
+	if old_version < 11:
+		if not saved_data.has("chapter1"):
+			saved_data["chapter1"] = {}
+		var ch1_v11: Dictionary = saved_data["chapter1"]
+		var v11_defaults: Dictionary = {
+			"halina_trust": 0,
+			"halina_r0_done": false,
+			"halina_r1_choice": "",
+			"halina_r1_done": false,
+			"halina_r2_choice": "",
+			"halina_r2_done": false,
+			"halina_close_done": false,
+			"landlord_tip_received": false,
+		}
+		for key in v11_defaults:
+			if not ch1_v11.has(key):
+				ch1_v11[key] = v11_defaults[key]
+
+	## v11 -> v12: dialogue once-states — top-level Array[String] of state
+	## ids that have already fired. Empty for any save predating v12 (no
+	## once: true states existed yet, so nothing to backfill).
+	if old_version < 12:
+		if not saved_data.has("dialogue_states_seen") \
+				or not saved_data["dialogue_states_seen"] is Array:
+			saved_data["dialogue_states_seen"] = []
+
+	## v12 -> v13: bug fix — declare two flags referenced by dialogue JSON
+	## without a State slot. chapter1.won_court (bool, default false) is
+	## read by asia_hint_states_ch1.json states 10/11; the bare-truthiness
+	## clause `!chapter1.won_court` resolved to null on the missing slot
+	## and the runner returned false, so those hint states could never
+	## match. chapter1.coffee_retry_decision (string, default "") is the
+	## options write_path of barista.json coffee_retry_prompt; the runner
+	## silently no-opped on _set_state_value for the missing slot, so the
+	## player's choice was never persisted. v13 declares both; writer
+	## plumbing (court-orchestration setter, coffee acknowledgement-flag
+	## system) is still pending per PROPOSAL_coffee_engine_followups.md §1.
+	if old_version < 13:
+		if not saved_data.has("chapter1"):
+			saved_data["chapter1"] = {}
+		var ch1_v13: Dictionary = saved_data["chapter1"]
+		if not ch1_v13.has("won_court"):
+			ch1_v13["won_court"] = false
+		if not ch1_v13.has("coffee_retry_decision"):
+			ch1_v13["coffee_retry_decision"] = ""
 
 	return saved_data

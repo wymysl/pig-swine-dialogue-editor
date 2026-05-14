@@ -28,11 +28,13 @@ func _init() -> void:
 	## -------------------------------------------------------------------
 	## Test 1: SAVE_VERSION constant on state.gd is 10.
 	## -------------------------------------------------------------------
+	## SAVE_VERSION may have moved past 10 by later sprints; this test only
+	## requires that v10 has actually shipped (i.e. SAVE_VERSION >= 10).
 	var save_version_val: int = state_script.SAVE_VERSION
-	if save_version_val == 10:
-		_pass("T1: state.gd SAVE_VERSION == 10")
+	if save_version_val >= 10:
+		_pass("T1: state.gd SAVE_VERSION >= 10 (current: %d)" % save_version_val)
 	else:
-		_fail("T1: expected SAVE_VERSION == 10, got " + str(save_version_val))
+		_fail("T1: expected SAVE_VERSION >= 10, got " + str(save_version_val))
 
 	## -------------------------------------------------------------------
 	## Test 2: v9 save — pre-existing coffee state preserved.

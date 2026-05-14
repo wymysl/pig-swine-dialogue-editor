@@ -97,6 +97,13 @@ signal dialogue_options_ready(write_path: String, choices: Array)
 @warning_ignore("unused_signal")
 signal dialogue_option_committed(value: Variant)
 
+## Emitted by DialogueRunner when an options block with "chain": true commits
+## an option. Signals DialogueBox to suppress its post-commit dismiss so the
+## runner can immediately fire the next matching state for the same NPC,
+## keeping the panel open and loading new content without a visible close/reopen.
+@warning_ignore("unused_signal")
+signal dialogue_chain_start()
+
 ## Emitted by coffee_brewing.gd when the minigame completes and the result
 ## panel is dismissed. Payload shape (all fields present):
 ##   { "minigame": "coffee_brewing", "context": String,
