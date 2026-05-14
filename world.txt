@@ -104,19 +104,10 @@ Recommended scene structure:
 
 ```text
 res://world/overworld/overworld.tscn
-res://world/districts/legal_quarter.tscn
-res://world/districts/old_town.tscn
-res://world/districts/residential_district.tscn
-res://world/districts/business_district.tscn
-res://world/districts/civic_core.tscn
-res://world/districts/transit_edge.tscn
-
 res://world/routes/office_street.tscn
 res://world/routes/grand_court_avenue.tscn
 res://world/routes/paragraf_lane.tscn
 res://world/routes/tenants_row.tscn
-res://world/routes/glass_street.tscn
-res://world/routes/civic_spine.tscn
 ```
 
 The top-level `overworld.tscn` can contain:

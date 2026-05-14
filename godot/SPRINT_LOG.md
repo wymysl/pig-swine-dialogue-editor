@@ -1170,3 +1170,26 @@ Follow-up still open:
 
 - Pig/Asia ambient zone lines are still hardcoded in small zone scripts; moving them into JSON needs a targeted state-selector shape rather than a quick string shuffle.
 - Coffee retry acknowledgment/relaunch remains proposal-shaped work; no runtime change was made without a clearer product decision.
+
+
+**Session 30 — 2026-05-14 — Code/QA — Autonomous maintenance: catalogue hygiene, orphan cleanup, data audit.**
+Files changed:
+
+- `scripts/autoload/dialogue_runner.gd`: added filename filter in `_load_all_dialogues()` dir loop to skip non-canonical files (`_rewrite`, `_v2`, legacy empty `dialogues.json`). These were polluting `_catalogue` with dead entries that no NPC queries but wasted memory and confused debug inspection.
+- `scripts/autoload/state.gd` and `scripts/systems/save.gd`: verified the `won_court` / `coffee_retry_decision` v13 migration (completed by parallel session). All dialogue trigger flag references now cross-check clean against `reset_state()`.
+- `tests/test_save_migration_v12_v13.gd`: rewrote migration test to cover v12→v13 idempotency, full v1→v13 chain, and reset_state declaration.
+- Removed 9 orphan `.gd.uid` files at project root (their source scripts had been deleted but UIDs were left behind).
+- Removed stale `tests/test_dialogue_runner.gd.tmp` backup (508 lines, superseded by the current 25KB test file).
+
+Audit findings documented in walkthrough:
+
+- 8 duplicate state IDs across dialogue files (e.g. `first_meeting` in both `pig.json` and `murrow.json`). No active `once: true` conflicts, but the NPC-agnostic `dialogue_states_seen` array makes this a latent bug. Recommended: prefix IDs with npc name (`pig_first_meeting`).
+- `cula.json` state `family_photo_ch1_repeat` has no line/lines/hint — produces hardcoded `'...'` fallback at runtime. Design-owned fix needed.
+- `meeting_room_stance.json` is retired (impossible trigger) but still loads into catalogue. Harmless; documented.
+- 17 scratch `.gd` scripts remain at project root. Not deleted (user may reference them); propose moving to a scratch/ subdirectory.
+
+Verification: `jq empty godot/data/dialogues/*.json` → EXIT 0 on all canonical files.
+
+### 2026-05-14 — Editorial Cleanups
+- Cleaned up `world.txt` per Proposal 2, removing premature scene scaffolding and standardizing tile size conventions.
+- Updated `PROPOSALS.md` to formally mark proposals 2, 3, 4, 5, 7, 8, 10, and 11 as `DONE` based on prior system edits and recent document verifications.

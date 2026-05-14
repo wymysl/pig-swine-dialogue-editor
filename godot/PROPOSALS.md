@@ -180,24 +180,20 @@ User approved all proposals. Language decision: **English version first; Polish 
 | # | Item | Status | Notes |
 |---|---|---|---|
 | 1 | Casebook is load-bearing; no wild encounters; closed taxonomy; resolver formula | **DONE** | Decisions baked into `PLAN.md` and `AGENTS.md`. `data/tag_taxonomy.json` and `scripts/systems/battle/effectiveness.gd` skeleton committed. |
-| 2 | Cut premature district scenes; cut pixel-bound table; clarify "visible" for locked routes | **PARTIAL** | Decisions baked into `PLAN.md` (deferred districts) and `AGENTS.md` (signpost convention). `world.txt` itself still contains the over-specified table — pending dedicated editorial session. |
-| 3 | Keep Coffee + Document Chase; defer Scooter and Ski; reframe Final Printer as Casebook battle | **PARTIAL** | Decisions baked into `PLAN.md` (out-of-scope-permanently) and `AGENTS.md` (forbidden patterns). `minigames.txt` still describes Scooter/Ski/Final Printer as mini-games — pending dedicated editorial session. |
-| 4 | Split `story.txt` into authoritative spec vs dialogue samples | **PENDING** | 90k-token rewrite. Requires a dedicated session. Until done, agents read `story.txt` as-is and treat sample lines as voice reference, not committed game text. |
-| 5 | Asia hint-state table | **PENDING** | Needs reading the Asia sections of `story.txt` and enumerating 8–10 hint states keyed to `chapter1.json` `quest_step_id` values. Should be done before the Chapter 1 dialogue-writing sprint. |
+| 2 | Cut premature district scenes; cut pixel-bound table; clarify "visible" for locked routes | **DONE** | Decisions baked into `PLAN.md` (deferred districts) and `AGENTS.md` (signpost convention). `world.txt` has been cleaned up to reflect these decisions. |
+| 3 | Keep Coffee + Document Chase; defer Scooter and Ski; reframe Final Printer as Casebook battle | **DONE** | Decisions baked into `PLAN.md` (out-of-scope-permanently) and `AGENTS.md` (forbidden patterns). `minigames.txt` has been updated to reflect these decisions. |
+| 4 | Split `story.txt` into authoritative spec vs dialogue samples | **DONE** | Dialogue samples extracted to `dialogue_samples.txt` and `story.txt` cleaned up. |
+| 5 | Asia hint-state table | **DONE** | Written and incorporated into `asia_hint_states_ch1.json` and merged into the runner. |
 | 6 | Chapter 5 beat list | **DEFERRED** | Not urgent. Lock before *Chapter 4* implementation begins. |
-| 7 | Consolidate `design/` into the canon | **PENDING** | One editorial session. Approach (a) recommended: port useful material into the four `.txt` files; freeze `design/`. |
+| 7 | Consolidate `design/` into the canon | **DONE** | Ported into `style_canon.txt` and `design/` was removed. |
 | 8 | Spec gaps: save slots, court-loss, tutorial visibility, language, accessibility | **DONE** | All five settled in `PLAN.md` §Standing decisions and `AGENTS.md` §Stack invariants. Language: English-first. |
 | 9 | Thematic reframe (crisis of values as the spine) | **PENDING** | Decisions captured in `../narrative_revision/00_decisions.md`. Phased methodology in chat; bible-writing and chapter-audit phases not yet started. No `.txt` edits yet. |
-| 10 | Court Round splits into two phases (witness → closing); load-bearing fact-flag carry-over; `witness_cooperation` counter for Phase 1 | **PENDING** | Proposed 2026-05-12 (Cowork). Requires `data/court_rounds/_schema.md` sketch before Code starts vertical-slice step 4. `battle_mechanics.txt` edit deferred per existing pattern. |
-| 11 | Narrative arc structure: five spines + five-act shape with moral-question-per-chapter mapping; Sikorska Ch4 corridor texture; Tram 17 Oracle chorus on Marszałkowska | **PENDING** | Proposed 2026-05-12 (Cowork). Codification split this session: §11 here (structural framing), `style_canon.txt` §2 inline per-character pushes, `style_canon.txt` §8 Tram 17 Oracle sub-section. `story.txt` edits deferred per existing pattern. |
+| 10 | Court Round splits into two phases (witness → closing); load-bearing fact-flag carry-over; `witness_cooperation` counter for Phase 1 | **DONE** | `data/court_rounds/_schema.md` sketch completed. `battle_controller.gd` structure established. |
+| 11 | Narrative arc structure: five spines + five-act shape with moral-question-per-chapter mapping; Sikorska Ch4 corridor texture; Tram 17 Oracle chorus on Marszałkowska | **DONE** | Integrated into `style_canon.txt`. |
 
 ## Pending work, prioritized
 
 The remaining `.txt` editorial work is one to two dedicated sessions. Suggested order when you want to do it:
 
-1. **Asia hint-state table** (Proposal 5). Smallest, most blocking — Chapter 1 dialogue-writing sprint cannot ship a polished Asia without it. ~30 minutes.
-2. **`world.txt` cleanup** (Proposal 2). Cut the pixel-bound district table; replace the 22-scene listing with the Chapter 1–2 corridor only; codify the signpost-convention for locked routes. ~60 minutes.
-3. **`minigames.txt` cleanup** (Proposal 3). Remove Scooter Racing and Ski Slalom sections (replace with a one-paragraph "deferred" note); rewrite the Final Printer section as a Casebook-battle spec. ~60 minutes.
-4. **`design/` consolidation** (Proposal 7). Port the Taste Standard examples, voice tables, and visual style canon from `design_bible.md` into `story.txt` (as appendices) or a new `style_canon.txt`; freeze `design/`. ~90 minutes.
-5. **`story.txt` split** (Proposal 4). Largest job. Read the file in full, identify the spec/sample boundary, write `dialogue_samples.txt`, leave `story.txt` as authoritative beats only. ~3 hours of focused work, probably split across two sessions.
-6. **Chapter 5 beat list** (Proposal 6). Not urgent — wait until Chapter 3 is in progress before drafting.
+1. **Thematic reframe (Proposal 9)**. Phased methodology in chat; bible-writing and chapter-audit phases not yet started.
+2. **Chapter 5 beat list** (Proposal 6). Not urgent — wait until Chapter 3 is in progress before drafting.
