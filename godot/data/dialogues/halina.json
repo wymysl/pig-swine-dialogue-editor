@@ -1,227 +1,529 @@
 {
-    "version": 1,
+    "version": 3,
     "npc_id": "halina",
-    "_provenance": "V1.4 phase-7 voice pack (V1.4_halina_meeting_research.md). Source draft: narrative_revision/phase_7_drafts/V1_4_draft_pass4.md (pass 4 with five §J review passes baked in).",
-    "_scope": "halina.json owns the Beat 8 client meeting in Cula's Ch1. The carrier states are gated on chapter1.client_meeting_stance ('sympathetic' / 'blunt_procedural' / 'technical'), set during Beat 7 when the player picks Cula's interview tone. Each carrier state runs the full meeting flow: opening (Asia announce + entry + greetings + Murrow opening) → carrier-specific dialogue (stance question + Halina responses + bonus evidence + register reactions) → shared content (required-evidence reconciliation + fee + Pig intrusion + epigram + close). Stage directions from the draft are NOT carried into this file (engine pattern; see murrow.json first_meeting). Chapter-4 corridor sighting is out of scope for this file (Ch4 voice pack).",
+    "_provenance": "V1.4 phase-7 voice pack (V1_4_halina_meeting_research.md). Session 27 (2026-05-13): shared intro factored into client_meeting_intro with chain:true options. Session 29 (2026-05-13): restructured into trust-meter system — three monolithic branch states replaced by round-based structure (intro → r0_response → r1 → r1_response → r2 → r2_response → close → optional reveal). trust_delta on each choice increments chapter1.halina_trust; tier thresholds gate two-variant Halina responses per round. High trust (≥ 5 total) unlocks the landlord-intimidation reveal post-close.",
+    "_scope": "halina.json owns the Beat 8 client meeting. Trust meter: halina_trust (int), halina_r0/r1/r2_done (bool), halina_r1/r2_choice (string re-fire guards), halina_close_done (bool), landlord_tip_received (bool). Bonus evidence: r0_technical=lease_1962_inheritance_1987, r0_high=wojcik_witness_statement, r0_blunt/r1_high=return_to_sender_slip, r2_high=landlord_contact. Chapter-4 corridor sighting out of scope (Ch4 pack).",
     "states": [
         {
-            "id": "client_meeting_sympathetic",
-            "trigger": "chapter1.halina_met == false && chapter1.client_meeting_stance == 'sympathetic'",
+            "id": "client_meeting_intro",
+            "trigger": "chapter1.halina_met == false && chapter1.client_meeting_stance == ''",
+            "_comment": "Shared intro: Asia announces, Halina enters, round of introductions, Murrow hands off. Options (chain:true) present Cula's three opening lines. trust_delta applied before chain re-fires, so the r0_response tier check sees the updated halina_trust immediately.",
             "lines": [
-                { "speaker": "asia", "text": "Mrs. Sikorska is here. I've shown her into the meeting room." },
-                "Good morning. I am Halina Sikorska. I have been told you can help.",
-                { "speaker": "cula", "text": "Good morning, Mrs. Sikorska. Dr. A. Cula. Please, sit. Thank you for coming in." },
+                "Good morning. Halina Sikorska. I've been told you can help.",
+                {
+                    "speaker": "cula",
+                    "text": "Good morning, Mrs. Sikorska. Dr. A. Cula. Please, sit. Thank you for coming in."
+                },
                 "Thank you.",
-                { "speaker": "cula", "text": "This is Mr. Crab and Mr. Whimsy. They have read the file. You know Mr. Murrow." },
+                {
+                    "speaker": "cula",
+                    "text": "This is Mr. Crab and Mr. Whimsy. They have read the file. You know Mr. Murrow."
+                },
                 "Mr. Murrow. Mr. Crab. Mr. Whimsy.",
-                { "speaker": "crab", "text": "Mrs. Sikorska." },
-                { "speaker": "whimsy", "text": "Mrs. Sikorska — a pleasure. Forgive the assembly. The file deserves it." },
-                { "speaker": "murrow", "text": "The notice and the docket are in the file. Doctor Cula will lead." },
-                { "speaker": "cula", "text": "Mrs. Sikorska. Before we go through the documents, how are you holding up? The last three weeks." },
+                {
+                    "speaker": "crab",
+                    "text": "Mrs. Sikorska."
+                },
+                {
+                    "speaker": "whimsy",
+                    "text": "Mrs. Sikorska — a pleasure. Forgive the assembly. The file deserves it."
+                },
+                {
+                    "speaker": "murrow",
+                    "text": "The notice and the docket are in the file. Dr. A. Cula will lead."
+                }
+            ],
+            "options": {
+                "write_path": "chapter1.client_meeting_stance",
+                "trust_path": "chapter1.halina_trust",
+                "chain": true,
+                "choices": [
+                    {
+                        "text": "How are you holding up? The last three weeks...",
+                        "value": "sympathetic",
+                        "trust_delta": 2
+                    },
+                    {
+                        "text": "I wanted to ask you about the notice. When was it dated?",
+                        "value": "blunt_procedural",
+                        "trust_delta": 0
+                    },
+                    {
+                        "text": "Please tell us about the lease history. How far back does it run?",
+                        "value": "technical",
+                        "trust_delta": 1
+                    }
+                ]
+            }
+        },
+        {
+            "id": "client_meeting_r0_response_high",
+            "trigger": "chapter1.halina_met == false && chapter1.halina_r0_done == false && chapter1.halina_trust >= 2",
+            "_comment": "Fires when Cula opened sympathetically (trust ≥ 2). Halina opens up: personal history, long tenancy, Mrs. Wójcik's offer to testify. Sets bonus_evidence = wojcik_witness_statement.",
+            "lines": [
+                {
+                    "speaker": "cula",
+                    "text": "Mrs. Sikorska, how are you holding up? The last three weeks must've been tough..."
+                },
                 "Thank you for asking. The matter has occupied more of my attention than I would have chosen. I have done what was needed.",
-                { "speaker": "cula", "text": "And the apartment itself. How long." },
-                "My father had the lease before me. He worked on the railways. He was given the apartment when he was assigned to Warsaw, in nineteen sixty-two. I inherited the lease in nineteen eighty-seven, after his death. I have lived there since. My husband moved in with me in nineteen seventy-four. He died in two thousand and nine. My son is in Wrocław. He has his own life. Iwaszkiewicz wrote that buildings hold us longer than we hold them. He may have been generous to the buildings.",
-                { "speaker": "cula", "text": "Thank you. And your work." },
-                "I taught Polish for thirty-eight years. Mostly in the same lyceum. The students change. The texts do not.",
-                { "speaker": "cula", "text": "The current tenancy paperwork. May I see it." },
-                "Of course.",
-                "The current paperwork is here. The address as it has stood since the renumbering.",
-                { "speaker": "cula", "text": "And the notice." },
-                "Here.",
-                { "speaker": "cula", "text": "And the court docket. Mr. Murrow obtained it this morning." },
-                { "speaker": "cula", "text": "The hearing has already been held. Ex parte. You were not present." },
-                "I was not informed.",
-                { "speaker": "cula", "text": "No. You were not." },
-                { "speaker": "cula", "text": "There is a person in your building. Number seven. The current resident. You mentioned him on the phone." },
-                "Yes. He brought the notice down to me. He had opened the envelope, read the first line. He apologised. He left it on the kitchen table and went back upstairs. He is a kind young man. He is not at fault for opening it.",
-                { "speaker": "cula", "text": "And anyone else in the building who has known you at that address. For some time." },
-                "Mrs. Wójcik. Second floor. She has lived there since nineteen ninety-one. She buys her bread at the same shop as I do. She would know me from the corridor; she would know my mother's name, if it were asked of her, because I told her once. She would sign a statement, if a statement were needed. I asked her, two weeks ago. She offered.",
-                { "speaker": "crab", "text": "The neighbour's statement. Continuous resident, second floor, since nineteen ninety-one. We can take that." },
-                { "speaker": "cula", "text": "Thank you. We will take it. Has she been at home this week." },
-                "She has. She will be at home on Friday afternoon. She is patient. She has been a widow longer than I have been one.",
-                { "speaker": "cula", "text": "And your own movements. This week. I will be brief." },
-                "I have been at the apartment most days. Tuesday morning at the doctor. Thursday afternoon at the library. I will need to reschedule with my cardiologist again. He is patient with me.",
-                { "speaker": "cula", "text": "Thank you. I have what I need from this part of the conversation." },
-                { "speaker": "cula", "text": "The current tenancy paperwork. The defective notice. The court docket. Mr. Murrow has the file." },
-                { "speaker": "murrow", "text": "I do." },
-                { "speaker": "cula", "text": "We will file the motion to set aside on the ground of invalid service. The hearing will be rescheduled. You will not need to be present at the motion itself; you may need to be present at the rescheduled hearing, depending on what the landlord does next." },
-                "Thank you. I will be available either way.",
-                { "speaker": "murrow", "text": "The fee for the motion and the rescheduled hearing is five thousand. Fixed. It includes the filing, the appearance, and any drafting necessary if the landlord answers." },
-                "Five thousand. I have the money. I will transfer it before Friday.",
-                { "speaker": "murrow", "text": "The retention is ready for signature. I will bring it through." },
-                "Thank you.",
-                { "speaker": "pig", "text": "Mr. Murrow. The Hennessy retainer phone has gone overboard. Third time this morning. Where is Asia." },
-                { "speaker": "pig", "text": "And the printer is throwing red lights. Small craft warning, Mr. Murrow —" },
-                { "speaker": "murrow", "text": "Mr. Pig. A moment. The meeting room." },
-                { "speaker": "murrow", "text": "The printer. Now." },
-                "I gather Mr. Pig is the senior partner.",
-                { "speaker": "cula", "text": "He is." },
-                "I gather the firm is busy.",
-                { "speaker": "cula", "text": "It is." },
-                { "speaker": "murrow", "text": "My apologies, Mrs. Sikorska. The Hennessy retainer phone is a long-running matter." },
-                "Of course.",
-                "You go to a lawyer like you go to a doctor: too late.",
-                { "speaker": "murrow", "text": "Two signatures. Here and here. I will witness." },
-                "Thank you.",
-                "Until Friday.",
-                { "speaker": "cula", "text": "Until Friday. Thank you, Mrs. Sikorska." },
-                "Thank you, Dr. A. Cula. Mr. Crab. Mr. Whimsy. Mr. Murrow."
+                {
+                    "speaker": "cula",
+                    "text": "How long have you lived in this apartment."
+                },
+                "My father had the lease before me. He worked on the railways. He was given the apartment when he was assigned to Warsaw, in nineteen sixty-two. I inherited in nineteen eighty-seven, after his death. I have lived there since.",
+                {
+                    "speaker": "cula",
+                    "text": "And you have been there continuously."
+                },
+                "Continuously. My husband moved in in seventy-four, while my father still held the lease. He died in two thousand and nine. My son is in Wrocław.",
+                {
+                    "speaker": "cula",
+                    "text": "There is a neighbour you mentioned. Mrs. Wójcik."
+                },
+                "Second floor. She has lived there since nineteen ninety-one. She knows me from the corridor. She would sign a statement, if a statement were needed. I asked her two weeks ago. She offered.",
+                {
+                    "speaker": "crab",
+                    "text": "Continuous resident, second floor, since ninety-one. We can take that statement."
+                },
+                {
+                    "speaker": "cula",
+                    "text": "We will. I have what I need from this part."
+                }
             ],
             "on_dismiss": [
-                { "set": "chapter1.halina_met", "value": true },
-                { "set": "chapter1.client_fee_agreed", "value": true },
-                { "set": "chapter1.bonus_evidence_collected", "value": "wojcik_witness_statement" },
-                { "set": "chapter1.cardiologist_plant_landed", "value": true }
+                {
+                    "set": "chapter1.halina_r0_done",
+                    "value": true
+                },
+                {
+                    "set": "chapter1.bonus_evidence_collected",
+                    "value": "wojcik_witness_statement"
+                }
             ]
         },
         {
-            "id": "client_meeting_blunt_procedural",
-            "trigger": "chapter1.halina_met == false && chapter1.client_meeting_stance == 'blunt_procedural'",
+            "id": "client_meeting_r0_response_blunt",
+            "trigger": "chapter1.halina_met == false && chapter1.halina_r0_done == false && chapter1.client_meeting_stance == 'blunt_procedural'",
+            "_comment": "Fires when Cula opened blunt-procedurally. Halina gives the notice sequence first; the prior returned letter becomes the stance's bonus evidence.",
             "lines": [
-                { "speaker": "asia", "text": "Mrs. Sikorska is here. I've shown her into the meeting room." },
-                "Good morning. I am Halina Sikorska. I have been told you can help.",
-                { "speaker": "cula", "text": "Good morning, Mrs. Sikorska. Dr. A. Cula. Please, sit. Thank you for coming in." },
-                "Thank you.",
-                { "speaker": "cula", "text": "This is Mr. Crab and Mr. Whimsy. They have read the file. You know Mr. Murrow." },
-                "Mr. Murrow. Mr. Crab. Mr. Whimsy.",
-                { "speaker": "crab", "text": "Mrs. Sikorska." },
-                { "speaker": "whimsy", "text": "Mrs. Sikorska — a pleasure. Forgive the assembly. The file deserves it." },
-                { "speaker": "murrow", "text": "The notice and the docket are in the file. Doctor Cula will lead." },
-                { "speaker": "cula", "text": "Mrs. Sikorska. I will go through this in order. The notice — when was it dated." },
-                "The eighth of April.",
-                { "speaker": "cula", "text": "When did you receive it." },
-                "The twenty-eighth. Twenty days later.",
-                { "speaker": "cula", "text": "How." },
-                "The current resident of number seven brought it down. The envelope had been opened. He had read the first line before realising it was not for him. He apologised at the door.",
-                { "speaker": "cula", "text": "The number on the envelope." },
-                "Number seven. The address as it stood after the building was renumbered in two thousand and fifteen. My apartment is now number twelve. It was number seven before the renumbering.",
-                { "speaker": "cula", "text": "And the landlord. He sent the notice to number seven knowing the renumbering had occurred." },
-                "He knew. He ought to have known. I cannot prove what he knew. I can prove what he was told.",
-                { "speaker": "cula", "text": "What was he told." },
-                "Six months ago he sent another letter. A rent statement. It came back to him. The post returned it to the sender. I know this because I telephoned his office about a separate matter a week later, and the woman who answered the telephone said the letter had been returned and that they would resend to the correct address. I do not know whether they did. I have no copy. I do not have the slip. It would be in his office, if he kept it.",
-                { "speaker": "crab", "text": "The return-to-sender slip. If it is in his file, it is producible by request. The slip alone is enough on knowledge." },
-                { "speaker": "murrow", "text": "Producible by request. We will request it." },
-                { "speaker": "cula", "text": "Did the office that called you give a date for the previous letter." },
-                "October. Late October. I do not have it written down. I would estimate the twentieth or the twenty-fifth.",
-                { "speaker": "cula", "text": "Thank you. The current notice. You read it on the twenty-eighth of April." },
-                "I read it that evening. I telephoned the firm the following morning. Mr. Murrow returned my call that afternoon. I came in the following Tuesday — last Tuesday — for the brief consultation. Today is the formal meeting.",
-                { "speaker": "cula", "text": "And the current tenancy paperwork." },
-                "Renewed in two thousand and nineteen. The address as it stands since the renumbering.",
-                { "speaker": "cula", "text": "And the court docket." },
-                { "speaker": "cula", "text": "The docket lists a hearing. It has already been held. Ex parte. You were not present." },
-                "I was not informed.",
-                { "speaker": "cula", "text": "No. You were not." },
+                {
+                    "speaker": "cula",
+                    "text": "Mrs. Sikorska. I wanted to ask about the notice first. Date, receipt, and who brought it to you."
+                },
+                "The notice is dated the eighth of April. I received it on the twenty-eighth. The young man now living at number seven brought it down. He had opened the first page before realising it was not for him.",
+                {
+                    "speaker": "cula",
+                    "text": "Number seven is your old number."
+                },
+                "Yes. Since the two thousand and fifteen renumbering, my apartment has been number twelve.",
+                {
+                    "speaker": "cula",
+                    "text": "Had the landlord used the correct address before."
+                },
+                "Yes. In October, a rent statement sent to number seven came back. His office telephoned me and resent it to number twelve.",
+                {
+                    "speaker": "crab",
+                    "text": "Returned once, corrected once, then repeated. That is useful."
+                },
+                {
+                    "speaker": "murrow",
+                    "text": "Prior knowledge in paper form. Paper is less forgetful than people."
+                },
+                {
+                    "speaker": "cula",
+                    "text": "Good. We will ask for the return-to-sender slip."
+                }
+            ],
+            "on_dismiss": [
+                {
+                    "set": "chapter1.halina_r0_done",
+                    "value": true
+                },
+                {
+                    "set": "chapter1.bonus_evidence_collected",
+                    "value": "return_to_sender_slip"
+                }
+            ]
+        },
+        {
+            "id": "client_meeting_r0_response_technical",
+            "trigger": "chapter1.halina_met == false && chapter1.halina_r0_done == false && chapter1.client_meeting_stance == 'technical'",
+            "_comment": "Fires when Cula opened technically (trust < 2, technical stance). Halina stays factual: lease chain, renumbering, notice address discrepancy. Sets bonus_evidence = lease_1962_inheritance_1987.",
+            "lines": [
+                {
+                    "speaker": "cula",
+                    "text": "Mrs. Sikorska. The lease chain. Walk me through it from the beginning."
+                },
+                "My father had the lease from nineteen sixty-two. I inherited it in eighty-seven. The renewal is from two thousand and nineteen. The address on the renewal is number twelve — the post-renumbering address.",
+                {
+                    "speaker": "cula",
+                    "text": "And the notice."
+                },
+                "Number seven. The address as it stood before the renumbering. The building was renumbered in two thousand and fifteen. My apartment has not been number seven for eleven years.",
+                {
+                    "speaker": "murrow",
+                    "text": "The landlord renewed to the correct address in two thousand and nineteen. He knew the renumbering had occurred. The notice is defective on its face."
+                },
+                {
+                    "speaker": "cula",
+                    "text": "The documents. May I see them."
+                },
+                "Of course. The original lease, the inheritance paperwork, and the renewal are here.",
+                {
+                    "speaker": "cula",
+                    "text": "Thank you. The chain is clean."
+                },
+                {
+                    "speaker": "murrow",
+                    "text": "It is."
+                }
+            ],
+            "on_dismiss": [
+                {
+                    "set": "chapter1.halina_r0_done",
+                    "value": true
+                },
+                {
+                    "set": "chapter1.bonus_evidence_collected",
+                    "value": "lease_1962_inheritance_1987"
+                }
+            ]
+        },
+        {
+            "id": "client_meeting_r1",
+            "trigger": "chapter1.halina_met == false && chapter1.halina_r0_done == true && chapter1.halina_r1_choice == ''",
+            "_comment": "Cula's second question round. Three approaches; trust_delta 2/1/0. write_path halina_r1_choice guards re-fire during chain. Chains to r1_response tier states.",
+            "lines": [
+                {
+                    "speaker": "cula",
+                    "text": "A few more questions."
+                }
+            ],
+            "options": {
+                "write_path": "chapter1.halina_r1_choice",
+                "trust_path": "chapter1.halina_trust",
+                "chain": true,
+                "choices": [
+                    {
+                        "text": "Mrs. Wójcik — is she available to give a statement this week?",
+                        "value": "warm",
+                        "trust_delta": 2
+                    },
+                    {
+                        "text": "The notice — when was it dated, and when did you actually receive it.",
+                        "value": "procedural",
+                        "trust_delta": 1
+                    },
+                    {
+                        "text": "The building was renumbered. What year, and what was the old apartment number.",
+                        "value": "technical",
+                        "trust_delta": 0
+                    }
+                ]
+            }
+        },
+        {
+            "id": "client_meeting_r1_response_high",
+            "trigger": "chapter1.halina_met == false && chapter1.halina_r1_choice != '' && chapter1.halina_r1_done == false && chapter1.halina_trust >= 3",
+            "_comment": "Halina responds openly: Mrs. Wójcik available Friday, and she volunteers the return-to-sender slip from October — prior knowledge of correct address. Sets bonus_evidence = return_to_sender_slip.",
+            "lines": [
+                "She is at home on Friday afternoon. She will sign whatever is needed. She has been a widow longer than I have been one. She is patient.",
+                {
+                    "speaker": "cula",
+                    "text": "And the notice. When was it sent, and when did you receive it."
+                },
+                "It was dated the eighth of April. I received it on the twenty-eighth. The current resident of number seven brought it down. He had opened the envelope before realising it was not for him. He apologised at the door. He is a kind young man.",
+                "There is one other thing. Six months ago, the landlord sent a rent statement to the old address — number seven. It was returned to sender. A woman at his office telephoned me a week later to say the letter had been returned and that they would resend to the correct address. I do not have the slip. But he does, if he kept it.",
+                {
+                    "speaker": "crab",
+                    "text": "The return-to-sender slip. Producible by request. That establishes knowledge of the correct address before the April notice — prior knowledge on the very point of service."
+                },
+                {
+                    "speaker": "murrow",
+                    "text": "We will request it."
+                },
+                {
+                    "speaker": "cula",
+                    "text": "Good. I have the timeline."
+                }
+            ],
+            "on_dismiss": [
+                {
+                    "set": "chapter1.halina_r1_done",
+                    "value": true
+                },
+                {
+                    "set": "chapter1.bonus_evidence_collected",
+                    "value": "return_to_sender_slip"
+                }
+            ]
+        },
+        {
+            "id": "client_meeting_r1_response_low",
+            "trigger": "chapter1.halina_met == false && chapter1.halina_r1_choice != '' && chapter1.halina_r1_done == false",
+            "_comment": "Halina gives the notice timeline factually. Nothing additional is volunteered.",
+            "lines": [
+                "The eighth of April. I received it on the twenty-eighth. Twenty days. The current resident of number seven brought it down. He had read the first line before realising it was not for him.",
+                {
+                    "speaker": "cula",
+                    "text": "And the building renumbering."
+                },
+                "Two thousand and fifteen. My apartment is now number twelve. The notice was addressed to number seven — my address before the renumbering.",
+                {
+                    "speaker": "cula",
+                    "text": "And the landlord would have known."
+                },
+                "He ought to have known. The renewal is from two thousand and nineteen. It shows number twelve.",
+                {
+                    "speaker": "cula",
+                    "text": "Thank you. I have the timeline."
+                }
+            ],
+            "on_dismiss": [
+                {
+                    "set": "chapter1.halina_r1_done",
+                    "value": true
+                }
+            ]
+        },
+        {
+            "id": "client_meeting_r2",
+            "trigger": "chapter1.halina_met == false && chapter1.halina_r1_done == true && chapter1.halina_r2_choice == ''",
+            "_comment": "Cula's third question round. Three approaches; trust_delta 2/1/0. write_path halina_r2_choice guards re-fire during chain. Chains to r2_response tier states.",
+            "lines": [
+                {
+                    "speaker": "cula",
+                    "text": "One more area."
+                }
+            ],
+            "options": {
+                "write_path": "chapter1.halina_r2_choice",
+                "trust_path": "chapter1.halina_trust",
+                "chain": true,
+                "choices": [
+                    {
+                        "text": "Has the landlord been in contact with you directly — outside of the formal notices.",
+                        "value": "empathetic",
+                        "trust_delta": 2
+                    },
+                    {
+                        "text": "The cooperative office — is the original lease chain accessible before Thursday.",
+                        "value": "assertive",
+                        "trust_delta": 1
+                    },
+                    {
+                        "text": "The renewal agreement of two thousand and nineteen. Does it show the post-renumbering address.",
+                        "value": "technical",
+                        "trust_delta": 0
+                    }
+                ]
+            }
+        },
+        {
+            "id": "client_meeting_r2_response_high",
+            "trigger": "chapter1.halina_met == false && chapter1.halina_r2_choice != '' && chapter1.halina_r2_done == false && chapter1.halina_trust >= 4",
+            "_comment": "Halina, now trusting, discloses the landlord's personal visit in March — 'think carefully about your situation.' She hadn't mentioned it; she wasn't sure it was relevant. Intimidation plant for Ch4. Sets bonus_evidence = landlord_contact.",
+            "lines": [
+                "Yes. Once.",
+                {
+                    "speaker": "cula",
+                    "text": "Tell me."
+                },
+                "In March. Before the notice. He came to the building himself. He knocked on my door. He said he hoped I was comfortable and that I should think carefully about my situation. He was not rude. He left before I could answer.",
+                "I did not know whether it was relevant to mention.",
+                {
+                    "speaker": "cula",
+                    "text": "It is relevant."
+                },
+                {
+                    "speaker": "murrow",
+                    "text": "March. Before the April notice. Prior contact on the subject of possession. Document it."
+                },
+                {
+                    "speaker": "crab",
+                    "text": "If he came in person, the building may have a door camera. The cooperative office can confirm installation date."
+                },
+                "I believe there is a camera. They installed it two years ago.",
+                {
+                    "speaker": "cula",
+                    "text": "Thank you. You have given us something we did not have."
+                }
+            ],
+            "on_dismiss": [
+                {
+                    "set": "chapter1.halina_r2_done",
+                    "value": true
+                },
+                {
+                    "set": "chapter1.bonus_evidence_collected",
+                    "value": "landlord_contact"
+                },
+                {
+                    "set": "chapter1.landlord_tip_received",
+                    "value": true
+                }
+            ]
+        },
+        {
+            "id": "client_meeting_r2_response_low",
+            "trigger": "chapter1.halina_met == false && chapter1.halina_r2_choice != '' && chapter1.halina_r2_done == false",
+            "_comment": "Halina confirms the cooperative chain and renewal address. Nothing personal is volunteered.",
+            "lines": [
+                "The cooperative office is open weekday mornings. The original chain is accessible. I can be there tomorrow if needed.",
+                {
+                    "speaker": "murrow",
+                    "text": "We will not need it unless the landlord answers on the underlying tenancy. He will not. The procedural defect ends the matter at the motion."
+                },
+                {
+                    "speaker": "cula",
+                    "text": "The renewal of two thousand and nineteen. The address."
+                },
+                "Number twelve. As it has stood since the renumbering.",
+                {
+                    "speaker": "cula",
+                    "text": "Good. The chain is clean."
+                },
+                {
+                    "speaker": "murrow",
+                    "text": "It is."
+                }
+            ],
+            "on_dismiss": [
+                {
+                    "set": "chapter1.halina_r2_done",
+                    "value": true
+                }
+            ]
+        },
+        {
+            "id": "client_meeting_close",
+            "trigger": "chapter1.halina_met == false && chapter1.halina_r2_done == true && chapter1.halina_close_done == false",
+            "_comment": "Shared close: Cula summarises, Murrow takes the fee, Pig interrupts with Hennessy phone, retention signed, farewells. Cardiologist plant. All meeting paths converge here. Sets halina_met, client_fee_agreed, halina_close_done, cardiologist_plant_landed.",
+            "lines": [
+                {
+                    "speaker": "cula",
+                    "text": "The current tenancy paperwork. The defective notice. The court docket. Mr. Murrow has the file."
+                },
+                {
+                    "speaker": "murrow",
+                    "text": "I do."
+                },
+                {
+                    "speaker": "cula",
+                    "text": "We will file the motion to set aside on the ground of invalid service. The hearing will be rescheduled. You will not need to be present at the motion itself; you may need to be present at the rescheduled hearing, depending on what the landlord does next."
+                },
+                "Thank you. I will be available either way.",
+                {
+                    "speaker": "murrow",
+                    "text": "The fee for the motion and the rescheduled hearing is five thousand. Fixed. It includes the filing, the appearance, and any drafting necessary if the landlord answers."
+                },
+                "Five thousand. I have the money. I will transfer it before Friday.",
                 "I will need to reschedule with my cardiologist again. He is patient with me.",
-                { "speaker": "cula", "text": "Thank you. The motion will be filed before any new hearing date is assigned. You will not need to be present at the motion itself." },
+                {
+                    "speaker": "murrow",
+                    "text": "The retention is ready for signature. I will bring it through."
+                },
                 "Thank you.",
-                { "speaker": "whimsy", "text": "A procedural defect dressed in a residential coat. Article 135-bis carries the doctrine; Article 132 carries the service. The combination is the case. Verily." },
-                { "speaker": "cula", "text": "Thank you. I have the timeline." },
-                { "speaker": "cula", "text": "The current tenancy paperwork. The defective notice. The court docket. Mr. Murrow has the file." },
-                { "speaker": "murrow", "text": "I do." },
-                { "speaker": "cula", "text": "We will file the motion to set aside on the ground of invalid service. The hearing will be rescheduled. You will not need to be present at the motion itself; you may need to be present at the rescheduled hearing, depending on what the landlord does next." },
-                "Thank you. I will be available either way.",
-                { "speaker": "murrow", "text": "The fee for the motion and the rescheduled hearing is five thousand. Fixed. It includes the filing, the appearance, and any drafting necessary if the landlord answers." },
-                "Five thousand. I have the money. I will transfer it before Friday.",
-                { "speaker": "murrow", "text": "The retention is ready for signature. I will bring it through." },
-                "Thank you.",
-                { "speaker": "pig", "text": "Mr. Murrow. The Hennessy retainer phone has gone overboard. Third time this morning. Where is Asia." },
-                { "speaker": "pig", "text": "And the printer is throwing red lights. Small craft warning, Mr. Murrow —" },
-                { "speaker": "murrow", "text": "Mr. Pig. A moment. The meeting room." },
-                { "speaker": "murrow", "text": "The printer. Now." },
+                {
+                    "speaker": "pig",
+                    "text": "Mr. Murrow. The Hennessy retainer phone has gone overboard. Third time this morning. Where is Asia."
+                },
+                {
+                    "speaker": "pig",
+                    "text": "And the printer is throwing red lights. Small craft warning, Mr. Murrow —"
+                },
+                {
+                    "speaker": "murrow",
+                    "text": "Mr. Pig. A moment. The meeting room."
+                },
+                {
+                    "speaker": "murrow",
+                    "text": "The printer. Now."
+                },
                 "I gather Mr. Pig is the senior partner.",
-                { "speaker": "cula", "text": "He is." },
+                {
+                    "speaker": "cula",
+                    "text": "He is."
+                },
                 "I gather the firm is busy.",
-                { "speaker": "cula", "text": "It is." },
-                { "speaker": "murrow", "text": "My apologies, Mrs. Sikorska. The Hennessy retainer phone is a long-running matter." },
+                {
+                    "speaker": "cula",
+                    "text": "It is."
+                },
+                {
+                    "speaker": "murrow",
+                    "text": "My apologies, Mrs. Sikorska. The Hennessy retainer phone is a long-running matter."
+                },
                 "Of course.",
                 "You go to a lawyer like you go to a doctor: too late.",
-                { "speaker": "murrow", "text": "Two signatures. Here and here. I will witness." },
+                {
+                    "speaker": "murrow",
+                    "text": "Two signatures. Here and here. I will witness."
+                },
                 "Thank you.",
                 "Until Friday.",
-                { "speaker": "cula", "text": "Until Friday. Thank you, Mrs. Sikorska." },
+                {
+                    "speaker": "cula",
+                    "text": "Until Friday. Thank you, Mrs. Sikorska."
+                },
                 "Thank you, Dr. A. Cula. Mr. Crab. Mr. Whimsy. Mr. Murrow."
             ],
             "on_dismiss": [
-                { "set": "chapter1.halina_met", "value": true },
-                { "set": "chapter1.client_fee_agreed", "value": true },
-                { "set": "chapter1.bonus_evidence_collected", "value": "return_to_sender_slip" },
-                { "set": "chapter1.cardiologist_plant_landed", "value": true }
+                {
+                    "set": "chapter1.halina_met",
+                    "value": true
+                },
+                {
+                    "set": "chapter1.client_fee_agreed",
+                    "value": true
+                },
+                {
+                    "set": "chapter1.halina_close_done",
+                    "value": true
+                },
+                {
+                    "set": "chapter1.cardiologist_plant_landed",
+                    "value": true
+                }
             ]
         },
         {
-            "id": "client_meeting_technical",
-            "trigger": "chapter1.halina_met == false && chapter1.client_meeting_stance == 'technical'",
+            "id": "client_meeting_reveal",
+            "trigger": "chapter1.halina_met == true && chapter1.landlord_tip_received == false && chapter1.halina_trust >= 5",
+            "_comment": "High-trust reveal (fires once after close if total trust ≥ 5). Halina catches Cula alone: landlord came to her door in February, before the notice — 'think carefully about your situation.' She thought it was manners. It was not. Seeds the Ch4 landlord-intimidation thread and strengthens the cardiologist plant. Must be ordered before post_meeting_ch1 so it takes priority when halina_met == true.",
             "lines": [
-                { "speaker": "asia", "text": "Mrs. Sikorska is here. I've shown her into the meeting room." },
-                "Good morning. I am Halina Sikorska. I have been told you can help.",
-                { "speaker": "cula", "text": "Good morning, Mrs. Sikorska. Dr. A. Cula. Please, sit. Thank you for coming in." },
-                "Thank you.",
-                { "speaker": "cula", "text": "This is Mr. Crab and Mr. Whimsy. They have read the file. You know Mr. Murrow." },
-                "Mr. Murrow. Mr. Crab. Mr. Whimsy.",
-                { "speaker": "crab", "text": "Mrs. Sikorska." },
-                { "speaker": "whimsy", "text": "Mrs. Sikorska — a pleasure. Forgive the assembly. The file deserves it." },
-                { "speaker": "murrow", "text": "The notice and the docket are in the file. Doctor Cula will lead." },
-                { "speaker": "cula", "text": "Mrs. Sikorska. The lease history. How far back does your tenancy run." },
-                "Nineteen sixty-two. My father held the original lease. I inherited in nineteen eighty-seven.",
-                { "speaker": "cula", "text": "Do you have the original." },
-                "I have it here.",
-                "This is the original lease. My father's name. Nineteen sixty-two. The signature is the building's administrator at the time. The seal is the housing cooperative's.",
-                { "speaker": "murrow", "text": "Two reorganisations of the cooperative since then. Nineteen seventy-four and two thousand and four. The chain holds across both." },
+                "Dr. A. Cula. A moment, if you have one.",
+                {
+                    "speaker": "cula",
+                    "text": "Of course."
+                },
+                "I should have told you this inside. In February — before the notice — the landlord came to the building himself. He knocked on my door. He said he hoped I was comfortable. He said I should think carefully about my situation. He smiled when he said it. He left before I could answer properly.",
+                "I thought at the time it was just his manner. People in his position sometimes have that manner.",
+                {
+                    "speaker": "cula",
+                    "text": "February. That is two months before the April notice."
+                },
                 "Yes.",
-                { "speaker": "cula", "text": "And the inheritance paperwork." },
-                "Nineteen eighty-seven. After my father's death. The document is here.",
-                { "speaker": "cula", "text": "Thank you. The chain is clean." },
-                { "speaker": "murrow", "text": "It is." },
-                "The current rental agreement renewal is from two thousand and nineteen. It has my address as it stands since the renumbering. Number twelve. The renumbering was in two thousand and fifteen.",
-                { "speaker": "cula", "text": "And the notice." },
-                "Number seven. The address as it stood before the renumbering. The landlord sent it to an address that has not been mine for eleven years.",
-                { "speaker": "cula", "text": "Thank you. And the court docket." },
-                { "speaker": "cula", "text": "The hearing has already been held. Ex parte. You were not present." },
-                "I was not informed.",
-                { "speaker": "cula", "text": "No. You were not." },
-                { "speaker": "cula", "text": "One last thing. The cooperative office — your records. Are they accessible if we need to verify a chain detail before Thursday." },
-                "The cooperative office is open weekday mornings. I can be there tomorrow if needed. I will need to reschedule with my cardiologist again. He is patient with me. The cooperative is two stops on the tram.",
-                { "speaker": "cula", "text": "Thank you. We will not trouble them unless the landlord answers on the underlying tenancy. He will not. The procedural defect will close the matter at the motion." },
-                { "speaker": "crab", "text": "The chain is clean through both reorganisations. The procedural defect ends the landlord's case before he reaches the merits." },
-                { "speaker": "murrow", "text": "It does." },
-                { "speaker": "cula", "text": "Thank you. The chain is what I needed." },
-                { "speaker": "cula", "text": "The current tenancy paperwork. The defective notice. The court docket. Mr. Murrow has the file." },
-                { "speaker": "murrow", "text": "I do." },
-                { "speaker": "cula", "text": "We will file the motion to set aside on the ground of invalid service. The hearing will be rescheduled. You will not need to be present at the motion itself; you may need to be present at the rescheduled hearing, depending on what the landlord does next." },
-                "Thank you. I will be available either way.",
-                { "speaker": "murrow", "text": "The fee for the motion and the rescheduled hearing is five thousand. Fixed. It includes the filing, the appearance, and any drafting necessary if the landlord answers." },
-                "Five thousand. I have the money. I will transfer it before Friday.",
-                { "speaker": "murrow", "text": "The retention is ready for signature. I will bring it through." },
-                "Thank you.",
-                { "speaker": "pig", "text": "Mr. Murrow. The Hennessy retainer phone has gone overboard. Third time this morning. Where is Asia." },
-                { "speaker": "pig", "text": "And the printer is throwing red lights. Small craft warning, Mr. Murrow —" },
-                { "speaker": "murrow", "text": "Mr. Pig. A moment. The meeting room." },
-                { "speaker": "murrow", "text": "The printer. Now." },
-                "I gather Mr. Pig is the senior partner.",
-                { "speaker": "cula", "text": "He is." },
-                "I gather the firm is busy.",
-                { "speaker": "cula", "text": "It is." },
-                { "speaker": "murrow", "text": "My apologies, Mrs. Sikorska. The Hennessy retainer phone is a long-running matter." },
-                "Of course.",
-                "You go to a lawyer like you go to a doctor: too late.",
-                { "speaker": "murrow", "text": "Two signatures. Here and here. I will witness." },
-                "Thank you.",
-                "Until Friday.",
-                { "speaker": "cula", "text": "Until Friday. Thank you, Mrs. Sikorska." },
-                "Thank you, Dr. A. Cula. Mr. Crab. Mr. Whimsy. Mr. Murrow."
+                {
+                    "speaker": "cula",
+                    "text": "You were right to tell me. If anything else comes back to you — anything at all — bring it to Mr. Murrow. He will pass it to me."
+                },
+                "Yes. I will.",
+                "Until Friday, Dr. A. Cula."
             ],
             "on_dismiss": [
-                { "set": "chapter1.halina_met", "value": true },
-                { "set": "chapter1.client_fee_agreed", "value": true },
-                { "set": "chapter1.bonus_evidence_collected", "value": "lease_1962_inheritance_1987" },
-                { "set": "chapter1.cardiologist_plant_landed", "value": true }
+                {
+                    "set": "chapter1.landlord_tip_received",
+                    "value": true
+                }
             ]
         },
         {
             "id": "post_meeting_ch1",
             "trigger": "chapter1.halina_met == true",
-            "_comment_ch4_scope": "TODO: Chapter-4 corridor sighting (β reappearance) is out of scope for this file. Wire a ch4-triggered state when the Ch4 voice pack is authored. The corridor sighting is approximately five lines exchanged; see narrative_revision/bibles/halina_sikorska.md §Chapter 4 for the line-shape inventory."
-    }
+            "line": "Thank you again, Dr. A. Cula. I will be available if anything is needed before Friday.",
+            "_comment_ch4_scope": "TODO: Chapter-4 corridor sighting (β reappearance) is out of scope for this file. Wire a ch4-triggered state when the Ch4 voice pack is authored. The corridor sighting is approximately five lines; see narrative_revision/bibles/halina_sikorska.md §Chapter 4 for the line-shape inventory."
+        }
     ],
     "idle_flavor": []
 }

@@ -8,27 +8,42 @@
             "trigger": "chapter1.met_pig == false",
             "lines": [
                 "It would appear that we are...",
-                { "speaker": "cula", "text": "Mr. Pig. Good morning." },
-                "Dr. A. Cula. Welcome. You arrive during a moment.",
-                "The firm is not bankrupt. Bankruptcy requires paperwork, and our paperwork is currently underwater along with the rest of us.",
+                {
+                    "speaker": "cula",
+                    "text": "Mr. Pig. Good morning."
+                },
+                "Dr. A. Cula! Welcome. You arrive during, well... a moment.",
+                "Let me assure you first: the firm is not bankrupt. Bankruptcy requires paperwork, and our paperwork is currently underwater along with the rest of us.",
                 "The rent is six weeks overdue.",
                 "Six weeks under the surface. The landlord knocks on the hull. Politely. The polite knock is somehow worse than a loud one.",
                 "Can a firm sail while six weeks underwater? I have asked myself this. The honest answer appears to be yes, on momentum.",
                 "So. We float. In the way that boats with leaks float, which is to say, less every morning.",
-                { "speaker": "cula", "text": "Six weeks. Understood." },
+                {
+                    "speaker": "cula",
+                    "text": "Six weeks. Understood."
+                },
                 "Anyway. I'm digressing. This is your first day, and we need you to start immediately. We have a case to take care of.",
                 "Mr. Murrow has the folder. Mr. Murrow knows the— ask Mr. Murrow.",
-                { "speaker": "cula", "text": "I'll find him." }
+                {
+                    "speaker": "cula",
+                    "text": "I'll find him."
+                }
             ],
             "on_dismiss": [
-                { "set": "chapter1.met_pig", "value": true },
-                { "set": "chapter1.pig_revealed_crisis", "value": true }
+                {
+                    "set": "chapter1.met_pig",
+                    "value": true
+                },
+                {
+                    "set": "chapter1.pig_revealed_crisis",
+                    "value": true
+                }
             ]
         },
         {
             "id": "post_meeting_pre_murrow",
             "trigger": "chapter1.met_pig == true && chapter1.met_murrow == false",
-            "line": "Yes. Mr. Murrow. As I said. Apologies for the noise."
+            "line": "Yes. Mr. Murrow. As I said. Apologies for the noise. Please don't forget to bill this conversation under \"Business Development\"."
         },
         {
             "id": "met_murrow_pre_binder",

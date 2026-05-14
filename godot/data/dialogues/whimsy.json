@@ -1,5 +1,5 @@
 {
-    "version": 2,
+    "version": 3,
     "npc_id": "whimsy",
     "_comment_v1_4_coffee": "V1.4 (2026-05-12): four coffee_reaction_* states added per minigames.txt §Character reactions §Whimsy. Two outcomes (Perfect = procedurally_alert_plus; Bad = over_caffeinated), each in pre- and post-recruit variants per the design brief's address-form rule (Whimsy uses 'Cula' only after recruited_whimsy flips; pre-recruit uses 'Dr. A. Cula'). In normal play coffee_buff is only set after recruited_whimsy by definition (the minigame trigger requires it), so the pre-recruit variants are practically unreachable. They exist for completeness per the design brief. Reactions placed AFTER before_meeting; !entered_court scopes them to pre-court.",
     "states": [
@@ -19,6 +19,24 @@
                 { "set": "chapter1.met_whimsy", "value": true },
                 { "set": "chapter1.recruited_whimsy", "value": true }
             ]
+        },
+        {
+            "id": "after_recruitment_client_upcoming",
+            "trigger": "chapter1.recruited_whimsy == true && chapter1.recruited_crab == true && !chapter1.halina_arrived && !chapter1.entered_court",
+            "_comment": "V1.5 post-recruitment progression. Gates on both recruited flags; fires while the client meeting is still pending. Whimsy registers the missing ingredient. Bare 'Cula' per AGENTS.md §Address forms (post-recruit).",
+            "line": "Cula. We have procedure and rhetoric. What we do not yet have is a client in the room. That tends to be useful."
+        },
+        {
+            "id": "after_recruitment_court_ready",
+            "trigger": "chapter1.recruited_whimsy == true && chapter1.archive_research_complete == true && chapter1.court_ready == false && !chapter1.entered_court",
+            "_comment": "V1.5 post-recruitment progression. Fires once archive research is complete and court_ready is still pending. Whimsy supplies the court-door framing from whimsy_ch01_019. Bare 'Cula' per AGENTS.md §Address forms.",
+            "line": "Cula. We are not asking the court for miracles. Merely a doorway through which the client may be heard."
+        },
+        {
+            "id": "after_recruitment_idle",
+            "trigger": "chapter1.recruited_whimsy == true && !chapter1.entered_court",
+            "_comment": "V1.5 generic fallback repeat beat for post-recruitment Whimsy, pre-court. Fires when no more specific progression state matches. Voice from whimsy_global_024. Bare 'Cula' per AGENTS.md §Address forms.",
+            "line": "Cula. Somewhere nearby, a right is being reduced to administration. Let us be irritating about it."
         },
         {
             "id": "coffee_reaction_perfect_recruited",

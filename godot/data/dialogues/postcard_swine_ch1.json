@@ -9,29 +9,36 @@
     "states": [
         {
             "id": "asia_address_label",
-            "trigger": "chapter1.court_won_procedural_reset == true && chapter1.beat13_complete == true",
+            "trigger": "chapter1.court_won_procedural_reset == true && chapter1.beat13_complete == true && chapter1.postcard_asia_announced == false",
             "_comment": "Asia reads the postcard address label as part of her sorting cycle. Hands do not stop. Three short declaratives.",
             "speaker": "asia",
             "lines": [
                 "Mr. Pig. Postcard. The address says Sapporo."
             ],
+            "on_dismiss": [
+                { "set": "chapter1.received_swine_postcard", "value": true },
+                { "set": "chapter1.postcard_asia_announced", "value": true }
+            ],
             "tags": ["beat14", "postcard", "address_label", "asia", "warm_while_sorting"]
         },
         {
             "id": "pig_readaloud_cue",
-            "trigger": "chapter1.postcard_asia_announced == true",
+            "trigger": "chapter1.postcard_asia_announced == true && chapter1.postcard_readaloud_cue_shown == false",
             "_comment": "Stage direction: Pig takes the postcard and reads the body aloud. Pig is not in on the joke. He reads sincerely.",
             "speaker": "stage_direction",
             "lines": [
                 "Pig turns the postcard over. The front shows a snowy building and a sign too small to read at this distance. Pig reads the body aloud."
             ],
+            "on_dismiss": [
+                { "set": "chapter1.postcard_readaloud_cue_shown", "value": true }
+            ],
             "tags": ["beat14", "postcard", "stage_direction", "read_aloud_cue"]
         },
         {
             "id": "pig_readaloud_body",
-            "trigger": "chapter1.postcard_readaloud_cue_shown == true",
+            "trigger": "chapter1.postcard_readaloud_cue_shown == true && chapter1.postcard_body_read == false",
             "_comment": "Mr. Pig reads Swine's Postcard 1 body aloud verbatim. H6 Postcard 1 family: greeting from Sapporo + vague-cosmopolitan business opportunity + direct stay-solvent. Three sentences.",
-            "speaker": "mr_pig",
+            "speaker": "pig",
             "lines": [
                 "Greetings from Sapporo. A very serious gentleman in the lobby has proposed a venture involving conference centers and a fisheries contact, and I have given him my card on principle. Keep Pig & Swine afloat in my absence."
             ],
@@ -40,31 +47,40 @@
                 "signature": "Yours, Swine.",
                 "origin": "Sapporo"
             },
-            "tags": ["beat14", "postcard", "read_aloud", "swine_postcard_1", "H6", "mr_pig"]
+            "on_dismiss": [
+                { "set": "chapter1.postcard_body_read", "value": true }
+            ],
+            "tags": ["beat14", "postcard", "read_aloud", "swine_postcard_1", "H6", "pig"]
         },
         {
             "id": "pig_postcard_reaction",
-            "trigger": "chapter1.postcard_body_read == true",
+            "trigger": "chapter1.postcard_body_read == true && chapter1.pig_postcard_reaction_shown == false",
             "_comment": "Pig's one-sentence reaction. Maritime continuity from the retainer aside (Beat 13). Distractable-anxious register. Pig does not flag the continuity; the player carries it.",
-            "speaker": "mr_pig",
+            "speaker": "pig",
             "lines": [
                 "The Sea of Japan, then."
             ],
-            "tags": ["beat14", "postcard", "reaction", "maritime", "distractable_anxious", "mr_pig"]
+            "on_dismiss": [
+                { "set": "chapter1.pig_postcard_reaction_shown", "value": true }
+            ],
+            "tags": ["beat14", "postcard", "reaction", "maritime", "distractable_anxious", "pig"]
         },
         {
             "id": "whimsy_archaic_deflection",
-            "trigger": "chapter1.pig_postcard_reaction_shown == true",
+            "trigger": "chapter1.pig_postcard_reaction_shown == true && chapter1.whimsy_postcard_deflection_shown == false",
             "_comment": "Whimsy registers the postcard's existence as theatre. Single archaic-deflection beat. One short construction. Per pack §B.5 Beat 14 spec.",
             "speaker": "whimsy",
             "lines": [
                 "Behold. The postcard."
             ],
+            "on_dismiss": [
+                { "set": "chapter1.whimsy_postcard_deflection_shown", "value": true }
+            ],
             "tags": ["beat14", "postcard", "archaic_deflection", "theatrical_cynic", "whimsy"]
         },
         {
             "id": "chapter_close",
-            "trigger": "chapter1.whimsy_postcard_deflection_shown == true",
+            "trigger": "chapter1.whimsy_postcard_deflection_shown == true && chapter1.complete == false",
             "_comment": "Chapter close. The postcard sits on Pig's desk. Ledger drawer closed. Asia's mail stack thinner. Case board still carries the third-clause note. Badge and route unlocks fire here.",
             "speaker": "stage_direction",
             "lines": [

@@ -3,13 +3,16 @@
     "npc_id": "barista",
     "_comment_scope": "Coffee tutorial dialogue — V1.4 pass 1. The legacy single coffee_outcome state has been split into five buff-gated states (one per spec §Result grades buff outcome, plus a separate F-grade variant), as required by the SCOPE NOTE that previously lived in V1.3. The retry prompt is authored as a standalone state with an in-dialogue options block. The runner picks first-match in JSON order; specific states are placed BEFORE more permissive ones (machine_objects before generic over_caffeinated; outcome states before retry).",
     "_comment_buff_contract": "Buff values written by coffee_brewing.gd (see scripts/systems/minigames/coffee_brewing.gd::_compute_grade): 'procedurally_alert_plus' (S grade), 'procedurally_alert' (A/B grade), 'caffeinated' (C grade), 'over_caffeinated' (D grade and F grade). chapter1.coffee_brew_grade carries the grade letter; the F-grade machine-objects state gates on 'over_caffeinated' AND coffee_brew_grade == 'F' to distinguish it from the D-grade procedural_mud case.",
-    "_comment_retry_pending_code": "The coffee_retry_prompt state has a trigger that matches any buff outcome. With first-match-in-JSON-order, the more specific outcome states above will fire before this one, so coffee_retry_prompt is unreachable on the FIRST post-minigame interaction. The intent is that an outcome's on_dismiss flips a 'coffee_outcome_acknowledged' flag (or equivalent), and the retry state's trigger then becomes the first match. That flag does not exist in State.data yet — see PROPOSAL_coffee_engine_followups.md. Until Code wires (a) the acknowledgement flag and (b) the retry honor (re-launch minigame on value=='retry'), this state remains structurally present but inert.",
+    "_comment_retry_pending_code": "The coffee_retry_prompt state has a trigger that matches any buff outcome. With first-match-in-JSON-order, the more specific outcome states above will fire before this one, so coffee_retry_prompt is unreachable on the FIRST post-minigame interaction. The intent is that an outcome's on_dismiss flips a 'coffee_outcome_acknowledged' flag (or equivalent), and the retry state's trigger then becomes the first match. chapter1.coffee_retry_decision is now declared, but the acknowledgement flag and retry honor still need Code wiring; see PROPOSAL_coffee_engine_followups.md. Until Code wires those pieces, this state remains structurally present but inert.",
     "states": [
         {
             "id": "coffee_order",
             "trigger": "chapter1.coffee_tutorial_seen == false",
             "lines": [
-                { "speaker": "cula", "text": "Black coffee." },
+                {
+                    "speaker": "cula",
+                    "text": "Black coffee."
+                },
                 "Court coffee, then. It will not make you wiser, but it may make your mistakes faster.",
                 "How strong?"
             ],
@@ -51,7 +54,7 @@
             "_comment": "F-grade. Distinct from generic over_caffeinated (D) because the machine's objection is the joke. Placed BEFORE coffee_outcome_over_caffeinated so the more specific F-grade clause wins priority. Barista machine-objects line per minigames.txt §Character reactions.",
             "lines": [
                 "The machine refuses service. I respect the clarity.",
-                "No charge. The machine has filed its own complaint."
+                "You know what... It's on the house."
             ],
             "on_dismiss": []
         },
@@ -60,7 +63,7 @@
             "trigger": "chapter1.coffee_buff == \"over_caffeinated\"",
             "_comment": "D-grade catch-all (procedural_mud). The F-grade match above consumes that branch first. Barista bad line per minigames.txt §Character reactions.",
             "lines": [
-                "This coffee has filed a complaint against itself.",
+                "This coffee has lodged a complaint against itself.",
                 "Two zloty. Drink it standing."
             ],
             "on_dismiss": []
@@ -68,15 +71,21 @@
         {
             "id": "coffee_retry_prompt",
             "trigger": "chapter1.coffee_buff != \"\"",
-            "_comment": "Retry prompt — fires after an outcome state has been acknowledged. Currently unreachable on the FIRST post-minigame interaction because the more specific outcome triggers above match first; reachable only once Code wires an acknowledgement flag (see PROPOSAL_coffee_engine_followups.md). The options block writes the player's choice to chapter1.coffee_retry_decision; that flag does not exist in State.data yet — Code's follow-up adds the flag declaration AND the engine behavior (on value=='retry', clear coffee state and re-launch the minigame).",
+            "_comment": "Retry prompt — fires after an outcome state has been acknowledged. Currently unreachable on the FIRST post-minigame interaction because the more specific outcome triggers above match first; reachable only once Code wires an acknowledgement flag (see PROPOSAL_coffee_engine_followups.md). The options block writes the player's choice to chapter1.coffee_retry_decision; that flag is declared, but Code still needs to consume value=='retry' by clearing coffee state and re-launching the minigame.",
             "lines": [
-                "Appeal the verdict, or drink the verdict?"
+                "Are you drinking it? Or are we waiting for your appeal?"
             ],
             "options": {
                 "write_path": "chapter1.coffee_retry_decision",
                 "choices": [
-                    { "text": "Appeal the coffee.", "value": "retry" },
-                    { "text": "Accept the beverage.", "value": "accept" }
+                    {
+                        "text": "Appeal the coffee.",
+                        "value": "retry"
+                    },
+                    {
+                        "text": "Accept the beverage.",
+                        "value": "accept"
+                    }
                 ]
             },
             "on_dismiss": []

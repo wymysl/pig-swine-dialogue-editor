@@ -6,25 +6,39 @@
             "id": "first_meeting_via_behind_counter",
             "trigger": "chapter1.met_asia == false && chapter1.met_asia_via_behind == true",
             "lines": [
-                "I apologise, only employees are allowed in this — oh.",
-                "Of course. Dr. A. Cula, good morning. We've been expecting you.",
-                "Your blue folder is on the second pile from the left. The archive is through that door, and Mr. Murrow is in there with the case file whenever you're ready for him.",
-                "Mr. Pig is at the case board. He'll want to say hello first."
+                "Excuse me, only employees are allowed... oh.",
+                "Of course. Dr. A. Cula, good morning! We've been expecting you.",
+                "Mr. Pig is at the case board. He'll want to say hello first.",
+                "Then, you'll want to pick up your blue folder. It's on the second pile from the left.",
+                {
+                    "speaker": "asia",
+                    "text": "The archive is through that door, and Mr. Murrow is in there with the case file whenever you're ready for him."
+                }
             ],
             "on_dismiss": [
-                { "set": "chapter1.met_asia", "value": true }
+                {
+                    "set": "chapter1.met_asia",
+                    "value": true
+                }
             ]
         },
         {
             "id": "first_welcome",
             "trigger": "chapter1.met_asia == false",
             "lines": [
-                "Dr. A. Cula, good morning. We've been expecting you.",
-                "Your blue folder is on the second pile from the left. The archive is through that door, and Mr. Murrow is in there with the case file whenever you're ready for him.",
-                "Mr. Pig is at the case board. He'll want to say hello first."
+                "Dr. A. Cula, good morning! We've been expecting you.",
+                "Mr. Pig is at the case board. He'll want to say hello first.",
+                "Then, you'll want to pick up your blue folder. It's on the second pile from the left.",
+                {
+                    "speaker": "asia",
+                    "text": "The archive is through that door, and Mr. Murrow is in there with the case file whenever you're ready for him."
+                }
             ],
             "on_dismiss": [
-                { "set": "chapter1.met_asia", "value": true }
+                {
+                    "set": "chapter1.met_asia",
+                    "value": true
+                }
             ]
         },
         {
