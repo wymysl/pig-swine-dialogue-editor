@@ -2,9 +2,9 @@ extends SceneTree
 ## tests/test_chapter1_phase_b.gd — verifies Chapter 1 Phase B wiring.
 ##
 ## Coverage:
-##   T1   — stance menu button writes "sympathetic"
-##   T2   — stance menu button writes "blunt_procedural"
-##   T3   — stance menu button writes "technical"
+##   T1   — Halina intro option writes "sympathetic"
+##   T2   — Halina intro option writes "blunt_procedural"
+##   T3   — Halina intro option writes "technical"
 ##   T4   — Each commit also emits Signals.chapter1_flag_changed with the
 ##          new stance value.
 ##   T5   — V1.A Asia announcement state matches when
@@ -13,15 +13,16 @@ extends SceneTree
 ##          halina_arrived true.
 ##   T6   — Once halina_arrived=true, V1.A state 7 (hint_halina_met) wins
 ##          the priority race — the announcement does NOT re-fire.
-##   T7-9 — halina.json dispatch picks the correct state per stance:
+##   T7-9 — halina.json dispatch reaches the correct round-0 state:
 ##          sympathetic → bonus_evidence_collected = wojcik_witness_statement
 ##          blunt_procedural → bonus_evidence_collected = return_to_sender_slip
 ##          technical → bonus_evidence_collected = lease_1962_inheritance_1987
 ##          (asserts the state's on_dismiss block writes correctly via the
 ##          DialogueRunner dismiss path).
+##   T9b  — a low-trust path can progress through r1, r2, and the shared close.
 ##   T10  — MeetingRoomTrigger gating decisions:
 ##          (a) preconditions unmet → no dispatch
-##          (b) preconditions met, stance == "" → would spawn menu (we mock)
+##          (b) preconditions met, stance == "" → would dispatch Halina intro
 ##          (c) preconditions met, stance != "" → would dispatch halina dialogue
 ##          (d) halina_met == true → no dispatch
 ##
@@ -80,15 +81,23 @@ func _init() -> void:
 		state_node.data["chapter1"]["bonus_evidence_collected"] = ""
 		state_node.data["chapter1"]["client_fee_agreed"] = false
 		state_node.data["chapter1"]["cardiologist_plant_landed"] = false
+		state_node.data["chapter1"]["halina_trust"] = 0
+		state_node.data["chapter1"]["halina_r0_done"] = false
+		state_node.data["chapter1"]["halina_r1_choice"] = ""
+		state_node.data["chapter1"]["halina_r1_done"] = false
+		state_node.data["chapter1"]["halina_r2_choice"] = ""
+		state_node.data["chapter1"]["halina_r2_done"] = false
+		state_node.data["chapter1"]["halina_close_done"] = false
+		state_node.data["chapter1"]["landlord_tip_received"] = false
 		_flag_changes.clear()
 		_line_capture = ["", []]
 
 	## -----------------------------------------------------------------------
 	## T1–T4: in-dialogue option pick (replaces the old stance-menu modal)
 	## -----------------------------------------------------------------------
-	## The stance picker is now meeting_room_stance.json. The runner
-	## dispatches the prompt + options; the dialogue box renders them;
-	## the player commits via Signals.dialogue_option_committed(value).
+	## The stance picker now lives in halina.json's client_meeting_intro
+	## state. The runner dispatches the intro + options; the dialogue box
+	## renders them; the player commits via Signals.dialogue_option_committed(value).
 	## We bypass the box and emit dialogue_option_committed directly to
 	## exercise the runner's write path.
 	##
@@ -103,7 +112,8 @@ func _init() -> void:
 	## Helper: trigger the stance dialogue, then emit the option_committed
 	## value as if the player had picked it.
 	var pick_stance := func(stance: String) -> void:
-		runner._on_dialogue_requested("meeting_room_stance", "Cula")
+		state_node.data["chapter1"]["halina_arrived"] = true
+		runner._on_dialogue_requested("halina", "Mrs. Sikorska")
 		sigs.dialogue_option_committed.emit(stance)
 
 	## Test 1: sympathetic
@@ -113,6 +123,7 @@ func _init() -> void:
 		_pass("T1: dialogue option 'sympathetic' writes State.client_meeting_stance")
 	else:
 		_fail("T1: expected 'sympathetic', got '%s'" % state_node.data["chapter1"]["client_meeting_stance"])
+	sigs.dialogue_dismissed.emit()
 
 	## Test 2: blunt_procedural
 	reset_ch1.call()
@@ -121,6 +132,7 @@ func _init() -> void:
 		_pass("T2: dialogue option 'blunt_procedural' writes State.client_meeting_stance")
 	else:
 		_fail("T2: expected 'blunt_procedural', got '%s'" % state_node.data["chapter1"]["client_meeting_stance"])
+	sigs.dialogue_dismissed.emit()
 
 	## Test 3: technical
 	reset_ch1.call()
@@ -129,6 +141,7 @@ func _init() -> void:
 		_pass("T3: dialogue option 'technical' writes State.client_meeting_stance")
 	else:
 		_fail("T3: expected 'technical', got '%s'" % state_node.data["chapter1"]["client_meeting_stance"])
+	sigs.dialogue_dismissed.emit()
 
 	## Test 4: option commit emits chapter1_flag_changed
 	reset_ch1.call()
@@ -142,6 +155,7 @@ func _init() -> void:
 		_pass("T4: option commit emits Signals.chapter1_flag_changed('client_meeting_stance', 'sympathetic')")
 	else:
 		_fail("T4: expected signal emission not found in captures: " + str(_flag_changes))
+	sigs.dialogue_dismissed.emit()
 
 	## Test 4b: dialogue_options_ready broadcasts write_path + 3 choices.
 	## Clear capture buffer IN PLACE — reassigning the local would break the
@@ -149,7 +163,8 @@ func _init() -> void:
 	reset_ch1.call()
 	_options_capture[0] = ""
 	_options_capture[1] = []
-	runner._on_dialogue_requested("meeting_room_stance", "Cula")
+	state_node.data["chapter1"]["halina_arrived"] = true
+	runner._on_dialogue_requested("halina", "Mrs. Sikorska")
 	var captured_choices: Array = _options_capture[1]
 	if _options_capture[0] == "chapter1.client_meeting_stance" \
 			and captured_choices.size() == 3 \
@@ -161,6 +176,7 @@ func _init() -> void:
 		_fail("T4b: options broadcast malformed; write_path='%s' choices=%s" % [_options_capture[0], str(captured_choices)])
 	## Drain the option without crashing (test cleanup).
 	sigs.dialogue_option_committed.emit("sympathetic")
+	sigs.dialogue_dismissed.emit()
 
 	## -----------------------------------------------------------------------
 	## T5–T6: V1.A Asia announcement state
@@ -205,39 +221,71 @@ func _init() -> void:
 	## -----------------------------------------------------------------------
 	## T7–T9: halina.json stance dispatch — verify on_dismiss flag writes
 	## -----------------------------------------------------------------------
-	## For each stance, set the gating flags, request halina dialogue,
-	## dismiss it, assert that all four expected flags wrote correctly.
+	## For each committed opening stance, request Halina dialogue, dismiss the
+	## matching round-0 response, and assert the stance-specific bonus evidence
+	## writes correctly. The option-chain handoff itself is covered by
+	## test_halina_intro_chain.gd.
 	var stance_to_evidence: Dictionary = {
 		"sympathetic": "wojcik_witness_statement",
 		"blunt_procedural": "return_to_sender_slip",
 		"technical": "lease_1962_inheritance_1987",
+	}
+	var stance_to_trust: Dictionary = {
+		"sympathetic": 2,
+		"blunt_procedural": 0,
+		"technical": 1,
 	}
 	var test_idx: int = 7
 	for stance in ["sympathetic", "blunt_procedural", "technical"]:
 		reset_ch1.call()
 		state_node.data["chapter1"]["halina_arrived"] = true
 		state_node.data["chapter1"]["client_meeting_stance"] = stance
-		## halina_met stays false → matches one of the three trigger variants.
+		state_node.data["chapter1"]["halina_trust"] = stance_to_trust[stance]
 		runner._on_dialogue_requested("halina", "Mrs. Sikorska")
 		sigs.dialogue_dismissed.emit()
 
 		var ch1: Dictionary = state_node.data["chapter1"]
 		var expected_evidence: String = stance_to_evidence[stance]
 		var t_ok: bool = (
-			ch1["halina_met"] == true
-			and ch1["client_fee_agreed"] == true
+			ch1["client_meeting_stance"] == stance
+			and ch1["halina_r0_done"] == true
 			and ch1["bonus_evidence_collected"] == expected_evidence
-			and ch1["cardiologist_plant_landed"] == true
 		)
 		if t_ok:
-			_pass("T%d: halina '%s' branch writes all 4 flags correctly (evidence=%s)" % [test_idx, stance, expected_evidence])
+			_pass("T%d: halina '%s' dispatch writes round-0 evidence=%s" % [test_idx, stance, expected_evidence])
 		else:
-			_fail("T%d: halina '%s' branch flag writes failed; ch1 state: halina_met=%s client_fee_agreed=%s evidence=%s cardiologist=%s" % [
+			_fail("T%d: halina '%s' round-0 flag writes failed; ch1 state: stance=%s trust=%s r0_done=%s evidence=%s last_lines=%s" % [
 				test_idx, stance,
-				str(ch1["halina_met"]), str(ch1["client_fee_agreed"]),
-				str(ch1["bonus_evidence_collected"]), str(ch1["cardiologist_plant_landed"])
+				str(ch1["client_meeting_stance"]), str(ch1["halina_trust"]),
+				str(ch1["halina_r0_done"]), str(ch1["bonus_evidence_collected"]),
+				str(_line_capture[1])
 			])
 		test_idx += 1
+
+	## Test 9b: low-trust path completes all remaining rounds and reaches the
+	## shared close. This guards the state-order progression after choices are
+	## persisted.
+	reset_ch1.call()
+	state_node.data["chapter1"]["halina_arrived"] = true
+	state_node.data["chapter1"]["client_meeting_stance"] = "blunt_procedural"
+	runner._on_dialogue_requested("halina", "Mrs. Sikorska")
+	sigs.dialogue_dismissed.emit()
+	state_node.data["chapter1"]["halina_r1_choice"] = "technical"
+	runner._on_dialogue_requested("halina", "Mrs. Sikorska")
+	sigs.dialogue_dismissed.emit()
+	state_node.data["chapter1"]["halina_r2_choice"] = "technical"
+	runner._on_dialogue_requested("halina", "Mrs. Sikorska")
+	sigs.dialogue_dismissed.emit()
+	runner._on_dialogue_requested("halina", "Mrs. Sikorska")
+	sigs.dialogue_dismissed.emit()
+	var ch1_close: Dictionary = state_node.data["chapter1"]
+	if ch1_close["halina_met"] == true \
+			and ch1_close["client_fee_agreed"] == true \
+			and ch1_close["halina_close_done"] == true \
+			and ch1_close["cardiologist_plant_landed"] == true:
+		_pass("T9b: low-trust Halina path reaches shared close and writes completion flags")
+	else:
+		_fail("T9b: low-trust path did not close; ch1=" + str(ch1_close))
 
 	## -----------------------------------------------------------------------
 	## T10: MeetingRoomTrigger gating decisions
@@ -260,11 +308,11 @@ func _init() -> void:
 	## Add the trigger to the tree before calling _chapter1() — that method
 	## uses get_node_or_null("/root/State") which only resolves when the
 	## script is attached to a tree-mounted node. Mirrors production wiring.
+	reset_ch1.call()
 	var trigger: Node = trigger_script.new()
 	get_root().add_child(trigger)
 
 	## Scenario (a): preconditions unmet (recruited_whimsy=false) → no dispatch.
-	reset_ch1.call()
 	var ch1_a: Dictionary = trigger._chapter1()
 	var would_dispatch_a: bool = (
 		ch1_a.get("recruited_whimsy", false)
@@ -276,22 +324,22 @@ func _init() -> void:
 	else:
 		_fail("T10a: should not dispatch when recruited_whimsy=false")
 
-	## Scenario (b): preconditions met, stance == "" → would show menu.
+	## Scenario (b): preconditions met, stance == "" → would dispatch Halina intro.
 	reset_ch1.call()
 	state_node.data["chapter1"]["recruited_whimsy"] = true
 	state_node.data["chapter1"]["halina_arrived"] = true
 	state_node.data["chapter1"]["client_meeting_stance"] = ""
 	var ch1_b: Dictionary = trigger._chapter1()
-	var should_show_menu_b: bool = (
+	var should_dispatch_intro_b: bool = (
 		ch1_b.get("recruited_whimsy", false)
 		and ch1_b.get("halina_arrived", false)
 		and not ch1_b.get("halina_met", false)
 		and str(ch1_b.get("client_meeting_stance", "")) == ""
 	)
-	if should_show_menu_b:
-		_pass("T10b: gating met + empty stance → menu path")
+	if should_dispatch_intro_b:
+		_pass("T10b: gating met + empty stance → Halina intro path")
 	else:
-		_fail("T10b: should take menu path; ch1=" + str(ch1_b))
+		_fail("T10b: should dispatch Halina intro; ch1=" + str(ch1_b))
 
 	## Scenario (c): preconditions met, stance committed → would dispatch dialogue.
 	reset_ch1.call()

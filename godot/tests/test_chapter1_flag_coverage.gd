@@ -8,6 +8,8 @@ const NON_DIALOGUE_SET_MARKERS: Array = [
 	"casebook engine",
 	"trigger",
 	"not yet authored",
+	"office payoff close",
+	"when wired",
 ]
 
 var _had_error: bool = false

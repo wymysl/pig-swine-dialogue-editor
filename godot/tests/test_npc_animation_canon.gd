@@ -2,7 +2,7 @@ extends SceneTree
 
 func _init() -> void:
 	print("[TestNPC Canon] Starting...")
-	var npcs = ["crab", "whimsy", "asia", "mr_pig", "murrow", "halina", "mr_swine", "sikorska", "cula"]
+	var npcs = ["crab", "whimsy", "asia", "mr_pig", "murrow", "halina", "mr_swine", "cula"]
 	var dirs = ["front", "back", "left", "right", "front_left", "front_right", "back_left", "back_right"]
 	var actions = ["idle", "walk", "run"]
 

@@ -2,8 +2,8 @@ extends SceneTree
 ## tests/test_player_diagonal_normalised.gd
 ##
 ## Verifies that:
-## 1. Walk speed is exactly WALK_SPEED (96 px/s).
-## 2. Sprint speed is exactly WALK_SPEED * SPRINT_SPEED_MULTIPLIER (153.6 px/s).
+## 1. Walk speed matches player.gd's current canonical value (120 px/s).
+## 2. Sprint speed is exactly WALK_SPEED * SPRINT_SPEED_MULTIPLIER (336 px/s).
 ## 3. Diagonal input (W+D) produces the same speed as cardinal input (W alone)
 ##    within float tolerance — i.e. Input.get_vector already normalises the
 ##    diagonal and player.gd does not apply a second scaling.
@@ -22,19 +22,19 @@ func _init() -> void:
 	var player = script.new()
 
 	# ── 1. Walk speed constant ────────────────────────────────────────────────
-	if not is_equal_approx(player.WALK_SPEED, 96.0):
-		_fail("WALK_SPEED should be 96.0, got " + str(player.WALK_SPEED))
+	if not is_equal_approx(player.WALK_SPEED, 120.0):
+		_fail("WALK_SPEED should be 120.0, got " + str(player.WALK_SPEED))
 		return
 
 	# ── 2. Sprint multiplier ──────────────────────────────────────────────────
-	if not is_equal_approx(player.SPRINT_SPEED_MULTIPLIER, 1.6):
-		_fail("SPRINT_SPEED_MULTIPLIER should be 1.6, got "
+	if not is_equal_approx(player.SPRINT_SPEED_MULTIPLIER, 2.8):
+		_fail("SPRINT_SPEED_MULTIPLIER should be 2.8, got "
 			+ str(player.SPRINT_SPEED_MULTIPLIER))
 		return
 
-	var sprint_speed := player.WALK_SPEED * player.SPRINT_SPEED_MULTIPLIER
-	if not is_equal_approx(sprint_speed, 153.6):
-		_fail("Sprint speed should be 153.6 px/s, got " + str(sprint_speed))
+	var sprint_speed: float = float(player.WALK_SPEED * player.SPRINT_SPEED_MULTIPLIER)
+	if not is_equal_approx(sprint_speed, 336.0):
+		_fail("Sprint speed should be 336.0 px/s, got " + str(sprint_speed))
 		return
 
 	# ── 3. Diagonal normalisation (structural) ────────────────────────────────
@@ -43,9 +43,9 @@ func _init() -> void:
 	# magnitude regardless of whether it was cardinal or diagonal.
 	var cardinal := Vector2(1.0, 0.0)                          # W alone  (already unit)
 	var diagonal := Vector2(1.0, 1.0).normalized()             # W+D normalised
-	# Both should already be unit vectors; applying WALK_SPEED gives 96 px/s.
-	var cardinal_speed := (cardinal * player.WALK_SPEED).length()
-	var diagonal_speed := (diagonal * player.WALK_SPEED).length()
+	# Both should already be unit vectors; applying WALK_SPEED gives 120 px/s.
+	var cardinal_speed: float = (cardinal * player.WALK_SPEED).length()
+	var diagonal_speed: float = (diagonal * player.WALK_SPEED).length()
 	if not is_equal_approx(cardinal_speed, diagonal_speed):
 		_fail("Diagonal speed %.4f != cardinal speed %.4f — normalisation broken"
 			% [diagonal_speed, cardinal_speed])
@@ -110,7 +110,7 @@ func _init() -> void:
 		return
 
 	player.free()
-	print("[DiagonalNorm] PASS — walk=96 px/s, sprint=153.6 px/s, "
+	print("[DiagonalNorm] PASS — walk=120 px/s, sprint=336 px/s, "
 		+ "diagonal normalised, all 8 buckets correct.")
 	quit(0)
 

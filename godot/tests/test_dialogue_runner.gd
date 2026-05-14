@@ -87,6 +87,29 @@ func _init() -> void:
 		_fail("T3: compound trigger should pass but returned false")
 
 	## -----------------------------------------------------------------------
+	## Test 3b: OR trigger passes when any group matches.
+	## Regression: judge_district_ch1.open_round uses || for three round-open
+	## states and previously fell through to the hard fallback.
+	## -----------------------------------------------------------------------
+	state_node.data["chapter1"]["casebook_judge_state"] = "round_2_open"
+	var judge_open_trigger: String = "chapter1.casebook_judge_state == 'round_1_open' || chapter1.casebook_judge_state == 'round_2_open' || chapter1.casebook_judge_state == 'round_3_open'"
+	result = runner._evaluate_trigger(judge_open_trigger)
+	if result:
+		_pass("T3b: OR trigger matches the active round-open branch")
+	else:
+		_fail("T3b: OR trigger should match round_2_open")
+
+	## -----------------------------------------------------------------------
+	## Test 3c: OR trigger fails when no group matches.
+	## -----------------------------------------------------------------------
+	state_node.data["chapter1"]["casebook_judge_state"] = "round_2_react"
+	result = runner._evaluate_trigger(judge_open_trigger)
+	if not result:
+		_pass("T3c: OR trigger rejects non-opening court state")
+	else:
+		_fail("T3c: OR trigger should reject round_2_react")
+
+	## -----------------------------------------------------------------------
 	## Test 4: line selection picks first passing state
 	## -----------------------------------------------------------------------
 	state_node.data["chapter1"]["met_pig"] = false
@@ -472,7 +495,11 @@ func _init() -> void:
 	reset_flags.call()
 	for flag in v1a_flags:
 		state_node.data["chapter1"][flag] = true
-	## won_court isn't in state.gd default set; ensure it can be set for the test.
+	## Coffee-result hints sit before the default coda in the V1.A priority
+	## chain and are intentionally limited to the post-readiness, pre-court
+	## window. Mark court entered so this test reaches the coda state.
+	state_node.data["chapter1"]["entered_court"] = true
+	## V1.A's post-court hints key off the convenience won_court bool.
 	## V1.A state 10 trigger uses `!won_court`, state 11 uses `won_court && !received_swine_postcard`.
 	## Setting all to true means received_swine_postcard==true → state 12 matches.
 	_signal_capture[1] = []
@@ -488,6 +515,41 @@ func _init() -> void:
 		_pass("T19: V1.A state 12 (default; chapter coda) dispatches canonical line")
 	else:
 		_fail("T19: expected '%s' but got: %s" % [expected19, str(lines19)])
+
+	## -----------------------------------------------------------------------
+	## Test 20 — production judge open-round OR trigger dispatches the bench prompt.
+	## -----------------------------------------------------------------------
+	const JUDGE_CH1_PATH: String = "res://data/dialogues/judge_district_ch1.json"
+	var judge_file := FileAccess.open(JUDGE_CH1_PATH, FileAccess.READ)
+	if judge_file == null:
+		_fail("T20: could not open " + JUDGE_CH1_PATH)
+		_finish()
+		return
+	var judge_parsed = JSON.parse_string(judge_file.get_as_text())
+	judge_file.close()
+	if judge_parsed == null:
+		_fail("T20: judge_district_ch1.json parse failed")
+		_finish()
+		return
+
+	runner._catalogue["judge_ch1_isolated"] = judge_parsed
+	state_node.data["chapter1"]["casebook_judge_state"] = "round_2_open"
+	_signal_capture[0] = ""
+	_signal_capture[1] = []
+	var capture20 := _signal_capture
+	sigs.dialogue_line_ready.connect(func(s: String, _npc_id: String, l: Array) -> void:
+		capture20[0] = s
+		capture20[1] = l
+	, CONNECT_ONE_SHOT)
+	runner._on_dialogue_requested("judge_ch1_isolated", "Judge")
+	var lines20: Array = _signal_capture[1]
+	var expected20: String = "Counsel for the petitioner."
+	if _signal_capture[0] == "Judge" and lines20.size() > 0 and lines20[0] == expected20:
+		_pass("T20: production judge open-round OR trigger dispatches bench prompt")
+	else:
+		_fail("T20: expected Judge/'%s' but got speaker=%s lines=%s" % [
+			expected20, str(_signal_capture[0]), str(lines20)
+		])
 
 	_finish()
 
@@ -510,4 +572,3 @@ func _finish() -> void:
 	else:
 		print("[TestDialogueRunner] PASS")
 		quit(0)
-

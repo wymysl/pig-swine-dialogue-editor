@@ -63,6 +63,45 @@ func _init() -> void:
 		printerr("[TypewriterTest] FAIL: Box should be hidden after second press")
 		quit(1)
 		return
-		
+
+	var sigs = get_root().get_node_or_null("/root/Signals")
+	if sigs == null:
+		printerr("[TypewriterTest] FAIL: Signals autoload missing")
+		quit(1)
+		return
+	var dismiss_capture: Array = [0]
+	sigs.dialogue_dismissed.connect(func() -> void:
+		dismiss_capture[0] += 1
+	)
+
+	box._on_dialogue_line_ready("Tester", "tester", ["First page.", "Second page."])
+	text_label.visible_characters = -1
+	box._is_typing = false
+	ev = InputEventAction.new()
+	ev.action = "interact"
+	ev.pressed = true
+	box._unhandled_input(ev)
+
+	if dismiss_capture[0] != 0:
+		printerr("[TypewriterTest] FAIL: dialogue_dismissed fired while advancing pages")
+		quit(1)
+		return
+	if not box._visible_now:
+		printerr("[TypewriterTest] FAIL: Box should stay visible after page advance")
+		quit(1)
+		return
+
+	text_label.visible_characters = -1
+	box._is_typing = false
+	ev = InputEventAction.new()
+	ev.action = "interact"
+	ev.pressed = true
+	box._unhandled_input(ev)
+
+	if dismiss_capture[0] != 1:
+		printerr("[TypewriterTest] FAIL: dialogue_dismissed should fire exactly once on final close")
+		quit(1)
+		return
+
 	print("[TypewriterTest] PASS")
 	quit(0)

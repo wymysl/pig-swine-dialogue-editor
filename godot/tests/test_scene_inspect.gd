@@ -157,9 +157,19 @@ func _init() -> void:
 			quit(1)
 			return
 		if npc_name == "MrPig":
+			## Accept either Sprite2D with non-null texture, or AnimatedSprite2D
+			## with non-null sprite_frames. The scene has used AnimatedSprite2D
+			## since Session 4; the old Sprite2D check is incorrect.
+			var visual_ok_pig: bool = false
 			var visual_spr := npc.get_node_or_null("Visual") as Sprite2D
-			if visual_spr == null or visual_spr.texture == null:
-				printerr("[Inspect] FAIL: MrPig does not have a valid Sprite2D Visual")
+			if visual_spr != null and visual_spr.texture != null:
+				visual_ok_pig = true
+			if not visual_ok_pig:
+				var anim_spr := npc.get_node_or_null("Visual") as AnimatedSprite2D
+				if anim_spr != null and anim_spr.sprite_frames != null:
+					visual_ok_pig = true
+			if not visual_ok_pig:
+				printerr("[Inspect] FAIL: MrPig does not have a valid Sprite2D or AnimatedSprite2D Visual")
 				office_scene.queue_free()
 				quit(1)
 				return

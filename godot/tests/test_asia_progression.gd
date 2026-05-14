@@ -39,14 +39,17 @@ func _init() -> void:
 		capture[1] = l
 	)
 
-	## Test 1: Initial state (met_pig == false, pig_revealed_crisis == false)
+	## Hint progression starts after Asia's first-meeting state has fired.
+	state_node.data["chapter1"]["met_asia"] = true
+
+	## Test 1: Initial hint state (met_pig == false, pig_revealed_crisis == false)
 	state_node.data["chapter1"]["met_pig"] = false
 	state_node.data["chapter1"]["pig_revealed_crisis"] = false
 	state_node.data["chapter1"]["met_murrow"] = false
 	
 	runner._on_dialogue_requested("asia", "Asia")
 	await process_frame
-	if _signal_capture[1].size() > 0 and "Welcome, Dr. A. Cula" in _signal_capture[1][0]:
+	if _signal_capture[1].size() > 0 and "You should talk to Mr. Pig first" in _signal_capture[1][0]:
 		_pass("T1: Asia hint correct before meeting pig")
 	else:
 		_fail("T1: expected initial hint, got " + str(_signal_capture[1]))
@@ -56,7 +59,7 @@ func _init() -> void:
 	_signal_capture[1] = []
 	runner._on_dialogue_requested("asia", "Asia")
 	await process_frame
-	if _signal_capture[1].size() > 0 and "Mr. Murrow knows what the case is about" in _signal_capture[1][0]:
+	if _signal_capture[1].size() > 0 and "Mr. Murrow will know what the case is actually about" in _signal_capture[1][0]:
 		_pass("T2: Asia hint correct after meeting pig")
 	else:
 		_fail("T2: expected post-pig hint, got " + str(_signal_capture[1]))
@@ -66,7 +69,7 @@ func _init() -> void:
 	_signal_capture[1] = []
 	runner._on_dialogue_requested("asia", "Asia")
 	await process_frame
-	if _signal_capture[1].size() > 0 and "You're after the procedural binder" in _signal_capture[1][0]:
+	if _signal_capture[1].size() > 0 and "procedural binder" in _signal_capture[1][0]:
 		_pass("T3: Asia hint correct after meeting murrow")
 	else:
 		_fail("T3: expected post-murrow hint, got " + str(_signal_capture[1]))

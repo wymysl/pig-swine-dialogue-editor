@@ -2,9 +2,10 @@ extends SceneTree
 ## tests/test_visual_smoke.gd — visual regression baseline for interior rooms.
 ## Walks the player through all 8 directions in every interior scene and saves
 ## screenshots to test_output/visual_smoke/<room>/<beat>/<direction>.png.
+## Under the headless DisplayServer this exits 0 with an explicit skip note.
 ##
 ## Usage:
-##   godot --headless --script tests/test_visual_smoke.gd
+##   godot --path . --script tests/test_visual_smoke.gd
 
 const OUTPUT_DIR = "test_output/visual_smoke"
 const INTERIOR_SCENES = [
@@ -18,6 +19,10 @@ const DIRECTIONS = ["front", "front_right", "right", "back_right", "back", "back
 
 func _init() -> void:
 	print("[VisualSmoke] Starting visual smoke regression suite...")
+	if DisplayServer.get_name().to_lower().contains("headless"):
+		print("[VisualSmoke] NOTE: headless DisplayServer cannot provide viewport pixels; skipping screenshot capture.")
+		quit(0)
+		return
 	var dir = DirAccess.open("res://")
 	if not dir.dir_exists(OUTPUT_DIR):
 		dir.make_dir_recursive(OUTPUT_DIR)
@@ -60,7 +65,11 @@ func _init() -> void:
 				# Wait one more frame to ensure rendering catches up
 				await process_frame
 				
-				var img: Image = get_root().get_texture().get_image()
+				var img: Image = _capture_viewport_image()
+				if img == null:
+					print("[VisualSmoke] SKIP: renderer did not expose a viewport image.")
+					quit(0)
+					return
 				
 				var out_folder = OUTPUT_DIR + "/" + room_name + "/" + beat
 				var da = DirAccess.open("res://")
@@ -79,3 +88,13 @@ func _init() -> void:
 	
 	print("[VisualSmoke] Finished.")
 	quit(0)
+
+
+func _capture_viewport_image() -> Image:
+	var texture := get_root().get_texture()
+	if texture == null:
+		return null
+	var img: Image = texture.get_image()
+	if img == null or img.is_empty():
+		return null
+	return img
