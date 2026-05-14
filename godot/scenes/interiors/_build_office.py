@@ -569,7 +569,6 @@ script = ExtResource("8_qhjoq")
 item_id = "procedural_binder"
 display_name = "Procedural Binder"
 state_flag_path = "chapter1.has_law_binder"
-pickup_line = "A heavy tome on administrative law. Better take it."
 
 [node name="Visual" type="ColorRect" parent="ProceduralBinder"]
 offset_left = -10.0
