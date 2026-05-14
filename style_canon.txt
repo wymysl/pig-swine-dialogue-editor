@@ -118,6 +118,11 @@ the sample lines.
   mocks the client. Anything boastful about the doctorate (he is
   embarrassed by the title in casual contexts; uses it formally in
   court filings only).
+- **Inspirations push (per §9, Kundera).** Occasional narrator-as-
+  essayist moments where Cula's interior observation steps back
+  and reflects: *"I notice that I do not yet know whether I'm
+  staying."* Rare — once or twice per chapter. The rest stays
+  short and observational.
 
 ### Mr. Pig
 
@@ -148,6 +153,12 @@ the sample lines.
   recedes in the Chapter 5 sincere moment — when Mr. Pig is finally
   honest about why the firm matters, no nautical scaffolding. Comedy
   steps back; the line lands plain.
+- **Inspirations push (per §9, Hrabal).** Pig's digressive beats
+  follow Hrabalian rhythm: long sentences that wander into
+  philosophy and recover with a maritime metaphor. He should
+  occasionally lose the thread mid-sentence and land on something
+  true by accident. The "back in my day" lectures should not be
+  tidy — Hrabalian dignity-in-incompetence lives in the wandering.
 
 ### Mr. Swine
 
@@ -161,6 +172,9 @@ the sample lines.
 - Arc rule: by Chapter 5 his portrait grows more sincere — same face,
   less evasive mouth. He is allowed exactly one fully sincere line per
   scene in Chapter 5; no more. Sincerity is rationed.
+- **Inspirations push (per §9).** Ch5 sincere lines are load-
+  bearing for the chapter's moral question ("does the firm
+  deserve to survive?"). The rationing keeps each landing earned.
 
 ### Murrow
 
@@ -186,6 +200,10 @@ the sample lines.
   where without being asked precisely. "Have you seen the [thing]?"
   gets nothing useful. "Where in the archive is the [specific thing]
   from [specific case]?" gets a precise location.
+- **Inspirations push (per §9, Mrożek).** One throwaway Mrożek
+  reference per chapter, deadpan, never explained. Murrow is the
+  rereader. The *Policja* paperback on the archive windowsill
+  (per §9 easter-egg roster) is his.
 
 ### Crab
 
@@ -204,6 +222,11 @@ the sample lines.
   trusts facts.
 - Notices first: the inconsistency. Always.
 - Will not say: anything reassuring while a fact remains unexplained.
+- **Inspirations push (per §9, stance-trio).** Crab's suspicion is
+  technical — about forms. Doubt about people's motives belongs to
+  the cynic of the stance-trio. Keep Crab in the technical
+  register; his two-sentence rhythm targets the form's
+  inconsistency.
 
 ### Whimsy
 
@@ -231,6 +254,11 @@ the sample lines.
   factual or procurement work. Court effect is weaker when Whimsy is
   deployed alone, stronger when paired with Crab (facts) or Murrow
   (structure).
+- **Inspirations push (per §9, Rumpole / Mortimer).** Add the
+  literary-quote-mid-cross-examination habit: one Wordsworth or
+  Shakespeare cite per Court Round Phase 2 closing where Whimsy is
+  on stage. Plain meta-Rumpole. The Rumpole paperback on Whimsy's
+  desk (per §9 easter-egg roster) is his.
 
 ### Asia
 
@@ -242,6 +270,12 @@ the sample lines.
 - Notices first: what the player has forgotten to do or pick up.
 - Will not say: legal opinion in her own voice. She quotes Murrow,
   she quotes Mr. Pig, she does not editorialize on the case.
+- **Inspirations push (per §9, Tokarczuk / Duszejko).** Occasionally
+  Asia is wrong in a way that turns out to be right — an offhand
+  reading about the tram or the weather lands as an accidental
+  forecast of the case outcome. The horoscope/moon-phase chart in
+  her workspace (per §9 easter-egg roster) earns its keep when
+  this happens. Once or twice across the game total.
 
 ### Waldek (Chapter 2 client)
 
@@ -750,6 +784,48 @@ Restraint rule: each easter egg appears once or twice, not on every
 visit. Warsaw is a city the cast lives in; it is not a checklist of
 references.
 
+### The Tram 17 Oracle (recurring chorus NPC)
+
+The Tram 17 Oracle is a recurring optional NPC stationed at a
+fixed corner of Marszałkowska. Function: the chapter's chorus —
+the Kundera narrator-as-essayist register embodied in an NPC. The
+player encounters him once per chapter; one cryptic line per
+encounter, mapped to that chapter's moral question (per
+PROPOSALS.md §11 act structure). Optional encounter — never
+blocks progress.
+
+**Geographic note.** Tram 17's actual 2019 ZTM route runs Wolska
+/ Kasprzaka and does not serve Marszałkowska. The joke is that
+the Oracle insists Tram 17 stops here, audibly wrong in the way
+oracles are about traffic. Gentle Mrożek-style unreliability —
+keep it.
+
+**Sketch lines per chapter** (rewrite to taste during phase-7
+voice work):
+
+- **Ch1** (*does procedure suffice?*) — "First-day clients are the
+  easy ones. The hard ones are the ones who come back." Plants
+  the Ch4 Sikorska corridor sighting.
+- **Ch2** (*do universal principles survive contact with someone
+  who can pay for them?*) — "A scale that only ever shows the
+  same answer is not measuring anything."
+- **Ch3** (*what does voluntary austerity owe imposed poverty?*) —
+  "Money kept against an emergency is also money kept against you
+  knowing what you'd spend it on."
+- **Ch4** (*what does the firm owe?*) — "The second walk down a
+  street is never the first walk again, even if the street is."
+- **Ch5** (*does the firm deserve to survive?*) — "Endings you
+  can feel coming have already happened."
+
+**Voice register.** Cryptic-but-grounded, Polish-eccentric-elder
+cadence. Two-sentence maximum per line. Never explains himself.
+Cula's reaction is one beat of acknowledgment; talking back to
+oracles is Whimsy's failure mode. Cula keeps walking.
+
+**Restraint rule.** One line per chapter, no more. Visibility
+from Marszałkowska is enough; the player who skips him loses the
+chorus for that chapter and the game does not flag it.
+
 ### What NOT to do with Warsaw
 
 - Do not invent fictional Polish institutions when a real one fits.
@@ -763,3 +839,153 @@ references.
 - Do not use Warsaw's tragic history as a punchline. The August 1
   siren is referenced with silence; the Uprising itself is not
   joked about.
+
+---
+
+## 9. Literary inspirations and easter eggs
+
+Pig & Swine sits at the intersection of Polish absurdism,
+post-Soviet bureaucratic comedy, and small-firm legal fiction. The
+references below are the explicit borrowings the writing pulls
+from — for structural beats, tonal anchors, character interiority,
+and for the scattered easter eggs that signal the game knows where
+it sits. A writer authoring a scene should be able to pull from
+this list deliberately rather than reach for a generic legal-drama
+cliché.
+
+### Literary borrowings (structural and tonal)
+
+**Sławomir Mrożek** — Polish absurdist playwright. Tonal default:
+politically and procedurally sharp, comedic, never despairing.
+Particularly *The Police* (a totalitarian bureaucracy has run out
+of crime to police and manufactures one — the structural shape of
+the firm inventing reasons to keep itself busy) and *Tango* (a
+generational stance-trio collapsing under absurd formality —
+useful for junior-trio writing). Borrow: terse stage-direction
+comedy and structural beats that puncture themselves.
+
+**Stanisław Lem** — institutional paranoia from the SF side.
+*Memoirs Found in a Bathtub* is the closest model: every document
+in the bunker interlocks, every signature presupposes another.
+Borrow: found-document framing for chapter openings (a court-file
+page, a phone-message slip, a wage stub that reframes what came
+before). *The Cyberiad* sits in reserve for the Final Printer
+encounter (Chapter 5) if it wants a baroque machine-court register.
+
+**Bohumil Hrabal** — *Closely Watched Trains*, *Too Loud a
+Solitude*. Czech dignity-in-incompetence. Mr. Pig's interiority is
+the place Hrabal lives in this game: first-person digressive
+monologue, long sentences that wander into philosophy and come
+back to a maritime metaphor. Borrow Hrabalian rhythm for any Mr.
+Pig monologue beat.
+
+**John Mortimer — *Rumpole of the Bailey*.** Aging defense
+barrister at a stagnant chambers wins through procedural cleverness
+and Shakespeare quotes; loyalty to the firm is the spine of the
+series. Borrow: episodic case-of-the-week structure under a
+slowly-accreting firm-arc — Sikorska's case is a Rumpole episode,
+the meta-plot is the Hilda-and-Old-Bailey background hum. Whimsy
+is the closest cast-member to a Rumpole; borrow the literary-quote-
+mid-cross-examination habit.
+
+**Olga Tokarczuk** — *The Books of Jacob* (multi-perspective
+re-traversal at literary scale) and *Drive Your Plow Over the
+Bones of the Dead* (a procedurally-eccentric protagonist working a
+real grievance through the wrong-seeming register). Borrow: the
+scene-retold-from-a-new-angle move for the chapter-3 ledger
+reveal, the chapter-4 family-photo retraversal, and the Plotek
+reframe. Asia carries the Janina-Duszejko frequency — practical
+warmth wrapped around real procedural conviction.
+
+**Milan Kundera** — *The Joke*, *The Unbearable Lightness of
+Being*. The irony mode in which characters are defined by what
+they don't realize about themselves. Useful for Mr. Pig: the
+half-right idealist must be written from inside his
+self-understanding. Writing him from the outside collapses the
+character into a target. Borrow Kundera's narrator-as-essayist
+register for chapter-opening cards and Casebook flavor text — the
+narrator pauses to argue with themselves, then returns to the
+case.
+
+**Witold Gombrowicz** — *Ferdydurke*. The principle that forms
+impose themselves on the people inside them. Useful for the
+junior-stance trio (true believer / cynic / opportunist as forms
+that flatten character into role) and for Mr. Pig's voluntary
+austerity as a posture his class affords him.
+
+**Krzysztof Kieślowski — *Dekalog*.** Ten short films, one moral
+question per episode, all set in a late-PRL Warsaw apartment
+block. The *Dekalog* register is what stops Pig & Swine from being
+a sketch. Pull on it when a case threatens to feel light. Each
+Casebook entry should land somewhere on the Dekalog gravity scale.
+
+**Franz Kafka** — *The Trial*, *The Castle*. Acknowledge as parent
+genre. Walk away. Kafka's despair register is the wrong target;
+the Polish writers above inherited his structural moves and shed
+the despair. Do not lean Kafka.
+
+**Disco Elysium / Pentiment** — interactive-narrative reference
+points, named here so future structural decisions can cite them.
+Disco for the failure-narrows-not-blocks economy and internal-
+monologue mechanics; Pentiment for stance tracked across acts.
+
+### Easter-egg roster (literary)
+
+Same restraint rule as §8: scatter, do not stack. One or two per
+chapter, more in Chapter 5.
+
+- **A Mrożek paperback (likely *Policja*) on a windowsill or
+  shelf** in the archive room, dog-eared. Murrow has been
+  rereading it.
+- **A Hrabal collection on Mr. Pig's desk**, page held open with a
+  paperclip. Pig occasionally starts a Hrabal sentence and forgets
+  where it was going. Murrow does not help him finish it.
+- **Lem on the firm's waiting-room shelf** — *Solaris* if the
+  player should recognize the title, *Memoirs Found in a Bathtub*
+  if the firm's mood is what's being scored.
+- **A worn Rumpole paperback on Whimsy's desk** (*Rumpole and the
+  Penge Bungalow Murders*, or *She Stoops to Folly*). Whimsy
+  occasionally quotes Wordsworth in a closing argument the way
+  Rumpole does in court.
+- **A Tokarczuk on Asia's reception desk**, page marked with a
+  tram ticket. The book changes between chapters — continuity
+  reward for the player who notices.
+- **A small horoscope or moon-phase chart pinned in Asia's
+  workspace** — *Drive Your Plow* reference. One Asia line in
+  passing; the joke is not its own punchline.
+- **A Kundera on Cula's nightstand** if his apartment is ever
+  shown (Chapter 4 or 5). *The Unbearable Lightness of Being*. A
+  throwaway dialogue line works if no apartment scene exists: "I'm
+  rereading the Kundera. It's heavier than I remembered."
+- **A *Dekalog* VHS boxset** on a firm shelf (1989; period-
+  appropriate in a 2019 firm that hasn't updated). Background
+  prop; no character speaks about it.
+- **A Gombrowicz quotation as bathroom-wall graffiti** in the
+  district court, glimpsed once. Crab notices the typo in the
+  quotation more than the quotation itself.
+- **A literary line stitched into a closing argument**: a
+  Rumpole-style literary cite from Whimsy, or a Kundera epigram
+  from Cula in a Casebook flavor card. One per chapter, max.
+- **A Kafka *non*-reference** (optional). A *Trial* paperback is
+  conspicuously absent from the firm's shelves. If a character
+  asks, Mr. Pig says they donated it. Writer's-restraint joke;
+  cut if it does not land in playtest.
+
+### What NOT to do with the literary roster
+
+- **Real-people rule still applies** (per AGENTS.md). Mrożek,
+  Hrabal, Tokarczuk, Kundera, Lem, Gombrowicz, and Kieślowski may
+  appear on shelves, in book titles, in graffiti, and in dialogue
+  references. They do not appear as characters; characters do not
+  visually resemble them.
+- **Do not turn an easter egg into a Wikipedia paragraph.** The
+  book is on the shelf and nobody explains it. If a character
+  references the author, the reference is one line and assumes the
+  listener knows.
+- **Do not stack literary easter eggs in one scene.** One book on
+  the shelf is texture. Three is a syllabus.
+- **Do not let the Kafka non-reference become a recurring beat.**
+  One-line gesture or nothing.
+- **No religious-doctrinal Dekalog jokes.** Kieślowski's Decalogue
+  is the moral-question framework; the Ten Commandments structure
+  is the register; the cases are not numbered I–X.
