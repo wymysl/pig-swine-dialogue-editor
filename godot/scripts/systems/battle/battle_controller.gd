@@ -1,10 +1,643 @@
-## REVERTED — premature skeleton.
+## scripts/systems/battle/battle_controller.gd
 ##
-## Removed because PROPOSALS.md §10 (Court Round two-phase split) is still
-## PENDING; battle controller work should not land before approval. The
-## original 379-line skeleton existed in commit c83feaa; restore from there
-## once §10 is approved.
+## Casebook Battle System — Chapter 1 court-round encounter runner.
 ##
-## Cowork sandbox cannot delete files — this stub keeps the path inert.
-## On Piotr's machine: `git rm` this file and its .uid sibling.
-extends RefCounted
+## Restored from the c83feaa skeleton, but reworked for the v17 player-driven
+## argument state and the live Effectiveness resolver. The old seed assumed
+## court-round JSON with authored buckets; this controller consumes the current
+## judgments/opponents/evidence/frame data and resolves buckets dynamically.
+
+class_name BattleController
+extends Node
+
+
+class PhaseOneController:
+	extends RefCounted
+
+	var witness_cooperation: int = 0
+	var established_evidence_ids: Dictionary = {}
+	var press_count: int = 0
+
+	func start(initial_cooperation: int) -> void:
+		witness_cooperation = max(0, initial_cooperation)
+		established_evidence_ids.clear()
+		press_count = 0
+
+	func spend_press(cost: int) -> int:
+		press_count += 1
+		witness_cooperation = max(0, witness_cooperation - max(0, cost))
+		return witness_cooperation
+
+	func establish_evidence(evidence_id: String) -> void:
+		if evidence_id != "":
+			established_evidence_ids[evidence_id] = true
+
+	func has_established(evidence_id: String) -> bool:
+		return established_evidence_ids.get(evidence_id, false)
+
+
+class PhaseTwoController:
+	extends RefCounted
+
+	var judicial_patience: int = 5
+	var proposed_frame: String = ""
+	var allowed_evidence_ids: Dictionary = {}
+	var wrong_shape_frame: bool = false
+
+	func start(
+		initial_patience: int,
+		frame_id: String,
+		frames: Dictionary,
+		chapter1: Dictionary,
+		state_rank: int
+	) -> void:
+		judicial_patience = max(0, initial_patience)
+		proposed_frame = frame_id
+		wrong_shape_frame = false
+		allowed_evidence_ids.clear()
+
+		var frame: Dictionary = {}
+		if frames.get(frame_id, {}) is Dictionary:
+			frame = frames.get(frame_id, {})
+		if frame.is_empty():
+			return
+
+		wrong_shape_frame = not bool(frame.get("well_fitted", false))
+		if _frame_unlocked(frame, chapter1, state_rank):
+			for evidence_id in frame.get("supporting_evidence", []):
+				allowed_evidence_ids[str(evidence_id)] = true
+
+	func apply_present_bucket(bucket: String) -> int:
+		if bucket == "backfires" or bucket == "no_effect":
+			judicial_patience = max(0, judicial_patience - 1)
+			return -1
+		return 0
+
+	func is_evidence_available(evidence_id: String, chapter1: Dictionary, evidence: Dictionary) -> bool:
+		if evidence_id == "":
+			return true
+		if allowed_evidence_ids.get(evidence_id, false):
+			return true
+		var entry: Dictionary = {}
+		if evidence.get(evidence_id, {}) is Dictionary:
+			entry = evidence.get(evidence_id, {})
+		var flag_path: String = str(entry.get("sets_flag", ""))
+		if flag_path.begins_with("chapter1."):
+			var key: String = flag_path.substr(9)
+			if chapter1.get(key, false) == true:
+				return true
+			if key == "bonus_evidence_collected" and chapter1.get(key, "") == evidence_id:
+				return true
+		return false
+
+	func _frame_unlocked(frame: Dictionary, chapter1: Dictionary, state_rank: int) -> bool:
+		var unlock_rank: int = _state_rank_for_tag(str(frame.get("court_round_unlock", "")))
+		if unlock_rank > state_rank:
+			return false
+		for requirement in frame.get("requires_flags", []):
+			if not _requirement_met(str(requirement), chapter1):
+				return false
+		return true
+
+	func _requirement_met(requirement: String, chapter1: Dictionary) -> bool:
+		if not requirement.begins_with("chapter1."):
+			return true
+		var expression: String = requirement.substr(9)
+		if expression.contains("=="):
+			var parts: PackedStringArray = expression.split("==", false, 1)
+			if parts.size() != 2:
+				return false
+			var key: String = parts[0].strip_edges()
+			var expected: String = parts[1].strip_edges().trim_prefix("'").trim_suffix("'").trim_prefix("\"").trim_suffix("\"")
+			return str(chapter1.get(key, "")) == expected
+		return bool(chapter1.get(expression.strip_edges(), false))
+
+	func _state_rank_for_tag(tag: String) -> int:
+		match tag:
+			"round_1_open": return 1
+			"round_1_react": return 2
+			"round_2_open": return 3
+			"round_2_react": return 4
+			"round_3_open": return 5
+			"round_3_remedy": return 6
+			_: return 999
+
+
+const JUDGMENTS_PATH: String = "res://data/judgments.json"
+const OPPONENTS_PATH: String = "res://data/argument_opponents.json"
+const TAXONOMY_PATH: String = "res://data/tag_taxonomy.json"
+const EVIDENCE_PATH: String = "res://data/evidence_ch1.json"
+const FRAMES_PATH: String = "res://data/argument_frames_ch1.json"
+
+const PHASE_ONE_STARTING_COOPERATION: int = 3
+const PHASE_TWO_DEFAULT_PATIENCE: int = 5
+const WRONG_SHAPE_PATIENCE: int = 3
+
+const VALID_BUCKETS: Array[String] = [
+	"super_effective",
+	"effective",
+	"not_very_effective",
+	"no_effect",
+	"backfires",
+]
+
+const STATE_RANKS: Dictionary = {
+	"round_1_open": 1,
+	"round_1_react": 2,
+	"round_2_open": 3,
+	"round_2_react": 4,
+	"round_3_open": 5,
+	"round_3_remedy": 6,
+}
+
+var _judgments: Dictionary = {}
+var _opponents: Dictionary = {}
+var _evidence: Dictionary = {}
+var _frames: Dictionary = {}
+var _taxonomy: Dictionary = {}
+
+var _loaded: bool = false
+var _taxonomy_valid: bool = false
+var _active_opponent: Resource = null
+var _active_round: Resource = null
+var _round_index: int = 0
+var _current_move_index: int = 0
+var _round_buckets: Dictionary = {}
+var _last_result: Dictionary = {}
+var _phase_one: PhaseOneController = PhaseOneController.new()
+var _phase_two: PhaseTwoController = PhaseTwoController.new()
+
+
+static func state_rank_for_tag(tag: String) -> int:
+	return int(STATE_RANKS.get(tag, 999))
+
+
+func _ready() -> void:
+	load_data()
+
+
+func load_data() -> bool:
+	_judgments.clear()
+	_opponents.clear()
+	_evidence.clear()
+	_frames.clear()
+	_taxonomy.clear()
+	_loaded = false
+	_taxonomy_valid = false
+
+	if not _load_judgments():
+		return false
+	if not _load_opponents():
+		return false
+	if not _load_named_block(EVIDENCE_PATH, "evidence", _evidence):
+		return false
+	if not _load_named_block(FRAMES_PATH, "frames", _frames):
+		return false
+
+	var parsed_taxonomy: Dictionary = _load_json_dictionary(TAXONOMY_PATH)
+	if parsed_taxonomy.is_empty():
+		return false
+	_taxonomy = parsed_taxonomy
+	_loaded = true
+	_taxonomy_valid = _validate_battle_tags()
+	return _taxonomy_valid
+
+
+func get_judgment(judgment_id: String) -> Resource:
+	return _judgments.get(judgment_id, null)
+
+
+func get_opponent(opponent_id: String) -> Resource:
+	return _opponents.get(opponent_id, null)
+
+
+func get_last_result() -> Dictionary:
+	return _last_result.duplicate(true)
+
+
+func start_round(opponent_id: String, round_index: int) -> void:
+	if not _ensure_loaded():
+		return
+	var opponent: Resource = _opponents.get(opponent_id, null)
+	if opponent == null:
+		push_error("BattleController.start_round: unknown opponent_id '%s'" % opponent_id)
+		return
+	var round: Resource = opponent.get_round(round_index)
+	if round == null:
+		push_error("BattleController.start_round: round_index %d missing for '%s'" % [round_index, opponent_id])
+		return
+
+	_active_opponent = opponent
+	_active_round = round
+	_round_index = round_index
+	_current_move_index = 0
+	_last_result = {}
+
+	if _is_phase_one_round(round_index):
+		_phase_one.start(PHASE_ONE_STARTING_COOPERATION)
+		_write_chapter1_flag("witness_cooperation", _phase_one.witness_cooperation)
+	else:
+		var proposed_frame: String = str(_chapter1().get("proposed_frame", ""))
+		var starting_patience: int = PHASE_TWO_DEFAULT_PATIENCE
+		if proposed_frame == "merits_defence":
+			starting_patience = WRONG_SHAPE_PATIENCE
+		_phase_two.start(starting_patience, proposed_frame, _frames, _chapter1(), state_rank_for_tag(round.round_tag))
+		_write_chapter1_flag("judicial_patience", _phase_two.judicial_patience)
+		if proposed_frame == "merits_defence":
+			_emit_judge_skepticism(round_index, proposed_frame)
+
+	_write_chapter1_flag("casebook_judge_state", round.round_tag)
+
+
+func opponent_advance() -> Dictionary:
+	if _active_round == null:
+		push_error("BattleController.opponent_advance: no active round")
+		return {}
+
+	var current_state: String = str(_chapter1().get("casebook_judge_state", ""))
+	if current_state == _active_round.round_tag:
+		_write_chapter1_flag("casebook_judge_state", _active_round.react_tag)
+	elif current_state == _active_round.react_tag and _current_move_index < _active_round.moves.size() - 1:
+		_current_move_index += 1
+
+	var move: Resource = _current_opponent_move()
+	var result: Dictionary = {
+		"round_index": _round_index,
+		"state": str(_chapter1().get("casebook_judge_state", "")),
+		"opening_statement": _active_round.opening_statement,
+		"pressure": _active_round.pressure,
+		"opponent_move_id": "",
+		"opponent_move": "",
+	}
+	if move != null:
+		result["opponent_move_id"] = move.move_id
+		result["opponent_move"] = move.display_name
+	_last_result = result
+	return result
+
+
+func player_press(witness_statement_id: String) -> Dictionary:
+	if _active_round == null:
+		push_error("BattleController.player_press: no active round")
+		return {}
+	if not _is_phase_one_round(_round_index):
+		push_error("BattleController.player_press: Press is only available during Phase 1")
+		return {}
+
+	_select_opponent_move(witness_statement_id)
+	var opponent_move: Resource = _current_opponent_move()
+	var move_tags: Dictionary[String, float] = _weighted_tags_for_evidence(witness_statement_id)
+	var resolved: Dictionary = _resolve_against_current(move_tags, opponent_move)
+
+	_phase_one.spend_press(1)
+	_write_chapter1_flag("witness_cooperation", _phase_one.witness_cooperation)
+	if _evidence.has(witness_statement_id):
+		_establish_evidence(witness_statement_id)
+
+	var result: Dictionary = _base_result(resolved)
+	result["action"] = "press"
+	result["witness_statement_id"] = witness_statement_id
+	result["witness_cooperation"] = _phase_one.witness_cooperation
+	_last_result = result
+	return result
+
+
+func player_present(move: Resource, evidence_id: String) -> Dictionary:
+	if _active_round == null:
+		push_error("BattleController.player_present: no active round")
+		return {}
+	if move == null:
+		push_error("BattleController.player_present: move is null")
+		return {}
+
+	var opponent_move: Resource = _current_opponent_move()
+	var move_tags: Dictionary[String, float] = _combine_move_and_evidence_tags(move.get_weighted_tags(), evidence_id)
+	var taxonomy_ok: bool = Effectiveness.validate_against_taxonomy(move_tags, _taxonomy)
+	var evidence_available: bool = true
+	if not _is_phase_one_round(_round_index):
+		evidence_available = _phase_two.is_evidence_available(evidence_id, _chapter1(), _evidence)
+
+	var resolved: Dictionary = _resolve_against_current(move_tags, opponent_move)
+	if not evidence_available and resolved.get("bucket", "no_effect") != "backfires":
+		resolved = {
+			"bucket": "no_effect",
+			"score": 0.0,
+			"primary_match": "",
+		}
+
+	var bucket: String = str(resolved.get("bucket", "no_effect"))
+	var multiplier: float = Effectiveness.bucket_to_force_multiplier(bucket)
+	var pressure_delta: int = int(round(float(_active_round.pressure) * max(0.0, multiplier)))
+	var patience_delta: int = 0
+	if _is_phase_one_round(_round_index):
+		if bucket != "backfires" and bucket != "no_effect":
+			_establish_evidence(evidence_id)
+	else:
+		patience_delta = _phase_two.apply_present_bucket(bucket)
+		_write_chapter1_flag("judicial_patience", _phase_two.judicial_patience)
+
+	_round_buckets[_round_index] = bucket
+
+	var result: Dictionary = _base_result(resolved)
+	result["action"] = "present"
+	result["move_id"] = move.id
+	result["evidence_id"] = evidence_id
+	result["taxonomy_valid"] = taxonomy_ok
+	result["evidence_available"] = evidence_available
+	result["force_multiplier"] = multiplier
+	result["opponent_pressure"] = _active_round.pressure
+	result["opponent_pressure_delta"] = pressure_delta
+	result["judicial_patience"] = int(_chapter1().get("judicial_patience", 0))
+	result["judicial_patience_delta"] = patience_delta
+	result["witness_cooperation"] = int(_chapter1().get("witness_cooperation", 0))
+	_last_result = result
+	return result
+
+
+func end_round() -> Dictionary:
+	if _active_round == null or _active_opponent == null:
+		push_error("BattleController.end_round: no active round")
+		return {}
+
+	var bucket: String = str(_round_buckets.get(_round_index, "no_effect"))
+	var round_non_backfire: bool = bucket != "backfires"
+	var result: Dictionary = {
+		"round_index": _round_index,
+		"bucket": bucket,
+		"round_non_backfire": round_non_backfire,
+		"court_won_procedural_reset": false,
+		"court_outcome": "",
+	}
+
+	if _round_index < 3:
+		start_round(_active_opponent.id, _round_index + 1)
+		result["next_state"] = str(_chapter1().get("casebook_judge_state", ""))
+		_last_result = result
+		return result
+
+	_write_chapter1_flag("casebook_judge_state", _active_round.react_tag)
+	var all_non_backfire: bool = true
+	for index in [1, 2, 3]:
+		if str(_round_buckets.get(index, "backfires")) == "backfires":
+			all_non_backfire = false
+			break
+
+	var outcome: String = "procedural_reset_weak"
+	if all_non_backfire:
+		if str(_chapter1().get("proposed_frame", "")) == "merits_defence":
+			outcome = "procedural_reset_narrow"
+		else:
+			outcome = "procedural_reset_full"
+		_write_chapter1_flag("court_won_procedural_reset", true)
+		_write_chapter1_flag("won_court", true)
+
+	_write_chapter1_flag("court_outcome", outcome)
+	result["court_won_procedural_reset"] = bool(_chapter1().get("court_won_procedural_reset", false))
+	result["court_outcome"] = outcome
+	result["casebook_judge_state"] = str(_chapter1().get("casebook_judge_state", ""))
+	_last_result = result
+	return result
+
+
+func _ensure_loaded() -> bool:
+	if _loaded and _taxonomy_valid:
+		return true
+	return load_data()
+
+
+func _load_judgments() -> bool:
+	var parsed: Dictionary = _load_json_dictionary(JUDGMENTS_PATH)
+	if parsed.is_empty():
+		return false
+	var raw_judgments: Array = []
+	if parsed.get("judgments", []) is Array:
+		raw_judgments = parsed.get("judgments", [])
+	for raw_judgment in raw_judgments:
+		if not raw_judgment is Dictionary:
+			push_error("BattleController: judgment entry is not a Dictionary")
+			return false
+		var judgment_script := load("res://scripts/systems/battle/judgment.gd") as GDScript
+		var judgment = judgment_script.load_from_dict(raw_judgment)
+		if judgment.id != "":
+			_judgments[judgment.id] = judgment
+	return true
+
+
+func _load_opponents() -> bool:
+	var parsed: Dictionary = _load_json_dictionary(OPPONENTS_PATH)
+	if parsed.is_empty():
+		return false
+	var raw_opponents: Array = []
+	if parsed.get("opponents", []) is Array:
+		raw_opponents = parsed.get("opponents", [])
+	for raw_opponent in raw_opponents:
+		if not raw_opponent is Dictionary:
+			push_error("BattleController: opponent entry is not a Dictionary")
+			return false
+		var opponent_script := load("res://scripts/systems/battle/argument_opponent.gd") as GDScript
+		var opponent = opponent_script.load_from_dict(raw_opponent)
+		if opponent.id != "":
+			_opponents[opponent.id] = opponent
+	return true
+
+
+func _load_named_block(path: String, block_name: String, target: Dictionary) -> bool:
+	var parsed: Dictionary = _load_json_dictionary(path)
+	if parsed.is_empty():
+		return false
+	if not parsed.get(block_name, {}) is Dictionary:
+		push_error("BattleController: '%s' missing Dictionary block '%s'" % [path, block_name])
+		return false
+	for key in parsed[block_name]:
+		if parsed[block_name][key] is Dictionary:
+			target[str(key)] = parsed[block_name][key]
+	return true
+
+
+func _load_json_dictionary(path: String) -> Dictionary:
+	if not FileAccess.file_exists(path):
+		push_error("BattleController: JSON file not found: %s" % path)
+		return {}
+	var file := FileAccess.open(path, FileAccess.READ)
+	if file == null:
+		push_error("BattleController: cannot open JSON file: %s" % path)
+		return {}
+	var text: String = file.get_as_text()
+	file.close()
+	var parsed: Variant = JSON.parse_string(text)
+	if parsed == null or not parsed is Dictionary:
+		push_error("BattleController: JSON parse failed: %s" % path)
+		return {}
+	return parsed
+
+
+func _validate_battle_tags() -> bool:
+	for judgment in _judgments.values():
+		if not judgment is Resource:
+			continue
+		for move in judgment.principle_moves:
+			if not Effectiveness.validate_against_taxonomy(move.get_weighted_tags(), _taxonomy):
+				return false
+
+	for opponent in _opponents.values():
+		if not opponent is Resource:
+			continue
+		for round in opponent.court_rounds:
+			for move in round.moves:
+				if not Effectiveness.validate_against_taxonomy(move.get_argument_tags(), _taxonomy):
+					return false
+				if not Effectiveness.validate_against_taxonomy(move.get_weakness_tags(), _taxonomy):
+					return false
+				if not Effectiveness.validate_against_taxonomy(move.get_strength_tags(), _taxonomy):
+					return false
+
+	for evidence_id in _evidence:
+		if not Effectiveness.validate_against_taxonomy(_weighted_tags_for_evidence(str(evidence_id)), _taxonomy):
+			return false
+	return true
+
+
+func _is_phase_one_round(round_index: int) -> bool:
+	return round_index == 1 or round_index == 2
+
+
+func _current_opponent_move() -> Resource:
+	if _active_round == null:
+		return null
+	return _active_round.get_move_at(_current_move_index)
+
+
+func _select_opponent_move(move_id: String) -> void:
+	if _active_round == null:
+		return
+	for index in range(_active_round.moves.size()):
+		if _active_round.moves[index].move_id == move_id:
+			_current_move_index = index
+			return
+
+
+func _resolve_against_current(move_tags: Dictionary[String, float], opponent_move: Resource) -> Dictionary:
+	if opponent_move == null:
+		return {
+			"bucket": "no_effect",
+			"score": 0.0,
+			"primary_match": "",
+		}
+	var resolved: Dictionary = Effectiveness.resolve(
+		move_tags,
+		opponent_move.get_weakness_tags(),
+		opponent_move.get_strength_tags()
+	)
+	if not VALID_BUCKETS.has(str(resolved.get("bucket", ""))):
+		resolved["bucket"] = "no_effect"
+	return resolved
+
+
+func _combine_move_and_evidence_tags(move_tags: Dictionary[String, float], evidence_id: String) -> Dictionary[String, float]:
+	var evidence_tags: Dictionary[String, float] = _weighted_tags_for_evidence(evidence_id)
+	if evidence_tags.is_empty():
+		return move_tags
+	if move_tags.is_empty():
+		return evidence_tags
+
+	var combined: Dictionary[String, float] = {}
+	for tag_id in move_tags:
+		combined[tag_id] = float(combined.get(tag_id, 0.0)) + (float(move_tags[tag_id]) * 0.75)
+	for tag_id in evidence_tags:
+		combined[tag_id] = float(combined.get(tag_id, 0.0)) + (float(evidence_tags[tag_id]) * 0.25)
+	return _normalise_tags(combined)
+
+
+func _weighted_tags_for_evidence(evidence_id: String) -> Dictionary[String, float]:
+	var tags: Array[String] = []
+	var entry: Dictionary = {}
+	if _evidence.get(evidence_id, {}) is Dictionary:
+		entry = _evidence.get(evidence_id, {})
+	for raw_tag in entry.get("argument_tags", []):
+		var tag_id: String = str(raw_tag)
+		if not tags.has(tag_id):
+			tags.append(tag_id)
+	for raw_tag in entry.get("context_tags", []):
+		var tag_id: String = str(raw_tag)
+		if not tags.has(tag_id):
+			tags.append(tag_id)
+	if tags.is_empty():
+		return {}
+	var weighted: Dictionary[String, float] = {}
+	var weight: float = 1.0 / float(tags.size())
+	for tag_id in tags:
+		weighted[tag_id] = weight
+	return weighted
+
+
+func _normalise_tags(tags: Dictionary[String, float]) -> Dictionary[String, float]:
+	var total: float = 0.0
+	for tag_id in tags:
+		total += float(tags[tag_id])
+	if total <= 0.0:
+		return {}
+	var out: Dictionary[String, float] = {}
+	for tag_id in tags:
+		out[tag_id] = float(tags[tag_id]) / total
+	return out
+
+
+func _establish_evidence(evidence_id: String) -> void:
+	if evidence_id == "" or not _evidence.has(evidence_id):
+		return
+	_phase_one.establish_evidence(evidence_id)
+	var entry: Dictionary = _evidence[evidence_id]
+	var flag_path: String = str(entry.get("sets_flag", ""))
+	if not flag_path.begins_with("chapter1."):
+		return
+	var key: String = flag_path.substr(9)
+	if key == "bonus_evidence_collected":
+		_write_chapter1_flag(key, evidence_id)
+	else:
+		_write_chapter1_flag(key, true)
+
+
+func _base_result(resolved: Dictionary) -> Dictionary:
+	return {
+		"bucket": str(resolved.get("bucket", "no_effect")),
+		"score": float(resolved.get("score", 0.0)),
+		"primary_match": str(resolved.get("primary_match", "")),
+		"casebook_judge_state": str(_chapter1().get("casebook_judge_state", "")),
+	}
+
+
+func _chapter1() -> Dictionary:
+	var state_node: Node = get_node_or_null("/root/State")
+	if state_node == null:
+		return {}
+	if not state_node.get("data") is Dictionary:
+		return {}
+	var data: Dictionary = state_node.get("data")
+	if not data.get("chapter1", {}) is Dictionary:
+		return {}
+	return data["chapter1"]
+
+
+func _write_chapter1_flag(flag_name: String, value: Variant) -> void:
+	var state_node: Node = get_node_or_null("/root/State")
+	if state_node == null:
+		push_error("BattleController: State autoload missing; cannot write chapter1.%s" % flag_name)
+		return
+	var data: Dictionary = state_node.get("data")
+	if not data.has("chapter1") or not data["chapter1"] is Dictionary:
+		push_error("BattleController: State.data.chapter1 missing")
+		return
+	if not data["chapter1"].has(flag_name):
+		push_error("BattleController: chapter1.%s is not declared in State.reset_state()" % flag_name)
+		return
+	data["chapter1"][flag_name] = value
+
+	var sigs: Node = get_node_or_null("/root/Signals")
+	if sigs != null and sigs.has_signal("chapter1_flag_changed"):
+		sigs.chapter1_flag_changed.emit(flag_name, value)
+
+
+func _emit_judge_skepticism(round_index: int, proposed_frame: String) -> void:
+	var sigs: Node = get_node_or_null("/root/Signals")
+	if sigs != null and sigs.has_signal("judge_skepticism_raised"):
+		sigs.judge_skepticism_raised.emit(round_index, proposed_frame)

@@ -116,3 +116,7 @@ signal dialogue_chain_start()
 ## for back-compat with the barista dialogue gate in barista.json.
 @warning_ignore("unused_signal")
 signal coffee_brewing_completed(result: Dictionary)
+
+## round_index/proposed_frame: wrong-shape court frame lowered initial judicial patience.
+@warning_ignore("unused_signal")
+signal judge_skepticism_raised(round_index: int, proposed_frame: String)
