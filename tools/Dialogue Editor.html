@@ -1507,6 +1507,18 @@
   .choice-value-input::placeholder { color: var(--mute); }
   .choice-value-input:hover { border-color: var(--border-strong); }
   .choice-value-input:focus { border-color: var(--accent); color: var(--text); }
+  .choice-value.enum-value-error::after {
+    content: " \26A0 not in declared enum";
+    color: var(--danger, #c44);
+    font-size: 0.85em;
+    margin-left: 0.4em;
+    white-space: nowrap;
+  }
+  .choice-value-input.enum-value-error {
+    border: 1px dashed var(--danger, #c44);
+    background: rgba(196, 68, 68, 0.09);
+    color: var(--danger, #c44);
+  }
 
   .choice-consequence-badge {
     background: transparent;
@@ -1594,6 +1606,11 @@
   }
   .choice-trust-delta::placeholder { color: var(--mute); }
   .choice-trust-delta:focus { border-color: var(--accent); }
+  .choice-trust-delta:disabled {
+    opacity: 0.35;
+    cursor: not-allowed;
+    border-style: dashed;
+  }
 
   /* ============ BOTTOM BAR ============ */
   #bottombar {
@@ -3485,6 +3502,8 @@ let knownSpeakers = []; // populated by collectSpeakers() after each folder load
 let flagPaths = [];     // populated by harvestFlagPaths() after each folder load
 let currentFlagFilter = '';
 let storedDirHandle = null; // restored from IDB on page load if previously picked
+window.__chapter1_registry = null;       // cached data/chapters/chapter1.json
+window.__argument_frames_ch1 = null;     // cached data/argument_frames_ch1.json
 
 const $ = sel => document.querySelector(sel);
 
@@ -3944,6 +3963,61 @@ function isStagingFile(name) {
   return name === 'dialogues.json' || name.includes('_rewrite') || name.includes('_v2');
 }
 
+async function readJsonAtRelativePathFromDirHandle(baseDir, relPath) {
+  if (!baseDir || !relPath) return null;
+  const parts = String(relPath).split('/').filter(Boolean);
+  if (parts.length === 0) return null;
+  let dir = baseDir;
+  for (let i = 0; i < parts.length - 1; i++) {
+    try {
+      dir = await dir.getDirectoryHandle(parts[i]);
+    } catch (_) {
+      return null;
+    }
+  }
+  try {
+    const handle = await dir.getFileHandle(parts[parts.length - 1]);
+    const file = await handle.getFile();
+    const text = await file.text();
+    return JSON.parse(text);
+  } catch (_) {
+    return null;
+  }
+}
+
+async function loadEnumSourceCachesForFolder() {
+  window.__chapter1_registry = null;
+  window.__argument_frames_ch1 = null;
+  if (!dirHandle) return;
+
+  const chapterCandidates = [
+    'chapters/chapter1.json',
+    'data/chapters/chapter1.json',
+    'godot/data/chapters/chapter1.json',
+    'chapter1.json'
+  ];
+  for (const p of chapterCandidates) {
+    const parsed = await readJsonAtRelativePathFromDirHandle(dirHandle, p);
+    if (parsed && typeof parsed === 'object') {
+      window.__chapter1_registry = parsed;
+      break;
+    }
+  }
+
+  const frameCandidates = [
+    'argument_frames_ch1.json',
+    'data/argument_frames_ch1.json',
+    'godot/data/argument_frames_ch1.json'
+  ];
+  for (const p of frameCandidates) {
+    const parsed = await readJsonAtRelativePathFromDirHandle(dirHandle, p);
+    if (parsed && typeof parsed === 'object') {
+      window.__argument_frames_ch1 = parsed;
+      break;
+    }
+  }
+}
+
 async function loadAllFiles() {
   files = {};
   for await (const entry of dirHandle.values()) {
@@ -3980,6 +4054,7 @@ async function loadAllFiles() {
   // Folder is open — new-file is now valid.
   const newFileBtn = document.getElementById('new-file-btn');
   if (newFileBtn) newFileBtn.disabled = false;
+  await loadEnumSourceCachesForFolder();
   knownSpeakers = collectSpeakers();
   flagPaths = harvestFlagPaths();
   refreshFlagList();
@@ -4432,6 +4507,151 @@ async function autoAddFlagToStateGd(namespace, key, literal) {
   renderContent();
   renderUnusedFlagsPanel();
   showToast(`state.gd: added ${namespace}.${key}, bumped SAVE_VERSION to ${newVersion}${saveNote}`);
+}
+
+function normalizeDeclaredEnumValues(values) {
+  if (!Array.isArray(values)) return null;
+  const out = [''];
+  for (const v of values) {
+    const sv = String(v);
+    if (!out.includes(sv)) out.push(sv);
+  }
+  return out;
+}
+
+function getRegistryEnumValues(writePath) {
+  const registry = window.__chapter1_registry;
+  if (!registry || !registry.new_state_flags || !writePath) return null;
+  const flag = writePath.replace(/^chapter1\./, '');
+  const flags = registry.new_state_flags;
+  if (Array.isArray(flags)) {
+    const row = flags.find(f => f && (f.key === writePath || f.key === flag || f.key === `chapter1.${flag}`));
+    if (row && Array.isArray(row._enum)) return normalizeDeclaredEnumValues(row._enum);
+    return null;
+  }
+  if (flags && typeof flags === 'object') {
+    const row = flags[flag] || flags[writePath];
+    if (row && Array.isArray(row._enum)) return normalizeDeclaredEnumValues(row._enum);
+  }
+  return null;
+}
+
+function deriveEnumValuesFromDialogueChoices(writePath) {
+  const set = new Set(['']);
+  for (const file of Object.values(files)) {
+    const json = file && file.json;
+    if (!json || !Array.isArray(json.states)) continue;
+    for (const st of json.states) {
+      const opts = st && st.options;
+      if (!opts || opts.write_path !== writePath || !Array.isArray(opts.choices)) continue;
+      for (const c of opts.choices) {
+        if (c && c.value !== undefined && c.value !== null) set.add(String(c.value));
+      }
+    }
+  }
+  return set.size > 1 ? Array.from(set) : null;
+}
+
+function getDeclaredEnumValues(writePath) {
+  if (!writePath || typeof writePath !== 'string') return null;
+  const path = writePath.trim();
+  if (!path) return null;
+
+  const fromRegistry = getRegistryEnumValues(path);
+  if (fromRegistry) return fromRegistry;
+
+  if (path === 'chapter1.proposed_frame') {
+    const frames = window.__argument_frames_ch1;
+    if (frames && frames.frames && typeof frames.frames === 'object') {
+      return normalizeDeclaredEnumValues(Object.keys(frames.frames));
+    }
+  }
+
+  const inlineFallback = {
+    "chapter1.client_meeting_stance": ["sympathetic", "blunt_procedural", "technical"],
+    "chapter1.murrow_choice": ["dry", "professional", "friendly"],
+    "chapter1.bonus_evidence_collected": [
+      "wojcik_witness_statement",
+      "return_to_sender_slip",
+      "lease_1962_inheritance_1987",
+      "landlord_contact"
+    ],
+    "chapter1.whimsy_co_counsel_posture": ["procedural_throat", "merits_pivot", "open_register"]
+  };
+  if (inlineFallback[path]) return normalizeDeclaredEnumValues(inlineFallback[path]);
+
+  const fromDialogues = deriveEnumValuesFromDialogueChoices(path);
+  if (fromDialogues) return normalizeDeclaredEnumValues(fromDialogues);
+  return null;
+}
+
+function isEnumValueFormatValid(optionValue) {
+  const value = String(optionValue == null ? '' : optionValue);
+  return value === '' || /^[a-z_][a-z0-9_]*$/.test(value);
+}
+
+function isEnumValueValid(writePath, optionValue) {
+  const declared = getDeclaredEnumValues(writePath);
+  if (declared === null) return true;
+  return declared.includes(String(optionValue == null ? '' : optionValue));
+}
+
+function renderEnumValueFormatError(writePath, optionValue, inputEl) {
+  if (!inputEl) return;
+  const wrap = inputEl.closest('.choice-value');
+  const clear = () => {
+    inputEl.classList.remove('enum-value-error');
+    if (wrap) wrap.classList.remove('enum-value-error');
+    inputEl.title = 'choice.value — written to options.write_path on commit';
+  };
+  const declared = getDeclaredEnumValues(writePath);
+  if (declared === null) {
+    clear();
+    return;
+  }
+  const value = String(optionValue == null ? '' : optionValue);
+  if (!isEnumValueFormatValid(value)) {
+    inputEl.classList.add('enum-value-error');
+    if (wrap) wrap.classList.add('enum-value-error');
+    inputEl.title = `Value "${value}" has invalid format for ${writePath}. Use lower_snake_case or empty string.`;
+    return;
+  }
+  if (isEnumValueValid(writePath, value)) {
+    clear();
+    return;
+  }
+  inputEl.classList.add('enum-value-error');
+  if (wrap) wrap.classList.add('enum-value-error');
+  inputEl.title = `Value "${value}" is not declared for ${writePath}. Allowed: ${declared.join(", ")}`;
+}
+
+// Returns a warning span when trust_path value is non-empty but not a valid
+// dotted-path format (e.g. chapter1.halina_trust). This fires before state.gd
+// is loaded, giving the author immediate feedback. A bare word like "asia" is
+// caught here; an unknown-but-valid-format path falls through to the existing
+// renderUndeclaredFlagWarning check.
+function renderTrustPathFormatError(path) {
+  const wrap = document.createElement('span');
+  wrap.className = 'undeclared-flag-warning';
+  const trimmed = path.trim();
+  // Empty is allowed (means: no trust meter for this options block).
+  // A valid path must be namespace.key — at least one dot, word chars only.
+  if (!trimmed || /^[a-z_][a-z0-9_]*(\.[a-z_][a-z0-9_]*)+$/.test(trimmed)) {
+    wrap.dataset.empty = '1';
+    return wrap;
+  }
+  wrap.innerHTML = `
+    <span class="undeclared-icon" title="trust_path must be a dotted State.data path — bare names are silently ignored at runtime and cause startup errors">⚠</span>
+    <span class="undeclared-msg">invalid format — must be namespace.key (e.g. chapter1.halina_trust)</span>
+  `;
+  return wrap;
+}
+
+// Returns true when a trust_path value is non-empty and passes format check.
+// Used to gate trust_delta inputs — a delta without a resolvable path is a no-op.
+function isTrustPathValid(path) {
+  const t = (path || '').trim();
+  return t.length > 0 && /^[a-z_][a-z0-9_]*(\.[a-z_][a-z0-9_]*)+$/.test(t);
 }
 
 // Minimal HTML-escape mirror of the host's escapeHtml. Some early callers
@@ -5196,6 +5416,9 @@ function renderState(state, stateIdx, defaultSpeaker, rebuildStates) {
     // states that don't use the trust meter or chaining.
     const meta = document.createElement('div');
     meta.className = 'options-meta';
+    const enumDatalistId = `enum-values-${state.id || 'state'}-${stateIdx}`;
+    let syncEnumChoiceValidation = () => {};
+    let syncEnumDatalist = () => {};
 
     function makePathField(labelText, key) {
       const lbl = document.createElement('label');
@@ -5205,26 +5428,58 @@ function renderState(state, stateIdx, defaultSpeaker, rebuildStates) {
       input.setAttribute('list', 'flag-list');
       input.value = opts[key] || '';
       input.placeholder = '(none)';
-      // Inline ⚠ warning surfaced when the path isn't declared in state.gd.
-      // The warning re-evaluates on every keystroke so the indicator drops
-      // the moment the author types a known path.
-      let warn = renderUndeclaredFlagWarning(opts[key] || '');
+      const isTrustPath = key === 'trust_path';
+
+      // For trust_path: check format first (bare words caught here even before
+      // state.gd is loaded), then fall through to the undeclared-flag check for
+      // valid-format but unknown paths. For other path fields: undeclared only.
+      function makeWarn(v) {
+        if (isTrustPath) {
+          const fmtWarn = renderTrustPathFormatError(v);
+          if (!fmtWarn.dataset.empty) return fmtWarn;
+        }
+        return renderUndeclaredFlagWarning(v);
+      }
+
+      // When trust_path changes, sync disabled state on every trust_delta input
+      // in the same options block — a delta without a resolvable path is a no-op
+      // at runtime, so we surface this visually without silently discarding data.
+      function syncTrustDeltaDisabled() {
+        if (!isTrustPath) return;
+        const valid = isTrustPathValid(opts.trust_path || '');
+        optBlock.querySelectorAll('.choice-trust-delta').forEach(el => {
+          el.disabled = !valid;
+          el.title = valid
+            ? 'trust_delta — added to options.trust_path on commit'
+            : 'set a valid trust_path above (e.g. chapter1.halina_trust) to enable trust_delta';
+        });
+      }
+
+      let warn = makeWarn(opts[key] || '');
       input.addEventListener('input', () => {
         const v = input.value.trim();
         if (v) opts[key] = v;
         else delete opts[key];
         markDirty();
-        const fresh = renderUndeclaredFlagWarning(v);
+        const fresh = makeWarn(v);
         warn.replaceWith(fresh);
         warn = fresh;
+        syncTrustDeltaDisabled();
+        if (key === 'write_path') {
+          syncEnumDatalist();
+          syncEnumChoiceValidation();
+        }
       });
       lbl.appendChild(input);
       lbl.appendChild(warn);
+      // Expose sync so the choices container can call it after its first render.
+      lbl._syncTrustDelta = syncTrustDeltaDisabled;
       return lbl;
     }
 
     meta.appendChild(makePathField('write_path', 'write_path'));
-    meta.appendChild(makePathField('trust_path', 'trust_path'));
+    const trustPathLabel = makePathField('trust_path', 'trust_path');
+    meta.appendChild(trustPathLabel);
 
     const chLabel = document.createElement('label');
     chLabel.textContent = 'chain';
@@ -5248,8 +5503,35 @@ function renderState(state, stateIdx, defaultSpeaker, rebuildStates) {
     const choicesContainer = document.createElement('div');
     choicesContainer.className = 'choices-container';
     optBlock.appendChild(choicesContainer);
+    const enumDatalist = document.createElement('datalist');
+    enumDatalist.id = enumDatalistId;
+    optBlock.appendChild(enumDatalist);
 
     const choiceFactory = () => ({ text: '', value: '' });
+    syncEnumDatalist = function syncEnumDatalistImpl() {
+      const declared = getDeclaredEnumValues(opts.write_path || '');
+      const hasDeclared = Array.isArray(declared) && declared.length > 0;
+      enumDatalist.innerHTML = '';
+      if (hasDeclared) {
+        declared.forEach(v => {
+          const op = document.createElement('option');
+          op.value = String(v);
+          enumDatalist.appendChild(op);
+        });
+      }
+      choicesContainer.querySelectorAll('.choice-value-input').forEach(input => {
+        if (hasDeclared) input.setAttribute('list', enumDatalistId);
+        else input.removeAttribute('list');
+      });
+    };
+    syncEnumChoiceValidation = function syncEnumChoiceValidationImpl() {
+      const writePath = opts.write_path || '';
+      choicesContainer.querySelectorAll('.choice-value-input').forEach(input => {
+        const i = parseInt(input.dataset.choiceIdx || '', 10);
+        const v = Number.isFinite(i) && opts.choices[i] ? opts.choices[i].value : input.value;
+        renderEnumValueFormatError(writePath, v, input);
+      });
+    };
 
     function rebuildChoices(focusIdx) {
       choicesContainer.innerHTML = '';
@@ -5263,7 +5545,10 @@ function renderState(state, stateIdx, defaultSpeaker, rebuildStates) {
           markDirty();
           rebuildChoices(choiceIdx);
         }, 'insert choice here'));
-        const row = renderChoiceRow(state, opts, choiceIdx, rebuildChoices, choiceFactory);
+        const row = renderChoiceRow(state, opts, choiceIdx, rebuildChoices, choiceFactory, {
+          writePath: opts.write_path || '',
+          validateChoiceInput: renderEnumValueFormatError
+        });
         choicesContainer.appendChild(row);
         const targets = findChoiceConsequences(state, opts.choices[choiceIdx], opts);
         if (targets.length > 0) {
@@ -5279,6 +5564,10 @@ function renderState(state, stateIdx, defaultSpeaker, rebuildStates) {
         rebuildChoices(opts.choices.length - 1);
       }, 'insert choice at end'));
       notifyGraphStructuralChange();
+      // Sync trust_delta disabled state after every rebuild (add/delete/reorder).
+      if (trustPathLabel._syncTrustDelta) trustPathLabel._syncTrustDelta();
+      syncEnumDatalist();
+      syncEnumChoiceValidation();
       requestAnimationFrame(() => {
         choicesContainer.querySelectorAll('.line-edit').forEach(autoResize);
       });
@@ -5291,6 +5580,11 @@ function renderState(state, stateIdx, defaultSpeaker, rebuildStates) {
       }
     }
     rebuildChoices();
+    // Sync trust_delta disabled state after the initial choice render so inputs
+    // that exist without a valid trust_path are immediately greyed out.
+    if (trustPathLabel._syncTrustDelta) trustPathLabel._syncTrustDelta();
+    syncEnumDatalist();
+    syncEnumChoiceValidation();
 
     const addBtn = document.createElement('button');
     addBtn.className = 'add-line-btn';
@@ -5996,7 +6290,7 @@ function escapeHtml(s) {
 // can read it via bare-name lookup. See the note at the top of the script.
 var pinnedConsequences = []; // [{ stateId, choiceIdx, targets: [stateId, ...] }]
 
-function renderChoiceRow(state, opts, choiceIdx, rebuildContainer, choiceFactory) {
+function renderChoiceRow(state, opts, choiceIdx, rebuildContainer, choiceFactory, enumHooks) {
   const choice = opts.choices[choiceIdx];
   const row = document.createElement('div');
   row.className = 'choice-row';
@@ -6066,10 +6360,17 @@ function renderChoiceRow(state, opts, choiceIdx, rebuildContainer, choiceFactory
   valInput.className = 'choice-value-input';
   valInput.type = 'text';
   valInput.value = choice.value != null ? String(choice.value) : '';
+  valInput.dataset.choiceIdx = String(choiceIdx);
   valInput.placeholder = 'value';
   valInput.title = 'choice.value — written to options.write_path on commit';
+  if (enumHooks && enumHooks.writePath) {
+    renderEnumValueFormatError(enumHooks.writePath, valInput.value, valInput);
+  }
   valInput.addEventListener('input', () => {
     opts.choices[choiceIdx].value = valInput.value;
+    if (enumHooks && typeof enumHooks.validateChoiceInput === 'function') {
+      enumHooks.validateChoiceInput(opts.write_path || '', valInput.value, valInput);
+    }
     markDirty();
     refreshModified();
   });
@@ -6105,14 +6406,20 @@ function renderChoiceRow(state, opts, choiceIdx, rebuildContainer, choiceFactory
   });
   row.appendChild(textarea);
 
-  // trust_delta numeric input.
+  // trust_delta numeric input. Disabled when opts.trust_path is absent or not a
+  // valid dotted path — a delta with no resolvable target is silently ignored at
+  // runtime, so we surface this in the editor rather than let it ghost-save.
   const tdInput = document.createElement('input');
   tdInput.className = 'choice-trust-delta';
   tdInput.type = 'number';
   tdInput.step = '1';
   tdInput.value = (typeof choice.trust_delta === 'number') ? String(choice.trust_delta) : '';
   tdInput.placeholder = 'Δ';
-  tdInput.title = 'trust_delta — added to options.trust_path on commit';
+  const _tdTrustValid = isTrustPathValid(opts.trust_path || '');
+  tdInput.disabled = !_tdTrustValid;
+  tdInput.title = _tdTrustValid
+    ? 'trust_delta — added to options.trust_path on commit'
+    : 'set a valid trust_path above (e.g. chapter1.halina_trust) to enable trust_delta';
   tdInput.addEventListener('input', () => {
     const raw = tdInput.value.trim();
     if (raw === '') {
