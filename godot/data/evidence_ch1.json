@@ -1,0 +1,104 @@
+{
+  "version": 1,
+  "_doc": "Chapter 1 evidence cards. New file per PROPOSAL_player_driven_argument.md §3. Each entry is a piece of evidence the player can surface during Beat 4 (binder) through Beat 9 (archive research). 'Surfacing' means reading the corresponding evidence card via dialogue (Crab/Murrow lines), the v2 binder UI, or item pickup. Surfaced evidence is consumed by (a) the argument-frame proposal in crab.json's synthesis options block, (b) the v2 binder UI's evidence panel, and (c) the future court-round controller during Phase 1 Present actions.\n\nTwo-pass authoring per AGENTS.md §Casebook authoring. Code owns: id, source, discovered_when, argument_tags, context_tags, sets_flag. Design owns: display_name, summary, press_lines, present_lines.\n\nSchema:\n  evidence: { <evidence_id>: {\n    display_name (Design — short noun phrase),\n    summary (Design — one-line description),\n    source (Code — where the card surfaces: 'binder_page_<n>' / 'archive_<doc_id>' / 'witness_<npc_id>' / 'item_<item_id>'),\n    discovered_when (Code — a dialogue-runner trigger predicate; when true, the card becomes surfaceable),\n    sets_flag (Code — chapter1 flag flipped true on surfacing; the binder_read_* and bonus-evidence flags are the v1 set),\n    argument_tags (Code — principle_tags from data/tag_taxonomy.json),\n    context_tags (Code — context_tags from data/tag_taxonomy.json),\n    press_lines (Design — what Cula sees/says when reading the card),\n    present_lines (Design — what Cula says when presenting this card in court; one per court-round opening_statement it's relevant to)\n  } }",
+  "_owner_code": "id, source, discovered_when, sets_flag, argument_tags, context_tags",
+  "_owner_design": "display_name, summary, press_lines, present_lines",
+  "evidence": {
+    "envelope_address_number_seven": {
+      "_status": "Code-pass complete; Design text pending.",
+      "source": "binder_page_1",
+      "discovered_when": "chapter1.has_law_binder == true",
+      "sets_flag": "chapter1.binder_read_envelope",
+      "argument_tags": ["service_of_process"],
+      "context_tags": ["service_failure", "documentary"],
+      "display_name": "",
+      "summary": "",
+      "press_lines": [],
+      "present_lines": []
+    },
+    "renewal_2019_number_twelve": {
+      "_status": "Code-pass complete; Design text pending.",
+      "source": "binder_page_2",
+      "discovered_when": "chapter1.has_law_binder == true",
+      "sets_flag": "chapter1.binder_read_renewal",
+      "argument_tags": ["service_of_process", "legal_certainty"],
+      "context_tags": ["civil_proceedings", "documentary", "housing"],
+      "display_name": "",
+      "summary": "",
+      "press_lines": [],
+      "present_lines": []
+    },
+    "renumbering_2015_fact": {
+      "_status": "Code-pass complete; Design text pending. The renumbering is not a document; it's an observation about the building. Surfaceable via Crab's stairwell observation OR by reading the binder cross-reference. Either path sets binder_read_renumbering.",
+      "source": "binder_page_3",
+      "discovered_when": "chapter1.has_law_binder == true || chapter1.met_crab == true",
+      "sets_flag": "chapter1.binder_read_renumbering",
+      "argument_tags": ["service_of_process"],
+      "context_tags": ["service_failure"],
+      "display_name": "",
+      "summary": "",
+      "press_lines": [],
+      "present_lines": []
+    },
+    "wojcik_witness_statement": {
+      "_status": "Hydrated from data/items.json. Surfaced by halina.json client_meeting_r0_response_high / client_meeting_r1_response_high. Bonus evidence — sympathetic-stance carrier.",
+      "source": "item_wojcik_witness_statement",
+      "discovered_when": "chapter1.bonus_evidence_collected == 'wojcik_witness_statement'",
+      "sets_flag": "chapter1.bonus_evidence_collected",
+      "argument_tags": ["service_of_process", "procedural_fairness"],
+      "context_tags": ["housing", "civil_proceedings", "documentary"],
+      "display_name": "Mrs. Wójcik's Witness Statement",
+      "summary": "",
+      "press_lines": [],
+      "present_lines": []
+    },
+    "return_to_sender_slip": {
+      "_status": "Hydrated from data/items.json. Surfaced by halina.json client_meeting_r0_response_blunt / client_meeting_r1_response_high. Bonus evidence — blunt-procedural-stance carrier; also volunteered on high-trust r1 from any stance.",
+      "source": "item_return_to_sender_slip",
+      "discovered_when": "chapter1.bonus_evidence_collected == 'return_to_sender_slip'",
+      "sets_flag": "chapter1.bonus_evidence_collected",
+      "argument_tags": ["service_of_process", "procedural_fairness", "legal_certainty"],
+      "context_tags": ["civil_proceedings", "service_failure", "documentary"],
+      "display_name": "Postal Return-to-Sender Slip",
+      "summary": "",
+      "press_lines": [],
+      "present_lines": []
+    },
+    "lease_1962_inheritance_1987": {
+      "_status": "Hydrated from data/items.json. Surfaced by halina.json client_meeting_r0_response_technical. Bonus evidence — technical-stance carrier.",
+      "source": "item_lease_1962_inheritance_1987",
+      "discovered_when": "chapter1.bonus_evidence_collected == 'lease_1962_inheritance_1987'",
+      "sets_flag": "chapter1.bonus_evidence_collected",
+      "argument_tags": ["service_of_process", "procedural_fairness", "prescribed_by_law"],
+      "context_tags": ["housing", "civil_proceedings", "documentary"],
+      "display_name": "1962 Lease + 1987 Inheritance Paperwork",
+      "summary": "",
+      "press_lines": [],
+      "present_lines": []
+    },
+    "landlord_contact": {
+      "_status": "Hydrated from halina.json client_meeting_r2_response_high. Bonus evidence — high-trust reveal. Surfacing also flips chapter1.landlord_tip_received; seeds Ch4 landlord-intimidation thread.",
+      "source": "witness_halina",
+      "discovered_when": "chapter1.bonus_evidence_collected == 'landlord_contact'",
+      "sets_flag": "chapter1.bonus_evidence_collected",
+      "argument_tags": ["procedural_fairness"],
+      "context_tags": ["housing", "civil_proceedings"],
+      "display_name": "Landlord's Personal Visit (March)",
+      "summary": "",
+      "press_lines": [],
+      "present_lines": []
+    },
+    "rights_memo_article_6": {
+      "_status": "Hydrated from data/items.json (rights_memo). The fair-hearing companion to the procedural binder; surfaced via Whimsy at Café Paragraf.",
+      "source": "item_rights_memo",
+      "discovered_when": "chapter1.has_rights_memo == true",
+      "sets_flag": "chapter1.has_rights_memo",
+      "argument_tags": ["procedural_fairness", "access_to_court", "effective_remedy"],
+      "context_tags": ["fair_trial", "civil_proceedings"],
+      "display_name": "Rights Memo with Coffee Ring",
+      "summary": "",
+      "press_lines": [],
+      "present_lines": []
+    }
+  }
+}

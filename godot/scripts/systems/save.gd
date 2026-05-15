@@ -324,4 +324,34 @@ func migrate_save(saved_data: Dictionary, old_version: int) -> Dictionary:
 		if saved_data.has("chapter1"):
 			if not saved_data["chapter1"].has("state_choice"):
 				saved_data["chapter1"]["state_choice"] = ""
+
+	## v15 -> v16: auto-added by dialogue editor for chapter1.murrow_choice.
+	if old_version < 16:
+		if saved_data.has("chapter1"):
+			if not saved_data["chapter1"].has("murrow_choice"):
+				saved_data["chapter1"]["murrow_choice"] = ""
+
+	## v16 -> v17: Player-driven argument scaffolding per
+	## PROPOSAL_player_driven_argument.md §3. Adds three binder_read_* read-
+	## state booleans, the proposed_frame and whimsy_co_counsel_posture string
+	## enums, and the two PROPOSALS.md §10 resource counters (judicial_patience
+	## defaults to 5, witness_cooperation to 0). Idempotent; defaults match
+	## State.reset_state().
+	if old_version < 17:
+		if saved_data.has("chapter1"):
+			var ch1: Dictionary = saved_data["chapter1"]
+			if not ch1.has("binder_read_envelope"):
+				ch1["binder_read_envelope"] = false
+			if not ch1.has("binder_read_renewal"):
+				ch1["binder_read_renewal"] = false
+			if not ch1.has("binder_read_renumbering"):
+				ch1["binder_read_renumbering"] = false
+			if not ch1.has("proposed_frame"):
+				ch1["proposed_frame"] = ""
+			if not ch1.has("whimsy_co_counsel_posture"):
+				ch1["whimsy_co_counsel_posture"] = ""
+			if not ch1.has("judicial_patience"):
+				ch1["judicial_patience"] = 5
+			if not ch1.has("witness_cooperation"):
+				ch1["witness_cooperation"] = 0
 	return saved_data

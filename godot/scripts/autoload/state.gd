@@ -2,7 +2,7 @@ extends Node
 ## State autoload — single writer. Owns all persistent game state and save/load.
 ## Migration required for every shape change (see AGENTS.md §Save migration policy).
 
-const SAVE_VERSION: int = 15
+const SAVE_VERSION: int = 17
 
 const TILE_SIZE := 64
 const CHAR_HEIGHT := 64
@@ -70,6 +70,19 @@ func _ready() -> void:
 ##          defensive coverage for early-adopter once-states authored before
 ##          v14 landed. Rename map and rationale: see godot/PROPOSALS.md /
 ##          godot/data/dialogues/_schema.md §Validation.
+## Player-driven argument scaffolding (SAVE_VERSION 17): seven new chapter1
+##          flags supporting the synthesis pivot specified in
+##          PROPOSAL_player_driven_argument.md §3. Three read-state flags
+##          (binder_read_envelope, binder_read_renewal, binder_read_renumbering)
+##          track what evidence Cula has actually surfaced from the procedural
+##          binder; gated by the dialogue/binder-UI surface, consumed by the
+##          synthesis dialogue and Asia's hint surface. Two synthesis-output
+##          flags (proposed_frame, whimsy_co_counsel_posture) carry what
+##          argument shape Cula committed to in the Crab/Whimsy dialogues into
+##          the eventual court round. Two §10 resource counters
+##          (judicial_patience, witness_cooperation) are pre-declared so
+##          dialogue/court systems can read/write them cleanly once the
+##          battle controller is restored. See proposal §3 for full rationale.
 func reset_state() -> Dictionary:
 	return {
 		## room_transition.gd: which scene is currently loaded.
@@ -143,6 +156,38 @@ func reset_state() -> Dictionary:
 			## Chapter-close gate.
 			"complete": false,
 			"state_choice": "",
+			"murrow_choice": "",
+			## Player-driven argument scaffolding (SAVE_VERSION 17).
+			## binder_read_* — set true when the corresponding evidence card has
+			## been surfaced (via dialogue read-line or binder UI). Required
+			## for proposing the matching argument frame in the Crab synthesis
+			## dialogue. Owners: dialogue runner (via on_dismiss set actions
+			## in crab.json / murrow.json) and the v2 binder UI.
+			"binder_read_envelope": false,
+			"binder_read_renewal": false,
+			"binder_read_renumbering": false,
+			## proposed_frame — string enum. The argument frame Cula committed
+			## to in the Crab synthesis dialogue. Consumed by the court-round
+			## controller at Phase 2 start. Enum values declared in
+			## data/argument_frames_ch1.json: "" / "defective_service_135bis"
+			## / "third_party_non_cure" / "fair_hearing_article_6" /
+			## "merits_defence". Owner: crab.json synthesis options block.
+			"proposed_frame": "",
+			## whimsy_co_counsel_posture — string enum. The rhetorical posture
+			## Whimsy adopted when recruited. Affects Phase 2 closing-argument
+			## flavor lines. Enum: "" / "procedural_throat" / "merits_pivot"
+			## / "open_register". Owner: whimsy.json before_meeting options.
+			"whimsy_co_counsel_posture": "",
+			## judicial_patience — PROPOSALS.md §10 Phase 2 resource. Judge's
+			## willingness to accept further argument. Default 5; Phase 2
+			## controller decrements on wrong citations. Owner: future
+			## battle_controller.gd Phase 2 sub-controller.
+			"judicial_patience": 5,
+			## witness_cooperation — PROPOSALS.md §10 Phase 1 resource.
+			## Per-witness cooperation budget. Default 0 (per-witness
+			## initialisation happens at Phase 1 start). Owner: future
+			## battle_controller.gd Phase 1 sub-controller.
+			"witness_cooperation": 0,
 		},
 		## Badges awarded across the game. Keys declared at reset; value is
 		## flipped true by DialogueRunner award_badge actions. Unknown keys

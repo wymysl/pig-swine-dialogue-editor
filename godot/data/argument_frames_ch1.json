@@ -1,0 +1,78 @@
+{
+  "version": 1,
+  "_doc": "Chapter 1 argument frames — the synthesis units the player commits to in the Crab dialogue (crab.json first_meeting_with_binder / after_binder_first_engagement options block). Each frame names the SHAPE of a legal argument: which evidence supports it, which statute it anchors to, and whether it's well-fitted to the case.\n\nThe player's selected frame writes to chapter1.proposed_frame (string enum, declared in state.gd at SAVE_VERSION 17). The court-round controller reads proposed_frame at Phase 2 start and gates which Casebook citations are available.\n\nThe 'well_fitted' boolean is the soft-fail axis per PROPOSAL_player_driven_argument.md §4. A well-fitted frame survives Phase 2 with full citations available; a not-well-fitted frame survives but Phase 2 citations are gated narrower and judicial_patience starts lower.\n\nTwo-pass authoring. Code owns: id, supporting_evidence, statute_anchor, court_round_unlock, well_fitted, requires_flags. Design owns: display_name, summary, wrong_shape_correction, present_cue.\n\nSchema:\n  frames: { <frame_id>: {\n    display_name (Design — short noun phrase shown in the options block),\n    summary (Design — one-line description for the binder UI),\n    supporting_evidence (Code — Array[String] of evidence_ids from evidence_ch1.json),\n    statute_anchor (Code — string label; not a tag, just a reference for the present_cue),\n    court_round_unlock (Code — which casebook_judge_state value this frame unlocks Phase 2 citation for: 'round_1_open' / 'round_2_open' / 'round_3_open'),\n    requires_flags (Code — Array[String] of chapter1.* flags that must be true to propose this frame; e.g. binder_read_envelope + binder_read_renewal for the defective-service frame),\n    well_fitted (Code — bool; calibrates soft-fail behavior),\n    wrong_shape_correction (Design — Crab's quiet correction line when this frame is the wrong shape),\n    present_cue (Design — Cula's first-spoken-line when the frame opens Phase 2)\n  } }",
+  "_owner_code": "id, supporting_evidence, statute_anchor, court_round_unlock, requires_flags, well_fitted",
+  "_owner_design": "display_name, summary, wrong_shape_correction, present_cue",
+  "frames": {
+    "defective_service_135bis": {
+      "_status": "Code-pass complete; Design text pending. The canonical well-fitted frame: defective service under KPC Article 135-bis § 2. Requires binder_read_envelope and binder_read_renewal (the player must have seen BOTH the wrong-address envelope and the right-address renewal). renumbering is not strictly required because the address mismatch suffices on its face, but reading it strengthens the Phase 1 fact-finding round.",
+      "supporting_evidence": [
+        "envelope_address_number_seven",
+        "renewal_2019_number_twelve",
+        "renumbering_2015_fact"
+      ],
+      "statute_anchor": "KPC Article 135-bis § 2",
+      "court_round_unlock": "round_1_open",
+      "requires_flags": [
+        "chapter1.binder_read_envelope",
+        "chapter1.binder_read_renewal"
+      ],
+      "well_fitted": true,
+      "display_name": "",
+      "summary": "",
+      "wrong_shape_correction": "",
+      "present_cue": ""
+    },
+    "third_party_non_cure": {
+      "_status": "Code-pass complete; Design text pending. The auxiliary well-fitted frame for Round 1 react: the resident at no. 7 accepting the notice does NOT cure service. Available once defective_service is proposed AND the third-party fact has been surfaced (currently surfaced by Murrow in murrow_first_meeting). Requires the same binder reads.",
+      "supporting_evidence": [
+        "envelope_address_number_seven",
+        "renewal_2019_number_twelve"
+      ],
+      "statute_anchor": "KPC Article 135-bis § 2 (third-clause)",
+      "court_round_unlock": "round_1_react",
+      "requires_flags": [
+        "chapter1.binder_read_envelope",
+        "chapter1.binder_read_renewal",
+        "chapter1.proposed_frame == 'defective_service_135bis'"
+      ],
+      "well_fitted": true,
+      "display_name": "",
+      "summary": "",
+      "wrong_shape_correction": "",
+      "present_cue": ""
+    },
+    "fair_hearing_article_6": {
+      "_status": "Code-pass complete; Design text pending. Round 2 frame. ECHR Article 6 fair-hearing. Requires the rights memo (Whimsy at Café Paragraf). Well-fitted as Round 2 supplementary; not well-fitted as a Round 1 substitute (the procedural-fairness argument needs the service-defect predicate to live in the same hearing).",
+      "supporting_evidence": [
+        "rights_memo_article_6"
+      ],
+      "statute_anchor": "ECHR Article 6 / pl_const_45",
+      "court_round_unlock": "round_2_open",
+      "requires_flags": [
+        "chapter1.has_rights_memo"
+      ],
+      "well_fitted": true,
+      "display_name": "",
+      "summary": "",
+      "wrong_shape_correction": "",
+      "present_cue": ""
+    },
+    "merits_defence": {
+      "_status": "Code-pass complete; Design text pending. The wrong-shape frame. Arguing the underlying tenancy validity at the motion-to-set-aside hearing is procedurally premature — the merits aren't before the court at this stage. Requires reading the lease/inheritance paperwork (technical-stance Halina meeting). Reachable, soft-fails: court_outcome narrows to procedural_reset_narrow, judicial_patience starts at 3 instead of 5. The wrong_shape_correction line is Crab walking the player back.",
+      "supporting_evidence": [
+        "lease_1962_inheritance_1987"
+      ],
+      "statute_anchor": "Underlying tenancy (out of place at the motion stage)",
+      "court_round_unlock": "round_2_open",
+      "requires_flags": [
+        "chapter1.bonus_evidence_collected == 'lease_1962_inheritance_1987'"
+      ],
+      "well_fitted": false,
+      "display_name": "",
+      "summary": "",
+      "wrong_shape_correction": "",
+      "present_cue": ""
+    }
+  }
+}
