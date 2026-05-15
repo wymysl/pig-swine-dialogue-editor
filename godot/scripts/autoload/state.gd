@@ -2,7 +2,7 @@ extends Node
 ## State autoload — single writer. Owns all persistent game state and save/load.
 ## Migration required for every shape change (see AGENTS.md §Save migration policy).
 
-const SAVE_VERSION: int = 14
+const SAVE_VERSION: int = 15
 
 const TILE_SIZE := 64
 const CHAR_HEIGHT := 64
@@ -142,6 +142,7 @@ func reset_state() -> Dictionary:
 			"whimsy_postcard_deflection_shown": false,
 			## Chapter-close gate.
 			"complete": false,
+			"state_choice": "",
 		},
 		## Badges awarded across the game. Keys declared at reset; value is
 		## flipped true by DialogueRunner award_badge actions. Unknown keys

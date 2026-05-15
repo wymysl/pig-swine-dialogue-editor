@@ -84,6 +84,11 @@ class ActiveStateContext:
 	## True when the matched state's options block declared `chain: true`.
 	## Triggers the post-commit dialogue_requested re-fire.
 	var chain: bool = false
+	## True when the matched state itself declared `chain: true` (top-level,
+	## not under options). Triggers the post-DISMISS re-fire for states with
+	## no choices — so a sequence like variant-line → shared-greeting can
+	## play without the player re-engaging the NPC.
+	var state_chain: bool = false
 	## State id of a `once: true` state that just matched. Appended to
 	## State.data.dialogue_states_seen on dismiss/commit.
 	var once_state_id: String = ""
@@ -103,6 +108,7 @@ class ActiveStateContext:
 		options_choices = []
 		trust_path = ""
 		chain = false
+		state_chain = false
 		once_state_id = ""
 
 var _ctx: ActiveStateContext = ActiveStateContext.new()
@@ -128,7 +134,22 @@ func _on_dialogue_dismissed() -> void:
 	if _ctx.once_state_id != "":
 		_mark_once_seen(_ctx.once_state_id)
 		_ctx.once_state_id = ""
+	## Cache state_chain locally because _apply_mutations may set flags that
+	## change which state matches on re-walk; we still want the original
+	## state's chain decision to drive the re-fire.
+	var should_state_chain: bool = _ctx.state_chain
+	_ctx.state_chain = false
 	_apply_mutations()
+	## state-level chain: re-walk states immediately so a non-choice state
+	## can hand off to the next matching state without the player having to
+	## re-engage the NPC. Mirrors options.chain on commit but fires on
+	## dismiss instead. Skipped when options are present — that path runs
+	## option-commit chain logic which already handles the re-fire.
+	if should_state_chain and not _ctx.options_present:
+		var sigs_chain = _signals()
+		if sigs_chain and sigs_chain.has_signal("dialogue_chain_start"):
+			sigs_chain.dialogue_chain_start.emit()
+		_on_dialogue_requested(_ctx.last_npc_id, _ctx.last_display_name)
 
 
 ## _apply_mutations — processes the on_dismiss mutation queue. Handles
@@ -555,6 +576,10 @@ func _on_dialogue_requested(npc_id: String, display_name: String) -> void:
 			var raw_mutations: Array = entry.get("on_dismiss", [])
 			_ctx.mutations = raw_mutations.duplicate(true)
 			_ctx.once_state_id = entry_id if bool(entry.get("once", false)) else ""
+			## state-level `chain: true` (distinct from options.chain) re-walks
+			## states on dismiss so non-choice states can sequence into the
+			## next match without the player re-engaging the NPC.
+			_ctx.state_chain = bool(entry.get("chain", false))
 			var lines: Array = _extract_lines(entry)
 			var state_speaker_id: String = str(entry.get("speaker", ""))
 			var emit_speaker: String = speaker

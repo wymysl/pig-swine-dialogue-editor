@@ -20,10 +20,10 @@
   'use strict';
 
   // ===== STATE =====
-  const NODE_W = 200;
-  const NODE_H = 78;
-  const EXT_W = 130;
-  const EXT_H = 42;
+  const NODE_W = 240;
+  const NODE_H = 108;
+  const EXT_W = 150;
+  const EXT_H = 48;
   const NODE_SEP = 56;
   const RANK_SEP = 90;
   const ZOOM_MIN = 0.25;
@@ -194,7 +194,14 @@
         : null;
 
       state.options.choices.forEach((choice, choiceIdx) => {
-        const targets = findChoiceConsequences(state, choice, state.options);
+        // findChoiceConsequences returns every state whose trigger COULD match
+        // post-commit. The runtime, however, picks the FIRST match in
+        // declaration order and stops. For the graph view we mirror that
+        // semantics so the diagram reflects what actually plays at runtime.
+        // The "all candidates" view is preserved in the linear pane's chips
+        // — that's still informational; the graph is structural.
+        const allTargets = findChoiceConsequences(state, choice, state.options);
+        const targets = allTargets.length > 0 ? [allTargets[0]] : [];
         for (const tid of targets) {
           let target = nodeById.get(tid);
           if (!target) {
@@ -248,6 +255,40 @@
       });
     }
 
+    // Third pass: inferred chain edges. A state with `chain: true` at the
+    // top level (NOT under options) re-fires the state walk on dismiss.
+    // The graph view doesn't see those edges from the choice-edge pass
+    // above, so the chain target sits at the same rank as its siblings
+    // instead of one rank deeper. Walk the json states in declaration order
+    // and add a soft edge from each chain-state to the FIRST subsequent
+    // state whose trigger isn't contradicted by the chain-state's own
+    // trigger — matches the runtime's "first match wins" semantics.
+    const statesList = f.json.states.filter(s => s && s.id);
+    for (let i = 0; i < statesList.length; i++) {
+      const src = statesList[i];
+      if (src.chain !== true) continue;
+      // Skip states with options — those use options.chain and the choice
+      // edges already model their downstream paths.
+      if (src.options && Array.isArray(src.options.choices) && src.options.choices.length > 0) continue;
+      for (let j = i + 1; j < statesList.length; j++) {
+        const cand = statesList[j];
+        if (!cand.id || !nodeById.has(cand.id)) continue;
+        if (triggersContradict(src.trigger || '', cand.trigger || '')) continue;
+        const tid = cand.id;
+        incomingCount.set(tid, (incomingCount.get(tid) || 0) + 1);
+        State.edges.push({
+          source: src.id,
+          target: tid,
+          choiceIdx: -1, // sentinel: not from a choice
+          choice: null,
+          kind: 'chain',
+          label: 'chain',
+          delta: null,
+        });
+        break; // first match only
+      }
+    }
+
     // Refine roles
     for (const node of State.nodes) {
       if (node.external) { node.role = 'external'; continue; }
@@ -263,6 +304,41 @@
     }
 
     layoutNodes();
+  }
+
+  // triggersContradict — fast structural check for the chain-edge inference.
+  // We only catch direct == / != contradictions on the same path:
+  //   A: `foo == 'x'`, B: `foo == 'y'` → contradiction.
+  //   A: `!foo`,       B: `foo == 'x'` → contradiction (false is "" which is != 'x' — sort of; we treat presence-clauses as contradicting).
+  //   A: `foo == 'x'`, B: `foo != 'x'` → contradiction.
+  // Anything more subtle (numeric ranges, multi-clause AND/OR) is treated as
+  // compatible. The intent is "would B silently fail if we walked into it
+  // after A just committed" — false positives here would HIDE a chain edge
+  // the runtime would actually take, which is worse than showing an extra
+  // tentative edge. So we err on the side of NOT declaring contradiction.
+  function triggersContradict(triggerA, triggerB) {
+    if (!triggerA || !triggerB) return false; // empty trigger matches anything
+    if (typeof parseTrigger !== 'function') return false;
+    const aClauses = parseTrigger(triggerA);
+    const bClauses = parseTrigger(triggerB);
+    for (const a of aClauses) {
+      for (const b of bClauses) {
+        if (a.path !== b.path) continue;
+        // path matches — check for contradiction by op/value
+        if (a.op === '==' && b.op === '==' && String(a.value) !== String(b.value)) return true;
+        if (a.op === '==' && b.op === '!=' && String(a.value) === String(b.value)) return true;
+        if (a.op === '!=' && b.op === '==' && String(a.value) === String(b.value)) return true;
+        // falsy (negated truthiness, e.g. `!met_asia`) vs == 'something' on
+        // the same path: the chain state asserts the flag is falsy, but the
+        // candidate compares it to a specific value. Treat as compatible —
+        // a flag could be unset (falsy) while the candidate's clause is
+        // checking equality, which would fail at runtime. We catch that
+        // case as "compatible" so the edge IS drawn but the user can read
+        // the trigger and judge. False-positive contradictions hide edges;
+        // we'd rather show one than hide one.
+      }
+    }
+    return false;
   }
 
   // Edge classification — matches the linear editor's full trust-precision
@@ -988,13 +1064,16 @@
       path.dataset.source = e.source;
       path.dataset.target = e.target;
       path.dataset.choiceIdx = String(e.choiceIdx);
+      // Chain edges are inferred (not declared in JSON), so no delete UI —
+      // to remove one, the user edits the source's trigger / chain flag.
+      const deletable = e.kind !== 'excluded' && e.kind !== 'chain';
       path.addEventListener('mouseenter', () => {
         showEdgeTooltip(e, path);
-        if (e.kind !== 'excluded') showEdgeDeleteBtn(e.source, e.target, e.choiceIdx);
+        if (deletable) showEdgeDeleteBtn(e.source, e.target, e.choiceIdx);
       });
       path.addEventListener('mouseleave', () => {
         hideTooltip();
-        if (e.kind !== 'excluded') scheduleHideEdgeDeleteBtn(e.source, e.target, e.choiceIdx);
+        if (deletable) scheduleHideEdgeDeleteBtn(e.source, e.target, e.choiceIdx);
       });
       path.addEventListener('click', (ev) => {
         ev.stopPropagation();
@@ -1012,7 +1091,7 @@
       // edges since those don't represent a real wired connection. The button
       // is hidden by default and shown via JS while the edge or button is
       // hovered. Self-contained — its own mouseenter cancels the hide timer.
-      if (e.kind !== 'excluded') {
+      if (deletable) {
         const dbtn = document.createElementNS('http://www.w3.org/2000/svg', 'g');
         dbtn.setAttribute('class', 'gedge-delete-btn');
         // Slight offset above midpoint so it doesn't sit ON the label pill.
@@ -1398,7 +1477,12 @@
   }
   function showEdgeTooltip(e, pathEl) {
     const target = e.target;
-    const text = e.choice && e.choice.text ? e.choice.text : '(empty choice)';
+    let text;
+    if (e.kind === 'chain') {
+      text = 'state.chain → next-matching state';
+    } else {
+      text = e.choice && e.choice.text ? e.choice.text : '(empty choice)';
+    }
     showTooltip(`${text}  →  ${target}`, pathEl);
   }
 

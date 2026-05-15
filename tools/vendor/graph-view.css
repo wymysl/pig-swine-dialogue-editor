@@ -142,6 +142,17 @@
     stroke-dasharray: 2 3;
     opacity: 0.5;
   }
+  /* Inferred chain edges from state.chain states. Drawn lighter + dotted so
+     they read as "implicit" — they're not declared in JSON, just the editor
+     guessing what the runtime would walk to next. */
+  .graph-edges .gedge.gedge-chain {
+    stroke: var(--text-2, var(--dim));
+    stroke-dasharray: 2 4;
+    opacity: 0.6;
+  }
+  .graph-edges .gedge.gedge-chain:hover {
+    opacity: 0.95;
+  }
   .graph-edges .gedge.dim { opacity: 0.12; }
   .graph-edges .gedge-label {
     pointer-events: none;
@@ -258,7 +269,7 @@
   .gnode-id {
     color: var(--accent);
     font-family: var(--font-mono);
-    font-size: 11.5px;
+    font-size: 13.5px;
     font-weight: 500;
     flex: 1;
     overflow: hidden;
@@ -269,12 +280,12 @@
   .gnode-role {
     color: var(--dim);
     font-family: var(--font-ui);
-    font-size: 9px;
+    font-size: 10px;
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.08em;
     background: var(--surface-2);
-    padding: 1px 5px;
+    padding: 1px 6px;
     border-radius: 3px;
     flex-shrink: 0;
   }
@@ -284,8 +295,8 @@
   .gnode-preview {
     color: var(--text-2);
     font-family: var(--font-mono);
-    font-size: 10.5px;
-    line-height: 1.35;
+    font-size: 12px;
+    line-height: 1.4;
     overflow: hidden;
     text-overflow: ellipsis;
     display: -webkit-box;
@@ -297,48 +308,69 @@
   }
   .gnode-meta {
     display: flex;
-    gap: 8px;
+    gap: 10px;
     align-items: center;
     color: var(--dim);
     font-family: var(--font-mono);
-    font-size: 10px;
+    font-size: 11px;
   }
   .gnode-meta-item { white-space: nowrap; }
   .gnode-meta-once { color: var(--accent); }
 
-  /* ✕ delete button — top-right corner, fades in on node hover.
-     Pointer-events shifts when shown so it can be clicked without re-stealing
-     the node click handler (button handles its own propagation). */
+  /* ✕ delete button — fixed-size in the top-right corner.
+     Defensive declarations: explicit box-sizing, display, padding 0, and
+     no min-* defaults override the browser's button styling that would
+     otherwise stretch the control to its surrounding flex slot. */
   .gnode-delete {
     position: absolute;
     top: 4px;
     right: 4px;
-    width: 18px;
-    height: 18px;
+    box-sizing: border-box;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 16px;
+    height: 16px;
+    min-width: 0;
+    min-height: 0;
+    max-width: 16px;
+    max-height: 16px;
     padding: 0;
+    margin: 0;
+    flex: 0 0 16px;
     line-height: 1;
-    font-size: 11px;
+    font-size: 10px;
     font-family: var(--font-ui);
+    font-weight: 400;
     color: var(--dim);
-    background: var(--surface-2);
-    border: 1px solid var(--border);
+    background: transparent;
+    border: 1px solid transparent;
     border-radius: 3px;
     cursor: pointer;
     opacity: 0;
     pointer-events: none;
     transition: opacity 0.12s ease, color 0.12s, border-color 0.12s, background 0.12s;
     z-index: 5;
+    appearance: none;
+    -webkit-appearance: none;
   }
-  .gnode:hover .gnode-delete,
-  .gnode.selected .gnode-delete {
-    opacity: 0.85;
+  /* Reveal only on direct hover — not when the parent node is merely hovered.
+     This makes it much harder to misclick while reading the card. */
+  .gnode:hover .gnode-delete {
+    opacity: 0.45;
     pointer-events: auto;
+    border-color: var(--border);
+    background: var(--surface);
   }
   .gnode-delete:hover {
     opacity: 1;
     color: var(--danger);
     border-color: var(--danger);
     background: var(--danger-soft, var(--surface-2));
+  }
+  .gnode-delete:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 1px;
   }
   .gnode.external .gnode-delete { display: none; }
 

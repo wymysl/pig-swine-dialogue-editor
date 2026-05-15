@@ -22,7 +22,9 @@
             "on_dismiss": [
                 {"set": "chapter1.met_pig", "value": true},
                 {"set": "chapter1.pig_revealed_crisis", "value": true}
-            ]
+            ],
+            "chain": true,
+            "once": true
         },
         {
             "id": "post_meeting_pre_murrow",

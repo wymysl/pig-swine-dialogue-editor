@@ -30,6 +30,7 @@
     activeWritePath: '',
     activeTrustPath: '',
     activeChain: false,
+    activeStateChain: false,
     activeOnDismiss: [],
     activeOnceId: '',
     startStateId: null, // optional explicit start; null = engine-pick
@@ -133,6 +134,9 @@
     State.activeWritePath = (s.options && s.options.write_path) || '';
     State.activeTrustPath = (s.options && s.options.trust_path) || '';
     State.activeChain = !!(s.options && s.options.chain);
+    // State-level chain (s.chain) re-walks on dismiss for non-choice states.
+    // Distinct from options.chain which fires on commit.
+    State.activeStateChain = s.chain === true;
     State.activeOnDismiss = Array.isArray(s.on_dismiss) ? s.on_dismiss : [];
     State.activeOnceId = (s.once === true && s.id) ? s.id : '';
   }
@@ -143,6 +147,7 @@
     State.activeWritePath = '';
     State.activeTrustPath = '';
     State.activeChain = false;
+    State.activeStateChain = false;
     State.activeOnDismiss = [];
     State.activeOnceId = '';
   }
@@ -179,6 +184,7 @@
     State.activeWritePath = (candidate.options && candidate.options.write_path) || '';
     State.activeTrustPath = (candidate.options && candidate.options.trust_path) || '';
     State.activeChain = !!(candidate.options && candidate.options.chain);
+    State.activeStateChain = candidate.chain === true;
     State.activeOnDismiss = Array.isArray(candidate.on_dismiss) ? candidate.on_dismiss : [];
     State.activeOnceId = (candidate.once === true && candidate.id) ? candidate.id : '';
     State.selectedChoiceIdx = 0;

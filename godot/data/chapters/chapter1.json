@@ -12,14 +12,30 @@
     { "key": "chapter1.halina_met", "default": false, "set_by": "halina.json client_meeting_<stance>" },
     { "key": "chapter1.halina_arrived", "default": false, "set_by": "engine — Beat 7 close, meeting-room entry trigger gate" },
     { "key": "chapter1.client_meeting_stance", "default": "", "_enum": ["sympathetic", "blunt_procedural", "technical"], "set_by": "Beat 7 stance-pick UI (B.1)" },
-    { "key": "chapter1.bonus_evidence_collected", "default": "", "_enum": ["wojcik_witness_statement", "return_to_sender_slip", "lease_1962_inheritance_1987"], "set_by": "halina.json client_meeting_<stance> on_dismiss" },
+    { "key": "chapter1.bonus_evidence_collected", "default": "", "_enum": ["wojcik_witness_statement", "return_to_sender_slip", "lease_1962_inheritance_1987", "landlord_contact"], "set_by": "halina.json client_meeting_<stance> on_dismiss / client_meeting_r2_response_high on_dismiss (trust≥5 reveal path)" },
     { "key": "chapter1.cardiologist_plant_landed", "default": false, "set_by": "halina.json client_meeting_<stance> on_dismiss" },
     { "key": "chapter1.client_fee_agreed", "default": false, "set_by": "halina.json client_meeting_<stance> on_dismiss" },
+
+    { "key": "chapter1.has_law_binder", "default": false, "set_by": "pickup.gd via items.json procedural_binder" },
+    { "key": "chapter1.has_rights_memo", "default": false, "set_by": "pickup.gd via items.json rights_memo" },
+
+    { "key": "chapter1.halina_trust", "default": 0, "_type": "int", "set_by": "dialogue_runner.gd trust_delta on options choices during Beat 8 client meeting (halina.json)" },
+    { "key": "chapter1.halina_r0_done", "default": false, "set_by": "halina.json client_meeting_r0_response_* on_dismiss" },
+    { "key": "chapter1.halina_r1_choice", "default": "", "set_by": "halina.json client_meeting_r1 options write_path" },
+    { "key": "chapter1.halina_r1_done", "default": false, "set_by": "halina.json client_meeting_r1_response_* on_dismiss" },
+    { "key": "chapter1.halina_r2_choice", "default": "", "set_by": "halina.json client_meeting_r2 options write_path" },
+    { "key": "chapter1.halina_r2_done", "default": false, "set_by": "halina.json client_meeting_r2_response_* on_dismiss" },
+    { "key": "chapter1.halina_close_done", "default": false, "set_by": "halina.json client_meeting_close on_dismiss" },
+    { "key": "chapter1.landlord_tip_received", "default": false, "set_by": "halina.json client_meeting_r2_response_high and client_meeting_reveal on_dismiss (trust≥5 path)" },
 
     { "key": "chapter1.archive_research_complete", "default": false, "set_by": "Beat 9 archive research (not yet authored; flag declared for V1.A state 8 dispatch)" },
 
     { "key": "chapter1.casebook_judge_state", "default": "", "_enum": ["round_1_open", "round_1_react", "round_2_open", "round_2_react", "round_3_open", "round_3_remedy"], "set_by": "casebook engine — Beat 12 court orchestration" },
     { "key": "chapter1.court_won_procedural_reset", "default": false, "set_by": "judge_district_ch1.json remedy_round_3_<stance> on_dismiss" },
+    { "key": "chapter1.won_court", "default": false, "set_by": "future court orchestration on Chapter 1 win; gates asia_hint_states_ch1.json hint_won_court / hint_received_swine_postcard" },
+
+    { "key": "chapter1.coffee_retry_decision", "default": "", "_enum": ["retry", "accept", ""], "set_by": "barista.json coffee_retry_prompt options write_path (retry plumbing pending — PROPOSAL_coffee_engine_followups.md §1)" },
+    { "key": "chapter1.state_choice", "default": "", "set_by": "dialogue_runner / future stance-choice plumbing" },
 
     { "key": "chapter1.beat13_complete", "default": false, "set_by": "Beat 13 office payoff close" },
     { "key": "chapter1.received_swine_postcard", "default": false, "set_by": "Beat 14 postcard arrival trigger / postcard_swine_ch1.json asia_address_label on_dismiss" },

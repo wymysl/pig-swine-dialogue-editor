@@ -1193,3 +1193,30 @@ Verification: `jq empty godot/data/dialogues/*.json` → EXIT 0 on all canonical
 ### 2026-05-14 — Editorial Cleanups
 - Cleaned up `world.txt` per Proposal 2, removing premature scene scaffolding and standardizing tile size conventions.
 - Updated `PROPOSALS.md` to formally mark proposals 2, 3, 4, 5, 7, 8, 10, and 11 as `DONE` based on prior system edits and recent document verifications.
+
+---
+
+**Session 39 — 2026-05-15 — Code/QA — chapter1.json registry catch-up + v14→v15 migration test.**
+Workflow-memo follow-up (nightly/2026-05-15/workflow.md). Applied the three items flagged by data_consistency.md that were still open after Sessions 32–38.
+
+1. **`data/chapters/chapter1.json`** — `new_state_flags` was missing every flag added at SAVE_VERSION 11 and later. Added:
+   - `chapter1.has_law_binder`, `chapter1.has_rights_memo` (pre-era pickup flags, undocumented until now)
+   - `chapter1.halina_trust`, `halina_r0_done`, `halina_r1_choice`, `halina_r1_done`, `halina_r2_choice`, `halina_r2_done`, `halina_close_done`, `landlord_tip_received` (SAVE_VERSION 11 trust-meter flags)
+   - `chapter1.won_court`, `chapter1.coffee_retry_decision` (SAVE_VERSION 13 dangling-flag declarations)
+   - `chapter1.state_choice` (SAVE_VERSION 15)
+   - `chapter1.bonus_evidence_collected` `_enum`: added `"landlord_contact"` — value set by `halina.json client_meeting_r2_response_high` on the trust≥5 reveal path; previously undeclared in the enum, which would cause a save-state validation failure on the next SAVE_VERSION bump.
+
+2. **`data/character_registry.json`** — registered three `npc_id` values present in active dialogue files but absent from the registry (data_consistency.md Low severity §3): `judge_district_ch1 → "Judge"`, `asia_hint_states_ch1 → "Asia"`, `postcard_swine_ch1 → "Postcard"`.
+
+3. **`tests/test_save_migration_v14_v15.gd`** — new 7-test migration file for v14→v15 (`state_choice` flag). Follows the same `extends SceneTree` pattern as all prior migration tests. Tests: SAVE_VERSION ≥ 15, v14→v15 adds `state_choice` as `""`, preserves existing keys, idempotency, `reset_state()` declares `state_choice`, missing-chapter1 guard (no crash), full v1→v15 chain with regressions on v11/v13 flags.
+
+No changes to `state.gd` or `save.gd` — both were already at SAVE_VERSION 15 with the full migration chain.
+
+Files changed: `data/chapters/chapter1.json`, `data/character_registry.json`, `tests/test_save_migration_v14_v15.gd` (new).
+
+Verification:
+- `find godot/data -name '*.json' -exec jq empty {} \;` → EXIT 0 (all 29+ JSON files).
+- Static parse of `test_save_migration_v14_v15.gd`: all 7 `_test_*` functions called by `_run_all` are defined; no mixed indent.
+- Acceptance to run on host: `godot --headless --path godot --script tests/test_save_migration_v14_v15.gd --log-file /tmp/pig_v14_v15.log` → expected EXIT 0, 7/7 PASS.
+- Regression: `godot --headless --path godot --script tests/test_save_migration_v12_v13.gd` → should still pass (no migration-chain changes).
+- `godot --headless --path godot --script tests/test_smoke.gd` → **EXIT 0** ✅ (confirmed by human, 2026-05-15).

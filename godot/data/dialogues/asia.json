@@ -7,7 +7,7 @@
             "trigger": "!chapter1.met_asia && chapter1.met_asia_via_behind == true",
             "lines": [
                 "Excuse me, only employees are allowed... oh.",
-                "Of course. Dr. A. Cula, good morning! We've been expecting you.",
+                "Of course. The new hire. Dr. A. Cula, good morning! We've been expecting you.",
                 "Mr. Pig is at the case board. He'll want to say hello first.",
                 "Then, you'll want to pick up your blue folder. It's on the second pile from the left.",
                 {"speaker": "asia", "text": "The archive is through that door, and Mr. Murrow is in there with the case file whenever you're ready for him."}
@@ -15,6 +15,37 @@
             "on_dismiss": [
                 {"set": "chapter1.met_asia", "value": true}
             ]
+        },
+        {
+            "id": "cula_approach",
+            "trigger": "!chapter1.met_asia",
+            "lines": [
+                {"speaker": "cula", "text": "[A young woman. Incredibly busy. Hopefully friendly.]"}
+            ],
+            "options": {
+                "write_path": "chapter1.state_choice",
+                "choices": [
+                    {"text": "Good morning. Dr. A. Cula, reporting for duty.", "value": "professional", "trust_delta": 1},
+                    {"text": "Good morning, you must be Asia? I saw you on the website. Cula, the new hire. Pleasure to meet you.", "value": "friendly", "trust_delta": 2},
+                    {"text": "Dr. A Cula, here to see Mr. Pig.", "value": "dry", "trust_delta": 0}
+                ],
+                "chain": true
+            },
+            "once": true
+        },
+        {
+            "id": "cula_approach_response_dry",
+            "trigger": "!chapter1.met_asia && chapter1.state_choice == 'dry'",
+            "lines": ["Oh."],
+            "once": true,
+            "chain": true
+        },
+        {
+            "id": "state_1_response_friendly",
+            "trigger": "chapter1.state_choice == 'friendly'",
+            "lines": ["Oooh no, I told them not to upload that picture, I was hungover that day! I'm sorry, I meant to say..."],
+            "chain": true,
+            "once": true
         },
         {
             "id": "first_welcome",
@@ -27,7 +58,8 @@
             ],
             "on_dismiss": [
                 {"set": "chapter1.met_asia", "value": true}
-            ]
+            ],
+            "chain": true
         },
         {
             "id": "post_pig_pre_murrow",

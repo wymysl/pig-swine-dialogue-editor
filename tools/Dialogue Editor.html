@@ -1063,13 +1063,26 @@
     border-radius: 5px;
     position: relative;
   }
-  /* Unsaved-edit indicator: a thin accent bar on the left edge plus a
-     subtle accent-soft tint. Applies to both .line-row.modified and
-     .choice-row.modified so all changed entries are scannable at a glance. */
+  /* Unsaved-edit indicator: a thin accent bar pinned to the OUTSIDE-left
+     edge via ::before (so it never visually collides with the drag handle
+     that sits at the start of the row's content). Plus a subtle accent-soft
+     tint inside the row to keep the field-wide cue. Applies to both
+     .line-row.modified and .choice-row.modified so all changed entries are
+     scannable at a glance. */
   .line-row.modified,
   .choice-row.modified {
-    box-shadow: inset 3px 0 0 var(--accent);
     background: var(--accent-soft);
+  }
+  .line-row.modified::before,
+  .choice-row.modified::before {
+    content: '';
+    position: absolute;
+    left: -10px;
+    top: 4px;
+    bottom: 4px;
+    width: 3px;
+    background: var(--accent);
+    border-radius: 2px;
   }
   .line-row.modified .line-edit,
   .choice-row.modified .line-edit,
@@ -1344,6 +1357,108 @@
     transition: border-color 0.12s;
   }
   .options-meta input[type="text"]:focus { border-color: var(--accent); }
+
+  /* Inline undeclared-flag warning. Shown next to write_path / trust_path
+     fields and trigger clauses when the path isn't in State.reset_state().
+     The wrapper is always rendered (so it can be swapped in place on every
+     keystroke); when empty it collapses to nothing via data-empty="1". */
+  .undeclared-flag-warning {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-family: var(--font-ui);
+    font-size: 10.5px;
+    font-weight: 500;
+    text-transform: none;
+    letter-spacing: 0;
+    color: var(--danger, #c44);
+    margin-left: 4px;
+  }
+  .undeclared-flag-warning[data-empty="1"] { display: none; }
+  .undeclared-flag-warning .undeclared-icon { font-size: 12px; line-height: 1; }
+  .undeclared-flag-warning .undeclared-msg { white-space: nowrap; }
+  .undeclared-flag-warning .undeclared-add {
+    background: transparent;
+    border: 1px solid var(--danger, #c44);
+    color: var(--danger, #c44);
+    font-family: var(--font-ui);
+    font-size: 10px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    padding: 1px 6px;
+    border-radius: 3px;
+    cursor: pointer;
+  }
+  .undeclared-flag-warning .undeclared-add:hover {
+    background: var(--danger, #c44);
+    color: var(--bg);
+  }
+  .undeclared-flag-warning .undeclared-add:disabled {
+    opacity: 0.55;
+    cursor: progress;
+  }
+
+  /* Sidebar "Unused declared flags" maintenance panel. Lists declared
+     chapter1 flags that no dialogue file references. Each row has a remove
+     button that strips the line from state.gd's reset_state(). */
+  #unused-flags-list {
+    padding: 0 14px 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+  .unused-flag-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 3px 0;
+  }
+  .unused-flag-path {
+    flex: 1;
+    font-family: var(--font-mono);
+    font-size: 10.5px;
+    color: var(--text-2, var(--text));
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    min-width: 0;
+  }
+  .unused-flag-remove {
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--dim);
+    font-family: var(--font-ui);
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    padding: 1px 6px;
+    border-radius: 3px;
+    cursor: pointer;
+  }
+  .unused-flag-remove:hover {
+    border-color: var(--danger, #c44);
+    color: var(--danger, #c44);
+  }
+  .unused-flag-remove:disabled {
+    opacity: 0.5;
+    cursor: progress;
+  }
+  .unused-flag-empty {
+    padding: 4px 14px;
+    color: var(--dim);
+    font-size: 11px;
+    font-style: italic;
+  }
+  .undeclared-flag-warning .undeclared-snippet {
+    font-family: var(--font-mono);
+    font-size: 10.5px;
+    color: var(--text-2, var(--text));
+    background: var(--surface-2, transparent);
+    padding: 1px 6px;
+    border-radius: 3px;
+    white-space: nowrap;
+  }
   .options-meta input[type="checkbox"] {
     margin: 0;
     cursor: pointer;
@@ -1357,6 +1472,7 @@
     margin-bottom: 4px;
     padding: 2px 0;
     border-radius: 5px;
+    position: relative;
   }
   .choice-value {
     min-width: 160px;
@@ -1715,6 +1831,358 @@
   }
   #toast.error::before { background: var(--danger); }
 
+  /* =========================================================
+     v2 UI POLISH — additive layer over the existing styles.
+     Goals: tighter topbar at narrow widths, richer welcome
+     state, shortcuts cheatsheet, sidebar empty hint.
+     ========================================================= */
+
+  /* Topbar: shrink spacing so buttons survive at 1024-1280px. */
+  #topbar { gap: 4px; padding: 0 12px 0 16px; }
+  #topbar .divider-v { margin: 0 2px; }
+  #topbar button { padding: 5px 9px; }
+  #topbar .brand-sub {
+    padding: 2px 6px;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    background: var(--surface-2);
+    font-size: 9.5px;
+  }
+  /* When the topbar still overflows, the secondary cluster collapses to
+     icon-only labels. Engaged by JS toggling .compact on #topbar. */
+  #topbar.compact #refresh-flags-btn span.btn-label,
+  #topbar.compact #theme-btn span.btn-label { display: none; }
+  #topbar.compact .brand-sub { display: none; }
+  #topbar.compact .view-toggle-btn span { display: none; }
+  #topbar.compact .view-toggle-btn { padding: 4px 7px !important; }
+
+  /* When no folder is opened, the Open Folder button is the only thing
+     that matters — light it up as the primary CTA. JS toggles .needs-folder
+     on #topbar. */
+  #topbar.needs-folder #open-btn {
+    background: var(--accent);
+    color: #1a1610;
+    border-color: var(--accent);
+    box-shadow: 0 0 0 4px var(--accent-soft);
+    animation: nudgeOpen 2.4s ease-in-out 1.2s 2;
+  }
+  body.light #topbar.needs-folder #open-btn { color: #fbf9f3; }
+  #topbar.needs-folder #open-btn:hover { background: #e2b95a; }
+  @keyframes nudgeOpen {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-1px); box-shadow: 0 0 0 6px var(--accent-soft); }
+  }
+
+  /* ==== Richer welcome / empty state ==== */
+  #empty {
+    /* Override original card layout with a wider hero. */
+    max-width: 720px;
+    padding: 0;
+    background: transparent;
+    border: none;
+    box-shadow: none;
+    margin: 56px auto;
+  }
+  .welcome-hero {
+    display: grid;
+    grid-template-columns: 200px 1fr;
+    gap: 32px;
+    align-items: center;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 32px 36px;
+    box-shadow: var(--shadow-md);
+    position: relative;
+    overflow: hidden;
+  }
+  .welcome-hero::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(circle at 0% 0%, var(--accent-soft) 0, transparent 38%);
+    pointer-events: none;
+    opacity: 0.7;
+  }
+  .welcome-art {
+    position: relative;
+    width: 200px;
+    height: 160px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .welcome-art svg { width: 100%; height: 100%; display: block; }
+  .welcome-body { min-width: 0; position: relative; }
+  .welcome-eyebrow {
+    color: var(--accent);
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.16em;
+    font-weight: 600;
+    margin-bottom: 8px;
+    font-family: var(--font-mono);
+  }
+  .welcome-title {
+    font-family: var(--font-display);
+    font-size: 26px;
+    font-weight: 600;
+    color: var(--text);
+    margin: 0 0 6px;
+    letter-spacing: -0.015em;
+    line-height: 1.15;
+  }
+  .welcome-lede {
+    color: var(--text-2);
+    font-size: 13.5px;
+    line-height: 1.55;
+    margin: 0 0 18px;
+    max-width: 44ch;
+  }
+  .welcome-lede code {
+    font-family: var(--font-mono);
+    font-size: 11.5px;
+    color: var(--accent);
+    background: var(--accent-soft);
+    padding: 1px 6px;
+    border-radius: 3px;
+  }
+  .welcome-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    align-items: center;
+  }
+  .welcome-cta {
+    background: var(--accent);
+    color: #1a1610;
+    border: 1px solid var(--accent);
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 500;
+    padding: 9px 18px;
+    border-radius: 6px;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    transition: background 0.12s, transform 0.06s;
+    box-shadow: 0 4px 14px rgba(212, 168, 74, 0.22);
+  }
+  body.light .welcome-cta { color: #fbf9f3; }
+  .welcome-cta:hover { background: #e2b95a; }
+  .welcome-cta:active { transform: translateY(1px); }
+  .welcome-link {
+    background: transparent;
+    color: var(--text-2);
+    border: 1px solid transparent;
+    font-family: inherit;
+    font-size: 12.5px;
+    padding: 8px 12px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: color 0.12s, background 0.12s;
+  }
+  .welcome-link:hover { color: var(--accent); background: var(--surface-2); }
+
+  .welcome-shortcuts {
+    margin-top: 22px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 6px 24px;
+    padding: 16px 20px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+  }
+  .welcome-shortcuts-h {
+    grid-column: 1 / -1;
+    color: var(--mute);
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    font-weight: 600;
+    margin-bottom: 4px;
+  }
+  .welcome-shortcut {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+    font-size: 12px;
+    color: var(--text-2);
+    line-height: 1.6;
+  }
+  .welcome-shortcut .keys {
+    flex-shrink: 0;
+    display: inline-flex;
+    gap: 3px;
+  }
+  .welcome-shortcut kbd {
+    background: var(--surface-2);
+    border: 1px solid var(--border-strong);
+    border-bottom-width: 2px;
+    padding: 1px 6px;
+    font-family: var(--font-mono);
+    font-size: 10.5px;
+    border-radius: 4px;
+    color: var(--text);
+    line-height: 1.5;
+  }
+  .welcome-footnote {
+    margin-top: 14px;
+    color: var(--dim);
+    font-size: 11px;
+    text-align: center;
+    font-family: var(--font-mono);
+  }
+  .welcome-footnote .dot { color: var(--mute); margin: 0 6px; }
+
+  /* ==== Sidebar empty state (no folder open) ==== */
+  .sidebar-empty {
+    padding: 28px 18px;
+    text-align: center;
+    color: var(--dim);
+    font-size: 11.5px;
+    line-height: 1.55;
+  }
+  .sidebar-empty-icon {
+    margin: 0 auto 12px;
+    width: 56px;
+    height: 44px;
+    color: var(--border-strong);
+    opacity: 0.8;
+  }
+  .sidebar-empty-icon svg { width: 100%; height: 100%; }
+  .sidebar-empty p { margin: 0 0 8px; }
+  .sidebar-empty .arrow {
+    display: inline-block;
+    color: var(--accent);
+    font-size: 16px;
+    transform: rotate(-90deg) translateX(-2px);
+    margin-bottom: 4px;
+  }
+
+  /* ==== Keyboard shortcuts modal (press ?) ==== */
+  #shortcuts-modal {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.55);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 9500;
+    backdrop-filter: blur(2px);
+  }
+  body.light #shortcuts-modal { background: rgba(28, 26, 20, 0.35); }
+  #shortcuts-modal.open { display: flex; }
+  .shortcuts-card {
+    background: var(--surface);
+    border: 1px solid var(--border-strong);
+    border-radius: 12px;
+    width: min(680px, calc(100vw - 48px));
+    max-height: calc(100vh - 96px);
+    overflow-y: auto;
+    box-shadow: var(--shadow-lg);
+    font-family: var(--font-ui);
+  }
+  .shortcuts-head {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 16px 22px 14px;
+    border-bottom: 1px solid var(--border);
+  }
+  .shortcuts-title {
+    font-family: var(--font-display);
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--text);
+    flex: 1;
+    letter-spacing: -0.01em;
+  }
+  .shortcuts-close {
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--dim);
+    font-family: var(--font-mono);
+    font-size: 11px;
+    padding: 3px 9px;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+  .shortcuts-close:hover { color: var(--accent); border-color: var(--accent); }
+  .shortcuts-body {
+    padding: 16px 22px 22px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 22px 36px;
+  }
+  .shortcuts-group h4 {
+    font-size: 9.5px;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    color: var(--mute);
+    font-weight: 600;
+    margin: 0 0 10px;
+  }
+  .shortcuts-group dl {
+    margin: 0;
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 6px 12px;
+    align-items: baseline;
+  }
+  .shortcuts-group dt {
+    display: inline-flex;
+    gap: 3px;
+    justify-content: flex-end;
+  }
+  .shortcuts-group dt kbd {
+    background: var(--surface-2);
+    border: 1px solid var(--border-strong);
+    border-bottom-width: 2px;
+    padding: 1px 6px;
+    font-family: var(--font-mono);
+    font-size: 10.5px;
+    border-radius: 4px;
+    color: var(--text);
+    white-space: nowrap;
+    line-height: 1.5;
+  }
+  .shortcuts-group dd {
+    margin: 0;
+    color: var(--text-2);
+    font-size: 12px;
+    line-height: 1.5;
+  }
+
+  /* ==== Bottombar hint mode (when no file selected) ==== */
+  #bottombar .hint-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    color: var(--dim);
+    font-size: 10.5px;
+  }
+  #bottombar .hint-chip kbd {
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    padding: 0 5px;
+    font-family: var(--font-mono);
+    font-size: 9.5px;
+    border-radius: 3px;
+    color: var(--text-2);
+    line-height: 1.5;
+  }
+  #bottombar .hint-sep { color: var(--mute); margin: 0 2px; }
+
+  @media (max-width: 760px) {
+    .welcome-hero { grid-template-columns: 1fr; gap: 18px; padding: 26px 24px; }
+    .welcome-art { width: 140px; height: 110px; }
+    .shortcuts-body { grid-template-columns: 1fr; }
+  }
+
   /* Grid-column anchors so display:none on view-mode siblings doesn't reflow
      graph-pane into a 0px track. Without these, hiding #content-pane in
      view-graph mode makes #graph-pane auto-place into column 2 (0px). */
@@ -1949,7 +2417,7 @@
   .gnode-id {
     color: var(--accent);
     font-family: var(--font-mono);
-    font-size: 11.5px;
+    font-size: 13.5px;
     font-weight: 500;
     flex: 1;
     overflow: hidden;
@@ -1960,12 +2428,12 @@
   .gnode-role {
     color: var(--dim);
     font-family: var(--font-ui);
-    font-size: 9px;
+    font-size: 10px;
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.08em;
     background: var(--surface-2);
-    padding: 1px 5px;
+    padding: 1px 6px;
     border-radius: 3px;
     flex-shrink: 0;
   }
@@ -1975,8 +2443,8 @@
   .gnode-preview {
     color: var(--text-2);
     font-family: var(--font-mono);
-    font-size: 10.5px;
-    line-height: 1.35;
+    font-size: 12px;
+    line-height: 1.4;
     overflow: hidden;
     text-overflow: ellipsis;
     display: -webkit-box;
@@ -1988,12 +2456,64 @@
   }
   .gnode-meta {
     display: flex;
-    gap: 8px;
+    gap: 10px;
     align-items: center;
     color: var(--dim);
     font-family: var(--font-mono);
-    font-size: 10px;
+    font-size: 11px;
   }
+  /* ✕ delete button — fixed-size in the top-right corner. Defensive
+     declarations so it can't stretch to a flex slot's full width. */
+  .gnode-delete {
+    position: absolute;
+    top: 4px;
+    right: 4px;
+    box-sizing: border-box;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 16px;
+    height: 16px;
+    min-width: 0;
+    min-height: 0;
+    max-width: 16px;
+    max-height: 16px;
+    padding: 0;
+    margin: 0;
+    flex: 0 0 16px;
+    line-height: 1;
+    font-size: 10px;
+    font-family: var(--font-ui);
+    font-weight: 400;
+    color: var(--dim);
+    background: transparent;
+    border: 1px solid transparent;
+    border-radius: 3px;
+    cursor: pointer;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.12s ease, color 0.12s, border-color 0.12s, background 0.12s;
+    z-index: 5;
+    appearance: none;
+    -webkit-appearance: none;
+  }
+  .gnode:hover .gnode-delete {
+    opacity: 0.45;
+    pointer-events: auto;
+    border-color: var(--border);
+    background: var(--surface);
+  }
+  .gnode-delete:hover {
+    opacity: 1;
+    color: var(--danger);
+    border-color: var(--danger);
+    background: var(--danger-soft, var(--surface-2));
+  }
+  .gnode-delete:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 1px;
+  }
+  .gnode.external .gnode-delete { display: none; }
   .gnode-meta-item { white-space: nowrap; }
   .gnode-meta-once { color: var(--accent); }
 
@@ -2441,6 +2961,101 @@
     grid-template-columns: 110px minmax(0, 1fr);
     gap: 12px;
     align-items: baseline;
+    position: relative;
+    border-radius: 4px;
+    transition: background 0.12s;
+  }
+  /* Unsaved-edit indicator in the simulator scene. Mirrors the linear
+     editor's .line-row.modified pattern: accent-soft tint + a 3px accent
+     bar pinned to the left edge via ::before (positioned in the scene
+     pane's padding so the grid columns don't reflow). Plus an "edited"
+     pill in the top-right corner so the affordance is obvious. */
+  .sim-line.sim-line-modified {
+    background: var(--accent-soft, rgba(212, 168, 74, 0.12));
+  }
+  .sim-line.sim-line-modified::before {
+    content: '';
+    position: absolute;
+    left: -10px;
+    top: 1px;
+    bottom: 1px;
+    width: 3px;
+    background: var(--accent);
+    border-radius: 2px;
+  }
+  .sim-line.sim-line-modified::after {
+    content: 'edited · unsaved';
+    position: absolute;
+    right: 4px;
+    top: -9px;
+    font-family: var(--font-mono, monospace);
+    font-size: 8.5px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--accent);
+    background: var(--bg);
+    border: 1px solid var(--accent);
+    padding: 0 6px;
+    border-radius: 8px;
+    opacity: 0.9;
+    pointer-events: none;
+  }
+  /* Speaker dropdown shown while editing the speaker field. Renders as a
+     custom popup (NOT a native <select>) so it has consistent styling and
+     can include a "+ Other…" affordance for fresh speaker ids. Positioned
+     `fixed` from JS so it floats over the modal. */
+  .sim-speaker-menu {
+    background: var(--surface);
+    border: 1px solid var(--border-strong);
+    border-radius: 6px;
+    box-shadow: var(--shadow-lg);
+    padding: 4px;
+    min-width: 160px;
+    z-index: 9100;
+    font-family: var(--font-mono, monospace);
+    font-size: 11px;
+    letter-spacing: 0.06em;
+    user-select: none;
+  }
+  .sim-speaker-menu-item {
+    padding: 5px 10px;
+    color: var(--text-2);
+    text-transform: uppercase;
+    border-radius: 3px;
+    cursor: pointer;
+  }
+  .sim-speaker-menu-item:hover { background: var(--surface-2); color: var(--text); }
+  .sim-speaker-menu-item.current { color: var(--accent); background: var(--accent-soft); }
+  .sim-speaker-menu-item.custom {
+    border-top: 1px solid var(--border);
+    margin-top: 4px;
+    padding-top: 7px;
+    color: var(--dim);
+    text-transform: none;
+    letter-spacing: 0;
+    font-family: var(--font-ui);
+    font-size: 11.5px;
+  }
+  .sim-speaker-menu-item.custom:hover { color: var(--accent); }
+  /* Transient "saved" pill — created by the simulator JS lazily inside
+     the titlebar after a successful inline edit. */
+  .sim-saved-caption {
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--accent);
+    border: 1px solid var(--accent);
+    border-radius: 3px;
+    padding: 1px 7px;
+    margin-left: 4px;
+    opacity: 0;
+    transform: translateY(-2px);
+    transition: opacity 0.18s ease, transform 0.18s ease;
+    pointer-events: none;
+  }
+  .sim-saved-caption.sim-saved-show {
+    opacity: 1;
+    transform: translateY(0);
   }
   .sim-line-empty { color: var(--mute, var(--dim)); font-style: italic; }
   .sim-speaker {
@@ -2668,9 +3283,12 @@
     <button id="save-btn" class="primary" disabled="" title="save current file (⌘S / Ctrl+S)">Save</button>
     <button id="save-all-btn" disabled="" title="save every dirty file (⇧⌘S / Ctrl+Shift+S)">Save all</button>
     <span class="divider-v"></span>
-    <button id="refresh-flags-btn" title="re-scan flag namespace from loaded files">Refresh flags</button>
+    <button id="refresh-flags-btn" title="re-scan flag namespace from loaded files"><svg width="11" height="11" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 6a4 4 0 1 1-1.2-2.85L10 4"></path><path d="M10 1.5V4H7.5"></path></svg><span class="btn-label">Refresh flags</span></button>
+    <button id="load-state-gd-btn" title="load godot/scripts/autoload/state.gd so the editor can flag undeclared write_path / trust_path / trigger flags"><span class="btn-label">Load state.gd</span></button>
+    <button id="load-save-gd-btn" title="load godot/scripts/systems/save.gd so the editor can auto-write migration blocks when adding flags"><span class="btn-label">Load save.gd</span></button>
     <button id="clear-pins-btn" class="ghost-accent" title="unpin all consequence highlights" style="display: none;">Clear pins (0)</button>
-    <button id="theme-btn" title="toggle light / dark theme">Light</button>
+    <button id="theme-btn" title="toggle light / dark theme (T)"><svg width="11" height="11" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.3" aria-hidden="true"><path d="M9.5 7.2A4 4 0 1 1 4.8 2.5a4 4 0 0 0 4.7 4.7z"></path></svg><span class="btn-label">Light</span></button>
+    <button id="help-btn" title="keyboard shortcuts (?)"><span style="font-family:var(--font-mono);font-size:11px;">?</span></button>
     <button id="play-btn" title="play this file in the simulator (no Godot needed)">▶ Play</button>
     <span class="divider-v"></span>
     <div class="view-toggle" role="tablist" aria-label="view mode">
@@ -2704,21 +3322,89 @@
         <span class="count" id="file-count"></span>
       </div>
       <div id="file-list"></div>
+      <!-- Unused-flag maintenance panel. Populated by renderUnusedFlagsPanel
+           after state.gd is loaded. Hidden until there's something to show. -->
+      <div id="unused-flags-section" class="sidebar-section" style="display:none">
+        Unused declared flags
+        <span class="count" id="unused-flags-count"></span>
+      </div>
+      <div id="unused-flags-list"></div>
+      <div class="sidebar-empty" id="sidebar-empty">
+        <div class="arrow" aria-hidden="true">↑</div>
+        <div class="sidebar-empty-icon" aria-hidden="true">
+          <svg viewBox="0 0 56 44" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round">
+            <path d="M5 10a2 2 0 0 1 2-2h13l3 3h26a2 2 0 0 1 2 2v23a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V10z"></path>
+            <line x1="14" y1="22" x2="42" y2="22" stroke-dasharray="2 3" opacity="0.5"></line>
+          </svg>
+        </div>
+        <p><strong style="color:var(--text-2);">No folder opened</strong></p>
+        <p>Click <em style="color:var(--accent);font-style:normal;font-weight:500;">Open folder</em> in the toolbar to load dialogue JSON files.</p>
+      </div>
     </div>
     <div id="content-pane"><div id="content">
       <div id="content-inner">
         <div id="empty">
-          <div class="empty-sub">Get started</div>
-          <h2>Open a dialogue folder</h2>
-          <p>Click <kbd>Open folder</kbd> and pick the directory containing the dialogue JSON files
-          (typically <code style="font-family:var(--font-mono);font-size:12px;color:var(--accent)">godot/data/dialogues/</code>).</p>
-          <p>Files load into the left pane. Click any one to edit lines, choices, conditions, and idle flavor.
-          Schema fields are preserved bit-identical on save.</p>
-          <p>Save with <kbd>⌘S</kbd> or <kbd>Ctrl+S</kbd>. Save all dirty files with <kbd>⇧⌘S</kbd>.
-          Wrap italics with <kbd>⌘I</kbd> while in any line.</p>
-          <div class="hint-tip">
-            Folder access uses the File System Access API — Chrome &amp; Edge support it.
-            Safari and Firefox don't yet.
+          <div class="welcome-hero">
+            <div class="welcome-art" aria-hidden="true">
+              <svg viewBox="0 0 200 160" xmlns="http://www.w3.org/2000/svg">
+                <defs>
+                  <linearGradient id="rootg" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stop-color="#d4a84a"></stop>
+                    <stop offset="100%" stop-color="#8a7536"></stop>
+                  </linearGradient>
+                </defs>
+                <!-- connectors -->
+                <path d="M100 48 C 70 70, 50 78, 40 96" fill="none" stroke="currentColor" stroke-width="1.4" opacity="0.35"></path>
+                <path d="M100 48 C 100 72, 100 78, 100 96" fill="none" stroke="currentColor" stroke-width="1.4" opacity="0.35"></path>
+                <path d="M100 48 C 130 70, 150 78, 160 96" fill="none" stroke="currentColor" stroke-width="1.4" opacity="0.35"></path>
+                <path d="M40 132 C 60 140, 80 142, 100 142" fill="none" stroke="currentColor" stroke-width="1.4" opacity="0.2"></path>
+                <!-- root node (highlighted) -->
+                <rect x="62" y="22" width="76" height="32" rx="6" fill="url(#rootg)" stroke="#d4a84a" stroke-width="1.5"></rect>
+                <rect x="68" y="30" width="40" height="3" rx="1.5" fill="#1a1610" opacity="0.85"></rect>
+                <rect x="68" y="38" width="30" height="3" rx="1.5" fill="#1a1610" opacity="0.55"></rect>
+                <rect x="68" y="46" width="22" height="3" rx="1.5" fill="#1a1610" opacity="0.4"></rect>
+                <!-- child nodes -->
+                <rect x="10" y="96" width="60" height="32" rx="5" fill="var(--surface-2, #24211a)" stroke="currentColor" stroke-width="1" opacity="0.7"></rect>
+                <rect x="18" y="104" width="32" height="2.5" rx="1" fill="currentColor" opacity="0.55"></rect>
+                <rect x="18" y="111" width="22" height="2.5" rx="1" fill="currentColor" opacity="0.35"></rect>
+                <rect x="70" y="96" width="60" height="32" rx="5" fill="var(--surface-2, #24211a)" stroke="currentColor" stroke-width="1" opacity="0.7"></rect>
+                <rect x="78" y="104" width="32" height="2.5" rx="1" fill="currentColor" opacity="0.55"></rect>
+                <rect x="78" y="111" width="22" height="2.5" rx="1" fill="currentColor" opacity="0.35"></rect>
+                <rect x="130" y="96" width="60" height="32" rx="5" fill="var(--surface-2, #24211a)" stroke="currentColor" stroke-width="1" opacity="0.7"></rect>
+                <rect x="138" y="104" width="32" height="2.5" rx="1" fill="currentColor" opacity="0.55"></rect>
+                <rect x="138" y="111" width="22" height="2.5" rx="1" fill="currentColor" opacity="0.35"></rect>
+                <!-- small pin -->
+                <circle cx="100" cy="54" r="3" fill="#d4a84a"></circle>
+              </svg>
+            </div>
+            <div class="welcome-body">
+              <div class="welcome-eyebrow">Pig &amp; Swine · Dialogue Editor</div>
+              <h2 class="welcome-title">Open a dialogue folder</h2>
+              <p class="welcome-lede">Point the editor at the directory holding your dialogue JSON
+              (typically <code>godot/data/dialogues/</code>). Files load into the left rail; click any
+              one to edit lines, choices, conditions, and idle flavor. Schema preserved bit-identical on save.</p>
+              <div class="welcome-actions">
+                <button class="welcome-cta" id="welcome-open-btn">
+                  <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"><path d="M2 4.5a1 1 0 0 1 1-1h3.2l1.6 1.6H13a1 1 0 0 1 1 1V12a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V4.5z"></path></svg>
+                  Open folder…
+                </button>
+                <button class="welcome-link" id="welcome-shortcuts-btn">
+                  Keyboard shortcuts <kbd style="background:var(--surface-2);border:1px solid var(--border);padding:0 5px;border-radius:3px;font-family:var(--font-mono);font-size:10px;margin-left:4px;color:var(--text-2);">?</kbd>
+                </button>
+              </div>
+            </div>
+          </div>
+          <div class="welcome-shortcuts">
+            <div class="welcome-shortcuts-h">Essentials</div>
+            <div class="welcome-shortcut"><span class="keys"><kbd>⌘S</kbd></span><span>Save current file</span></div>
+            <div class="welcome-shortcut"><span class="keys"><kbd>⇧⌘S</kbd></span><span>Save every dirty file</span></div>
+            <div class="welcome-shortcut"><span class="keys"><kbd>⌘I</kbd></span><span>Wrap selection in <code style="font-family:var(--font-mono);font-size:10.5px;color:var(--accent);">[i]…[/i]</code></span></div>
+            <div class="welcome-shortcut"><span class="keys"><kbd>Enter</kbd></span><span>Insert a new line/choice below</span></div>
+            <div class="welcome-shortcut"><span class="keys"><kbd>?</kbd></span><span>Open the full cheatsheet</span></div>
+            <div class="welcome-shortcut"><span class="keys"><kbd>F</kbd></span><span>Fit graph to viewport</span></div>
+          </div>
+          <div class="welcome-footnote">
+            Folder access via the File System Access API <span class="dot">·</span> Chrome &amp; Edge supported <span class="dot">·</span> not available on Safari or Firefox yet
           </div>
         </div>
       </div>
@@ -2733,6 +3419,51 @@
   </div>
 </div>
 <div id="toast" role="status" aria-live="polite"></div>
+<div id="shortcuts-modal" role="dialog" aria-modal="true" aria-labelledby="shortcuts-title">
+  <div class="shortcuts-card">
+    <div class="shortcuts-head">
+      <span class="shortcuts-title" id="shortcuts-title">Keyboard shortcuts</span>
+      <button class="shortcuts-close" id="shortcuts-close" type="button">Esc</button>
+    </div>
+    <div class="shortcuts-body">
+      <div class="shortcuts-group">
+        <h4>File</h4>
+        <dl>
+          <dt><kbd>⌘S</kbd></dt><dd>Save current file</dd>
+          <dt><kbd>⇧⌘S</kbd></dt><dd>Save every dirty file</dd>
+          <dt><kbd>Ctrl S</kbd></dt><dd>Save (Windows / Linux)</dd>
+        </dl>
+      </div>
+      <div class="shortcuts-group">
+        <h4>Editing</h4>
+        <dl>
+          <dt><kbd>Enter</kbd></dt><dd>Insert new line / choice below</dd>
+          <dt><kbd>⇧Enter</kbd></dt><dd>Literal newline in current bubble</dd>
+          <dt><kbd>⌘I</kbd></dt><dd>Wrap selection in <code style="font-family:var(--font-mono);font-size:10.5px;color:var(--accent);">[i]…[/i]</code></dd>
+          <dt><kbd>Drag ≡</kbd></dt><dd>Reorder lines, choices, states</dd>
+        </dl>
+      </div>
+      <div class="shortcuts-group">
+        <h4>Graph view</h4>
+        <dl>
+          <dt><kbd>F</kbd></dt><dd>Fit graph to viewport</dd>
+          <dt><kbd>0</kbd></dt><dd>Reset zoom &amp; pan</dd>
+          <dt><kbd>/</kbd></dt><dd>Search nodes</dd>
+          <dt><kbd>Drag pin</kbd></dt><dd>Wire a choice to a target state</dd>
+        </dl>
+      </div>
+      <div class="shortcuts-group">
+        <h4>App</h4>
+        <dl>
+          <dt><kbd>?</kbd></dt><dd>Toggle this cheatsheet</dd>
+          <dt><kbd>Esc</kbd></dt><dd>Close cheatsheet / modal</dd>
+          <dt><kbd>T</kbd></dt><dd>Toggle light / dark theme</dd>
+          <dt><kbd>▶ Play</kbd></dt><dd>Run the file in the in-app simulator</dd>
+        </dl>
+      </div>
+    </div>
+  </div>
+</div>
 <script src="vendor/graph-view.js"></script>
 <script src="vendor/simulator.js"></script>
 <script>
@@ -2761,12 +3492,19 @@ const $ = sel => document.querySelector(sel);
 
 const themeBtn = $('#theme-btn');
 function applyTheme(mode) {
+  // Preserve the icon (first child <svg>) — only swap the label span.
+  let label = themeBtn.querySelector('.btn-label');
+  if (!label) {
+    label = document.createElement('span');
+    label.className = 'btn-label';
+    themeBtn.appendChild(label);
+  }
   if (mode === 'light') {
     document.body.classList.add('light');
-    themeBtn.textContent = 'Dark';
+    label.textContent = 'Dark';
   } else {
     document.body.classList.remove('light');
-    themeBtn.textContent = 'Light';
+    label.textContent = 'Light';
   }
   if (window.GraphView && window.GraphView.onThemeChange) window.GraphView.onThemeChange();
 }
@@ -2783,6 +3521,191 @@ if (clearPinsBtn) {
     clearAllPinnedConsequences();
   });
 }
+
+// ======================================================================
+// v2 UI POLISH WIRING
+// Adds: shortcuts modal (?, Esc, T), welcome-screen buttons, Open-Folder
+// primary-state when no folder is loaded, sidebar empty hint visibility,
+// topbar overflow detection (.compact class). All non-destructive — the
+// underlying logic (Open folder click, theme toggle, etc.) is untouched.
+// ======================================================================
+
+const _sidebarEmpty = document.getElementById('sidebar-empty');
+const _shortcutsModal = document.getElementById('shortcuts-modal');
+const _topbar = document.getElementById('topbar');
+
+function _updateFolderUiState() {
+  const hasFolder = !!dirHandle;
+  if (_sidebarEmpty) _sidebarEmpty.style.display = hasFolder ? 'none' : '';
+  if (_topbar) _topbar.classList.toggle('needs-folder', !hasFolder);
+  // While there's no folder, force the welcome (linear pane) into view so
+  // the hero & shortcuts are discoverable. Stash the user's preferred mode
+  // in a SEPARATE localStorage key so it survives reloads — GraphView.setMode
+  // writes to its own key, so without this a reload-while-folderless would
+  // permanently lose the preference.
+  const PREF_KEY = 'dialogue_editor_pref_view_mode';
+  if (!hasFolder) {
+    if (window.GraphView && window.GraphView.getMode && window.GraphView.setMode) {
+      const current = window.GraphView.getMode();
+      if (current !== 'linear') {
+        try { localStorage.setItem(PREF_KEY, current); } catch (_) {}
+        window.GraphView.setMode('linear');
+      }
+    }
+  } else {
+    let pref = null;
+    try { pref = localStorage.getItem(PREF_KEY); } catch (_) {}
+    if (pref && window.GraphView && window.GraphView.setMode && pref !== 'linear') {
+      window.GraphView.setMode(pref);
+      try { localStorage.removeItem(PREF_KEY); } catch (_) {}
+    }
+  }
+}
+_updateFolderUiState();
+// Re-apply after GraphView.init() has booted (called later in this script).
+// setTimeout(0) puts us after the synchronous init.
+setTimeout(_updateFolderUiState, 0);
+
+// Welcome screen primary CTA → reuse the topbar's open-folder click path.
+const _welcomeOpenBtn = document.getElementById('welcome-open-btn');
+if (_welcomeOpenBtn) {
+  _welcomeOpenBtn.addEventListener('click', () => $('#open-btn').click());
+}
+const _welcomeShortcutsBtn = document.getElementById('welcome-shortcuts-btn');
+if (_welcomeShortcutsBtn) {
+  _welcomeShortcutsBtn.addEventListener('click', () => openShortcuts());
+}
+
+// Shortcuts modal open/close.
+function openShortcuts() {
+  if (!_shortcutsModal) return;
+  _shortcutsModal.classList.add('open');
+}
+function closeShortcuts() {
+  if (!_shortcutsModal) return;
+  _shortcutsModal.classList.remove('open');
+}
+const _helpBtn = document.getElementById('help-btn');
+if (_helpBtn) _helpBtn.addEventListener('click', () => {
+  _shortcutsModal.classList.toggle('open');
+});
+const _shortcutsClose = document.getElementById('shortcuts-close');
+if (_shortcutsClose) _shortcutsClose.addEventListener('click', closeShortcuts);
+if (_shortcutsModal) {
+  _shortcutsModal.addEventListener('click', (e) => {
+    if (e.target === _shortcutsModal) closeShortcuts();
+  });
+}
+
+// Global keys: `?` toggles cheatsheet, `Esc` closes it, `T` toggles theme.
+// All are no-ops while a text input / textarea is focused so we never steal
+// from in-progress edits.
+document.addEventListener('keydown', (e) => {
+  if (e.metaKey || e.ctrlKey || e.altKey) return;
+  const t = e.target;
+  const inEditable = t && (
+    t.tagName === 'INPUT' ||
+    t.tagName === 'TEXTAREA' ||
+    t.tagName === 'SELECT' ||
+    t.isContentEditable
+  );
+  if (e.key === 'Escape' && _shortcutsModal && _shortcutsModal.classList.contains('open')) {
+    e.preventDefault();
+    closeShortcuts();
+    return;
+  }
+  if (inEditable) return;
+  if (e.key === '?' || (e.shiftKey && e.key === '/')) {
+    e.preventDefault();
+    _shortcutsModal.classList.toggle('open');
+    return;
+  }
+  if (e.key === 't' || e.key === 'T') {
+    // Don't fire while the graph view captures `t` for something else.
+    const next = document.body.classList.contains('light') ? 'dark' : 'light';
+    applyTheme(next);
+    try { localStorage.setItem('dialogue-editor-theme', next); } catch (_) {}
+  }
+});
+
+// Detect topbar overflow → toggle .compact so secondary button labels
+// collapse to icons. Re-evaluates on resize and on view-toggle clicks
+// (the active state can subtly change widths).
+function _evaluateTopbarCompactness() {
+  if (!_topbar) return;
+  // Probe by removing .compact, measuring, then re-applying if needed.
+  const wasCompact = _topbar.classList.contains('compact');
+  _topbar.classList.remove('compact');
+  const overflowing = _topbar.scrollWidth > _topbar.clientWidth + 2;
+  if (overflowing) _topbar.classList.add('compact');
+  else if (wasCompact) {
+    // Re-test in compact form — only stay compact if it still helps.
+    _topbar.classList.add('compact');
+    const stillOverflowing = _topbar.scrollWidth > _topbar.clientWidth + 2;
+    if (!stillOverflowing) {
+      // Window is wide enough; try un-compact, accept if it fits.
+      _topbar.classList.remove('compact');
+      if (_topbar.scrollWidth > _topbar.clientWidth + 2) _topbar.classList.add('compact');
+    }
+  }
+}
+window.addEventListener('resize', _evaluateTopbarCompactness);
+requestAnimationFrame(_evaluateTopbarCompactness);
+
+// Watch dirHandle / currentFile and refresh the chrome accordingly. Polling
+// is much simpler than monkey-patching the function declarations (which are
+// resolved at the binding level, not via window.*). Cheap at 250ms — we
+// only touch the DOM when state actually changes.
+let _lastFolderState = null;
+let _lastFileState = null;
+setInterval(() => {
+  const fs = !!dirHandle;
+  const ff = currentFile || null;
+  if (fs !== _lastFolderState) {
+    _lastFolderState = fs;
+    _updateFolderUiState();
+    _updateBottomBarHints();
+    _evaluateTopbarCompactness();
+  }
+  if (ff !== _lastFileState) {
+    _lastFileState = ff;
+    _updateBottomBarHints();
+  }
+}, 250);
+
+// Bottombar hints — when no file is selected, replace the dash stats with
+// useful shortcut hints. When a file IS open, the host's normal stat update
+// will overwrite #stat-states / #stat-lines as usual.
+function _updateBottomBarHints() {
+  const statStates = document.getElementById('stat-states');
+  const statLines = document.getElementById('stat-lines');
+  if (!statStates || !statLines) return;
+  if (currentFile) return; // host will manage these
+  // No file open — show hints instead.
+  statStates.innerHTML = '';
+  statLines.innerHTML = '';
+  const tip = (kbd, text) => {
+    const wrap = document.createElement('span');
+    wrap.className = 'hint-chip';
+    const k = document.createElement('kbd');
+    k.textContent = kbd;
+    wrap.appendChild(k);
+    wrap.appendChild(document.createTextNode(' ' + text));
+    return wrap;
+  };
+  if (!dirHandle) {
+    statStates.appendChild(tip('?', 'shortcuts'));
+    const sep = document.createElement('span');
+    sep.className = 'hint-sep';
+    sep.textContent = '·';
+    statLines.appendChild(sep);
+    statLines.appendChild(tip('T', 'toggle theme'));
+  } else {
+    statStates.appendChild(tip('↑↓', 'navigate files'));
+    statLines.appendChild(tip('?', 'shortcuts'));
+  }
+}
+_updateBottomBarHints();
 
 // -------- IDB / FOLDER AUTO-RESTORE --------
 
@@ -2823,20 +3746,72 @@ async function idbSet(key, value) {
 async function tryAutoRestore() {
   if (!hasFSA) return;
   const stored = await idbGet('dirHandle');
+  if (stored) {
+    storedDirHandle = stored;
+    try {
+      const permission = await stored.queryPermission({ mode: 'readwrite' });
+      if (permission === 'granted') {
+        dirHandle = stored;
+        await loadAllFiles();
+        renderSidebar();
+        updateBottomBar();
+      }
+    } catch (e) {
+      console.warn('Auto-restore queryPermission failed:', e);
+    }
+  }
+  // Restore state.gd / save.gd handles. queryPermission is silent: if
+  // browser already granted, we load + parse. If only 'prompt', we
+  // surface a "Restore" affordance on the button so one click reauthorises.
+  await tryAutoRestoreStateGd();
+  await tryAutoRestoreSaveGd();
+  updateRestoreButton();
+}
+
+async function tryAutoRestoreStateGd() {
+  const stored = await idbGet('stateGdHandle');
   if (!stored) return;
-  storedDirHandle = stored;
+  stateGdHandle = stored;
+  const btn = document.getElementById('load-state-gd-btn');
+  const lbl = btn && btn.querySelector('.btn-label');
   try {
-    const permission = await stored.queryPermission({ mode: 'readwrite' });
-    if (permission === 'granted') {
-      dirHandle = stored;
-      await loadAllFiles();
-      renderSidebar();
-      updateBottomBar();
+    const perm = await stored.queryPermission({ mode: 'readwrite' });
+    if (perm === 'granted') {
+      const file = await stored.getFile();
+      stateGdText = await file.text();
+      parseStateGd(stateGdText);
+      renderContent();
+      renderUnusedFlagsPanel();
+      if (lbl) lbl.textContent = `state.gd ✓ (${declaredFlagPaths.size})`;
+    } else if (lbl) {
+      // Permission decayed; nudge the user that one click reattaches it.
+      lbl.textContent = `Restore state.gd`;
     }
   } catch (e) {
-    console.warn('Auto-restore queryPermission failed:', e);
+    console.warn('state.gd auto-restore failed:', e);
+    if (lbl) lbl.textContent = 'Load state.gd';
   }
-  updateRestoreButton();
+}
+
+async function tryAutoRestoreSaveGd() {
+  const stored = await idbGet('saveGdHandle');
+  if (!stored) return;
+  saveGdHandle = stored;
+  const btn = document.getElementById('load-save-gd-btn');
+  const lbl = btn && btn.querySelector('.btn-label');
+  try {
+    const perm = await stored.queryPermission({ mode: 'readwrite' });
+    if (perm === 'granted') {
+      const file = await stored.getFile();
+      saveGdText = await file.text();
+      if (lbl) lbl.textContent = `save.gd ✓`;
+    } else if (lbl) {
+      lbl.textContent = `Restore save.gd`;
+    }
+  } catch (e) {
+    console.warn('save.gd auto-restore failed:', e);
+    if (lbl) lbl.textContent = 'Load save.gd';
+  }
 }
 
 function updateRestoreButton() {
@@ -3008,6 +3983,7 @@ async function loadAllFiles() {
   knownSpeakers = collectSpeakers();
   flagPaths = harvestFlagPaths();
   refreshFlagList();
+  renderUnusedFlagsPanel();
 }
 
 function collectSpeakers() {
@@ -3048,6 +4024,422 @@ function harvestFlagPaths() {
     }
   }
   return Array.from(paths).sort();
+}
+
+// ============ state.gd parsing for undeclared-path warnings =============
+// The dialogue runtime requires every trigger / write_path / trust_path
+// reference to be a path that's pre-declared in State.reset_state(). If the
+// path isn't declared, the runtime resolves it to null, the trigger silently
+// fails, and the state never matches — a particularly nasty footgun because
+// the simulator's looser path resolver doesn't enforce the same check.
+//
+// This module parses state.gd's `reset_state()` dictionary literal, walks
+// each top-level namespace block (chapter1, chapter2, ...) at brace depth 0,
+// and builds a Set of "namespace.key" strings. The renderer compares paths
+// against this set and surfaces an inline warning + copy-snippet button.
+//
+// Paths from namespaces we couldn't parse are conservatively treated as
+// "unknown" (no warning) to avoid red-flagging valid flags.
+var declaredFlagPaths = new Set();      // 'chapter1.foo' style strings
+var declaredFlagTypes = new Map();      // path → default-value literal string
+var declaredFlagNamespaces = new Set(); // 'chapter1', 'chapter2', ...
+var stateGdHandle = null;               // FSA handle (cached for re-scan)
+var stateGdText = '';                   // last-loaded state.gd contents (for in-place edits)
+var saveGdHandle = null;                // FSA handle for save.gd
+var saveGdText = '';                    // last-loaded save.gd contents
+
+function parseStateGd(text) {
+  declaredFlagPaths = new Set();
+  declaredFlagTypes = new Map();
+  declaredFlagNamespaces = new Set();
+  // Find every top-level namespace block. The GDScript dictionary uses the
+  // same "name": { ... } shape inside reset_state(), so we can locate the
+  // start with a single regex and then brace-walk to the close.
+  const nsRe = /"([a-zA-Z_]\w*)":\s*\{/g;
+  let m;
+  while ((m = nsRe.exec(text)) !== null) {
+    const ns = m[1];
+    // Skip non-flag-namespace top-level keys (e.g. "current_scene_path" would
+    // not match anyway since it's not a dict). We only walk those that opened
+    // a block. The check is now: did we just match an opening brace? Yes.
+    let i = m.index + m[0].length;
+    let depth = 1;
+    const start = i;
+    while (i < text.length && depth > 0) {
+      const c = text[i++];
+      if (c === '{') depth++;
+      else if (c === '}') depth--;
+    }
+    if (depth !== 0) continue; // unbalanced — skip
+    const block = text.substring(start, i - 1);
+    // Walk the block at brace-depth 0 only so we don't pick up keys from
+    // nested dicts as flags of THIS namespace.
+    let d = 0, pos = 0;
+    while (pos < block.length) {
+      const c = block[pos];
+      if (c === '"' && d === 0) {
+        const km = block.substring(pos).match(/^"(\w+)":\s*([^,\n]+)/);
+        if (km) {
+          const key = km[1];
+          const valRaw = km[2].trim().replace(/,?$/, '');
+          declaredFlagPaths.add(`${ns}.${key}`);
+          declaredFlagTypes.set(`${ns}.${key}`, valRaw);
+          pos += km[0].length;
+          continue;
+        }
+      }
+      if (c === '{') d++;
+      else if (c === '}') d--;
+      pos++;
+    }
+    if (declaredFlagPaths.size > 0) declaredFlagNamespaces.add(ns);
+  }
+}
+
+// Default GDScript literal for a fresh flag, inferred from key name. Used
+// for the "copy snippet" affordance so the pasted line is the right type.
+function _defaultLiteralForFlag(path) {
+  const key = path.split('.').pop() || '';
+  // Heuristic: anything ending _trust / _count / _idx / _level is an int;
+  // anything ending _stance / _choice / _state / _name / _id / _grade is a
+  // string; otherwise bool.
+  if (/_(trust|count|idx|level|score)$/.test(key)) return '0';
+  if (/_(stance|choice|state|name|id|grade|outcome|decision|reaction|buff)$/.test(key)) return '""';
+  return 'false';
+}
+
+function snippetForFlag(path) {
+  const key = path.split('.').pop() || path;
+  return `"${key}": ${_defaultLiteralForFlag(path)},`;
+}
+
+// ============ Auto-patcher: insert / remove flag in state.gd + save.gd ===
+// Surgical string edits because parsing GDScript properly is overkill for
+// the narrow shapes we touch: a single `const SAVE_VERSION` line, a single
+// namespace block inside reset_state(), and an append to the tail of
+// migrate_save(). Each helper returns { ok, text, message } so the caller
+// can decide whether to write through.
+
+// Insert `\t\t\t"key": default,` immediately before the closing brace of the
+// namespace block. Preserves indentation by sampling the namespace block's
+// opening-line indent + one tab.
+function patchStateGdAddFlag(text, namespace, key, literal) {
+  const nsRe = new RegExp(`("${namespace}":\\s*\\{)`);
+  const match = text.match(nsRe);
+  if (!match) return { ok: false, text, message: `namespace "${namespace}" not found in state.gd` };
+  // Find the line containing the namespace declaration, sample its indent.
+  const lineStart = text.lastIndexOf('\n', match.index) + 1;
+  const headerIndent = text.substring(lineStart, match.index).replace(/[^\t ]/g, '');
+  const innerIndent = headerIndent + '\t';
+  // Walk the block to its closing brace.
+  let i = match.index + match[0].length;
+  let depth = 1;
+  while (i < text.length && depth > 0) {
+    const c = text[i];
+    if (c === '{') depth++;
+    else if (c === '}') depth--;
+    if (depth === 0) break;
+    i++;
+  }
+  if (depth !== 0) return { ok: false, text, message: `unbalanced braces in "${namespace}" block` };
+  // Re-check: is the flag already declared inside this block?
+  const block = text.substring(match.index + match[0].length, i);
+  const dupRe = new RegExp(`"${key.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}"\\s*:`);
+  if (dupRe.test(block)) {
+    return { ok: false, text, message: `${namespace}.${key} is already declared` };
+  }
+  // Find the closing brace's line start so the inserted line has its own line.
+  const closeLineStart = text.lastIndexOf('\n', i) + 1;
+  // Walk backward from closing brace to find the last non-blank, non-comment
+  // line and ensure it ends with a comma. Most state.gd entries already
+  // trailing-comma, so this is mostly defensive.
+  const insertion = `${innerIndent}"${key}": ${literal},\n`;
+  const patched = text.substring(0, closeLineStart) + insertion + text.substring(closeLineStart);
+  return { ok: true, text: patched, message: `inserted ${namespace}.${key}` };
+}
+
+function patchStateGdRemoveFlag(text, namespace, key) {
+  const nsRe = new RegExp(`("${namespace}":\\s*\\{)`);
+  const match = text.match(nsRe);
+  if (!match) return { ok: false, text, message: `namespace "${namespace}" not found` };
+  let i = match.index + match[0].length;
+  let depth = 1;
+  while (i < text.length && depth > 0) {
+    const c = text[i];
+    if (c === '{') depth++;
+    else if (c === '}') depth--;
+    if (depth === 0) break;
+    i++;
+  }
+  const blockStart = match.index + match[0].length;
+  const blockEnd = i;
+  // Match the whole line containing `"key":` (incl. comment continuation,
+  // trailing comma, newline) so the removal leaves no orphan whitespace.
+  const lineRe = new RegExp(
+    `^[ \\t]*"${key.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}"\\s*:[^\\n]*\\n`,
+    'm'
+  );
+  const block = text.substring(blockStart, blockEnd);
+  const lineMatch = block.match(lineRe);
+  if (!lineMatch) return { ok: false, text, message: `${namespace}.${key} line not found inside its block` };
+  const newBlock = block.replace(lineMatch[0], '');
+  const patched = text.substring(0, blockStart) + newBlock + text.substring(blockEnd);
+  return { ok: true, text: patched, message: `removed ${namespace}.${key}` };
+}
+
+// Bump `const SAVE_VERSION: int = N` by 1. Returns the new version on
+// success so callers can quote it in the migration block.
+function patchStateGdBumpSaveVersion(text) {
+  const re = /const\s+SAVE_VERSION\s*:\s*int\s*=\s*(\d+)/;
+  const m = text.match(re);
+  if (!m) return { ok: false, text, message: 'SAVE_VERSION constant not found in state.gd' };
+  const cur = parseInt(m[1], 10);
+  const next = cur + 1;
+  const patched = text.replace(re, `const SAVE_VERSION: int = ${next}`);
+  return { ok: true, text: patched, message: `SAVE_VERSION ${cur} → ${next}`, version: next };
+}
+
+// Append a migration block to the end of migrate_save() for the new flag.
+// The block's idempotent "has check → set default" is the standard pattern
+// used by the existing migrations in save.gd, so the appended code reads
+// like the surrounding ones.
+function patchSaveGdAppendMigration(text, version, namespace, key, literal) {
+  const funcRe = /func\s+migrate_save\s*\(saved_data:\s*Dictionary,\s*old_version:\s*int\)\s*->\s*Dictionary:/;
+  const funcMatch = text.match(funcRe);
+  if (!funcMatch) return { ok: false, text, message: 'migrate_save() function not found in save.gd' };
+  // Find the `return saved_data` line that closes the function. Walk forward
+  // until the first top-level `return saved_data` after the function header.
+  const tailRe = /\n([ \t]*)return\s+saved_data\s*\n/g;
+  tailRe.lastIndex = funcMatch.index + funcMatch[0].length;
+  const tailMatch = tailRe.exec(text);
+  if (!tailMatch) return { ok: false, text, message: '`return saved_data` not found inside migrate_save()' };
+  const indent = tailMatch[1] || '\t';
+  // Build the migration block. Uses the same `if old_version < N:` shape
+  // as existing entries; idempotent via the .has(key) guard.
+  const block =
+`\n${indent}## v${version - 1} -> v${version}: auto-added by dialogue editor for ${namespace}.${key}.\n` +
+`${indent}if old_version < ${version}:\n` +
+`${indent}\tif saved_data.has("${namespace}"):\n` +
+`${indent}\t\tif not saved_data["${namespace}"].has("${key}"):\n` +
+`${indent}\t\t\tsaved_data["${namespace}"]["${key}"] = ${literal}\n`;
+  // Insert right before the `return saved_data` line.
+  const insertAt = tailMatch.index + 1; // skip the leading \n in tailRe
+  const patched = text.substring(0, insertAt) + block + text.substring(insertAt);
+  return { ok: true, text: patched, message: `appended v→${version} migration for ${namespace}.${key}` };
+}
+
+// One-shot: write text back to an FSA handle. Caller handles permission
+// dance via requestPermission.
+async function writeHandle(handle, text) {
+  const writable = await handle.createWritable();
+  await writable.write(text);
+  await writable.close();
+}
+
+// ============ Unused-declared-flags maintenance panel =================
+// Compares declared flags (from state.gd) against flags referenced by any
+// dialogue JSON (from harvestFlagPaths). The set difference is "declared
+// but unused by dialogue" — candidates for removal. The runtime could still
+// reference these from non-dialogue code (other .gd files, .tscn), so the
+// remove button surfaces a confirm dialog warning about that.
+function computeUnusedDeclaredFlags() {
+  if (declaredFlagPaths.size === 0) return [];
+  const refs = new Set(harvestFlagPaths());
+  // Manually-typed paths in conditions/etc. might be under namespaces we
+  // didn't parse from state.gd. Keep the comparison scoped to declared
+  // namespaces only, so we don't flag flags from systems we don't know about.
+  const out = [];
+  for (const p of declaredFlagPaths) {
+    if (!refs.has(p)) out.push(p);
+  }
+  out.sort();
+  return out;
+}
+
+function renderUnusedFlagsPanel() {
+  const section = document.getElementById('unused-flags-section');
+  const countEl = document.getElementById('unused-flags-count');
+  const listEl = document.getElementById('unused-flags-list');
+  if (!section || !listEl) return;
+  if (declaredFlagPaths.size === 0) {
+    section.style.display = 'none';
+    listEl.innerHTML = '';
+    return;
+  }
+  const unused = computeUnusedDeclaredFlags();
+  section.style.display = '';
+  if (countEl) countEl.textContent = String(unused.length);
+  listEl.innerHTML = '';
+  if (unused.length === 0) {
+    const empty = document.createElement('div');
+    empty.className = 'unused-flag-empty';
+    empty.textContent = 'every declared flag is referenced by a dialogue file.';
+    listEl.appendChild(empty);
+    return;
+  }
+  for (const path of unused) {
+    const row = document.createElement('div');
+    row.className = 'unused-flag-item';
+    row.innerHTML = `
+      <code class="unused-flag-path">${escapeHtmlSafe(path)}</code>
+      <button class="unused-flag-remove" title="strip this line from state.gd's reset_state() block">remove</button>
+    `;
+    const btn = row.querySelector('.unused-flag-remove');
+    btn.addEventListener('click', async () => {
+      const dot = path.indexOf('.');
+      const ns = dot > 0 ? path.substring(0, dot) : '';
+      const key = dot > 0 ? path.substring(dot + 1) : path;
+      const ok = window.confirm(
+        `Remove ${path} from state.gd's reset_state()?\n\n` +
+        `This flag isn't referenced by any dialogue JSON, but it might still be used by ` +
+        `other .gd files (e.g. systems, scenes) — search the project before relying on ` +
+        `this cleanup. Removal does NOT add a save migration; old saves keep the orphaned key.`
+      );
+      if (!ok) return;
+      btn.disabled = true;
+      btn.textContent = 'removing…';
+      try {
+        await autoRemoveFlagFromStateGd(ns, key);
+        row.remove();
+        renderUnusedFlagsPanel();
+      } catch (e) {
+        console.error(e);
+        showToast(`Remove failed: ${e.message}`, true);
+        btn.disabled = false;
+        btn.textContent = 'remove';
+      }
+    });
+    listEl.appendChild(row);
+  }
+}
+
+async function autoRemoveFlagFromStateGd(namespace, key) {
+  if (!stateGdHandle) throw new Error("state.gd isn't loaded");
+  try { await stateGdHandle.requestPermission({ mode: 'readwrite' }); } catch (_) {}
+  const file = await stateGdHandle.getFile();
+  let text = await file.text();
+  const rmRes = patchStateGdRemoveFlag(text, namespace, key);
+  if (!rmRes.ok) throw new Error(rmRes.message);
+  await writeHandle(stateGdHandle, rmRes.text);
+  stateGdText = rmRes.text;
+  parseStateGd(rmRes.text);
+  renderContent();
+  showToast(`state.gd: removed ${namespace}.${key} from reset_state()`);
+}
+
+// True iff state.gd has been loaded AND the path's namespace is one we
+// successfully parsed AND the path isn't in the declared set. If state.gd
+// was never loaded, return false (no warning) so the editor stays usable
+// without it. If the namespace is unknown, also return false.
+function isFlagUndeclared(path) {
+  if (declaredFlagPaths.size === 0) return false;
+  if (!path || typeof path !== 'string') return false;
+  const dot = path.indexOf('.');
+  if (dot < 0) return false;
+  const ns = path.substring(0, dot);
+  if (!declaredFlagNamespaces.has(ns)) return false;
+  return !declaredFlagPaths.has(path);
+}
+
+// Render a ⚠ "undeclared in state.gd" badge with a copy-snippet button.
+// Always returns a DOM element (empty placeholder span when no warning
+// applies) so callers can replaceWith without null-checking. The copy
+// button writes the GDScript line to the clipboard so the author can paste
+// it into reset_state() and rerun the game without further fiddling.
+function renderUndeclaredFlagWarning(path) {
+  const wrap = document.createElement('span');
+  wrap.className = 'undeclared-flag-warning';
+  if (!isFlagUndeclared(path)) {
+    wrap.dataset.empty = '1';
+    return wrap;
+  }
+  const dot = path.indexOf('.');
+  const ns = dot > 0 ? path.substring(0, dot) : 'chapter1';
+  const key = dot > 0 ? path.substring(dot + 1) : path;
+  const literal = _defaultLiteralForFlag(path);
+  const snippet = `"${key}": ${literal},`;
+  wrap.innerHTML = `
+    <span class="undeclared-icon" title="path not declared in state.gd — runtime triggers using it will silently fail">⚠</span>
+    <span class="undeclared-msg">not declared in state.gd</span>
+    <button type="button" class="undeclared-add" title="auto-write '${escapeHtmlSafe(snippet)}' into state.gd's ${escapeHtmlSafe(ns)} block (and append a migrate_save block in save.gd if loaded)">add</button>
+    <code class="undeclared-snippet">${escapeHtmlSafe(snippet)}</code>
+  `;
+  const btn = wrap.querySelector('.undeclared-add');
+  btn.addEventListener('click', async (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    btn.disabled = true;
+    const original = btn.textContent;
+    btn.textContent = 'writing…';
+    try {
+      await autoAddFlagToStateGd(ns, key, literal);
+      btn.textContent = 'added';
+      setTimeout(() => { if (btn) { btn.textContent = original; btn.disabled = false; } }, 1200);
+    } catch (err) {
+      console.error(err);
+      btn.textContent = 'failed';
+      showToast(`Auto-add failed: ${err.message}`, true);
+      setTimeout(() => { if (btn) { btn.textContent = original; btn.disabled = false; } }, 1800);
+    }
+  });
+  return wrap;
+}
+
+// One-click add. Patches state.gd (insert line, bump SAVE_VERSION) and
+// save.gd (append migration block) if both handles are loaded. Falls back
+// to state.gd-only with a toast nudge if save.gd isn't loaded yet.
+async function autoAddFlagToStateGd(namespace, key, literal) {
+  if (!stateGdHandle) {
+    throw new Error("state.gd isn't loaded — click 'Load state.gd' first");
+  }
+  // Re-read state.gd from disk to avoid clobbering an out-of-band edit.
+  try { await stateGdHandle.requestPermission({ mode: 'readwrite' }); } catch (_) {}
+  const stFile = await stateGdHandle.getFile();
+  let stText = await stFile.text();
+
+  const addRes = patchStateGdAddFlag(stText, namespace, key, literal);
+  if (!addRes.ok) throw new Error(addRes.message);
+  stText = addRes.text;
+
+  const bumpRes = patchStateGdBumpSaveVersion(stText);
+  if (!bumpRes.ok) throw new Error(bumpRes.message);
+  stText = bumpRes.text;
+  const newVersion = bumpRes.version;
+
+  await writeHandle(stateGdHandle, stText);
+  stateGdText = stText;
+  parseStateGd(stText);
+
+  // Migration block — only if save.gd is loaded.
+  let saveNote = '';
+  if (saveGdHandle) {
+    try { await saveGdHandle.requestPermission({ mode: 'readwrite' }); } catch (_) {}
+    const svFile = await saveGdHandle.getFile();
+    let svText = await svFile.text();
+    const migRes = patchSaveGdAppendMigration(svText, newVersion, namespace, key, literal);
+    if (migRes.ok) {
+      await writeHandle(saveGdHandle, migRes.text);
+      saveGdText = migRes.text;
+      saveNote = ' + save.gd migration';
+    } else {
+      saveNote = ` (save.gd skipped: ${migRes.message})`;
+    }
+  } else {
+    saveNote = ' — load save.gd to also add a migration block';
+  }
+
+  // Refresh UI: warnings on the just-added path should disappear immediately.
+  renderContent();
+  renderUnusedFlagsPanel();
+  showToast(`state.gd: added ${namespace}.${key}, bumped SAVE_VERSION to ${newVersion}${saveNote}`);
+}
+
+// Minimal HTML-escape mirror of the host's escapeHtml. Some early callers
+// run before that helper is defined depending on script ordering — keep
+// this inline so renderUndeclaredFlagWarning is self-contained.
+function escapeHtmlSafe(s) {
+  return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
 }
 
 function collectStateFlags(state) {
@@ -3498,6 +4890,32 @@ function renderState(state, stateIdx, defaultSpeaker, rebuildStates) {
   onceLabel.appendChild(onceCheck);
   onceLabel.appendChild(document.createTextNode('fires once'));
 
+  // State-level chain toggle — writes state.chain = true (top-level, NOT
+  // under options). Distinct from options.chain (which fires on choice
+  // commit): state.chain fires on DISMISS, re-walking states immediately so
+  // a non-choice state can sequence into the next match without the player
+  // re-engaging the NPC. Engine: dialogue_runner.gd reads `entry.chain` at
+  // state-match time and fires the chain signal in _on_dialogue_dismissed.
+  const chainLabel = document.createElement('label');
+  chainLabel.className = 'state-once';
+  if (state.chain === true) chainLabel.classList.add('active');
+  chainLabel.title = 'on dismiss, re-walk states so the next matching one fires immediately (continuous dialogue without re-engaging)';
+  const chainCheck = document.createElement('input');
+  chainCheck.type = 'checkbox';
+  chainCheck.checked = state.chain === true;
+  chainCheck.addEventListener('change', () => {
+    if (chainCheck.checked) {
+      state.chain = true;
+      chainLabel.classList.add('active');
+    } else {
+      delete state.chain;
+      chainLabel.classList.remove('active');
+    }
+    markDirty();
+  });
+  chainLabel.appendChild(chainCheck);
+  chainLabel.appendChild(document.createTextNode('chain'));
+
   // Per-state ▶ — open the simulator starting at THIS state (bypasses the
   // entry-state walk so the user can play any sub-scene in isolation).
   const playBtn = document.createElement('button');
@@ -3513,6 +4931,7 @@ function renderState(state, stateIdx, defaultSpeaker, rebuildStates) {
   });
   idRow.appendChild(playBtn);
   idRow.appendChild(onceLabel);
+  idRow.appendChild(chainLabel);
 
   // State-level speaker override — picker writes state.speaker. Plain-string
   // lines in this state are then spoken by the picked character_id
@@ -3786,13 +5205,21 @@ function renderState(state, stateIdx, defaultSpeaker, rebuildStates) {
       input.setAttribute('list', 'flag-list');
       input.value = opts[key] || '';
       input.placeholder = '(none)';
+      // Inline ⚠ warning surfaced when the path isn't declared in state.gd.
+      // The warning re-evaluates on every keystroke so the indicator drops
+      // the moment the author types a known path.
+      let warn = renderUndeclaredFlagWarning(opts[key] || '');
       input.addEventListener('input', () => {
         const v = input.value.trim();
         if (v) opts[key] = v;
         else delete opts[key];
         markDirty();
+        const fresh = renderUndeclaredFlagWarning(v);
+        warn.replaceWith(fresh);
+        warn = fresh;
       });
       lbl.appendChild(input);
+      lbl.appendChild(warn);
       return lbl;
     }
 
@@ -4046,8 +5473,14 @@ function renderConditionsEditor(state, card, onConditionsChange) {
       clauses[idx].path = newPath;
       if (isCustom) rebuildClauses();
       commitTrigger();
+      const fresh = renderUndeclaredFlagWarning(newPath);
+      pathWarn.replaceWith(fresh);
+      pathWarn = fresh;
     });
     row.appendChild(pathSel);
+    // Inline ⚠ if the clause references a path that isn't declared in state.gd.
+    let pathWarn = renderUndeclaredFlagWarning(clause.path);
+    row.appendChild(pathWarn);
 
     const opSel = document.createElement('select');
     opSel.className = 'clause-op';
@@ -5400,6 +6833,7 @@ if (refreshFlagsBtn) {
     flagPaths = harvestFlagPaths();
     refreshFlagList();
     refreshPathSelects();
+    renderUnusedFlagsPanel();
     const original = refreshFlagsBtn.textContent;
     refreshFlagsBtn.textContent = `Refreshed (${flagPaths.length})`;
     refreshFlagsBtn.disabled = true;
@@ -5407,6 +6841,95 @@ if (refreshFlagsBtn) {
       refreshFlagsBtn.textContent = original;
       refreshFlagsBtn.disabled = false;
     }, 1200);
+  });
+}
+
+// Load state.gd — one-time file picker (FSA gives us a persistent handle for
+// the session). After load, the editor compares every options.write_path,
+// options.trust_path, and trigger flag against the parsed declared paths
+// and surfaces a ⚠ warning + copy-snippet button when something's missing
+// from State.reset_state(). Re-clicking the button re-scans the same file
+// (handy after you've added a flag to state.gd and want the warnings to
+// clear without re-loading the editor).
+const loadStateGdBtn = $('#load-state-gd-btn');
+if (loadStateGdBtn) {
+  loadStateGdBtn.addEventListener('click', async () => {
+    try {
+      let handle = stateGdHandle;
+      if (!handle) {
+        const picked = await window.showOpenFilePicker({
+          types: [{ description: 'Godot script', accept: { 'text/plain': ['.gd'] } }],
+          excludeAcceptAllOption: false,
+          multiple: false
+        });
+        handle = picked && picked[0];
+      } else {
+        // Re-scan: request fresh permission if expired.
+        try { await handle.requestPermission({ mode: 'readwrite' }); } catch (_) {}
+      }
+      if (!handle) return;
+      // Upgrade to readwrite so the add/remove buttons can patch the file.
+      try { await handle.requestPermission({ mode: 'readwrite' }); } catch (_) {}
+      stateGdHandle = handle;
+      // Persist the handle so the next session can auto-restore without a
+      // file picker. The user still needs to grant permission once per page
+      // load, but it's a one-click "Allow" instead of navigating the picker.
+      idbSet('stateGdHandle', handle);
+      const file = await handle.getFile();
+      stateGdText = await file.text();
+      parseStateGd(stateGdText);
+      // Visible feedback + re-render so warnings appear / disappear right away.
+      renderContent();
+      renderUnusedFlagsPanel();
+      showToast(`Parsed ${declaredFlagPaths.size} flag${declaredFlagPaths.size === 1 ? '' : 's'} from ${file.name}`);
+      const lbl = loadStateGdBtn.querySelector('.btn-label');
+      if (lbl) lbl.textContent = `state.gd ✓ (${declaredFlagPaths.size})`;
+    } catch (e) {
+      if (e && e.name !== 'AbortError') {
+        console.error(e);
+        showToast(`Couldn't load state.gd: ${e.message}`, true);
+      }
+    }
+  });
+}
+
+// Load save.gd — pairs with state.gd so the auto-add flow can append a new
+// migration block to migrate_save() whenever a flag is added. Without this
+// the editor can still add the flag to reset_state(), but old saves loaded
+// in-game would silently miss the field and triggers using it would fail.
+const loadSaveGdBtn = $('#load-save-gd-btn');
+if (loadSaveGdBtn) {
+  loadSaveGdBtn.addEventListener('click', async () => {
+    try {
+      let handle = saveGdHandle;
+      if (!handle) {
+        const picked = await window.showOpenFilePicker({
+          types: [{ description: 'Godot script', accept: { 'text/plain': ['.gd'] } }],
+          excludeAcceptAllOption: false,
+          multiple: false
+        });
+        handle = picked && picked[0];
+      }
+      if (!handle) return;
+      try { await handle.requestPermission({ mode: 'readwrite' }); } catch (_) {}
+      saveGdHandle = handle;
+      idbSet('saveGdHandle', handle);
+      const file = await handle.getFile();
+      saveGdText = await file.text();
+      // Sanity check — is this really save.gd? Look for migrate_save.
+      if (!/func\s+migrate_save\s*\(/.test(saveGdText)) {
+        showToast(`That file doesn't look like save.gd (no migrate_save function). Keeping the handle anyway.`, true);
+      } else {
+        showToast(`Loaded ${file.name} (${saveGdText.split('\n').length} lines)`);
+      }
+      const lbl = loadSaveGdBtn.querySelector('.btn-label');
+      if (lbl) lbl.textContent = `save.gd ✓`;
+    } catch (e) {
+      if (e && e.name !== 'AbortError') {
+        console.error(e);
+        showToast(`Couldn't load save.gd: ${e.message}`, true);
+      }
+    }
   });
 }
 
@@ -5704,14 +7227,6 @@ function isSingleLineModified(state) {
   const sav = typeof stateSnap.line === 'string' ? stateSnap.line : '';
   return cur !== sav;
 }
-
-// Explicit exports for the simulator IIFE — top-level function declarations
-// in a strict-mode classic script normally land on window, but the bundler
-// wrapper rewires the realm in a way that can shadow them. Belt and braces.
-window.isLineModified = isLineModified;
-window.isChoiceModified = isChoiceModified;
-window.isIdleLineModified = isIdleLineModified;
-window.isSingleLineModified = isSingleLineModified;
 
 // ============ Selection persistence (linear / split / graph) ============
 // The graph view tracks State.selectedNodeId internally; the linear pane

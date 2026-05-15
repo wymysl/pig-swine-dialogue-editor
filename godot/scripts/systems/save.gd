@@ -318,4 +318,10 @@ func migrate_save(saved_data: Dictionary, old_version: int) -> Dictionary:
 				kept.append(sid)
 		saved_data["dialogue_states_seen"] = kept
 
+
+	## v14 -> v15: auto-added by dialogue editor for chapter1.state_choice.
+	if old_version < 15:
+		if saved_data.has("chapter1"):
+			if not saved_data["chapter1"].has("state_choice"):
+				saved_data["chapter1"]["state_choice"] = ""
 	return saved_data
