@@ -1,0 +1,983 @@
+{
+  "version": 1,
+  "id": "chapter1_round_1",
+  "chapter": 1,
+  "opponent_id": "landlord_counsel_ch1",
+  "judgment_unlock": "procedural_reset_ch1",
+  "_status": "Code-pass complete; Design text fields stubbed.",
+  "_owner_code": "id, opponent_id, judgment_unlock, phase_1_fact_finding action costs and fact flags, witness ids and budgets, statement ids and tags, press/present wiring, phase_2_closing frame gates, counter-question ids/tags/weighted dictionaries, citation move references and patience deltas, victory resolution.",
+  "_owner_design": "witness display names, statement text, press follow-up text, present judge reactions, judge counter-question text, citation flavor lines, defeat lines, partial lines, victory result lines.",
+  "phase_1_fact_finding": {
+    "action_costs": {
+      "press": 1,
+      "present": 1,
+      "present_bonus": 0
+    },
+    "witness_cooperation_total": 5,
+    "local_fact_flags": {
+      "_fact.landlord_knew_address": {
+        "scope": "local_round",
+        "resolution_weight": "primary",
+        "article_tags": [
+          "echr_6",
+          "pl_const_45"
+        ],
+        "principle_tags": [
+          "service_of_process",
+          "procedural_fairness",
+          "legal_certainty"
+        ],
+        "context_tags": [
+          "civil_proceedings",
+          "service_failure",
+          "documentary"
+        ],
+        "set_by": [
+          "court_clerk.clerk_registry_service_entry.present_return_to_sender_slip"
+        ],
+        "used_by": [
+          "phase_2_closing.victory_resolution",
+          "phase_2_closing.jq_remedy_scope"
+        ]
+      },
+      "_fact.notice_received_april_28": {
+        "scope": "local_round",
+        "resolution_weight": "primary",
+        "article_tags": [
+          "echr_6",
+          "pl_const_45"
+        ],
+        "principle_tags": [
+          "service_of_process",
+          "access_to_court"
+        ],
+        "context_tags": [
+          "civil_proceedings",
+          "service_failure",
+          "deadline"
+        ],
+        "set_by": [
+          "resident_no_7.resident_found_envelope.press_when_notice_brought_down"
+        ],
+        "used_by": [
+          "phase_2_closing.victory_resolution",
+          "phase_2_closing.jq_article_6_civil"
+        ]
+      },
+      "_fact.resident_no_authority": {
+        "scope": "local_round",
+        "resolution_weight": "primary",
+        "article_tags": [
+          "echr_6",
+          "pl_const_45"
+        ],
+        "principle_tags": [
+          "service_of_process",
+          "procedural_fairness"
+        ],
+        "context_tags": [
+          "civil_proceedings",
+          "service_failure",
+          "housing"
+        ],
+        "set_by": [
+          "resident_no_7.resident_found_envelope.press_whether_he_knew_halina"
+        ],
+        "used_by": [
+          "phase_2_closing.victory_resolution",
+          "phase_2_closing.jq_third_party_cure"
+        ]
+      },
+      "_fact.renumbering_2015_documented": {
+        "scope": "local_round",
+        "resolution_weight": "primary",
+        "article_tags": [
+          "echr_6",
+          "pl_const_45"
+        ],
+        "principle_tags": [
+          "service_of_process",
+          "legal_certainty"
+        ],
+        "context_tags": [
+          "civil_proceedings",
+          "service_failure",
+          "documentary"
+        ],
+        "set_by": [
+          "court_clerk.clerk_address_on_petition.present_renumbering_2015_fact"
+        ],
+        "used_by": [
+          "phase_2_closing.victory_resolution",
+          "phase_2_closing.jq_article_6_civil"
+        ]
+      },
+      "_fact.bonus_neighbor_continuity": {
+        "scope": "local_round",
+        "resolution_weight": "bonus",
+        "article_tags": [
+          "echr_6"
+        ],
+        "principle_tags": [
+          "procedural_fairness"
+        ],
+        "context_tags": [
+          "housing",
+          "documentary"
+        ],
+        "set_by": [
+          "resident_no_7.resident_found_envelope.present_wojcik_witness_statement"
+        ],
+        "used_by": [
+          "phase_2_closing.victory_resolution"
+        ]
+      },
+      "_fact.bonus_return_to_sender_slip": {
+        "scope": "local_round",
+        "resolution_weight": "bonus",
+        "article_tags": [
+          "echr_6",
+          "pl_const_45"
+        ],
+        "principle_tags": [
+          "service_of_process",
+          "legal_certainty"
+        ],
+        "context_tags": [
+          "civil_proceedings",
+          "service_failure",
+          "documentary"
+        ],
+        "set_by": [
+          "court_clerk.clerk_registry_service_entry.present_return_to_sender_slip"
+        ],
+        "used_by": [
+          "phase_2_closing.victory_resolution"
+        ]
+      },
+      "_fact.bonus_lease_chain_documented": {
+        "scope": "local_round",
+        "resolution_weight": "bonus",
+        "article_tags": [
+          "echr_6"
+        ],
+        "principle_tags": [
+          "prescribed_by_law",
+          "procedural_fairness"
+        ],
+        "context_tags": [
+          "housing",
+          "documentary"
+        ],
+        "set_by": [
+          "court_clerk.clerk_address_on_petition.present_lease_chain_documents"
+        ],
+        "used_by": [
+          "phase_2_closing.victory_resolution"
+        ]
+      },
+      "_fact.bonus_landlord_pre_notice_contact": {
+        "scope": "local_round",
+        "resolution_weight": "bonus",
+        "article_tags": [
+          "echr_6"
+        ],
+        "principle_tags": [
+          "procedural_fairness"
+        ],
+        "context_tags": [
+          "housing",
+          "civil_proceedings"
+        ],
+        "set_by": [
+          "court_clerk.clerk_registry_service_entry.present_landlord_contact"
+        ],
+        "used_by": [
+          "phase_2_closing.victory_resolution"
+        ]
+      }
+    },
+    "witnesses": [
+      {
+        "id": "court_clerk",
+        "display_name": "DESIGN_TODO",
+        "_status_note": "DESIGN_TODO - Polish civil-court registry clerk; archival-bureaucrat register; no name; dry confidence in the file jacket.",
+        "cooperation_budget": 3,
+        "statements": [
+          {
+            "id": "clerk_registry_service_entry",
+            "text": "DESIGN_TODO",
+            "_status_note": "DESIGN_TODO - One sentence establishing that the registry file shows service entered against the petition address.",
+            "article_tags": [
+              "echr_6",
+              "pl_const_45"
+            ],
+            "principle_tags": [
+              "service_of_process",
+              "procedural_fairness"
+            ],
+            "context_tags": [
+              "civil_proceedings",
+              "service_failure",
+              "documentary"
+            ],
+            "press_options": [
+              {
+                "id": "press_registry_source",
+                "cost": 1,
+                "follow_up_statement_id": "clerk_address_on_petition",
+                "follow_up_text": "DESIGN_TODO",
+                "fact_flags_set": []
+              }
+            ],
+            "present_options": [
+              {
+                "id": "present_return_to_sender_slip",
+                "evidence_id": "return_to_sender_slip",
+                "cost": 0,
+                "available_when": "chapter1.bonus_evidence_collected == 'return_to_sender_slip'",
+                "fact_flags_set": [
+                  "_fact.landlord_knew_address",
+                  "_fact.bonus_return_to_sender_slip"
+                ],
+                "judge_reaction": "DESIGN_TODO"
+              },
+              {
+                "id": "present_landlord_contact",
+                "evidence_id": "landlord_contact",
+                "cost": 0,
+                "available_when": "chapter1.bonus_evidence_collected == 'landlord_contact'",
+                "fact_flags_set": [
+                  "_fact.bonus_landlord_pre_notice_contact"
+                ],
+                "judge_reaction": "DESIGN_TODO"
+              }
+            ],
+            "fact_flags_set": []
+          },
+          {
+            "id": "clerk_address_on_petition",
+            "text": "DESIGN_TODO",
+            "_status_note": "DESIGN_TODO - One sentence that the address in the service entry is simply the address copied from the petition papers.",
+            "article_tags": [
+              "echr_6",
+              "pl_const_45"
+            ],
+            "principle_tags": [
+              "service_of_process",
+              "legal_certainty"
+            ],
+            "context_tags": [
+              "civil_proceedings",
+              "service_failure",
+              "documentary"
+            ],
+            "press_options": [
+              {
+                "id": "press_registry_crosscheck",
+                "cost": 1,
+                "follow_up_statement_id": "clerk_no_municipal_crosscheck",
+                "follow_up_text": "DESIGN_TODO",
+                "fact_flags_set": []
+              }
+            ],
+            "present_options": [
+              {
+                "id": "present_renumbering_2015_fact",
+                "evidence_id": "renumbering_2015_fact",
+                "cost": 1,
+                "fact_flags_set": [
+                  "_fact.renumbering_2015_documented"
+                ],
+                "judge_reaction": "DESIGN_TODO"
+              },
+              {
+                "id": "present_lease_chain_documents",
+                "evidence_id": "lease_1962_inheritance_1987",
+                "cost": 0,
+                "available_when": "chapter1.bonus_evidence_collected == 'lease_1962_inheritance_1987'",
+                "fact_flags_set": [
+                  "_fact.bonus_lease_chain_documented"
+                ],
+                "judge_reaction": "DESIGN_TODO"
+              }
+            ],
+            "fact_flags_set": []
+          },
+          {
+            "id": "clerk_no_municipal_crosscheck",
+            "text": "DESIGN_TODO",
+            "_status_note": "DESIGN_TODO - One sentence confirming the registry does not independently audit renumbering unless a corrected filing is placed in the record.",
+            "article_tags": [
+              "echr_6"
+            ],
+            "principle_tags": [
+              "legal_certainty"
+            ],
+            "context_tags": [
+              "civil_proceedings",
+              "documentary"
+            ],
+            "press_options": [],
+            "present_options": [],
+            "fact_flags_set": []
+          },
+          {
+            "id": "clerk_third_party_receipt_noted",
+            "text": "DESIGN_TODO",
+            "_status_note": "DESIGN_TODO - One sentence stating that the file notes delivery to an adult at number seven, with no inquiry into authority.",
+            "article_tags": [
+              "echr_6",
+              "pl_const_45"
+            ],
+            "principle_tags": [
+              "service_of_process",
+              "procedural_fairness"
+            ],
+            "context_tags": [
+              "civil_proceedings",
+              "service_failure",
+              "housing"
+            ],
+            "press_options": [],
+            "present_options": [],
+            "fact_flags_set": []
+          }
+        ]
+      },
+      {
+        "id": "resident_no_7",
+        "display_name": "DESIGN_TODO",
+        "_status_note": "DESIGN_TODO - the young man who brought the notice down to Halina; mild, apologetic, and plainly not a hostile witness.",
+        "cooperation_budget": 2,
+        "statements": [
+          {
+            "id": "resident_found_envelope",
+            "text": "DESIGN_TODO",
+            "_status_note": "DESIGN_TODO - One sentence that he found an envelope for number seven and brought it downstairs once he realised it was not his.",
+            "article_tags": [
+              "echr_6",
+              "pl_const_45"
+            ],
+            "principle_tags": [
+              "service_of_process"
+            ],
+            "context_tags": [
+              "service_failure",
+              "housing"
+            ],
+            "press_options": [
+              {
+                "id": "press_when_notice_brought_down",
+                "cost": 1,
+                "follow_up_statement_id": "resident_brought_notice_april_28",
+                "follow_up_text": "DESIGN_TODO",
+                "fact_flags_set": [
+                  "_fact.notice_received_april_28"
+                ]
+              },
+              {
+                "id": "press_whether_he_knew_halina",
+                "cost": 1,
+                "follow_up_statement_id": "resident_no_authority_to_accept",
+                "follow_up_text": "DESIGN_TODO",
+                "fact_flags_set": [
+                  "_fact.resident_no_authority"
+                ]
+              }
+            ],
+            "present_options": [
+              {
+                "id": "present_wojcik_witness_statement",
+                "evidence_id": "wojcik_witness_statement",
+                "cost": 0,
+                "available_when": "chapter1.bonus_evidence_collected == 'wojcik_witness_statement'",
+                "fact_flags_set": [
+                  "_fact.bonus_neighbor_continuity"
+                ],
+                "judge_reaction": "DESIGN_TODO"
+              }
+            ],
+            "fact_flags_set": []
+          },
+          {
+            "id": "resident_brought_notice_april_28",
+            "text": "DESIGN_TODO",
+            "_status_note": "DESIGN_TODO - One sentence pinning the actual handover to 28 April and making the delay sound inadvertent rather than malicious.",
+            "article_tags": [
+              "echr_6",
+              "pl_const_45"
+            ],
+            "principle_tags": [
+              "access_to_court",
+              "service_of_process"
+            ],
+            "context_tags": [
+              "service_failure",
+              "deadline",
+              "housing"
+            ],
+            "press_options": [],
+            "present_options": [],
+            "fact_flags_set": []
+          },
+          {
+            "id": "resident_no_authority_to_accept",
+            "text": "DESIGN_TODO",
+            "_status_note": "DESIGN_TODO - One sentence confirming he did not know Halina, was not her relative, and had no authority to receive legal mail for her.",
+            "article_tags": [
+              "echr_6",
+              "pl_const_45"
+            ],
+            "principle_tags": [
+              "service_of_process",
+              "procedural_fairness"
+            ],
+            "context_tags": [
+              "service_failure",
+              "housing",
+              "civil_proceedings"
+            ],
+            "press_options": [],
+            "present_options": [],
+            "fact_flags_set": []
+          },
+          {
+            "id": "resident_opened_first_page",
+            "text": "DESIGN_TODO",
+            "_status_note": "DESIGN_TODO - One sentence admitting he opened the first page by mistake before realising the notice was not his.",
+            "article_tags": [
+              "echr_6"
+            ],
+            "principle_tags": [
+              "service_of_process"
+            ],
+            "context_tags": [
+              "service_failure",
+              "documentary"
+            ],
+            "press_options": [],
+            "present_options": [],
+            "fact_flags_set": []
+          }
+        ]
+      }
+    ]
+  },
+  "phase_2_closing": {
+    "judicial_patience_default": 5,
+    "frame_gates": {
+      "defective_service_135bis": {
+        "judicial_patience_start": 5,
+        "available_counter_questions": [
+          "jq_article_6_civil",
+          "jq_third_party_cure",
+          "jq_remedy_scope"
+        ]
+      },
+      "third_party_non_cure": {
+        "judicial_patience_start": 5,
+        "available_counter_questions": [
+          "jq_third_party_cure",
+          "jq_article_6_civil",
+          "jq_remedy_scope"
+        ],
+        "_status_note": "Auxiliary well-fitted frame - the schedule opens on cure, then pivots back to Article 6 and remedy."
+      },
+      "fair_hearing_article_6": {
+        "judicial_patience_start": 5,
+        "available_counter_questions": [
+          "jq_article_6_civil",
+          "jq_remedy_scope"
+        ],
+        "_status_note": "Supplementary frame - the service point is thinner, so the cure question does not open unless another frame supplied it."
+      },
+      "merits_defence": {
+        "judicial_patience_start": 3,
+        "available_counter_questions": [
+          "jq_merits_premature",
+          "jq_remedy_scope"
+        ],
+        "_status_note": "Wrong-shape frame - Phase 2 starts with reduced patience and the judge immediately redirects counsel back to procedure."
+      }
+    },
+    "judge_counter_questions": [
+      {
+        "id": "jq_article_6_civil",
+        "text": "DESIGN_TODO",
+        "_status_note": "DESIGN_TODO - Judge asks why Article 6 matters in a civil hearing and forces counsel to distinguish civil fair-hearing doctrine from criminal shorthand.",
+        "opponent_pressure_move": "technicality_does_not_matter",
+        "article_tags": [
+          "echr_6",
+          "pl_const_45"
+        ],
+        "principle_tags": [
+          "access_to_court",
+          "procedural_fairness",
+          "effective_remedy"
+        ],
+        "context_tags": [
+          "civil_proceedings",
+          "fair_trial"
+        ],
+        "pressure_weakness_tags": {
+          "echr_6": 0.20,
+          "pl_const_45": 0.15,
+          "access_to_court": 0.25,
+          "procedural_fairness": 0.20,
+          "civil_proceedings": 0.10,
+          "fair_trial": 0.10
+        },
+        "pressure_strength_tags": {
+          "proportionality": 0.50,
+          "positive_obligations": 0.50
+        },
+        "requires_fact_flags": [],
+        "judicial_patience_default": 5,
+        "available_citations": [
+          {
+            "move_id": "motion_to_set_aside",
+            "article_tags": [
+              "echr_6",
+              "pl_const_45"
+            ],
+            "principle_tags": [
+              "service_of_process",
+              "procedural_fairness",
+              "access_to_court"
+            ],
+            "context_tags": [
+              "civil_proceedings",
+              "service_failure",
+              "fair_trial"
+            ],
+            "move_tags": {
+              "echr_6": 0.20,
+              "pl_const_45": 0.15,
+              "service_of_process": 0.20,
+              "procedural_fairness": 0.20,
+              "access_to_court": 0.15,
+              "civil_proceedings": 0.05,
+              "service_failure": 0.03,
+              "fair_trial": 0.02
+            },
+            "requires_fact_flags": [],
+            "judicial_patience_delta_on_hit": 1,
+            "judicial_patience_delta_on_miss": -1,
+            "judicial_patience_delta_on_backfire": -2,
+            "flavor_line": "DESIGN_TODO",
+            "_status_note": "DESIGN_TODO - Cula reframes Article 6 as the practical right to be heard at all, not as criminal-procedure ornament."
+          },
+          {
+            "move_id": "notice_window",
+            "article_tags": [
+              "echr_6",
+              "pl_const_45"
+            ],
+            "principle_tags": [
+              "service_of_process",
+              "access_to_court"
+            ],
+            "context_tags": [
+              "civil_proceedings",
+              "service_failure",
+              "deadline"
+            ],
+            "move_tags": {
+              "echr_6": 0.15,
+              "pl_const_45": 0.15,
+              "service_of_process": 0.20,
+              "access_to_court": 0.20,
+              "civil_proceedings": 0.10,
+              "service_failure": 0.10,
+              "deadline": 0.10
+            },
+            "requires_fact_flags": [
+              "_fact.notice_received_april_28"
+            ],
+            "judicial_patience_delta_on_hit": 1,
+            "judicial_patience_delta_on_miss": -1,
+            "judicial_patience_delta_on_backfire": -2,
+            "flavor_line": "DESIGN_TODO",
+            "_status_note": "DESIGN_TODO - Cula ties the actual-notice date to why the civil-hearing right still has procedural work to do."
+          }
+        ],
+        "frame_gates": {
+          "fair_hearing_article_6": {
+            "available_citation_ids": [
+              "motion_to_set_aside",
+              "notice_window"
+            ]
+          }
+        },
+        "defeat_lines": [
+          "DESIGN_TODO"
+        ],
+        "partial_lines": [
+          "DESIGN_TODO"
+        ]
+      },
+      {
+        "id": "jq_third_party_cure",
+        "text": "DESIGN_TODO",
+        "_status_note": "DESIGN_TODO - Judge asks why the current occupant's receipt does not cure service; the line must sound skeptical but teachably procedural.",
+        "opponent_pressure_move": "third_party_cure",
+        "article_tags": [
+          "echr_6",
+          "pl_const_45"
+        ],
+        "principle_tags": [
+          "service_of_process",
+          "procedural_fairness",
+          "legal_certainty"
+        ],
+        "context_tags": [
+          "civil_proceedings",
+          "service_failure",
+          "housing"
+        ],
+        "pressure_weakness_tags": {
+          "echr_6": 0.15,
+          "service_of_process": 0.35,
+          "procedural_fairness": 0.20,
+          "legal_certainty": 0.10,
+          "civil_proceedings": 0.10,
+          "service_failure": 0.10
+        },
+        "pressure_strength_tags": {
+          "documentary": 0.50,
+          "legal_certainty": 0.50
+        },
+        "requires_fact_flags": [
+          "_fact.resident_no_authority"
+        ],
+        "judicial_patience_default": 5,
+        "available_citations": [
+          {
+            "move_id": "third_clause_non_cure",
+            "article_tags": [
+              "echr_6",
+              "pl_const_45"
+            ],
+            "principle_tags": [
+              "service_of_process",
+              "procedural_fairness"
+            ],
+            "context_tags": [
+              "civil_proceedings",
+              "service_failure",
+              "housing"
+            ],
+            "move_tags": {
+              "echr_6": 0.15,
+              "pl_const_45": 0.10,
+              "service_of_process": 0.30,
+              "procedural_fairness": 0.20,
+              "civil_proceedings": 0.10,
+              "service_failure": 0.10,
+              "housing": 0.05
+            },
+            "requires_fact_flags": [
+              "_fact.resident_no_authority"
+            ],
+            "judicial_patience_delta_on_hit": 1,
+            "judicial_patience_delta_on_miss": -1,
+            "judicial_patience_delta_on_backfire": -2,
+            "flavor_line": "DESIGN_TODO",
+            "_status_note": "DESIGN_TODO - Cula explains that a stranger in the stairwell is not an authorised agent and cannot cure a known wrong address."
+          }
+        ],
+        "frame_gates": {
+          "third_party_non_cure": {
+            "available_citation_ids": [
+              "third_clause_non_cure"
+            ]
+          }
+        },
+        "defeat_lines": [
+          "DESIGN_TODO"
+        ],
+        "partial_lines": [
+          "DESIGN_TODO"
+        ]
+      },
+      {
+        "id": "jq_remedy_scope",
+        "text": "DESIGN_TODO",
+        "_status_note": "DESIGN_TODO - Judge asks what precise remedy counsel seeks if relief is granted; the line must invite a narrow procedural answer, not a merits speech.",
+        "opponent_pressure_move": "ask_for_everything",
+        "article_tags": [
+          "echr_6",
+          "pl_const_45"
+        ],
+        "principle_tags": [
+          "effective_remedy",
+          "access_to_court",
+          "procedural_fairness"
+        ],
+        "context_tags": [
+          "civil_proceedings",
+          "housing",
+          "deadline"
+        ],
+        "pressure_weakness_tags": {
+          "echr_6": 0.10,
+          "pl_const_45": 0.10,
+          "effective_remedy": 0.35,
+          "access_to_court": 0.15,
+          "procedural_fairness": 0.10,
+          "civil_proceedings": 0.10,
+          "housing": 0.05,
+          "deadline": 0.05
+        },
+        "pressure_strength_tags": {
+          "proportionality": 0.50,
+          "housing": 0.50
+        },
+        "requires_fact_flags": [],
+        "judicial_patience_default": 5,
+        "available_citations": [
+          {
+            "move_id": "rehearing_as_remedy",
+            "article_tags": [
+              "echr_6",
+              "pl_const_45"
+            ],
+            "principle_tags": [
+              "effective_remedy",
+              "access_to_court",
+              "procedural_fairness"
+            ],
+            "context_tags": [
+              "civil_proceedings",
+              "housing",
+              "deadline"
+            ],
+            "move_tags": {
+              "echr_6": 0.15,
+              "pl_const_45": 0.10,
+              "effective_remedy": 0.30,
+              "access_to_court": 0.15,
+              "procedural_fairness": 0.10,
+              "civil_proceedings": 0.10,
+              "housing": 0.05,
+              "deadline": 0.05
+            },
+            "requires_fact_flags": [],
+            "judicial_patience_delta_on_hit": 2,
+            "judicial_patience_delta_on_miss": -1,
+            "judicial_patience_delta_on_backfire": -2,
+            "flavor_line": "DESIGN_TODO",
+            "_status_note": "DESIGN_TODO - Cula asks only for the rehearing the client should have had in the first place; if patience is healthy, the line should sound quietly exact."
+          }
+        ],
+        "frame_gates": {
+          "defective_service_135bis": {
+            "available_citation_ids": [
+              "rehearing_as_remedy"
+            ]
+          },
+          "third_party_non_cure": {
+            "available_citation_ids": [
+              "rehearing_as_remedy"
+            ]
+          },
+          "fair_hearing_article_6": {
+            "available_citation_ids": [
+              "rehearing_as_remedy"
+            ]
+          },
+          "merits_defence": {
+            "available_citation_ids": [
+              "rehearing_as_remedy"
+            ]
+          }
+        },
+        "defeat_lines": [
+          "DESIGN_TODO"
+        ],
+        "partial_lines": [
+          "DESIGN_TODO"
+        ]
+      },
+      {
+        "id": "jq_merits_premature",
+        "text": "DESIGN_TODO",
+        "_status_note": "DESIGN_TODO - Judge cuts off a merits-first argument and asks why counsel is arguing tenancy merits at a motion-to-set-aside hearing.",
+        "opponent_pressure_move": "merits_override",
+        "article_tags": [
+          "echr_6",
+          "pl_const_45"
+        ],
+        "principle_tags": [
+          "service_of_process",
+          "procedural_fairness",
+          "access_to_court"
+        ],
+        "context_tags": [
+          "civil_proceedings",
+          "fair_trial",
+          "housing"
+        ],
+        "pressure_weakness_tags": {
+          "echr_6": 0.15,
+          "pl_const_45": 0.10,
+          "service_of_process": 0.20,
+          "procedural_fairness": 0.20,
+          "access_to_court": 0.15,
+          "civil_proceedings": 0.10,
+          "fair_trial": 0.10
+        },
+        "pressure_strength_tags": {
+          "prescribed_by_law": 0.50,
+          "housing": 0.50
+        },
+        "requires_fact_flags": [],
+        "judicial_patience_default": 3,
+        "available_citations": [
+          {
+            "move_id": "motion_to_set_aside",
+            "article_tags": [
+              "echr_6",
+              "pl_const_45"
+            ],
+            "principle_tags": [
+              "service_of_process",
+              "procedural_fairness",
+              "access_to_court"
+            ],
+            "context_tags": [
+              "civil_proceedings",
+              "service_failure",
+              "fair_trial"
+            ],
+            "move_tags": {
+              "echr_6": 0.20,
+              "pl_const_45": 0.15,
+              "service_of_process": 0.20,
+              "procedural_fairness": 0.20,
+              "access_to_court": 0.15,
+              "civil_proceedings": 0.05,
+              "service_failure": 0.03,
+              "fair_trial": 0.02
+            },
+            "requires_fact_flags": [],
+            "judicial_patience_delta_on_hit": 1,
+            "judicial_patience_delta_on_miss": -2,
+            "judicial_patience_delta_on_backfire": -4,
+            "flavor_line": "DESIGN_TODO",
+            "_status_note": "DESIGN_TODO - Cula retreats from the merits and recentres the hearing on service as the procedural door."
+          },
+          {
+            "move_id": "rehearing_as_remedy",
+            "article_tags": [
+              "echr_6",
+              "pl_const_45"
+            ],
+            "principle_tags": [
+              "effective_remedy",
+              "procedural_fairness"
+            ],
+            "context_tags": [
+              "civil_proceedings",
+              "fair_trial",
+              "housing"
+            ],
+            "move_tags": {
+              "echr_6": 0.15,
+              "pl_const_45": 0.10,
+              "effective_remedy": 0.20,
+              "procedural_fairness": 0.20,
+              "civil_proceedings": 0.15,
+              "fair_trial": 0.10,
+              "housing": 0.10
+            },
+            "requires_fact_flags": [],
+            "judicial_patience_delta_on_hit": 1,
+            "judicial_patience_delta_on_miss": -2,
+            "judicial_patience_delta_on_backfire": -4,
+            "flavor_line": "DESIGN_TODO",
+            "_status_note": "DESIGN_TODO - Cula concedes that the merits are premature and narrows the ask to a rehearing only."
+          }
+        ],
+        "frame_gates": {
+          "merits_defence": {
+            "available_citation_ids": [
+              "motion_to_set_aside",
+              "rehearing_as_remedy"
+            ]
+          }
+        },
+        "defeat_lines": [
+          "DESIGN_TODO"
+        ],
+        "partial_lines": [
+          "DESIGN_TODO"
+        ]
+      }
+    ],
+    "victory_resolution": {
+      "evaluation_order": [
+        "narrow_victory",
+        "strong_victory",
+        "standard_victory"
+      ],
+      "primary_fact_flags": [
+        "_fact.landlord_knew_address",
+        "_fact.notice_received_april_28",
+        "_fact.resident_no_authority",
+        "_fact.renumbering_2015_documented"
+      ],
+      "branches": [
+        {
+          "id": "narrow_victory",
+          "when": "primary_fact_count <= 1 || judicial_patience <= 1 || chapter1.proposed_frame == 'merits_defence'",
+          "sets": [
+            {
+              "path": "chapter1.court_won_procedural_reset",
+              "value": true
+            },
+            {
+              "path": "chapter1.court_outcome",
+              "value": "procedural_reset_narrow"
+            }
+          ],
+          "result_text": "DESIGN_TODO",
+          "_status_note": "DESIGN_TODO - Narrow win only; the bench grants a reset but makes clear counsel reached it on a thinner record or thinner patience."
+        },
+        {
+          "id": "strong_victory",
+          "when": "primary_fact_count >= 4 && judicial_patience >= 4",
+          "sets": [
+            {
+              "path": "chapter1.court_won_procedural_reset",
+              "value": true
+            },
+            {
+              "path": "chapter1.court_outcome",
+              "value": "procedural_reset_with_costs"
+            }
+          ],
+          "result_text": "DESIGN_TODO",
+          "_status_note": "DESIGN_TODO - Strong victory; all four core facts are in and the judge is still patient enough to award the reset with costs."
+        },
+        {
+          "id": "standard_victory",
+          "when": "primary_fact_count >= 2 && judicial_patience >= 2",
+          "sets": [
+            {
+              "path": "chapter1.court_won_procedural_reset",
+              "value": true
+            },
+            {
+              "path": "chapter1.court_outcome",
+              "value": "procedural_reset_full"
+            }
+          ],
+          "result_text": "DESIGN_TODO",
+          "_status_note": "DESIGN_TODO - Standard procedural reset; competent result, no collapse, but without the stronger costs variant."
+        }
+      ]
+    }
+  }
+}
