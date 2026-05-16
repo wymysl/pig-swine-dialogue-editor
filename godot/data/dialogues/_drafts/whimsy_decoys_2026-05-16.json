@@ -1,0 +1,134 @@
+{
+  "version": 4,
+  "npc_id": "whimsy",
+  "_status": "DRAFT — decoy revision per PROPOSAL_player_driven_argument.md §1 (Whimsy subsection) + §3, post 2026-05-16 revision (commit 30680b7). Companion to the live whimsy.json at HEAD. NOT loaded by dialogue_runner — lives in data/dialogues/_drafts/ subdirectory which the runner skips.\n\nReshape: Whimsy surfaces evidence for frames 3 / 4 (civic-archive property-transfer record AND the rights memo). He does NOT surface notice-period or substantive-defense evidence — those live with Murrow and Halina respectively.\n\nWhimsy's civic-archive hobby is the in-fiction justification for property_transfer_2018 surfacing here. The voice-pack rewrite at HEAD already has Whimsy positioned as a rhetorical-associate-by-temperament; the decoy revision adds the records-hobbyist angle that produces the standing-evidence pointer. The new line about 'a folder of who-owns-what' is one of two voice-pack additions in this draft.\n\non_dismiss now sets surfaced_property_transfer alongside the existing met_whimsy + recruited_whimsy.",
+  "_proposal_anchor": "PROPOSAL_player_driven_argument.md §1 (Whimsy subsection — surfaces frames 3/4) + §3 (proposed_frame v2).",
+  "_voice_authority": "narrative_revision/voice_agents/whimsy.md + ai_voice_constraints.md. Existing voice-pack discipline preserved; one line added per voice agent (the 'folder of who-owns-what' civic-records line).",
+  "_new_flags_referenced": "on_dismiss writes chapter1.surfaced_property_transfer. NOT yet declared in state.gd; reference-via-missing-key safe.",
+  "states": [
+    {
+      "id": "before_meeting",
+      "trigger": "!chapter1.met_whimsy",
+      "_comment": "DECOY REWRITE. The HEAD version is the procedural-throat single-path recruitment with Cula opening with the conclusion. The decoy revision keeps Whimsy's three-posture response variants (whimsy_co_counsel_posture enum from the overnight cohort) AND adds Whimsy's civic-records surface — he produces the property-transfer record offhand during recruitment, regardless of which posture Cula picks. This is the in-fiction surfacing of property_transfer_2018 evidence.\n\nWhimsy's voice in this state: existing recruitment shape with one new beat. The 'folder of who-owns-what' line is new — voiced per the bible's brilliant-when-aimed + occasionally-near-correct registers. Em-dash latitude permitted.\n\nThe three Cula option-texts and Whimsy's three response variants stay (they live in companion states whimsy_response_<posture>); this state authors only the opening and the universal civic-records beat. on_dismiss writes met_whimsy + recruited_whimsy + surfaced_property_transfer.",
+      "lines": [
+        {"speaker": "cula", "text": "Mr. Whimsy. Cula, Pig & Swine. We need a second voice in court tomorrow."},
+        "Dr. A. Cula. Sit. Have you anything beyond procedural vibes, or am I to be recruited on atmosphere?"
+      ],
+      "options": {
+        "write_path": "chapter1.whimsy_co_counsel_posture",
+        "chain": true,
+        "choices": [
+          {"text": "Notice went to the wrong door — landlord knew. I need the fair-hearing rebuttal in your voice.", "value": "procedural_throat"},
+          {"text": "He cannot evict her — she has held that flat since eighty-seven. Argue the tenancy.", "value": "merits_pivot"},
+          {"text": "Tell me the geometry of the wrong. I'll know it when I hear it.", "value": "open_register"}
+        ]
+      }
+    },
+    {
+      "id": "whimsy_civic_records_offer",
+      "trigger": "chapter1.met_whimsy == false && chapter1.whimsy_co_counsel_posture != ''",
+      "_comment": "NEW STATE — fires once Cula has picked a posture in before_meeting. Whimsy produces the property-transfer record from his civic-records hobby. This is the universal beat (fires regardless of posture) before the per-posture response state.\n\non_dismiss sets surfaced_property_transfer (the evidence card becomes surfaceable). DOES NOT set met_whimsy or recruited_whimsy yet — those fire in the per-posture response state that runs next via chain.",
+      "lines": [
+        "Before the music — a fact you may want. I keep a folder of who-owns-what. Marginal pastime. Occasionally useful.",
+        "Your landlord sold the building in two thousand and eighteen. The new owner is a property concern out of Mokotów. The eviction notice arrives under the prior owner's hand. The lease will have assigned forward at transfer — the new owner inherits the obligation — but some sharp counsel would raise the standing question anyway.",
+        "Not the music I would lead with. The folder is yours if you want it."
+      ],
+      "on_dismiss": [
+        {"set": "chapter1.surfaced_property_transfer", "value": true}
+      ],
+      "chain": true,
+      "once": true
+    },
+    {
+      "id": "whimsy_response_procedural_throat",
+      "trigger": "chapter1.whimsy_co_counsel_posture == 'procedural_throat' && !chapter1.met_whimsy",
+      "_comment": "REWRITE — well-fitted posture response. The HEAD version has this voice; the decoy revision preserves it. The 'fair-hearing argument can sing' calibration anchor stays verbatim.",
+      "lines": [
+        "Ah. The fair-hearing doctrine, asked to do its gymnastics again. Notice to an address without a client; an objection present in paper, absent from the record. I have heard worse music.",
+        {"speaker": "cula", "text": "The Rights Memo."},
+        "Marginalia in espresso. Half the argument is already mine.",
+        "I propose. The fair-hearing argument can sing. The service defect gives it a throat. I will lend my voice tomorrow at fourteen hundred."
+      ],
+      "on_dismiss": [
+        {"set": "chapter1.met_whimsy", "value": true},
+        {"set": "chapter1.recruited_whimsy", "value": true}
+      ],
+      "once": true
+    },
+    {
+      "id": "whimsy_response_merits_pivot",
+      "trigger": "chapter1.whimsy_co_counsel_posture == 'merits_pivot' && !chapter1.met_whimsy",
+      "_comment": "REWRITE — wrong-shape posture response (merits-pivot). Whimsy walks Cula back without rebuke; recruits anyway. Existing draft voice preserved.",
+      "lines": [
+        "The merits — at the motion stage. You wish to argue, before the same court that has already heard the landlord uncontested, that the tenancy is valid.",
+        {"speaker": "cula", "text": "She has held it since eighty-seven."},
+        "She has. And the court will hear that when it hears the case. The motion stage is a door, not a hearing. We are arguing that the door was closed wrongly.",
+        "I will follow you in. I am cheaper than the door."
+      ],
+      "on_dismiss": [
+        {"set": "chapter1.met_whimsy", "value": true},
+        {"set": "chapter1.recruited_whimsy", "value": true}
+      ],
+      "once": true
+    },
+    {
+      "id": "whimsy_response_open_register",
+      "trigger": "chapter1.whimsy_co_counsel_posture == 'open_register' && !chapter1.met_whimsy",
+      "_comment": "REWRITE — open-register posture response. Whimsy probes; recruits without a frame yet committed. Existing draft voice preserved.",
+      "lines": [
+        "The geometry. You walk in with a question rather than a verdict.",
+        {"speaker": "cula", "text": "I walked in with a binder and three pages of fact."},
+        "And no shape yet. Acceptable. The shape will arrive when Crab finishes counting his envelopes.",
+        "I propose this. You return with a frame. I lend my voice to whatever frame you bring. The voice is the easy part."
+      ],
+      "on_dismiss": [
+        {"set": "chapter1.met_whimsy", "value": true},
+        {"set": "chapter1.recruited_whimsy", "value": true}
+      ],
+      "once": true
+    },
+    {
+      "id": "after_recruitment_client_upcoming",
+      "trigger": "chapter1.recruited_whimsy == true && chapter1.recruited_crab == true && !chapter1.halina_arrived && !chapter1.entered_court",
+      "_states_unchanged_from_live_whimsy_json": true,
+      "lines": ["Cula. We have procedure and rhetoric. What we do not yet have is a client in the room. That tends to be useful."]
+    },
+    {
+      "id": "after_recruitment_court_ready",
+      "trigger": "chapter1.recruited_whimsy == true && chapter1.archive_research_complete == true && !chapter1.court_ready && !chapter1.entered_court",
+      "_states_unchanged_from_live_whimsy_json": true,
+      "lines": ["Cula. We are not asking the court for miracles. Merely a doorway through which the client may be heard."]
+    },
+    {
+      "id": "after_recruitment_idle",
+      "trigger": "chapter1.recruited_whimsy == true && !chapter1.entered_court",
+      "_states_unchanged_from_live_whimsy_json": true,
+      "lines": ["Cula. Somewhere nearby, a right is being reduced to administration. Let us be irritating about it."]
+    },
+    {
+      "id": "whimsy_coffee_reaction_perfect_recruited",
+      "trigger": "chapter1.coffee_buff == 'procedurally_alert_plus' && chapter1.met_whimsy == true && chapter1.recruited_whimsy == true && !chapter1.entered_court",
+      "_states_unchanged_from_live_whimsy_json": true,
+      "lines": ["Cula! Behold — a black-robed liquid of justice."]
+    },
+    {
+      "id": "whimsy_coffee_reaction_bad_recruited",
+      "trigger": "chapter1.coffee_buff == 'over_caffeinated' && chapter1.met_whimsy == true && chapter1.recruited_whimsy == true && !chapter1.entered_court",
+      "_states_unchanged_from_live_whimsy_json": true,
+      "lines": ["Cula. A tragic brew, but tragedy has rights."]
+    },
+    {
+      "id": "whimsy_coffee_reaction_perfect_pre_recruit",
+      "trigger": "chapter1.coffee_buff == 'procedurally_alert_plus' && chapter1.met_whimsy == true && !chapter1.recruited_whimsy && !chapter1.entered_court",
+      "_states_unchanged_from_live_whimsy_json": true,
+      "lines": ["Dr. A. Cula! Behold — a black-robed liquid of justice."]
+    },
+    {
+      "id": "whimsy_coffee_reaction_bad_pre_recruit",
+      "trigger": "chapter1.coffee_buff == 'over_caffeinated' && chapter1.met_whimsy == true && !chapter1.recruited_whimsy && !chapter1.entered_court",
+      "_states_unchanged_from_live_whimsy_json": true,
+      "lines": ["Dr. A. Cula. A tragic brew, but tragedy has rights."]
+    }
+  ],
+  "idle_flavor": ["A procedural argument without a metaphor is like coffee without water. Dry and slightly offensive."]
+}

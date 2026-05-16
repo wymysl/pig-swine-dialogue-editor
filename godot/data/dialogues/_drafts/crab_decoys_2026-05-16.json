@@ -1,0 +1,232 @@
+{
+  "version": 4,
+  "npc_id": "crab",
+  "_status": "DRAFT — decoy revision per PROPOSAL_player_driven_argument.md §1 (Crab subsection) + §3 + §4, post 2026-05-16 revision (commit 30680b7). Companion to the live crab.json at HEAD (voice-pack rewrites committed at 8d6bb3b). NOT loaded by dialogue_runner — lives in data/dialogues/_drafts/ subdirectory which the runner skips via DirAccess.current_is_dir() at line 350 of dialogue_runner.gd.\n\nReshape: Crab surfaces evidence for frames 1 / 2 / 4 (substantive pointer to Halina's receipts, notice-period timing, defective-service envelope+renewal+renumbering). He does NOT surface standing — civic records are Whimsy's beat. He does NOT cite Article 135-bis pre-synthesis. The options block expands from 3 to 4 (or 5 if halina_met) credible argument frames. Crab's post-synthesis response is calibrated by frame fit per the §4 consequence matrix.\n\nMerge strategy: take this draft, open the live crab.json, replace the state bodies of first_meeting_with_binder + after_binder_first_engagement + crab_post_pitch_response. ADD the four new sibling response states (crab_post_pitch_response_substantive / _notice_period / _standing / _incapacity). The states marked _states_unchanged_from_live_crab_json remain at HEAD. The on_dismiss writes for the new surfaced_* flags reference flags NOT yet declared in state.gd; missing-key-fails-trigger semantics keep this safe in runtime until the next SAVE_VERSION bump.",
+  "_proposal_anchor": "PROPOSAL_player_driven_argument.md §1 (Crab subsection — surfaces frames 1/2/4) + §3 (proposed_frame enum v2) + §4 (consequence matrix).",
+  "_voice_authority": "narrative_revision/voice_agents/crab.md + ai_voice_constraints.md. Existing voice-pack discipline at HEAD (commit 8d6bb3b) preserved; only line-content changes for the decoy mechanic.",
+  "_new_flags_referenced": "Triggers and on_dismiss writes reference chapter1.surfaced_notice_timeline and chapter1.surfaced_payment_receipts. These flags are NOT declared in state.gd at HEAD (per the proposal §3 deferral); reference-via-missing-key fails the trigger silently until declared. Declaration tracked in the proposal §3 'New flags introduced by this revision (5 booleans, defer to v17→v18 migration when next required)' list.",
+  "states": [
+    {
+      "id": "before_binder",
+      "trigger": "!chapter1.met_crab && !chapter1.has_law_binder",
+      "_comment": "UNCHANGED from HEAD. Pre-binder first-meeting. Crab observes envelope vs. building number; no Article named yet. The 'postal theatre' calibration anchor remains here as a temperament line. Address form pre-recruit: 'Dr. A. Cula'.",
+      "_states_unchanged_from_live_crab_json": true,
+      "lines": [
+        {"speaker": "cula", "text": "Crab. I'm Cula."},
+        "Dr. A. Cula. Heard. Murrow's procedural binder?",
+        {"speaker": "cula", "text": "Not yet. He has it."},
+        "Then we are early. I cannot tell you what is defective in the service until I have read the notice. The notice is in the binder. Until then I am standing in a doorway making faces.",
+        {"speaker": "cula", "text": "Right. I'll get it."},
+        "Do. Renumbering was two thousand and fifteen. The envelope we have a copy of was sent to number seven. The building above us reads number twelve. That is not service. That is postal theatre."
+      ],
+      "on_dismiss": [
+        {"set": "chapter1.met_crab", "value": true}
+      ]
+    },
+    {
+      "id": "before_binder_briefing",
+      "trigger": "chapter1.met_crab == true && !chapter1.has_law_binder && !chapter1.recruited_crab",
+      "_comment": "UNCHANGED from HEAD. Repeat-visit beat without binder. Same voice; same shape.",
+      "_states_unchanged_from_live_crab_json": true,
+      "lines": [
+        "Dr. A. Cula. Still no binder. The shelf has been patient with you; I will be also.",
+        {"speaker": "cula", "text": "Hm. Working on it."},
+        "Second shelf, blue spine. Murrow has flagged Article one-thirty-five-bis in three colors. Bring it down. Until then we are arguing from memory."
+      ]
+    },
+    {
+      "id": "first_meeting_with_binder",
+      "trigger": "!chapter1.met_crab && chapter1.has_law_binder == true",
+      "_comment": "LOAD-BEARING DECOY REWRITE. Cula has the binder; Crab takes it and READS facts off three pages without naming the Article. New beat: Crab also reads the notice DATES (April 8 / April 28 / ex parte hearing) as a separate fact-stack — surfaces chapter1.surfaced_notice_timeline. Crab makes a passing reference to Halina's records ('she keeps receipts — the kind you keep when you expect the landlord to forget') — surfaces chapter1.surfaced_payment_receipts as a pointer.\n\nThe options block expands from the HEAD 3-option (all writing chapter1.recruited_crab=true) to 4 (or 5 if halina_met) credible argument frames writing chapter1.proposed_frame. The pitch text is Cula's; Crab's response in the next state is calibrated by frame fit per §4.\n\nThe incapacity_defense option appears as a fifth choice ONLY if chapter1.halina_met == true at this point (i.e., Cula went to Halina before reading the binder, which is a possible play order). The dialogue_runner's option-block schema doesn't support conditional options out-of-the-box; the editor and runtime would need a small extension to gate the fifth option on the halina_met flag. If runtime extension is out-of-scope, the incapacity_defense option appears unconditionally and the path-correctness is enforced by the post-synthesis response state's trigger (incapacity_defense post-pitch state requires halina_met for context-relevance).\n\non_dismiss now sets chapter1.met_crab + chapter1.binder_read_envelope + chapter1.binder_read_renewal + chapter1.binder_read_renumbering + chapter1.surfaced_notice_timeline + chapter1.surfaced_payment_receipts. recruited_crab is NOT flipped here — it's flipped in the per-frame post_pitch_response states based on whether the chosen frame is procedurally-credible (every frame except incapacity_defense flips recruited_crab; incapacity_defense leaves it false until a post-court apology beat is authored).\n\n`once: true` ensures the synthesis-options state doesn't re-fire if the player returns to Crab post-recruitment without progressing.",
+      "lines": [
+        {"speaker": "cula", "text": "Crab. I'm Cula. The procedural binder — Murrow said you'd want a second pair of eyes on the Sikorska service before fourteen hundred."},
+        "Dr. A. Cula. Heard. Hand it here.",
+        "Three pages worth reading. First — the envelope. Number seven. Dated the eighth of April.",
+        "Second — the renewal. Number twelve, two thousand and nineteen, landlord's countersignature on the page facing.",
+        "Third — the renumbering. Two thousand and fifteen. The building stopped being number seven eleven years ago.",
+        "And the timing. Notice dated the eighth, the resident at number seven walked it down on the twenty-eighth. Hearing already ran. Halina has paperwork of her own — receipts, the kind you keep when you expect the landlord to forget.",
+        {"speaker": "cula", "text": "What is the shape, Crab."},
+        "Your call. Several theories on the table. Pick one."
+      ],
+      "options": {
+        "write_path": "chapter1.proposed_frame",
+        "chain": true,
+        "choices": [
+          {"text": "Service was defective. He sent the writ to the wrong door knowing the right one.", "value": "defective_service_135bis"},
+          {"text": "She has paid the rent. We argue the merits.", "value": "substantive_defense"},
+          {"text": "The notice period is short. We argue the timing window.", "value": "notice_period_failure"},
+          {"text": "The building changed hands in eighteen. The landlord here isn't even the real plaintiff.", "value": "standing_wrong_party"},
+          {"text": "She's elderly. She can't have been properly served.", "value": "incapacity_defense"}
+        ]
+      },
+      "on_dismiss": [
+        {"set": "chapter1.met_crab", "value": true},
+        {"set": "chapter1.binder_read_envelope", "value": true},
+        {"set": "chapter1.binder_read_renewal", "value": true},
+        {"set": "chapter1.binder_read_renumbering", "value": true},
+        {"set": "chapter1.surfaced_notice_timeline", "value": true},
+        {"set": "chapter1.surfaced_payment_receipts", "value": true}
+      ],
+      "once": true
+    },
+    {
+      "id": "after_binder_first_engagement",
+      "trigger": "chapter1.met_crab == true && chapter1.has_law_binder == true && !chapter1.recruited_crab && chapter1.proposed_frame == ''",
+      "_comment": "LOAD-BEARING DECOY REWRITE — late-binder path. Same shape as first_meeting_with_binder: Crab reads the three pages plus the dates plus the records reference; options block writes chapter1.proposed_frame. The greeting differs (Cula already met Crab pre-binder).\n\nTrigger gated additionally on proposed_frame == '' so this state doesn't re-fire after the player has already committed to a frame.",
+      "lines": [
+        {"speaker": "cula", "text": "Crab. I have the binder."},
+        "Heard. Hand it here.",
+        "Envelope: number seven, eighth of April. Renewal: number twelve, two thousand and nineteen, countersigned. Renumbering: two thousand and fifteen.",
+        "Notice receipt the twenty-eighth. Halina keeps receipts.",
+        "Your call, Dr. A. Cula. Several theories. Pick one."
+      ],
+      "options": {
+        "write_path": "chapter1.proposed_frame",
+        "chain": true,
+        "choices": [
+          {"text": "Defective service. He knew the right address.", "value": "defective_service_135bis"},
+          {"text": "She has paid. Argue the merits.", "value": "substantive_defense"},
+          {"text": "Notice period was short. Argue the window.", "value": "notice_period_failure"},
+          {"text": "The building changed hands. Wrong party.", "value": "standing_wrong_party"},
+          {"text": "She is elderly. The service is bad on that ground.", "value": "incapacity_defense"}
+        ]
+      },
+      "on_dismiss": [
+        {"set": "chapter1.binder_read_envelope", "value": true},
+        {"set": "chapter1.binder_read_renewal", "value": true},
+        {"set": "chapter1.binder_read_renumbering", "value": true},
+        {"set": "chapter1.surfaced_notice_timeline", "value": true},
+        {"set": "chapter1.surfaced_payment_receipts", "value": true}
+      ],
+      "once": true
+    },
+    {
+      "id": "crab_post_pitch_response",
+      "trigger": "chapter1.proposed_frame == 'defective_service_135bis' && !chapter1.recruited_crab && !chapter1.halina_met && !chapter1.entered_court",
+      "_comment": "REWRITE — well-fitted frame response. Crab now produces the labelling (Article 135-bis § 2) AFTER Cula has named the shape. Recruitment flips here, NOT in the synthesis state. Bare 'Cula' per AGENTS.md §Address forms (post-recruit).",
+      "lines": [
+        "Cula. Right. Defective service it is. Article one-thirty-five-bis, paragraph two of the Code of Civil Procedure. He sent a writ to a building that has not been Mrs. Sikorska's building in eleven years. A confession with a postal date.",
+        "I will take the post — register, return-to-sender slip, the resident at number seven. Drafting takes an afternoon. The walking takes Friday.",
+        "Three problems, one notice, one Friday. Find me before fourteen hundred if anything in the binder reads wrong."
+      ],
+      "on_dismiss": [
+        {"set": "chapter1.recruited_crab", "value": true}
+      ],
+      "once": true
+    },
+    {
+      "id": "crab_post_pitch_response_substantive",
+      "trigger": "chapter1.proposed_frame == 'substantive_defense' && !chapter1.recruited_crab && !chapter1.halina_met && !chapter1.entered_court",
+      "_comment": "NEW STATE — wrong-frame response for substantive_defense. Crab walks Cula back without rebuke. Halina's receipts are real evidence; the merits case IS her position. Crab's correction: the procedural defect ends the matter first; the merits live behind the procedural door. Recruitment still flips (the frame is procedurally credible, just wrong-priority for the motion stage). Bare 'Cula' post-recruit.\n\nThe judicial_patience and halina_trust deltas are applied by the future battle controller at frame-commit; this state's job is to land the voice. Crab is patient here because Halina actually does have payment receipts — the substantive case is unwinnable at the motion stage but Cula isn't wrong to take the receipts seriously.",
+      "lines": [
+        "Cula. The merits, then. Halina does have the receipts; that part is real.",
+        "But the merits are not before the court on Friday. The motion stage is a door. We are arguing whether the door was closed wrongly. The merits sit behind it.",
+        "I will still walk the post. If the door closes on procedure we never get to the receipts. Find me before fourteen hundred if anything in the binder reads wrong."
+      ],
+      "on_dismiss": [
+        {"set": "chapter1.recruited_crab", "value": true}
+      ],
+      "once": true
+    },
+    {
+      "id": "crab_post_pitch_response_notice_period",
+      "trigger": "chapter1.proposed_frame == 'notice_period_failure' && !chapter1.recruited_crab && !chapter1.halina_met && !chapter1.entered_court",
+      "_comment": "NEW STATE — wrong-frame response for notice_period_failure. Cooler than substantive — the timing argument is colorable but the address-on-the-envelope defect ends the matter before timing arithmetic gets to do work. Crab's correction is pointed: the envelope itself is wrong; the dates on a wrong envelope don't matter. Recruitment still flips (procedurally credible). Bare 'Cula'.",
+      "lines": [
+        "Cula. The window. Yes — the dates are tight under the Tenancy Act. Murrow has the citation in the binder.",
+        "Look at the envelope again. Number seven. Look at the renewal. Number twelve. He sent the notice to a door that is not hers. The timing argument lives on top of an address that does not exist.",
+        "Argue the window if you want. The locational defect ends the hearing first. Find me before fourteen hundred."
+      ],
+      "on_dismiss": [
+        {"set": "chapter1.recruited_crab", "value": true}
+      ],
+      "once": true
+    },
+    {
+      "id": "crab_post_pitch_response_standing",
+      "trigger": "chapter1.proposed_frame == 'standing_wrong_party' && !chapter1.recruited_crab && !chapter1.halina_met && !chapter1.entered_court",
+      "_comment": "NEW STATE — wrong-frame response for standing_wrong_party. The civic-records angle is Whimsy's; Crab knows about the 2018 transfer because Whimsy mentioned it. Crab's correction is sharper than the notice_period response because standing is an aggressive theory that asks the court to do real work. Recruitment still flips (the theory is procedurally credible if uphill). Bare 'Cula'.",
+      "lines": [
+        "Cula. Whimsy's records. Yes — the building did change hands in eighteen. The lease assigned forward at transfer. The prior landlord is still a real party.",
+        "You can argue it. The judge will note it. Then the judge will turn to the wrong-door service question because the wrong-door service question is in the envelope.",
+        "Drafting still takes an afternoon. Find me before fourteen hundred."
+      ],
+      "on_dismiss": [
+        {"set": "chapter1.recruited_crab", "value": true}
+      ],
+      "once": true
+    },
+    {
+      "id": "crab_post_pitch_response_incapacity",
+      "trigger": "chapter1.proposed_frame == 'incapacity_defense' && !chapter1.recruited_crab && !chapter1.entered_court",
+      "_comment": "NEW STATE — GAME-PUNISHED hard-wrong response. Crab refuses to assist. Recruitment does NOT flip in this state — chapter1.recruited_crab stays false. A post-court Cula→Halina apology dialogue beat (authored separately, not in this draft) is the recovery path; on completion of that beat, recruited_crab can flip and Crab returns to neutral.\n\nCrab's voice here is colder than any other state in his canon. The Taste Standard test 'alive' is hard here: Crab does not lecture; he refuses. His refusal is itself the line. Address form 'Dr. A. Cula' (recruitment did NOT happen).\n\nThe incapacity_defense path has the harshest consequence per §4: judicial_patience -5, halina_trust -4, Crab unrecruited. The judge_reaction_template 'icy_silence' lands in court via the future battle controller. This dialogue state's job is the *pre-court* moment when Crab walks out of the conversation.",
+      "lines": [
+        "Dr. A. Cula. No.",
+        {"speaker": "cula", "text": "Crab —"},
+        "No. Halina is older than the building. She is not incompetent. The argument insults her and I will not draft it.",
+        "Find me again when the argument is something else. I will still take the post if you find a procedural angle. The post is a courtesy to Mr. Murrow, not to you."
+      ],
+      "once": true
+    },
+    {
+      "id": "crab_coffee_reaction_perfect_recruited",
+      "trigger": "chapter1.coffee_buff == 'procedurally_alert_plus' && chapter1.met_crab == true && chapter1.recruited_crab == true && !chapter1.entered_court",
+      "_comment": "UNCHANGED from HEAD.",
+      "_states_unchanged_from_live_crab_json": true,
+      "lines": ["Cula. No obvious flaws. Disturbing."]
+    },
+    {
+      "id": "crab_coffee_reaction_bad_recruited",
+      "trigger": "chapter1.coffee_buff == 'over_caffeinated' && chapter1.met_crab == true && chapter1.recruited_crab == true && !chapter1.entered_court",
+      "_comment": "UNCHANGED from HEAD.",
+      "_states_unchanged_from_live_crab_json": true,
+      "lines": ["Cula. That is not coffee. That is witness intimidation."]
+    },
+    {
+      "id": "crab_coffee_reaction_perfect_pre_recruit",
+      "trigger": "chapter1.coffee_buff == 'procedurally_alert_plus' && chapter1.met_crab == true && !chapter1.recruited_crab && !chapter1.entered_court",
+      "_comment": "UNCHANGED from HEAD.",
+      "_states_unchanged_from_live_crab_json": true,
+      "lines": ["Dr. A. Cula. No obvious flaws. Disturbing."]
+    },
+    {
+      "id": "crab_coffee_reaction_bad_pre_recruit",
+      "trigger": "chapter1.coffee_buff == 'over_caffeinated' && chapter1.met_crab == true && !chapter1.recruited_crab && !chapter1.entered_court",
+      "_comment": "UNCHANGED from HEAD.",
+      "_states_unchanged_from_live_crab_json": true,
+      "lines": ["Dr. A. Cula. That is not coffee. That is witness intimidation."]
+    },
+    {
+      "id": "hint_needs_archive",
+      "trigger": "chapter1.recruited_crab == true && chapter1.halina_met == true && !chapter1.archive_research_complete && !chapter1.entered_court",
+      "_comment": "UNCHANGED from HEAD.",
+      "_states_unchanged_from_live_crab_json": true,
+      "lines": [
+        "Cula. The service address is in the archive — somewhere. Someone filed a certificate at the cooperative office when the building was resurveyed. We need to know whether the certificate describes the door on the envelope.",
+        "The paper is the next step. Until we have it the case is half-told."
+      ]
+    },
+    {
+      "id": "crab_hint_court_ready",
+      "trigger": "chapter1.recruited_crab == true && chapter1.archive_research_complete == true && !chapter1.court_ready && !chapter1.entered_court",
+      "_comment": "UNCHANGED from HEAD.",
+      "_states_unchanged_from_live_crab_json": true,
+      "lines": [
+        "Cula. The facts are not beautiful. They are standing in the right order. That is what we needed before fourteen hundred."
+      ]
+    },
+    {
+      "id": "after_engagement",
+      "trigger": "chapter1.recruited_crab == true",
+      "_comment": "UNCHANGED from HEAD.",
+      "_states_unchanged_from_live_crab_json": true,
+      "lines": [
+        "Cula. If we go in now we will be making an argument with decorative gaps. The argument can be made. The gaps are what the landlord will fill, and he will fill them in his favour."
+      ]
+    }
+  ],
+  "idle_flavor": [
+    "The office is quiet. Either nothing has happened or the evidence is hiding better than usual.",
+    "Half the legal questions in this office begin with someone reading the address on an envelope twice."
+  ]
+}
