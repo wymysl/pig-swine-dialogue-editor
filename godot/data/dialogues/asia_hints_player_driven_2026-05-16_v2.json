@@ -37,8 +37,8 @@
         },
         {
             "id": "hint_crab_quiet_wrong_shape",
-            "trigger": "chapter1.recruited_crab == true && chapter1.proposed_frame == 'merits_defence' && !chapter1.entered_court",
-            "_comment": "LOAD-BEARING — per PROPOSAL_player_driven_argument.md §1 Asia subsection. Fires when Cula has proposed the merits_defence frame to Crab. Asia does not name the frame or the doctrine. She signals via Crab's visible discomfort — the two-past-reception walk is the tell she notices because she is at the desk all day. The gentle question ('He doesn't usually walk past twice') is not a question in punctuation but in implication — the player reads the gap. No legal vocabulary. One sentence per beat; no em-dash. Merge note: must precede any generic post-recruitment hint; insert after hint_binder_unread_renumbering.",
+            "trigger": "chapter1.recruited_crab == true && chapter1.proposed_frame == 'substantive_defense' && !chapter1.entered_court",
+            "_comment": "LOAD-BEARING — per PROPOSAL_player_driven_argument.md §1 Asia subsection. Fires when Cula has proposed the substantive_defense frame to Crab (renamed from merits_defence in the 2026-05-16 decoy revision; battle_controller _normalise_frame_id keeps the legacy alias resolving for old saves). Asia does not name the frame or the doctrine. She signals via Crab's visible discomfort — the two-past-reception walk is the tell she notices because she is at the desk all day. The gentle question ('He doesn't usually walk past twice') is not a question in punctuation but in implication — the player reads the gap. No legal vocabulary. One sentence per beat; no em-dash. Merge note: must precede any generic post-recruitment hint; insert after hint_binder_unread_renumbering.",
             "lines": [
                 "Mr. Crab walked past reception twice this morning, Dr. A. Cula. He doesn't usually walk past twice."
             ],

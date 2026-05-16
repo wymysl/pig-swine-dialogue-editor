@@ -1,0 +1,145 @@
+{
+  "version": 1,
+  "_doc": "Chapter 1 judge reaction templates — the feedback channel per PROPOSAL_player_driven_argument.md §4. Five templates correspond 1:1 to the judge_reaction_template field on each frame in argument_frames_ch1.json. The battle controller looks up the template by id when proposed_frame is committed at Phase 2 start (or earlier if the controller selects a Phase-2-skipping reaction such as icy_silence) and emits the judge_lines via Signals.dialogue_line_ready against the judge speaker. Patience drain happens in addition to the per-frame judicial_patience_delta_on_select declared in argument_frames_ch1.json — the deltas in this file are the in-round residual drain that occurs as the template's judge speech plays out.\n\nTwo-pass authoring per AGENTS.md §Casebook authoring. Code owns: id, follow_up_state_id, patience_drain_amount, post_reaction_player_options[].id, post_reaction_player_options[].leads_to_state_id, post_reaction_player_options[].judicial_patience_delta, post_reaction_player_options[].leads_to_round_outcome. Design owns: all judge_lines text, post_reaction_player_options[].text, in_fiction_notes.\n\nSchema:\n  templates: { <template_id>: {\n    judge_lines (Design — Array of {speaker, text}; speaker is 'judge' or 'narrator' or one of the seated counsel for cross-talk; played in order),\n    follow_up_state_id (Code — dialogue runner state id to resume after this template completes; typically a court_round state),\n    patience_drain_amount (Code — int; subtracted from chapter1.judicial_patience after lines play; complements the per-frame delta),\n    post_reaction_player_options (Code+Design — Array of options the player chooses after the judge reaction; each: {id, text, leads_to_state_id, judicial_patience_delta, leads_to_round_outcome}),\n    in_fiction_notes (Design — meta notes for the human reviewer; not loaded at runtime)\n  } }",
+  "_owner_code": "id, follow_up_state_id, patience_drain_amount, post_reaction_player_options[].id, post_reaction_player_options[].leads_to_state_id, post_reaction_player_options[].judicial_patience_delta, post_reaction_player_options[].leads_to_round_outcome",
+  "_owner_design": "judge_lines (all text), post_reaction_player_options[].text, in_fiction_notes",
+  "_referenced_by": "data/argument_frames_ch1.json frames[].judge_reaction_template; scripts/systems/battle/battle_controller.gd Phase2Controller.start() and apply_frame_select()",
+  "_status": "Code-pass complete (all structural fields populated). Design-pass partial — judge_lines authored at draft voice level; post_reaction_player_options[].text drafted; in_fiction_notes populated. Voice pass needed against narrative_revision/voice_agents/judge.md if it exists; otherwise pass against AGENTS.md §Cast canonical names + §Humor rules and the Polish district-court register established in data/dialogues/judge_district_ch1.json. The judge is unnamed — never addressed by name.",
+  "templates": {
+    "approving_set_aside": {
+      "_in_fiction_notes": "Well-fitted frame (defective_service_135bis). The judge accepts the procedural argument without rhetorical lift; no congratulation. Dry, professional. The bench finds for Cula because the argument is correct, not because Cula was clever. This is the strong-victory voice signal.",
+      "judge_lines": [
+        {"speaker": "judge", "text": "Counsel. The court has read the file."},
+        {"speaker": "judge", "text": "The renumbering of two thousand and fifteen is on the cooperative-office record. The renewal of two thousand and nineteen carries the landlord's countersignature. The notice of the eighth of April was directed to a flat number that has not been the respondent's address for eleven years."},
+        {"speaker": "judge", "text": "The court will hear the third-clause point on the resident at number seven before it grants relief."},
+        {"speaker": "cula", "text": "Yes, your honour. The resident at number seven holds no express authority from Mrs. Sikorska. Service is not cured by his receipt."},
+        {"speaker": "judge", "text": "Noted. The court reserves on remedy."}
+      ],
+      "follow_up_state_id": "round_2_open",
+      "patience_drain_amount": 0,
+      "post_reaction_player_options": [
+        {
+          "id": "proceed_to_remedy",
+          "text": "Proceed to the remedy phase.",
+          "leads_to_state_id": "round_3_open",
+          "judicial_patience_delta": 0,
+          "leads_to_round_outcome": "advance"
+        }
+      ]
+    },
+    "tolerant_try_again": {
+      "_in_fiction_notes": "Decoy frame (substantive_defense). The most generous wrong-frame reaction. Judge notes the merits aren't before the court at the motion stage, then ASKS counsel whether there's a procedural defect she'd like to argue. The pivot offer is the soft-fail spine — Cula can recover on the next round. Halina is silent. Patience drain modest.",
+      "judge_lines": [
+        {"speaker": "judge", "text": "Counsel."},
+        {"speaker": "judge", "text": "The court has considered the receipts. The receipts are admirable record-keeping. The court does not see them today."},
+        {"speaker": "judge", "text": "This is a motion to set aside, counsel. The merits will be heard, if the merits are heard, on the underlying matter. Today the court has been asked whether the hearing of fifteen days ago was properly noticed."},
+        {"speaker": "judge", "text": "Does counsel wish to be heard on the procedural point."},
+        {"speaker": "cula", "text": "[pause]"}
+      ],
+      "follow_up_state_id": "round_1_pivot_offer",
+      "patience_drain_amount": 1,
+      "post_reaction_player_options": [
+        {
+          "id": "pivot_to_service",
+          "text": "Yes, your honour. The notice of the eighth of April was directed to number seven. Mrs. Sikorska's address is number twelve.",
+          "leads_to_state_id": "round_2_open",
+          "judicial_patience_delta": -1,
+          "leads_to_round_outcome": "pivot_recover"
+        },
+        {
+          "id": "hold_substantive_line",
+          "text": "Your honour, the receipts go to whether any default ever occurred — which goes to whether the eviction action is properly brought.",
+          "leads_to_state_id": "round_1_hold_substantive_ruling",
+          "judicial_patience_delta": -2,
+          "leads_to_round_outcome": "burn_attempt"
+        }
+      ]
+    },
+    "cool_dismissal": {
+      "_in_fiction_notes": "Decoy frame (notice_period_failure). Cooler than tolerant — the judge has noticed the locational defect and is now wondering why counsel didn't see it. Halina mildly disappointed (the per-frame halina_trust_delta is -1; this template doesn't add more). The pivot offer is still extended but with less warmth.",
+      "judge_lines": [
+        {"speaker": "judge", "text": "Counsel. The dates."},
+        {"speaker": "judge", "text": "The eighth of April. The twenty-eighth of April. The ex parte hearing. Counsel argues the Tenancy Act notice window."},
+        {"speaker": "judge", "text": "The court observes that the envelope of the eighth of April reads number seven. The respondent's flat is number twelve."},
+        {"speaker": "judge", "text": "Does counsel wish to be heard on the address."},
+        {"speaker": "cula", "text": "[pause]"}
+      ],
+      "follow_up_state_id": "round_1_pivot_offer",
+      "patience_drain_amount": 1,
+      "post_reaction_player_options": [
+        {
+          "id": "pivot_to_service",
+          "text": "Yes, your honour. The renewal of two thousand and nineteen carries the landlord's countersignature on number twelve. He knew the renumbering and served the old door regardless.",
+          "leads_to_state_id": "round_2_open",
+          "judicial_patience_delta": -1,
+          "leads_to_round_outcome": "pivot_recover"
+        },
+        {
+          "id": "hold_window_line",
+          "text": "Your honour, the timing window is the basis of our objection — the respondent's right to be heard on a proper schedule is the issue.",
+          "leads_to_state_id": "round_1_hold_window_ruling",
+          "judicial_patience_delta": -2,
+          "leads_to_round_outcome": "burn_attempt"
+        }
+      ]
+    },
+    "sharper_really_your_theory": {
+      "_in_fiction_notes": "Decoy frame (standing_wrong_party OR overbroad_remedy). The judge raises an eyebrow. Standing is an aggressive theory that asks the court to do real work; overbroad_remedy is asking for more than the procedural reset earns. Both read as either inexperience or grandstanding. Halina disappointed (-1 from the frame delta). Patience drain higher than the previous templates because the judge is now openly testing the theory.",
+      "judge_lines": [
+        {"speaker": "judge", "text": "Counsel."},
+        {"speaker": "judge", "text": "The court will hear counsel briefly on the standing point, then return to the matter that is actually before it."},
+        {"speaker": "judge", "text": "Counsel asserts the prior owner is not a real party in interest because the building changed hands in two thousand and eighteen. The court notes that the lease assigned forward at transfer. The prior landlord retains a tenancy interest under the assignment. The court does not require further submissions on this."},
+        {"speaker": "judge", "text": "Is there a procedural defect in the service of the notice of the eighth of April that counsel wishes to put before the court."},
+        {"speaker": "cula", "text": "[pause]"}
+      ],
+      "follow_up_state_id": "round_1_pivot_offer",
+      "patience_drain_amount": 2,
+      "post_reaction_player_options": [
+        {
+          "id": "pivot_to_service",
+          "text": "Yes, your honour. The notice was served to number seven; my client's flat has been number twelve since the two-thousand-fifteen renumbering.",
+          "leads_to_state_id": "round_2_open",
+          "judicial_patience_delta": -1,
+          "leads_to_round_outcome": "pivot_recover"
+        },
+        {
+          "id": "hold_standing_line",
+          "text": "Your honour, the new owner is the proper plaintiff. The action is not properly brought.",
+          "leads_to_state_id": "round_1_hold_standing_ruling",
+          "judicial_patience_delta": -3,
+          "leads_to_round_outcome": "burn_attempt"
+        }
+      ]
+    },
+    "icy_silence": {
+      "_in_fiction_notes": "Hard-wrong frame (incapacity_defense). The judge says nothing for a beat too long; the court reporter pauses typing. Halina objects audibly. Then the judge moves immediately to the procedural defect without dignifying the incapacity argument with engagement. This template DOES NOT extend a pivot option — the player's recovery path is the post-court Cula→Halina apology beat (separate dialogue, not driven by this template). Patience drain is heavy (-3 added to the per-frame -5; total -8 from the moment of commit through the end of this reaction). Halina_trust drops -4 per the frame delta plus an additional -1 from her in-court objection.",
+      "judge_lines": [
+        {"speaker": "judge", "text": "..."},
+        {"speaker": "narrator", "text": "[The court reporter has stopped typing.]"},
+        {"speaker": "halina", "text": "I am quite competent, Dr. Cula."},
+        {"speaker": "judge", "text": "Counsel."},
+        {"speaker": "judge", "text": "The court will hear no further argument from counsel on the capacity of the respondent. The respondent has spoken for herself. The court accepts her competence on its own observation."},
+        {"speaker": "judge", "text": "Counsel may proceed to the next argument, or counsel may sit down. The court will not require a third option."},
+        {"speaker": "cula", "text": "[pause]"}
+      ],
+      "follow_up_state_id": "round_1_after_icy_silence",
+      "patience_drain_amount": 3,
+      "post_reaction_player_options": [
+        {
+          "id": "pivot_to_service_recovery",
+          "text": "Your honour, the notice of the eighth of April was directed to number seven. My client's address is number twelve. We move to set aside on the service defect.",
+          "leads_to_state_id": "round_2_open",
+          "judicial_patience_delta": -1,
+          "leads_to_round_outcome": "pivot_recover_narrow"
+        },
+        {
+          "id": "sit_down",
+          "text": "The court has the file. Counsel rests on the documents.",
+          "leads_to_state_id": "round_1_sit_down_bench_initiative",
+          "judicial_patience_delta": 0,
+          "leads_to_round_outcome": "bench_initiative"
+        }
+      ]
+    }
+  }
+}

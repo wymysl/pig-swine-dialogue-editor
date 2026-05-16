@@ -48,7 +48,8 @@ func _init() -> void:
 	_test_start_round_sets_round_1_open()
 	_test_present_returns_live_bucket()
 	_test_backfire_decrements_judicial_patience()
-	_test_merits_defence_starts_phase_2_at_three_patience()
+	_test_substantive_defense_starts_phase_2_at_three_patience()
+	_test_legacy_merits_defence_alias_still_resolves()
 	_test_press_decrements_witness_cooperation()
 	_test_unknown_tag_rejected_by_taxonomy()
 	_test_end_to_end_three_round_smoke()
@@ -117,15 +118,35 @@ func _test_backfire_decrements_judicial_patience() -> void:
 	_assert(before - after == 1, "judicial_patience decremented by 1")
 
 
-func _test_merits_defence_starts_phase_2_at_three_patience() -> void:
-	print("[T5] merits_defence starts Phase 2 with judicial_patience 3")
+func _test_substantive_defense_starts_phase_2_at_three_patience() -> void:
+	## Renamed from _test_merits_defence_starts_phase_2_at_three_patience per the
+	## decoy-revision rename (merits_defence → substantive_defense). The battle
+	## controller has a legacy-name compatibility helper (battle_controller.gd
+	## _normalise_frame_id) that still accepts "merits_defence" — covered by
+	## _test_legacy_merits_defence_alias_still_resolves below.
+	print("[T5] substantive_defense starts Phase 2 with judicial_patience 3")
 	_reset_state()
-	_chapter1()["proposed_frame"] = "merits_defence"
+	_chapter1()["proposed_frame"] = "substantive_defense"
 	_chapter1()["bonus_evidence_collected"] = "lease_1962_inheritance_1987"
 	_skepticism_events.clear()
 	_controller.start_round("landlord_counsel_ch1", 3)
 	_assert(_chapter1()["judicial_patience"] == 3, "judicial_patience starts at 3")
 	_assert(_skepticism_events.size() == 1 and _skepticism_events[0][0] == 3, "judge_skepticism_raised emitted at round 3 open")
+
+
+func _test_legacy_merits_defence_alias_still_resolves() -> void:
+	## Regression: the battle controller's _normalise_frame_id helper maps the
+	## retired 'merits_defence' enum value forward to 'substantive_defense' for
+	## old save files still carrying the legacy value. This test exists so a
+	## future cleanup pass cannot silently drop the alias.
+	print("[T5b] legacy merits_defence alias normalises to substantive_defense")
+	_reset_state()
+	_chapter1()["proposed_frame"] = "merits_defence"
+	_chapter1()["bonus_evidence_collected"] = "lease_1962_inheritance_1987"
+	_skepticism_events.clear()
+	_controller.start_round("landlord_counsel_ch1", 3)
+	_assert(_chapter1()["judicial_patience"] == 3, "legacy alias also starts at patience 3")
+	_assert(_skepticism_events.size() == 1, "legacy alias still emits judge_skepticism_raised")
 
 
 func _test_press_decrements_witness_cooperation() -> void:
