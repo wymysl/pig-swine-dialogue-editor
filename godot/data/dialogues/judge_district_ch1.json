@@ -1,7 +1,8 @@
 {
-    "version": 1,
+    "version": 2,
     "npc_id": "judge_district_ch1",
     "display_name": "Judge",
+    "_schema_doc": "Court bench prompts and remedy announcement for the Chapter 1 district-court motion-to-set-aside hearing. Round 1 react states branch on chapter1.client_meeting_stance (the carrier the player ran in Halina's meeting). Round 3 remedy states branch on chapter1.court_outcome (set by battle_controller.evaluate_packet_submission) plus chapter1.proposed_frame (the dominant decoy frame). The order of states matters: dialogue_runner picks the first state whose trigger evaluates true (godot/scripts/autoload/dialogue_runner.gd), so specific outcome/frame combinations precede generic fallbacks.",
     "states": [
         {
             "id": "open_round",
@@ -39,40 +40,121 @@
             "tags": ["court", "round_2", "dry_surprise", "fair_hearing", "third_clause"]
         },
         {
-            "id": "remedy_round_3_sympathetic",
-            "trigger": "chapter1.casebook_judge_state == 'round_3_remedy' && chapter1.client_meeting_stance == 'sympathetic'",
-            "_comment": "Round 3 remedy announcement — sympathetic carrier. Identical text to blunt_procedural variant. Long-form citation per §A.5 remedy-announcement recommendation.",
+            "id": "remedy_blunder_incapacity",
+            "trigger": "chapter1.casebook_judge_state == 'round_3_remedy' && chapter1.court_outcome == 'blunder-recovered' && chapter1.proposed_frame == 'incapacity_defense'",
+            "_comment": "Incapacity blunder — outcome=blunder-recovered, dominant frame=incapacity_defense. Icy and brief; the bench identifies the procedural ground that Cula failed to make. Mrs. Sikorska is named with the client honorific to underscore that the court respects her where counsel did not. No sermon, no lecture: capacity is dismissed in one sentence, the cognitive-not-chronological test is named once, and the reset is granted on the bench's own motion. 'Next case.' is the punctuation. court_won_procedural_reset is preserved (PROPOSAL_player_driven_argument.md §4 invariant: the chapter never forks into Halina-evicted).",
             "lines": [
-                "Counsel. On the motion of the petitioner, the hearing of the eighth is set aside on the ground of invalid service under Article 135-bis § 2 of the Code of Civil Procedure. The matter is rescheduled. The clerk will assign a new hearing date within the statutory window. Notice will be served in the ordinary course."
+                "Counsel. The court has read counsel's submission on capacity. Mrs. Sikorska's age is not before this court, and the test the Code applies is cognitive, not chronological. The hearing of the eighth is set aside on the service ground the bench has identified on the face of the documents, under Article 135-bis § 2 of the Code of Civil Procedure. Notice will be served in the ordinary course. Next case."
             ],
             "on_dismiss": [
-                {"set": "chapter1.court_won_procedural_reset", "value": true}
+                {"set": "chapter1.court_won_procedural_reset", "value": true},
+                {"set": "chapter1.won_court", "value": true}
             ],
-            "tags": ["court", "round_3", "remedy_announcement", "sympathetic_carrier"]
+            "tags": ["court", "round_3", "remedy_announcement", "icy_silence", "blunder_incapacity"]
         },
         {
-            "id": "remedy_round_3_blunt_procedural",
-            "trigger": "chapter1.casebook_judge_state == 'round_3_remedy' && chapter1.client_meeting_stance == 'blunt_procedural'",
-            "_comment": "Round 3 remedy announcement — blunt-procedural carrier. Identical text to sympathetic variant.",
+            "id": "remedy_blunder_recovered_bench_initiative",
+            "trigger": "chapter1.casebook_judge_state == 'round_3_remedy' && chapter1.court_outcome == 'blunder-recovered'",
+            "_comment": "Fallback for the burns_round_attempt / supported_count <= 1 path without incapacity. Bench reaches the procedural ground itself because the defect is visible on the documents; counsel did not earn the win. Tone: dry, not cruel. 'Counsel may return better organised' is the comic-deflationary close.",
             "lines": [
-                "Counsel. On the motion of the petitioner, the hearing of the eighth is set aside on the ground of invalid service under Article 135-bis § 2 of the Code of Civil Procedure. The matter is rescheduled. The clerk will assign a new hearing date within the statutory window. Notice will be served in the ordinary course."
+                "Counsel. The court has heard counsel address several questions but none of them completely. The procedural defect, however, is on the face of the documents. The hearing of the eighth is set aside on the bench's own motion under Article 135-bis § 2 of the Code of Civil Procedure. Notice will be served in the ordinary course. Counsel may return better organised."
             ],
             "on_dismiss": [
-                {"set": "chapter1.court_won_procedural_reset", "value": true}
+                {"set": "chapter1.court_won_procedural_reset", "value": true},
+                {"set": "chapter1.won_court", "value": true}
             ],
-            "tags": ["court", "round_3", "remedy_announcement", "blunt_procedural_carrier"]
+            "tags": ["court", "round_3", "remedy_announcement", "bench_initiative", "blunder_recovered"]
         },
         {
-            "id": "remedy_round_3_technical",
-            "trigger": "chapter1.casebook_judge_state == 'round_3_remedy' && chapter1.client_meeting_stance == 'technical'",
-            "_comment": "Round 3 remedy announcement — technical carrier. Adds one-clause acknowledgment that underlying tenancy is not before the court (per pack §B.4).",
+            "id": "remedy_narrow_standing",
+            "trigger": "chapter1.casebook_judge_state == 'round_3_remedy' && chapter1.court_outcome == 'narrow' && chapter1.proposed_frame == 'standing_wrong_party'",
+            "_comment": "D3 standing/wrong-party decoy included. Plausible doctrinal correction (assignment-of-lease imputes the prior owner's procedural conduct to the current). Not humiliation; the bench declines the frame and resets on the right ground.",
             "lines": [
-                "Counsel. On the motion of the petitioner, the hearing of the eighth is set aside on the ground of invalid service under Article 135-bis § 2 of the Code of Civil Procedure. The matter is rescheduled. The clerk will assign a new hearing date within the statutory window. Notice will be served in the ordinary course. The underlying tenancy is not before the court on this motion."
+                "Counsel. Counsel suggested the 2018 ownership transfer ousts the respondent's standing. The lease assigns forward with the freehold; the prior owner's procedural conduct on these documents remains imputable. The court declines that frame and resets on the service defect under Article 135-bis § 2 of the Code of Civil Procedure. Notice will be served in the ordinary course."
             ],
             "on_dismiss": [
-                {"set": "chapter1.court_won_procedural_reset", "value": true}
+                {"set": "chapter1.court_won_procedural_reset", "value": true},
+                {"set": "chapter1.won_court", "value": true}
             ],
-            "tags": ["court", "round_3", "remedy_announcement", "technical_carrier"]
+            "tags": ["court", "round_3", "remedy_announcement", "sharper_really_your_theory", "narrow_standing"]
+        },
+        {
+            "id": "remedy_narrow_notice_period",
+            "trigger": "chapter1.casebook_judge_state == 'round_3_remedy' && chapter1.court_outcome == 'narrow' && chapter1.proposed_frame == 'notice_period_failure'",
+            "_comment": "D2 notice-period (Tenancy Act 14-day window) decoy included. Cool dismissal: the timing point is colorable but procedurally subordinate to the locational defect already on the face of the documents. The bench resets on service; the timing point is simply not reached.",
+            "lines": [
+                "Counsel. Counsel pressed the Tenancy Act notice window. The window is colorable but procedurally subordinate to the locational defect on the face of the documents. The court resets on the service ground under Article 135-bis § 2 of the Code of Civil Procedure; the timing point is not reached. Notice will be served in the ordinary course."
+            ],
+            "on_dismiss": [
+                {"set": "chapter1.court_won_procedural_reset", "value": true},
+                {"set": "chapter1.won_court", "value": true}
+            ],
+            "tags": ["court", "round_3", "remedy_announcement", "cool_dismissal", "narrow_notice_period"]
+        },
+        {
+            "id": "remedy_narrow_merits",
+            "trigger": "chapter1.casebook_judge_state == 'round_3_remedy' && chapter1.court_outcome == 'narrow' && chapter1.proposed_frame == 'substantive_defense'",
+            "_comment": "D1 merits/substantive-defense decoy included. Tolerant correction: merits are not before the court on a motion to set aside; the procedural defect is. The bench reads counsel charitably as preserving the service objection and resets on that ground. 'The tenancy itself remains for another day' restates remedy discipline (no merits ruling) plainly.",
+            "lines": [
+                "Counsel. The court has heard counsel argue the merits. The merits are not before the court on a motion to set aside; the procedural defect is. The court reads the submission as preserving the service objection. The hearing of the eighth is set aside under Article 135-bis § 2 of the Code of Civil Procedure. Notice will be served in the ordinary course. The tenancy itself remains for another day."
+            ],
+            "on_dismiss": [
+                {"set": "chapter1.court_won_procedural_reset", "value": true},
+                {"set": "chapter1.won_court", "value": true}
+            ],
+            "tags": ["court", "round_3", "remedy_announcement", "tolerant_try_again", "narrow_merits"]
+        },
+        {
+            "id": "remedy_narrow_overbroad",
+            "trigger": "chapter1.casebook_judge_state == 'round_3_remedy' && chapter1.court_outcome == 'narrow' && chapter1.proposed_frame == 'overbroad_remedy'",
+            "_comment": "D4 overbroad-remedy decoy as the only blunder (dominant_frame fallback at the lowest priority slot). Judge narrows the ask explicitly; the remedy is procedural reset, nothing wider. Closing line is the canonical voice-reference 'A modest remedy is often stronger than an ambitious speech' (judge_global_voice_anchors_009), repurposed here as a register hit.",
+            "lines": [
+                "Counsel. Counsel has asked for the world — dismissal with prejudice, permanent injunction, or both. The court will not convert a service defect into a merits ruling. The remedy is procedural reset under Article 135-bis § 2 of the Code of Civil Procedure; nothing wider. Notice will be served in the ordinary course. A modest remedy is often stronger than an ambitious speech."
+            ],
+            "on_dismiss": [
+                {"set": "chapter1.court_won_procedural_reset", "value": true},
+                {"set": "chapter1.won_court", "value": true}
+            ],
+            "tags": ["court", "round_3", "remedy_announcement", "sharper_really_your_theory", "narrow_overbroad_remedy"]
+        },
+        {
+            "id": "remedy_narrow_thin",
+            "trigger": "chapter1.casebook_judge_state == 'round_3_remedy' && chapter1.court_outcome == 'narrow'",
+            "_comment": "Narrow outcome with no decoys (proposed_frame defaults to 'defective_service_135bis'). The packet covered fewer than the full four elements — usually two or three — so the bench acts narrowly and warns explicitly that the record is thin. 'Survival, not vindication' is the closer: the canonical weak-success register (judge_ch01_weak_success_006).",
+            "lines": [
+                "Counsel. The court has heard enough to act, narrowly. The hearing of the eighth is set aside under Article 135-bis § 2 of the Code of Civil Procedure; the record will support no wider order. Notice will be served in the ordinary course. Counsel should regard this as survival, not vindication."
+            ],
+            "on_dismiss": [
+                {"set": "chapter1.court_won_procedural_reset", "value": true},
+                {"set": "chapter1.won_court", "value": true}
+            ],
+            "tags": ["court", "round_3", "remedy_announcement", "approving_set_aside", "narrow_thin_record"]
+        },
+        {
+            "id": "remedy_standard",
+            "trigger": "chapter1.casebook_judge_state == 'round_3_remedy' && chapter1.court_outcome == 'standard'",
+            "_comment": "Standard outcome — address defect plus at least one supporting element, no decoys. Clean procedural order in the neutral register: imperfect-but-sufficient submission, reset granted, merits expressly reserved. 'No view is expressed on the merits' is the standard-performance canonical close (judge_ch01_standard_performance_005).",
+            "lines": [
+                "Counsel. The submissions were imperfect but sufficient. The hearing of the eighth is set aside on the ground of invalid service under Article 135-bis § 2 of the Code of Civil Procedure. The matter is rescheduled within the statutory window. Notice will be served in the ordinary course. No view is expressed on the merits."
+            ],
+            "on_dismiss": [
+                {"set": "chapter1.court_won_procedural_reset", "value": true},
+                {"set": "chapter1.won_court", "value": true}
+            ],
+            "tags": ["court", "round_3", "remedy_announcement", "approving_set_aside", "standard"]
+        },
+        {
+            "id": "remedy_strong",
+            "trigger": "chapter1.casebook_judge_state == 'round_3_remedy' && chapter1.court_outcome == 'strong'",
+            "_comment": "Strong outcome — 4/4 packet, no decoys. Dry surprise plus stronger acknowledgement plus costs reserved (the mechanically-supported extra). Opener echoes the canonical strong-performance line ('Against several expectations...'). Direct address to Dr. A. Cula is the rare acknowledgement permitted by the perfect_bonus voice-reference set (judge_ch01_perfect_bonus_007), hedged in the same line by 'do not let that become confidence without documents' so dry surprise does not slip into praise. Remedy discipline holds: hearing reopened, costs reserved, underlying tenancy expressly not before the court — no total victory.",
+            "lines": [
+                "Counsel. Against several expectations, counsel has produced a coherent submission on all four elements of Article 135-bis § 2 of the Code of Civil Procedure. The hearing of the eighth is set aside. Notice will be served in the ordinary course. Costs are reserved. The underlying tenancy is not before this court. Dr. A. Cula — do not let that become confidence without documents."
+            ],
+            "on_dismiss": [
+                {"set": "chapter1.court_won_procedural_reset", "value": true},
+                {"set": "chapter1.won_court", "value": true}
+            ],
+            "tags": ["court", "round_3", "remedy_announcement", "approving_set_aside", "strong", "costs_reserved"]
         }
     ]
 }
