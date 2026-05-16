@@ -449,8 +449,14 @@ func _init() -> void:
 		for flag in v1a_flags:
 			state_node.data["chapter1"][flag] = false
 
-	## Test 17 — first state (`!pig_revealed_crisis`) matches at chapter start.
+	## Test 17 — first state (`!pig_revealed_crisis && met_asia`) matches at chapter start.
+	## The V1.A hint pack gates state 1 on `chapter1.met_asia == true`: Asia should
+	## not deliver crisis hints before she has been met. The reset_flags lambda zeros
+	## out the chapter1 progression flags; we then explicitly set met_asia so the
+	## trigger can match. (Test drift from Session 46: prior to this fix, T17 was
+	## firing the runner's fallback placeholder line because met_asia stayed false.)
 	reset_flags.call()
+	state_node.data["chapter1"]["met_asia"] = true
 	_signal_capture[1] = []
 	var capture17 := _signal_capture
 	sigs.dialogue_line_ready.connect(func(s: String, _npc_id: String, l: Array) -> void:

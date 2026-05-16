@@ -238,12 +238,24 @@ func _test_bool_defaults_are_false() -> void:
 			_assert(false, "'chapter1.%s' missing from registry (bool default check skipped)" % k)
 
 	## Broader pass: any bool-typed entry defaulting true is flagged explicitly.
+	## Type-guard the `!= false` comparison: if a registry entry declares
+	## `_type: "bool"` but ships a non-bool default (e.g. a String, indicating
+	## a mistyped registry entry), Godot crashes on `String == bool`. The
+	## type-guard reroutes such entries to an explicit mistyped-entry assertion
+	## so the runner surfaces the real data bug instead of dying on a SCRIPT
+	## ERROR mid-loop (which masked the remaining T5 + T6 + T7 checks before
+	## Session 46's tail bump made the failure visible).
 	for short_key in registry.keys():
 		var entry: Dictionary = registry[short_key]
 		var reg_type: String = str(entry.get("_type", ""))
 		var reg_default: Variant = entry.get("default", null)
+		var default_is_bool: bool = typeof(reg_default) == TYPE_BOOL
 		## Detect bool entries by _type OR by literal false default without _type set.
-		var is_bool_entry: bool = (reg_type == "bool") or (reg_type == "" and reg_default == false)
+		var is_bool_entry: bool = (reg_type == "bool") or (reg_type == "" and default_is_bool and reg_default == false)
+		if is_bool_entry and not default_is_bool:
+			_assert(false,
+				"'chapter1.%s' registry declares _type:'bool' but default is %s (not a bool) — mistyped registry entry" % [short_key, typeof(reg_default)])
+			continue
 		if is_bool_entry and reg_default != false:
 			_assert(false,
 				"'chapter1.%s' bool flag defaults true — requires human confirmation" % short_key)
