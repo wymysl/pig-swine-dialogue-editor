@@ -4,17 +4,54 @@
     "states": [
         {
             "id": "before_pig",
-            "trigger": "!chapter1.met_pig",
+            "trigger": "!chapter1.met_pig && !chapter1.met_murrow",
             "lines": ["Doctor Cula. Mr. Pig is expecting you. The case can wait the ten minutes Mr. Pig requires for opening remarks."]
+        },
+        {
+            "id": "after_pig",
+            "trigger": "chapter1.met_pig && !chapter1.met_murrow",
+            "lines": [
+                {"speaker": "murrow", "text": "[This must be Mr. Murrow. Young and promising. I've read his profile on Ionkionked.]"}
+            ],
+            "options": {
+                "write_path": "chapter1.murrow_choice",
+                "choices": [
+                    {"text": "Good morning. Dr. A. Cula.", "value": "dry", "trust_delta": 0},
+                    {"text": "Mr. Murrow. Dr. A. Cula. I was told you'd have a case for me.", "value": "professional", "trust_delta": 1},
+                    {"text": "Mr. Murrow. Dr. A. Cula. A pleasure to meet you.", "value": "friendly", "trust_delta": 2}
+                ],
+                "chain": true
+            },
+            "once": true
+        },
+        {
+            "id": "state_2_response_friendly",
+            "trigger": "chapter1.met_pig == true && chapter1.murrow_choice == 'friendly'",
+            "lines": ["Well, well, well. Dr. A. Cula, the famous, promising and talented new hire."],
+            "once": true,
+            "chain": true
+        },
+        {
+            "id": "state_2_response_professional",
+            "trigger": "chapter1.met_pig == true && chapter1.murrow_choice == 'professional'",
+            "lines": ["Dr. A. Cula."],
+            "once": true,
+            "chain": true
+        },
+        {
+            "id": "state_2_response_dry",
+            "trigger": "chapter1.met_pig == true && chapter1.murrow_choice == 'dry'",
+            "lines": ["Murrow. Mr. Murrow."],
+            "once": true,
+            "chain": true
         },
         {
             "id": "murrow_first_meeting",
             "trigger": "chapter1.met_pig == true && !chapter1.met_murrow",
             "_comment_v1_2_p6": "Phase 7 V1.2 pass 6 dialogue. Sikorska eviction defense (V1.4-canonical): 2015 renumbering, flat #7 -> #12, landlord knowledge via 2019 renewal countersignature, motion to set aside, Friday 14:00 courtroom 4, retention pending. Pass-3 'Mrs. Borowski' provisional state superseded; V1.4 has shipped and locks the case content.",
             "lines": [
-                {"speaker": "cula", "text": "Mr. Murrow. I was told you'd have the Sikorska file."},
-                "Doctor Cula. Welcome to Pig & Swine. You've picked a noisy day to begin.",
-                "The case is the Sikorska eviction defense. Halina Sikorska, at number twelve; the notice was served to old number seven.",
+                "Welcome to Pig & Swine. You've picked a noisy day to begin.",
+                "We have a lot of work to do. The case is the Sikorska eviction defense. Halina Sikorska, at number twelve; the notice was served to old number seven.",
                 "The building was renumbered in two thousand and fifteen. The two thousand and nineteen renewal carries the landlord's countersignature. He served the old door anyway.",
                 "Hearing already ran ex parte. The current resident at number seven brought the notice down three weeks late. Actual notice reached her on the twenty-eighth of April.",
                 "We file a motion to set aside. Fourteen days from actual notice. We are inside the window.",
@@ -77,5 +114,5 @@
             ]
         }
     ],
-    "idle_flavor": ["The paperwork is current. Whether it is correct is a separate question.", "Ensure every form is stamped in triplicate."]
+    "idle_flavor": ["The paperwork is current. Whether it is correct is a separate question.", "Ensure every form is stamped in triplicate.", "Two pages are out of sequence. Not yours."]
 }

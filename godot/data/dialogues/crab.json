@@ -1,90 +1,148 @@
 {
     "version": 3,
     "npc_id": "crab",
+    "_provenance": "End-to-end rewrite per `Rewrite crab.json` prompt, 2026-05-15. Second pass same day after re-reading narrative_revision/ai_voice_constraints.md §1 scrub list + §2 Crab will-not-say and re-sampling data/voice_references/dialogue_samples_crab.jsonl. Voice pass against narrative_revision/voice_agents/crab.md (gear-shift register, the most current bible) and cula.md (choice text). Where voice_references conflict with crab.md or ai_voice_constraints.md, the latter two win per the documented authority hierarchy. Three voice_references closers that survive all three sources are preserved as calibration anchors: 'postal theatre' (crab_ch01_008), 'decorative gaps' (crab_global_012), 'not beautiful, standing in the right order' (crab_global_013). Schema mirrors halina.json and murrow.json patterns. All previously-existing state IDs preserved; two new states added (before_binder_briefing, crab_post_pitch_response) to host chain follow-ups. All previously-existing on_dismiss flag writes preserved at semantically-equivalent triggers. No new chapter1.* flags introduced.",
+    "_anti_ai_voice_pass": "Second-pass scrubs applied per ai_voice_constraints.md §1: em-dashes capped ≤1 per line (every Crab line audited); contrastive antithesis ('not X but Y' / 'it's not just X — it's Y') categorically cut except for the canonical 'That is not service. That is postal theatre.' (style_canon §1 calibration anchor — exempt under the authority hierarchy). Removed self-explaining-stance line ('earn my place in this conversation') per §2 Crab phase-6 Hit #3. Removed symmetric paired 'If X / If not X' construction in hint_needs_archive. Confirmed no scrub-list vocabulary present ('delve', 'tapestry', 'myriad', 'vibrant', 'navigate' metaphorical, 'showcase', 'essence of', 'heart of', 'robust', 'intricate', 'weave', 'intersection', 'Indeed', 'Moreover', 'Furthermore', 'let me be clear', 'I won't pretend', 'to be honest', 'one might argue'). idle_flavor entry 2 rewritten from third-person stage direction into first-person Crab voice to match murrow.json convention.",
+    "_branching_constraint": "Per the rewrite prompt's hard rule, no new chapter1.* flags were added. The chapter1 schema has no free string slot reusable by Crab (state_choice is owned by asia.json; murrow_choice by murrow.json; client_meeting_stance by halina.json + meeting_room_trigger.gd; bonus_evidence_collected by items.json + halina.json; coffee_buff by the coffee mini-game and all NPC reaction states; halina_r1/r2_choice by halina.json). The Halina-style differentiated-response branching pattern (chain:true + write_path → distinct enum values → tier-gated response states) therefore cannot be reproduced for Crab without a Code-role schema change (new flag in state.gd + SAVE_VERSION bump + migration + test), which is out of scope. The three branches authored here adopt the constrained pattern: chain:true + write_path = chapter1.recruited_crab (or chapter1.met_crab on the post-recruit hint) + value=true for every choice. The branch surfaces Cula's stance-and-voicing choice; the follow-up Crab response state is unified across choices. The wrong-but-not-blocking choice in `first_meeting_with_binder` (option C, the rush-to-close pitch) is therefore answered by a single Crab response calibrated to the wrong-shape — the response carries a quiet correction in its second sentence that lands particularly hard on option C while remaining in-voice for A and B. Reported to the human in the final summary.",
     "states": [
         {
             "id": "before_binder",
             "trigger": "!chapter1.met_crab && !chapter1.has_law_binder",
-            "_comment_v1_2_p6": "Phase 7 V1.2 pass 6 dialogue. Sikorska file reference per V1.4 canonical case content. Pass-3 'Borowski file' provisional state superseded.",
+            "_comment": "First-meeting beat, pre-binder. Cula opens with the canonical bare-surname-plus-self-id greeting (AGENTS.md §First-meeting introductions). Crab is mid-investigation on a stairwell — the gear-shift lands on 'postal theatre' (calibration anchor from crab.md). Crab uses 'Dr. A. Cula' pre-recruit per AGENTS.md §Address forms. Linear (no branch) because pre-binder Cula has nothing yet to commit to; the branch point is reserved for first_meeting_with_binder once Cula is actually about to deploy the binder. on_dismiss preserves met_crab=true from the previous schema.",
             "lines": [
-                {"speaker": "cula", "text": "Crab. I'm Cula. I could use a second pair of eyes on the Sikorska file before fourteen hundred."},
-                "Cula. Heard.",
-                "The binder is not in the room. I cannot check service without the binder.",
-                {"speaker": "cula", "text": "Right."}
+                {"speaker": "cula", "text": "Crab. I'm Cula."},
+                "Dr. A. Cula. Heard. Murrow's procedural binder?",
+                {"speaker": "cula", "text": "Not yet. He has it."},
+                "Then we are early. I cannot tell you what is defective in the service until I have read the notice. The notice is in the binder. Until then I am standing in a doorway making faces.",
+                {"speaker": "cula", "text": "Right. I'll get it."},
+                "Do. Renumbering was two thousand and fifteen. The envelope we have a copy of was sent to number seven. The building above us reads number twelve. That is not service. That is postal theatre."
             ],
             "on_dismiss": [
                 {"set": "chapter1.met_crab", "value": true}
             ]
         },
         {
+            "id": "before_binder_briefing",
+            "trigger": "chapter1.met_crab == true && !chapter1.has_law_binder && !chapter1.recruited_crab",
+            "_comment": "NEW state. Repeat-visit beat when Cula returns without the binder. Originally there was no post-greeting pre-binder state; the new state both documents the wait and gives Crab a short gear-shift to deliver. Crab uses 'Dr. A. Cula' (still pre-recruit). No on_dismiss writes — the binder pickup is what moves the player forward.",
+            "lines": [
+                "Dr. A. Cula. Still no binder. The shelf has been patient with you; I will be also.",
+                {"speaker": "cula", "text": "Hm. Working on it."},
+                "Second shelf, blue spine. Murrow has flagged Article one-thirty-five-bis in three colors. Bring it down. Until then we are arguing from memory."
+            ]
+        },
+        {
             "id": "first_meeting_with_binder",
             "trigger": "!chapter1.met_crab && chapter1.has_law_binder == true",
-            "_comment_intro_rule": "Fused intro + binder hand-off for the path where Cula collects the procedural binder before speaking to Crab. Required by AGENTS.md §First-meeting introductions: an inventory hand-off line ('Here.') must not stand as the first word spoken between Cula and Crab. Sets both met_crab and recruited_crab because the binder hand-off IS the recruitment beat in this branch.",
+            "_comment": "Fused intro + binder hand-off + recruitment. AGENTS.md §First-meeting introductions forbids letting an inventory hand-off line stand as the first word spoken — Cula greets first ('Crab. I'm Cula.'), then names the binder. Crab takes the binder, runs the gear-shift fact-stack, and the state ends on an options block with three Cula pitch choices. The options block uses the constrained branch pattern documented in `_branching_constraint` at the top of this file: write_path = chapter1.recruited_crab with value=true for every choice, chain:true. All three choices converge on `crab_post_pitch_response` for Crab's unified reaction; the response carries a quiet wrong-shape correction that lands hardest on option C ('Get me out of Friday on procedure') without blocking any path. on_dismiss preserves the original schema's met_crab=true and recruited_crab=true writes (the write_path also flips recruited_crab; on_dismiss restates both for self-documentation). `once: true` is set so the state is skipped on any unlikely re-entry after the chain has fired.",
             "lines": [
-                {"speaker": "cula", "text": "Crab. I'm Cula. The binder — service on the Sikorska notice. Need a second pair of eyes before fourteen hundred."},
-                "Cula. Heard.",
-                "The binder cites Article 132. The notice mentions service. I can check that.",
-                {"speaker": "cula", "text": "Right."}
+                {"speaker": "cula", "text": "Crab. I'm Cula. The procedural binder — Murrow said you'd want a second pair of eyes on the Sikorska service before fourteen hundred."},
+                "Dr. A. Cula. Heard. Hand it here.",
+                "Notice dated the eighth of April. Envelope: number seven. Renewal in the binder: number twelve, two thousand and nineteen, landlord's countersignature on the page facing. He knew the renumbering. He served the wrong door anyway.",
+                "Article one-thirty-five-bis, paragraph two of the Code of Civil Procedure. Translated — he sent a writ to a building that has not been Mrs. Sikorska's building in eleven years. A confession with a postal date."
             ],
+            "options": {
+                "write_path": "chapter1.recruited_crab",
+                "chain": true,
+                "choices": [
+                    {"text": "I'll draft the motion under one-thirty-five-bis. Could you walk the post?", "value": true},
+                    {"text": "Walk me through what worries you most before Friday.", "value": true},
+                    {"text": "We should just file the motion. Friday is close enough.", "value": true}
+                ]
+            },
             "on_dismiss": [
                 {"set": "chapter1.met_crab", "value": true},
                 {"set": "chapter1.recruited_crab", "value": true}
-            ]
+            ],
+            "once": true
         },
         {
             "id": "after_binder_first_engagement",
             "trigger": "chapter1.met_crab == true && chapter1.has_law_binder == true && !chapter1.recruited_crab",
+            "_comment": "Late-binder path: Cula spoke to Crab pre-binder (`before_binder` fired and set met_crab), then went and got the binder, and is back. Second branch point. Same constrained pattern as first_meeting_with_binder: options chain:true, write_path = recruited_crab, value=true for every choice, converging on `crab_post_pitch_response`. The choices are framing choices (delegation vs. asking vs. wrong-shape rush) — the substantive difference from the fused intro is that Cula has already met Crab and the greeting is done; this branch is purely the work hand-off. on_dismiss preserves the original schema's recruited_crab=true write. `once: true` matches the first_meeting_with_binder pattern.",
             "lines": [
-                {"speaker": "cula", "text": "Here."},
-                "The binder cites Article 132. The notice mentions service. I can check that.",
-                {"speaker": "cula", "text": "Good."}
+                {"speaker": "cula", "text": "Crab. I have the binder."},
+                "Heard.",
+                "Notice dated the eighth of April. Envelope says number seven. Renewal in the binder is two thousand nineteen at number twelve — landlord's signature on the page facing. He knew. He served the wrong door anyway. That is not service. That is postal theatre.",
+                "What I need from you before fourteen hundred — "
             ],
+            "options": {
+                "write_path": "chapter1.recruited_crab",
+                "chain": true,
+                "choices": [
+                    {"text": "I'll take service under one-thirty-five-bis. Could you walk the post?", "value": true},
+                    {"text": "What would you chase next.", "value": true},
+                    {"text": "Just file the motion. We do not have time for legwork.", "value": true}
+                ]
+            },
             "on_dismiss": [
                 {"set": "chapter1.recruited_crab", "value": true}
-            ]
+            ],
+            "once": true
+        },
+        {
+            "id": "crab_post_pitch_response",
+            "trigger": "chapter1.recruited_crab == true && chapter1.has_law_binder == true && !chapter1.halina_met && !chapter1.entered_court",
+            "_comment": "NEW state. Chained follow-up to both first_meeting_with_binder and after_binder_first_engagement. Trigger fires once at the moment recruited_crab flips and before Halina has been met. `once: true` ensures it does not re-fire if the player returns to Crab before the Halina beat. Crab addresses Cula as 'Cula' — recruitment beat unlocks the bare-surname form per AGENTS.md §Address forms. The second line ('The motion is the easy half...') is the deliberate quiet correction for the wrong-shape rush pitch: it lands as procedural fact for the A/B pickers and as a dry redirection for the C picker, without blocking either path. The fact-stack closer ('Three problems...') is a canonical Crab shape from crab.md §Calibration anchors.",
+            "lines": [
+                "Cula. Right. Service goes to you under one-thirty-five-bis. I will take the post — register, return-to-sender slip, the resident at number seven. Murrow takes whatever he is not saying he will take, which we both know he has not said yet.",
+                "Drafting takes an afternoon. The walking takes Friday.",
+                "Three problems, one notice, one Friday. Find me before fourteen hundred if anything in the binder reads wrong."
+            ],
+            "once": true
         },
         {
             "id": "crab_coffee_reaction_perfect_recruited",
             "trigger": "chapter1.coffee_buff == 'procedurally_alert_plus' && chapter1.met_crab == true && chapter1.recruited_crab == true && !chapter1.entered_court",
-            "_comment": "V1.4 coffee reaction — S-grade, post-recruit. Voice verbatim from minigames.txt §Character reactions §Crab Perfect ('No obvious flaws. Disturbing.'). Crab addresses Cula by bare 'Cula' per AGENTS.md §Address forms (Crab uses 'Cula' only after recruitment).",
+            "_comment": "V1.4 coffee reaction — S-grade, post-recruit. Line preserved verbatim from minigames.txt §Character reactions §Crab Perfect ('No obvious flaws. Disturbing.'); the gear-shift is built in — procedural verdict + colloquial closer. Crab addresses Cula by bare 'Cula' per AGENTS.md §Address forms (post-recruit, private context).",
             "lines": ["Cula. No obvious flaws. Disturbing."]
         },
         {
             "id": "crab_coffee_reaction_bad_recruited",
             "trigger": "chapter1.coffee_buff == 'over_caffeinated' && chapter1.met_crab == true && chapter1.recruited_crab == true && !chapter1.entered_court",
-            "_comment": "V1.4 coffee reaction — D/F-grade, post-recruit. Voice verbatim from minigames.txt §Character reactions §Crab Bad ('That is not coffee. That is witness intimidation.').",
+            "_comment": "V1.4 coffee reaction — D/F-grade, post-recruit. Line preserved verbatim from minigames.txt §Character reactions §Crab Bad ('That is not coffee. That is witness intimidation.'). This is the canonical mid-sentence pattern: technical noun-phrase definition, with the witness-intimidation closer doing the gear-shift via legal-register substitution. Crab uses bare 'Cula' (post-recruit).",
             "lines": ["Cula. That is not coffee. That is witness intimidation."]
         },
         {
             "id": "crab_coffee_reaction_perfect_pre_recruit",
             "trigger": "chapter1.coffee_buff == 'procedurally_alert_plus' && chapter1.met_crab == true && !chapter1.recruited_crab && !chapter1.entered_court",
-            "_comment": "V1.4 coffee reaction — S-grade, pre-recruit. Authored for completeness per design brief; in normal play coffee_buff is only set after recruited_whimsy, which is downstream of recruited_crab — so this branch is practically unreachable. Pre-recruit Crab uses 'Dr. A. Cula' per AGENTS.md §Address forms.",
+            "_comment": "V1.4 coffee reaction — S-grade, pre-recruit. Same line as the post-recruit variant; address form switches to 'Dr. A. Cula' per AGENTS.md. Practically unreachable in normal play (coffee_buff is only set after recruited_whimsy, which is downstream of recruited_crab); state retained for completeness per the original schema.",
             "lines": ["Dr. A. Cula. No obvious flaws. Disturbing."]
         },
         {
             "id": "crab_coffee_reaction_bad_pre_recruit",
             "trigger": "chapter1.coffee_buff == 'over_caffeinated' && chapter1.met_crab == true && !chapter1.recruited_crab && !chapter1.entered_court",
-            "_comment": "V1.4 coffee reaction — D/F-grade, pre-recruit. Same scope note as the perfect pre-recruit variant; pre-recruit Crab uses 'Dr. A. Cula' per AGENTS.md §Address forms.",
+            "_comment": "V1.4 coffee reaction — D/F-grade, pre-recruit. Same scope note as the perfect pre-recruit variant. Address form 'Dr. A. Cula' per AGENTS.md.",
             "lines": ["Dr. A. Cula. That is not coffee. That is witness intimidation."]
         },
         {
             "id": "hint_needs_archive",
             "trigger": "chapter1.recruited_crab == true && chapter1.halina_met == true && !chapter1.archive_research_complete && !chapter1.entered_court",
-            "_comment": "V1.5 post-recruitment progression. Fires after the client meeting, before archive research is complete. Crab's factual domain is the service certificate — he nudges Cula toward the archive. Bare 'Cula' per AGENTS.md §Address forms (post-recruit).",
-            "lines": ["Cula. The service address is in the archive. Someone filed a certificate. Check whether the certificate describes a door that exists."]
+            "_comment": "Post-Halina-meeting hint state. Crab's factual domain is the service certificate; he nudges Cula toward the archive. Rewritten from a single-line nudge into a two-beat gear-shift: procedural observation, then a colloquial closer that names the suspect shape of the paperwork. Crab uses bare 'Cula' (post-recruit, private firm context). Linear — no branch here. The prompt's anti-branch rule (do not branch on procedural hint states where all options would produce identical Crab responses) applies cleanly: the player advances to the archive regardless, and a cosmetic Cula-voicing branch would not earn its keep.",
+            "lines": [
+                "Cula. The service address is in the archive — somewhere. Someone filed a certificate at the cooperative office when the building was resurveyed. We need to know whether the certificate describes the door on the envelope.",
+                "The paper is the next step. Until we have it the case is half-told."
+            ]
         },
         {
             "id": "crab_hint_court_ready",
             "trigger": "chapter1.recruited_crab == true && chapter1.archive_research_complete == true && !chapter1.court_ready && !chapter1.entered_court",
-            "_comment": "V1.5 post-recruitment progression. Fires once archive research is complete but court_ready is not yet set. Crab's quiet approval before the hearing. Voice from crab_global_013. Bare 'Cula' per AGENTS.md §Address forms.",
-            "lines": ["The facts are not beautiful, but they are standing in the right order."]
+            "_comment": "Quiet approval beat between archive research and the readiness check. The line lands the fact-stack closer pattern (Crab refusing to reassure but producing a sentence that names the work as ready). Bare 'Cula' per AGENTS.md §Address forms (post-recruit). 'Not beautiful but standing in the right order' is calibrated to the voice agent's anti-reassurance discipline — it is a fact, not comfort.",
+            "lines": [
+                "Cula. The facts are not beautiful. They are standing in the right order. That is what we needed before fourteen hundred."
+            ]
         },
         {
             "id": "after_engagement",
             "trigger": "chapter1.recruited_crab == true",
-            "_comment": "V1.5 generic fallback repeat beat — fires when no more specific post-recruitment state matches (e.g. before halina_met, or between milestones). Bare 'Cula' per AGENTS.md §Address forms.",
-            "lines": ["Cula. If we go in now, we will be making an argument with decorative gaps."]
+            "_comment": "Catch-all repeat-beat for post-recruitment states not matched above (between Halina's arrival and the meeting; between court_ready and entered_court; etc.). Bare 'Cula' per AGENTS.md §Address forms. The line names absence-of-evidence as a procedural problem (canonical Crab move — diagnosing what the documents are not yet saying). 'Decorative gaps' is the gear-shift closer.",
+            "lines": [
+                "Cula. If we go in now we will be making an argument with decorative gaps. The argument can be made. The gaps are what the landlord will fill, and he will fill them in his favour."
+            ]
         }
     ],
-    "idle_flavor": ["The office is quiet. Either nothing happened, or the evidence is hiding better than usual."]
+    "idle_flavor": [
+        "The office is quiet. Either nothing has happened or the evidence is hiding better than usual.",
+        "Half the legal questions in this office begin with someone reading the address on an envelope twice."
+    ]
 }
