@@ -1,18 +1,19 @@
 # Agent 9 Done — QA audit and headless sweep
 
-Generated: 2026-05-16 06:07:02 
-Commit: this file is included in the Agent 9 audit commit; exact SHA is only knowable after commit creation and is recorded in the final automation response.
+Generated: 2026-05-16 09:42:15 
+Commit: included in the Agent 9 audit commit; exact SHA is reported by git after commit creation.
 Report: `nightly/2026-05-16/qa_audit.md`
+Audit duration: rerun/update pass from approximately 09:36 to 09:42 local.
 
-Overall verdict: REGRESSION — headless sweep ran, export artifacts were produced, but 3/41 commands failed and export-log sanity found `ERROR:` lines.
+Overall verdict: REGRESSION, but exportable — 38/41 headless commands passed; JSON/cross-reference structure is mostly clean; address-form and registry/test drift need human attention.
 
 Dimensions completed:
-- Headless sweep + export: completed; 38/41 passed.
-- JSON validity: passed for all `godot/data` JSON files.
+- Headless sweep + export: completed; failures: `v17_coverage`, `dialogue`, `extra_test_chapter1_flag_coverage`.
+- JSON validity: passed for 44 `godot/data` JSON files.
 - Flag/tag/evidence/frame/move/enum/address/draft/schema/web audits: completed.
-- Agent reports ingested: Agents 1, 2, 3, 4, 7, 8, 10, 11; Agents 5, 6, 12 missing by cutoff.
+- Agent reports ingested from root `nightly` and `godot/nightly`; late Agent 5 and Agent 12 commits included.
 
 Top three concerns:
-1. `test_dialogue_runner.gd` fails on Asia hint dispatch after uncommitted `asia_hint_states_ch1.json` gating change.
-2. Registry drift: `murrow_choice` missing, `state_choice` lacks `_enum`, `client_meeting_stance` lacks empty enum value, and v17 coverage test has a type bug.
-3. Live address-form violations remain in `murrow.json` (`Doctor Cula`, `Mr. Cula`).
+1. Failing tests: v17 coverage type crash/missing `murrow_choice`, dialogue runner Asia hint fallback, stale Chapter 1 flag coverage assumptions.
+2. Runtime address-form violations in `godot/data/dialogues/murrow.json` (`Doctor Cula`, `Mr. Cula`).
+3. Agent 6 delivery is partial/missing: Whimsy final draft exists untracked with no done-report.
