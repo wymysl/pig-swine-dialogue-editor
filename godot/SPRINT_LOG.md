@@ -1449,3 +1449,35 @@ Verification:
 Notes:
 - Headless runs still print pre-existing dialogue-catalogue validation errors from duplicate/draft dialogue files already present in the worktree; this court packet pass did not change those files.
 - The web export completed with exit 0 but Godot printed its existing macOS editor-settings save warning for `/Users/piotr/Library/Application Support/Godot/editor_settings-4.6.tres`.
+
+---
+
+**Session 45 - 2026-05-16 - QA - full Chapter 1 motion-packet path coverage.**
+
+Added focused end-to-end regression coverage for the assembled Chapter 1 motion packet across binder assembly, save continuity, court scoring, outcome flags, and first post-court dialogue.
+
+Changes:
+- `tests/test_chapter1_motion_packet_full_path.gd` (new)
+  - Covers strong correct 4/4 packet through BlueBinder, save/load continuity, court completion, strong judge dialogue, and postcard opener.
+  - Covers standard correct 3/4 packet and standard judge dialogue.
+  - Covers merits, notice-period, standing/wrong-party, overbroad-remedy, and incapacity decoy paths.
+  - Covers missing evidence / under-investigated packet recovery.
+  - Verifies court outcome flags and post-court dialogue reachability.
+
+Verification:
+- `godot --headless --path godot --script tests/test_chapter1_motion_packet_full_path.gd --log-file /tmp/pig_swine_ch1_motion_packet_full_path.log` -> **EXIT 0**, `44/44 PASS`.
+- `godot --headless --path godot --script tests/test_motion_packet_assembly.gd --log-file /tmp/pig_swine_motion_packet_assembly_full_path.log` -> **EXIT 0**, `21/21 PASS`.
+- `godot --headless --path godot --script tests/test_court_packet_scoring.gd --log-file /tmp/pig_swine_court_packet_scoring_full_path.log` -> **EXIT 0**, `25/25 PASS`.
+- `godot --headless --path godot --script tests/test_postcard_swine_chain.gd --log-file /tmp/pig_swine_postcard_full_path.log` -> **EXIT 0**, `15/15 PASS`.
+- `godot --headless --path godot --script tests/test_save_migration_v17_v18.gd --log-file /tmp/pig_swine_save_v17_v18_full_path.log` -> **EXIT 0**, `137/137 PASS`.
+- `godot --headless --path godot --script tests/test_save_migration_v18_v19.gd --log-file /tmp/pig_swine_save_v18_v19_full_path.log` -> **EXIT 0**, `35/35 PASS`.
+- `find godot/data -name '*.json' -print0 | xargs -0 -n1 jq empty` -> **EXIT 0**.
+- `godot --headless --path godot --script tests/test_smoke.gd --log-file /tmp/pig_swine_smoke_motion_packet_full_path.log` -> **EXIT 0**.
+- `godot --headless --path godot --script tests/test_runner.gd --log-file /tmp/pig_swine_runner_motion_packet_full_path.log` -> **EXIT 0**.
+- `godot --headless --path godot --export-release "Web" exports/web/index.html --log-file /tmp/pig_swine_export_motion_packet_full_path.log` -> **EXIT 0**; export artifact present at `godot/exports/web/index.html`.
+- `git diff --check` -> **EXIT 0**.
+
+Notes:
+- The new focused test could not use production `Save.save_game()` / `Save.load_game()` directly because this headless macOS run failed to open `user://save.json`. It instead writes the same versioned save payload to `/tmp`, reloads it, and applies the production `migrate_save()` path. Dedicated save migration tests passed separately.
+- The project test runner still exits cleanly as a skeleton/no-GUT aggregate runner.
+- Headless runs still print Godot's macOS CA-certificate warning. Web export also prints the existing editor-settings save warning for `/Users/piotr/Library/Application Support/Godot/editor_settings-4.6.tres`.
