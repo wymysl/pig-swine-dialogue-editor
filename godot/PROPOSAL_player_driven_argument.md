@@ -1,427 +1,367 @@
 # PROPOSAL — Player-driven argument synthesis (Chapter 1 Sikorska arc)
 
-**Status.** DRAFT — Phase 1 plan revised 2026-05-16. Original §1 / §3 / §4 / §7 funnelled the player to a single answer; the revision adds credible decoy frames so synthesis is a real choice. The overnight cohort (commits `2f7a81b` through `8d6bb3b`) landed the v17 system scaffolding, the QA passes, and the voice-pack rewrites against the original funnel design — the runtime is consistent with itself but does not yet implement the decoy mechanic. This revision is the design target the next implementation pass works against.
-**Filed.** 2026-05-15. **Revised.** 2026-05-16.
-**Relation to existing proposals.** Extends PROPOSALS.md §10 (Court Round two-phase split). §10 is marked DONE in the status table but its implementation skeleton was reverted (see `battle_controller.gd`, `judgment.gd`, `principle_move.gd`, `argument_opponent.gd`, `data/court_rounds/_schema.md` — restored by Agent 1 of the overnight cohort at commit `603f65e`). This proposal supplies the missing front half of §10's design: how the player gets to the point of having something to argue with by the time Phase 1 begins. §10 covers Phase 1 (witness fact-finding) and Phase 2 (closing argument). This proposal adds a Phase 0 — INVESTIGATE — and reshapes the existing Beats 4–9 dialogue so that what happens in court is the consequence of what the player synthesised before walking in.
+**Status.** DRAFT — Phase 1 plan revised twice. v1 (2026-05-15) funnelled the player to a single right answer. v2 (2026-05-16 AM) replaced the funnel with four credible decoy frames plus an optional hard-wrong; the runtime data files (`evidence_ch1.json`, `argument_frames_ch1.json`) and the three decoy dialogue drafts under `data/dialogues/_drafts/` are at v2. v3 (2026-05-16 PM, this revision) reshapes the synthesis target itself: the Chapter 1 challenge is **motion-packet assembly**, not a theory-label quiz. The player must establish each of four required elements of the KPC Art. 135-bis § 2 motion to set aside, and choose whether to bolt on weaker decoy theories. The decoy roster carries over from v2 with one addition (overbroad remedy); incapacity-by-age remains the punished blunder.
+
+**Filed.** 2026-05-15. **Revised.** 2026-05-16 AM (decoy revision). **Re-revised.** 2026-05-16 PM (motion-packet revision).
+
+**Relation to existing proposals.** Same as v2 — extends PROPOSALS.md §10 (Court Round two-phase split). The §10 Phase 2 of Court Round 1 is now precisely **packet submission**, not theory pitch. The four-element packet maps one-to-one onto the four `resolution_weight: primary` fact flags already authored in `data/court_rounds/chapter1_round_1.json` (`_fact.landlord_knew_address`, `_fact.notice_received_april_28`, `_fact.resident_no_authority`, `_fact.renumbering_2015_documented`), so Code-pass alignment is largely free.
 
 ---
 
-## 0. The problem named precisely
+## 0. What this revision corrects in v2
 
-The Sikorska arc (Chapter 1) currently positions Cula as a courier between people who already know the answer. Verbatim evidence from the current data:
+v2 framed synthesis as "pick which named theory the case is about." That is structurally a theory-label quiz: the player selects from a menu of frame_ids, the game checks fit, and rewards or punishes. Three problems:
 
-- `data/dialogues/crab.json` state `first_meeting_with_binder` (lines 38–43): on first contact with the binder, Crab in three consecutive lines (a) reads the envelope address and reads the 2019 renewal address, (b) cites "Article one-thirty-five-bis, paragraph two of the Code of Civil Procedure" by name, and (c) delivers the legal frame ("A confession with a postal date"). The player's three choices that follow are tonal — all three set `chapter1.recruited_crab = true` and converge on `crab_post_pitch_response`. Crab's `_branching_constraint` provenance note acknowledges this explicitly: "value=true for every choice ... the wrong-but-not-blocking choice ... is therefore answered by a single Crab response."
-- `data/dialogues/murrow.json` state `murrow_first_meeting` (lines 52–67): Murrow delivers the full case — renumbering, 2019 countersignature, "we file a motion to set aside", "fourteen days from actual notice", "Friday at fourteen hundred, courtroom four" — in eight lines before Cula speaks a substantive sentence. Cula's two interjections are clarification follow-ups, not investigative work.
-- `data/dialogues/whimsy.json` state `before_meeting` (lines 8–16): Cula opens with the conclusion already named ("Notice went to an address the client left two years ago. The objection is in the papers; the record does not show it"). Whimsy adds rhetorical framing ("The fair-hearing argument can sing. The service defect gives it a throat") and the recruitment closes.
-- `data/dialogues/halina.json` is the counter-example. The trust meter (Session 29, SAVE_VERSION 11) gives Halina three real branches with consequential variation — bonus evidence shifts by stance, the high-trust reveal carries the landlord-intimidation thread into Ch4. This is the shape the rest of the arc lacks.
+1. **It is not what junior counsel actually do.** A junior preparing a motion to set aside does not first decide whether the case is "a defective-service case" or "a notice-period case." She works from the rule outward — she proves each element the rule requires, and only secondarily considers whether to throw in weaker auxiliary theories. The procedural mistake she risks is including too many theories or asking for too much remedy.
 
-The mechanic-narrative mismatch is real. The game's identity, per `godot/AGENTS.md` §Project identity, is "a parody of post-Soviet legal practice that takes its law seriously and its dignity not at all" — but the player currently doesn't do any law. Crab, Murrow, and Whimsy do it for them.
+2. **It collapses the four-element procedural test into a single label.** KPC Art. 135-bis § 2 has structure: (i) non-current address, (ii) to the knowledge of the serving party, (iii) motion filed within fourteen days of actual notice, (iv) no third-party authority to cure. v2 buried all four under a single `defective_service_135bis` frame_id and treated "defective service" as the right answer, period. The player never had to demonstrate they understood the rule.
 
-## 1. Narrative reshape across the Sikorska arc
+3. **The decoy mechanic was the wrong shape.** v2's decoys were *competing* theories: pick this OR that. In real practice they are *additions* a junior might pile onto a competent motion — "I'll argue defective service AND notice-period AND standing AND, while we are at it, the merits — surely one will land." That additive mistake is the procedurally interesting one, and v2 could not represent it.
 
-The reshape principle: **NPCs surface evidence pointing at multiple credible argument frames. Cula (the player) synthesises by choosing which frame the evidence best supports.** Each NPC moves from "teacher who states the conclusion" to "investigator who hands Cula raw material relevant to several arguments at once." The wrong synthesis must be reachable, credible at the moment of choice, and consequential — wrong frames cost `judicial_patience`, cost `halina_trust`, and burn one of three court-round attempts. The player who picks wrong is not punished into reload; they argue the wrong case and the chapter calibrates around it.
+This revision keeps what v2 got right (named decoys with halina_trust and judicial_patience consequences; incapacity as the punished blunder) and reshapes the synthesis surface around packet assembly.
 
-**Decoys are load-bearing.** Without decoys, "synthesis" collapses into "connect the only available dots." Raw-data-no-nudging is the model for later chapters once the player has Casebook intuition; Chapter 1 needs *scaffolded* synthesis where the right answer is reachable and the wrong answers are credible. This revision introduces four argument frames (plus an optional fifth hard-wrong) that any procedurally-literate junior in Cula's position would consider, each with at least one piece of supporting evidence the NPCs put on the table.
+## 1. The accepted target — motion-packet assembly
 
-### The four frames
+**Synthesis act.** Cula prepares a motion to set aside under KPC Art. 135-bis § 2. The motion has four required elements and a remedy ask. The synthesis surface — Crab's dialogue at first meeting, expanded across the Beat 4–10 path — is where Cula (a) establishes each element by surfacing the evidence that supports it, and (b) decides whether to bolt on weaker decoy theories.
 
-1. **Substantive defense — fight the eviction on merits.** Argue Mrs. Sikorska has met every obligation under the lease; the underlying tenancy is sound. Anchor evidence: payment receipts from Sikorska's records (six months of rent statements showing settlement) plus the 1962/1987 lease chain. *Wrong because Friday is too close to develop merits substance, and the procedural defect already wins the immediate hearing.* This frame absorbs the old "rush to file" and "merits_defence" wrong-shape from the original §3 — it is now an explicit, named, evidence-supported decoy rather than an implicit straw.
-2. **Notice-period failure — argue the eviction notice period was insufficient under the Tenancy Act.** Polish tenancy law requires specific notice intervals before an eviction action; argue the landlord undershot. Anchor evidence: the dates on the notice timeline (April 8 service, April 28 actual receipt, hearing held ex parte three weeks late). *Wrong because the defect here is locational (wrong door), not temporal — the timing math is colorable but irrelevant once the address fails.* Plausible because notice-period defenses are the standard junior move when an eviction notice arrives mis-served.
-3. **Standing / wrong party — argue the proper plaintiff is the new building owner, not the original landlord.** A property-transfer record (introduced via Whimsy's civic-records archive in §1.3) shows the building changed hands in 2018; the landlord-of-record on the eviction notice is the prior owner. *Wrong because the lease assigned forward at transfer — Sikorska's obligations and the new owner's rights run together; the prior landlord retains some claim under the assignment.* Aggressive, defensible, and the kind of theory a sharp counsel would test.
-4. **Defective service under Article 135-bis § 2 KPC — the right answer.** Service to the post-renumbering wrong door, with landlord knowledge demonstrated by the 2019 renewal countersignature. Supported by the strongest combined evidence once Cula has read both the envelope and the renewal.
+### 1.1 Four required elements
 
-**Optional fifth frame (hard-wrong) — incapacity defense.** Argue Mrs. Sikorska is elderly and therefore not competent to be served. The "evidence" is her age (visible in the client meeting; documented in her file). Wrong because Polish civil procedure does not impute incapacity from age; the test is cognitive, not chronological — and Sikorska is sharp. *Game-punished:* Halina disapproves audibly (`halina_trust -4`), Crab refuses to assist beyond the bare procedural duties (`recruited_crab` does NOT flip; the Crab side-track requires reset via a `decline_incapacity` follow-up), the judge reaction is icy silence and a sharp `judicial_patience -5`. Include this frame *unless* QA tests show it materially disrupts the soft-fail balance — its purpose is to draw the moral compass of the Pig & Swine firm explicitly. The firm's identity per AGENTS.md §Humor rules is "incompetent but morally worth saving" — incapacity-against-an-elderly-client is the line the firm does not cross, and the game's refusal to let the player cross it without consequence is part of the chapter's character work.
+The well-fitted packet covers all four. Each element is established when its supporting evidence is surfaced; flag writes are derived from existing evidence-card `sets_flag` writes plus the existing Phase 1 `_fact.*` flags in `chapter1_round_1.json`.
 
-### NPC role split — who surfaces what
+1. **Non-current address (E1).** The address used for service has been renumbered, altered, or otherwise made non-current. Supporting evidence: `envelope_address_number_seven` (notice addressed to #7), `renewal_2019_number_twelve` (renewal at #12), `renumbering_2015_fact`. Establishes `_fact.renumbering_2015_documented`.
+2. **Landlord knowledge (E2).** The defect was known to the serving party. Supporting evidence: `renewal_2019_number_twelve` (landlord countersignature at #12); bonus: `return_to_sender_slip` (October 2018 bounce-back from same misaddressing); bonus: `landlord_contact` (March personal visit to #12). Establishes `_fact.landlord_knew_address`.
+3. **Timely actual-notice motion (E3).** Filed within fourteen days of actual notice. Supporting evidence: `notice_timeline_april` (April 8 service to #7, April 28 actual receipt by Halina, today is the 5th of May → 9 days remaining). Establishes `_fact.notice_received_april_28`.
+4. **No third-party authority / cure (E4).** The resident of new #7 who accepted the envelope had no authority to receive process for Halina. Supporting evidence: Murrow's first-meeting authority fact (the third clause of Art. 135-bis); reinforced by Crab's pre-binder stairwell observation of the current resident at #7. Establishes `_fact.resident_no_authority`. (NEW evidence card may be needed: `resident_no_7_no_authority` — see §3.)
 
-The named dialogue states are rewrite targets. Existing state IDs are preserved; line content changes. Existing `on_dismiss` flag writes are preserved at semantically-equivalent triggers. The overnight cohort already landed voice-pack rewrites on these files (commit `8d6bb3b`); the decoy reshape is the next pass on the same files, layered on top of the voice work.
+Packet completeness drives the Phase 2 court reaction: 4/4 → strong; 3/4 → standard; 2/4 → narrow; ≤1/4 → bench-initiative. This maps cleanly onto the existing `primary_fact_count` victory-resolution logic in `chapter1_round_1.json` — minimal Code-pass change.
 
-**Crab — `crab.json`.** Crab surfaces evidence for frames 1 (substantive), 2 (notice-period timeline), and 4 (defective service). He does NOT surface evidence for standing — civic records are not his beat.
+### 1.2 Decoy items
 
-- `before_binder` and `before_binder_briefing`: Crab observes the envelope number, observes the building number above the stairwell, names the 2015 renumbering. He does not connect them; he does not name the Article. He mentions, in passing, that Sikorska "has paperwork — receipts, the kind you keep when you expect the landlord to forget" — surfaces the substantive-defense evidence pointer without naming the frame.
-- `first_meeting_with_binder` (the load-bearing rewrite): Crab takes the binder, reads aloud the envelope address, reads the renewal address, names the renumbering year. He explicitly notes the dates (notice April 8, actual receipt April 28) as a separate fact — this surfaces the notice-period evidence pointer. He does NOT cite Article 135-bis. The options block becomes Cula's *synthesis* choice: four argument frames Cula proposes (substantive, notice-period, standing, defective-service), only one of which is well-fitted. Crab's response is calibrated by frame fit per §4. The optional incapacity frame appears as a fifth option ONLY if Cula has met Halina (post-`halina_met`); it is procedurally-junior-mistake territory and earns the game-punished response per §4.
-- `after_binder_first_engagement` (late-binder path): same shape — synthesis-choice options, fit-calibrated responses.
-- `crab_post_pitch_response`: post-synthesis, well-fitted-frame variant. Crab produces the *labelling* — "Article 135-bis, paragraph two of the Code of Civil Procedure" — but only after Cula has named the *shape* of the argument. New sibling states `crab_post_pitch_response_substantive`, `crab_post_pitch_response_notice_period`, `crab_post_pitch_response_standing` carry the wrong-frame walk-backs per §4 voice templates.
+The player may bolt these on but should not. Each is a real-world junior mistake; each costs `judicial_patience` and (for personally insulting decoys) `halina_trust`. Decoys are NEVER auto-included — they require explicit "yes, include this fallback" decisions at named moments in the synthesis dialogue.
 
-**Murrow — `murrow.json`.** Murrow surfaces evidence for frames 2 (notice-period — tenancy-act citations), 3 (standing — lease assignment article), and 4 (defective service). He does NOT surface substantive-defense evidence because that lives with Halina and the client's records.
+- **D1 — Merits / substantive defense.** Argue Halina has paid the rent. Supporting (decoy-side) evidence: `payment_receipts_sikorska`, `lease_1962_inheritance_1987`. Wrong because the merits are not before the court at the motion stage; the procedural defect wins the hearing without them. Cost: `judicial_patience -2`, `halina_trust 0` (she trusts Cula to find the procedural angle; the merits move is not insulting). Burns a round attempt. Decision moment: Halina meeting (technical/sympathetic stance) or Murrow Beat 9 archive walk-through ("we could plead the merits as a backup — include?").
+- **D2 — Notice-period failure under the Tenancy Act.** Argue the notice window itself was short. Supporting evidence: `notice_timeline_april`, `tenancy_act_notice_window_citation`. Wrong because the locational defect ends the matter first; the timing is colorable but procedurally subordinate. Cost: `judicial_patience -2`, `halina_trust -1` (the wrong-door fact is in plain sight on the documents Halina handed Cula; reaching for timing instead reads as missing the obvious). Burns a round attempt. Decision moment: Murrow first-meeting ("the Tenancy Act fourteen-day window is colorable; do we include it?").
+- **D3 — Standing / wrong party (post-2018 ownership transfer).** Argue the prior owner has no standing. Supporting evidence: `property_transfer_2018`. Wrong because the lease assigned forward at the 2018 transfer. Cost: `judicial_patience -3`, `halina_trust -1` (she signed the lease with the prior owner and continues to deal with him; the standing theory implies she does not know who her landlord is). Burns a round attempt. Decision moment: Whimsy `before_meeting` ("I keep a folder of who-owns-what — there is a property transfer in two thousand and eighteen. Add it?").
+- **D4 — Overbroad remedy.** Ask the court for dismissal with prejudice / a permanent injunction / both. NEW in v3. Wrong because the canonical remedy in this chapter is procedural reset only (story.txt Beat 12 Round 3, "remedy discipline (load-bearing)"). Cost: `judicial_patience -2`, `halina_trust 0` (she does not parse remedy-scope arguments closely). Does NOT burn a round attempt — the remedy ask is part of Phase 2 closing, not a separate frame — but the bench reaction (`sharper_really_your_theory` template) is sharper and the win narrows by one tier. Decision moment: Whimsy `before_meeting` rhetorical-flourish offer ("for theatre we could ask for the world. Permanent injunction. Dismissal with prejudice. Or only what we need.") OR Cula's own option in the Murrow `court_readiness_check`.
+- **D5 — Incapacity by age (the punished blunder).** Argue Halina is too elderly to be served. Supporting (such as it is) evidence: `sikorska_age_visible`. Wrong because Polish civil procedure does not impute incapacity from age; the test is cognitive, not chronological — and Halina is sharp. Cost: `judicial_patience -5`, `halina_trust -4`. Crab refuses to assist the next round; recovery requires a post-court apology dialogue beat. Burns a round attempt. Decision moment: a single Cula-internal option in the Crab post-Halina-meeting state ("Halina is seventy-one. Could we plead incapacity as belt-and-braces?"). The option must be reachable so the moral choice is real; the consequences must be loud so it is not the obvious move.
 
-- `murrow_first_meeting`: the eight-line case briefing collapses to four observation-shaped lines about the file. Murrow names what is true about the *file* — dates, countersignature, docket entry, the ex parte hearing — and offers two doctrinal pointers: "The Tenancy Act sets a fourteen-day window from notice; check it" (notice-period pointer) and "When the building sold in two thousand and eighteen, the lease assigned forward; the prior owner remains a real party in interest" (standing pointer, with the implicit message that the assignment theory is *colorable* but not winning). He does NOT name the motion to set aside. The fourteen-day-from-actual-notice statute fact stays.
-- `has_binder_pre_crab`: branches on `binder_read_*` flags (see §3). Cula who has skimmed gets a different response than Cula who has read.
-- `court_readiness_check`: Murrow asks Cula to state the argument; Cula's options block produces the closing posture Phase 2 consumes. The current "Service first. Fair hearing second. Remedy last" line moves into a Cula-spoken option, not a Murrow line.
+### 1.3 Difference from v2
 
-**Whimsy — `whimsy.json`.** Whimsy surfaces evidence for frame 3 (standing — property-transfer records from Whimsy's civic-archive hobby) and frame 4 (defective service — the rights memo). He does NOT surface notice-period or substantive evidence.
+v2 made the player pick *one* frame. v3 lets the player assemble the packet that actually goes in. The hard call is no longer "what is this case about?" (which had one defensible answer) — it is "do I include this weaker theory as a fallback?" (which has several defensible answers, with different procedural costs). The D1–D3 and D5 decoys carry over from v2 unchanged in cost structure; D4 (overbroad remedy) is new in v3 and absorbs what was implicitly the "ask for everything" failure mode in `chapter1_round_1.json`'s `jq_remedy_scope` (currently silent in v2).
 
-- `before_meeting`: Cula opens with the *question* she wants help with, not the conclusion. Three Cula option-pitches map to frames 1/2/3/4 (the option set varies by which evidence Cula has surfaced before reaching Whimsy). Whimsy responds in his three established postures (procedural_throat / merits_pivot / open_register) but now with a fourth surface: he produces the property-transfer record from his civic-archive collection if Cula's pitch touches standing, and he marginalises in espresso on the rights memo regardless.
-- Whimsy's character note (already in the voice-pack rewrite at commit `8d6bb3b`): "I keep a folder of who-owns-what. Marginal pastime. Occasionally useful." This is the in-fiction justification for Whimsy as the standing-evidence source. The civic-archive record is plausibly Whimsy's because Whimsy is rhetorical-associate-by-temperament but also a literal records hobbyist.
+### 1.4 NPC role split — who surfaces what
 
-**Halina — `halina.json`.** Trust meter unchanged. The bonus-evidence enum (`wojcik_witness_statement` / `return_to_sender_slip` / `lease_1962_inheritance_1987` / `landlord_contact`) stays. **Addition:** the technical-stance carrier `lease_1962_inheritance_1987` now also points at frame 1 (substantive defense) — the long unbroken tenancy is part of the substantive case. The blunt-stance `return_to_sender_slip` strengthens frame 4 (already does). The sympathetic-stance `wojcik_witness_statement` strengthens frame 4 and weakly supports frame 1. The high-trust reveal `landlord_contact` strengthens frame 4 only. No changes to halina.json content — the points-to-frames mapping lives in `data/evidence_ch1.json`, not in the dialogue file.
+Largely inherited from v2 §1.4; what changes is the framing of the synthesis dialogue from "pick a frame" to "include this in the packet."
 
-**Halina — payment receipts.** The substantive-defense frame needs the payment receipts as supporting evidence. The receipts surface in halina.json on the *sympathetic* stance (where Halina talks about her records) and on the *technical* stance (where she produces her folder). To avoid a new chapter1 flag and a SAVE_VERSION bump, the receipts are not a separate `bonus_evidence_collected` value; they are derivable from `chapter1.client_meeting_stance != ""` (any completed meeting surfaces the existence of receipts in conversation; the technical-stance and sympathetic-stance specifically yield the actual document). The frame's `requires_flags` use this derivation.
+- **Crab — `crab.json`.** Surfaces evidence for E1 (non-current address), E2 (landlord knowledge — via the renewal countersignature), E3 (notice timeline) and E4 (resident-at-#7 lacks authority — Crab's stairwell observation is what makes E4 surfaceable before Murrow's Beat 9 walk-through). The v2 rewrite kept the canonical greeting and the gear-shift fact-stack ("That is not service. That is postal theatre."). The v3 reshape: replace the three-option pitch (currently three tonal Cula lines all writing `recruited_crab = true`) with three packet-shaping options that write per-element bools: "include E1+E2 in the packet" / "include E4 if we can get Murrow's authority point" / "include the incapacity belt-and-braces" (D5). The recruitment flag `recruited_crab` still flips on every option (preserving the existing on_dismiss writes); the per-element bools are the new payload.
+- **Murrow — `murrow.json`.** Surfaces evidence for E3 (notice timeline + Tenancy Act citation), E4 (the authority-required third-clause fact), and offers D1 and D2 as named decoy options. The eight-line case-briefing collapses to four observation lines plus two decoy-offer states: "include the merits as a backup?" (D1) and "include the Tenancy Act notice-period angle?" (D2). The fourteen-days-from-actual-notice fact stays — it is E3's primary anchor.
+- **Whimsy — `whimsy.json`.** Surfaces evidence for D3 (property transfer) and offers D3 + D4 as named decoy options. His character note "I keep a folder of who-owns-what. Marginal pastime. Occasionally useful." (from the 2026-05-16 voice-pack rewrite at commit 8d6bb3b) is the in-fiction justification for D3. D4 (overbroad remedy) is Whimsy's rhetorical-flourish offer ("for theatre we could ask for the world").
+- **Halina — `halina.json`.** Trust meter unchanged. The bonus-evidence enum (`wojcik_witness_statement` / `return_to_sender_slip` / `lease_1962_inheritance_1987` / `landlord_contact`) maps to packet elements: `wojcik_witness` reinforces E1 and E2; `return_to_sender_slip` reinforces E2; `lease_1962_inheritance_1987` reinforces D1 (it is the substantive-defense anchor); `landlord_contact` reinforces E2. No content changes to `halina.json` — the points-to-elements mapping lives in `motion_elements_ch1.json` (see §3), not in the dialogue file. The technical/sympathetic stance also surfaces `payment_receipts_sikorska` (D1's anchor) via existing dialogue.
+- **Asia — `asia_hint_states_ch1.json`.** Hint surface. v3 nudges: when the packet is missing an element, Asia's hint signposts the NPC who surfaces it ("Mr. Crab is on the stairwell again — he's been muttering about the door numbers" → E1; "Mr. Murrow flagged a paragraph in green — third clause, page facing the renewal" → E4). When the packet contains a decoy, Asia does NOT comment — the bench is the feedback channel for decoy inclusion, not Asia.
 
-**Asia — `data/dialogues/asia.json` and `asia_hint_states_ch1.json`.** Asia is a hint surface. Her hints become *signposts to investigative gaps and frame-fit nudges*. When the player has proposed a wrong frame to Crab, Asia's hint nudges toward re-reading the envelope — without naming what's wrong. Specifics in the overnight cohort's `data/dialogues/asia_hints_player_driven_2026-05-16.json` draft (still pending merge).
+## 2. Reasoning surface — where the player actually synthesises
 
-## 2. Reasoning surface — where does the player actually synthesise?
+Unchanged from v2 §2: dialogue-options as the v1 surface (load-bearing); binder UI as v2 deliverable (case-file pages mood, deferred). The packet model makes the binder UI a more obvious fit when it ships — the binder becomes a literal motion-packet draft with element slots and a "decoys" sidebar, and the player drops evidence cards into element slots. But the v1 surface still works: each element bool flips when its supporting evidence is surfaced, and decoy bools flip on explicit dialogue choices. The Crab/Murrow/Whimsy synthesis states carry the load.
 
-Three candidates evaluated.
-
-**(a) Blue binder UI as a standalone casework screen.** A pause-screen with evidence cards (what Crab observed, what Halina said, what is in the renewal), a statute panel (Article 135-bis text excerpt), and a proposed-argument frame the player assembles by combining evidence + statute. This is the casework metaphor.
-
-**(b) Court-round battle UI as the synthesis venue.** No pre-court pause-screen; synthesis happens in dialogue option-blocks and live in court, turn-by-turn. The existing dialogue-options + court-round battle controller carry the load.
-
-**(c) Both — binder for pre-court assembly, battle for delivery and counterargument defence.** Binder is the workshop; court is the performance.
-
-**Recommendation: (c) with (b) as the load-bearing surface and (a) as a v2 deliverable.**
-
-Reasoning: the existing dialogue-options mechanic is *already* a synthesis surface — option-blocks let Cula say "this is the shape I think the argument is." Halina's trust meter proves the shape works. Adding a binder UI now risks building a screen the player visits twice and never again. The dialogue-option synthesis approach gives us the player-driven mechanic at low scope, validates the design with a playable Beat 4–9 in this sprint, and earns the right to build the binder UI later as a *visualisation* of state the player has already produced through dialogue choices.
-
-The binder UI is the v2 deliverable because the assembly metaphor really does become valuable in Chapter 3 (Kacper's *areszt śledczy* visit, multiple evidence threads) and Chapter 5 (Final Hearing). Building it for Chapter 1 alone is over-investment.
-
-The court-round battle UI is the load-bearing surface. The reverted `battle_controller.gd` skeleton from commit c83feaa should be restored (per `PROPOSAL_court_rounds_schema.md`'s revert note: "When §10 is approved, restore the previous content from commit c83feaa"). §10 is now DONE per PROPOSALS.md status table; the revert was procedural, not editorial. The restoration becomes the venue where Phase 1 (witness fact-finding) and Phase 2 (closing argument) play out. Player turns in court are the Ace Attorney **Press** and **Present** primitives, mapped to legal mechanics — see §7.
-
-**Hard call I am making, for the human to override.** The binder pause-screen mood is unspecified — index cards vs case-file pages vs Ace-Attorney evidence panel. My default for the v2 binder is *case-file pages* (annotated paper, marginalia in Murrow's handwriting, paper-clipped exhibits): it matches the office register (period-frozen 1990s/2000s) and the existing pickup_line for the procedural binder ("Murrow has flagged Article 135-bis in three colors"). If the human prefers the index-cards or AA-evidence-panel direction, name it before v2 starts. The Phase 1 work in this proposal does not depend on this choice.
+The court-round battle UI is still the load-bearing surface for Phase 2. The reverted `battle_controller.gd` skeleton was restored by Agent 1 at commit 603f65e (per v2's Open Question 2, since mooted). Integration of the packet model with Phase 2 is the next pass.
 
 ## 3. Data model
 
-The original §3 introduced `evidence_ch1.json` and `argument_frames_ch1.json` and committed the v17 flag set. Those landed in commit `bc45550` and the registry catch-up at `2f7a81b`. **This revision extends both files** with `points_to_frames` weighted mappings on the evidence side, and `strength_rating` / `judge_reaction_template` / `source_npc` on the frame side. The schema extensions are additive — no SAVE_VERSION bump is required because the wire format for `chapter1.proposed_frame` does not change (it remains a string field; the enum value set expands per the directive, which is permitted without a wire-format bump). Existing field semantics are preserved.
+### 3.1 Replace `argument_frames_ch1.json` with `motion_elements_ch1.json`
 
-**Evidence card schema (revised).** `data/evidence_ch1.json` entries gain a `points_to_frames` field. Schema:
-
-```jsonc
-{
-  "version": 2,
-  "evidence": {
-    "envelope_address_number_seven": {
-      "_status": "Code-pass complete; Design text pending.",
-      "source": "binder_page_1",
-      "source_npc": "crab",
-      "discovered_when": "chapter1.has_law_binder == true",
-      "sets_flag": "chapter1.binder_read_envelope",
-      "argument_tags": ["service_of_process"],
-      "context_tags": ["service_failure", "documentary"],
-      "points_to_frames": {
-        "defective_service_135bis": 0.9,
-        "notice_period_failure":    0.2
-      },
-      "display_name": "",
-      "summary": "",
-      "press_lines": [],
-      "present_lines": []
-    }
-    /* ... */
-  }
-}
-```
-
-The `points_to_frames` dictionary maps frame_id → support weight in `[0.0, 1.0]`. Multiple frames can be supported by one evidence card; the weights need NOT sum to 1.0 (an envelope strongly supports defective service AND weakly hints at timing). The `source_npc` field names which NPC surfaces this evidence in conversation — used by the binder UI v2 to attribute marginalia and by Asia's hint surface to nudge the player toward the right NPC.
-
-**New evidence pieces to add tonight:**
-
-| evidence_id | source_npc | discovered_when | sets_flag | points_to_frames |
-|---|---|---|---|---|
-| `payment_receipts_sikorska` | halina | `chapter1.client_meeting_stance != ""` | `chapter1.surfaced_payment_receipts` *(NEW — see flags below)* | `substantive_defense: 0.85, defective_service_135bis: 0.1` |
-| `notice_timeline_april` | crab | `chapter1.met_crab == true && chapter1.has_law_binder == true` | `chapter1.surfaced_notice_timeline` *(NEW)* | `notice_period_failure: 0.9, defective_service_135bis: 0.2` |
-| `property_transfer_2018` | whimsy | `chapter1.met_whimsy == true` | `chapter1.surfaced_property_transfer` *(NEW)* | `standing_wrong_party: 0.9, defective_service_135bis: 0.1` |
-| `sikorska_age_visible` | none (Cula's observation in client meeting) | `chapter1.halina_met == true` | `chapter1.surfaced_sikorska_age` *(NEW)* | `incapacity_defense: 1.0` |
-| `tenancy_act_notice_window_citation` | murrow | `chapter1.met_murrow == true && chapter1.has_law_binder == true` | `chapter1.surfaced_tenancy_act_window` *(NEW)* | `notice_period_failure: 0.7` |
-
-The five new `surfaced_*` flags are bools, default `false`. They join the existing seven v17 flags as a SECOND wave of additions — but they do NOT require a SAVE_VERSION bump because the wire format of `chapter1` (a dictionary) accepts new boolean keys forward-compatibly; the migration only needs to add them at the v17→v18 step (when one is next required) or via the `Dictionary.has()` guards in dialogue triggers. The recommended path is **defer their addition to a SAVE_VERSION bump combined with the next genuine wire-change** — typically when Chapter 2 schema additions arrive. In the meantime, drafts and dialogue files reference these flags via `Dictionary.get(flag, false)` semantics already supported by `DialogueRunner._evaluate_trigger` (missing paths warn and fail the trigger; declare them in `State.reset_state()` and the migration before referencing in committed dialogue). **If the next implementation pass needs these flags live, a v17→v18 migration adds them as default-false; the wire format is unchanged.** Document the deferral in the runtime files when authored.
-
-**Argument frame schema (revised).** `data/argument_frames_ch1.json` entries gain `strength_rating`, `judge_reaction_template`, and `source_npc_primary`. Schema:
+The v2 `argument_frames_ch1.json` is structurally a frames-as-mutually-exclusive-choices file; v3 needs elements-and-decoys-as-independent-bools. Cleanest is a rename + schema replacement. Code's call — alternative is to keep the filename and bump to schema version 3.
 
 ```jsonc
 {
-  "version": 2,
-  "frames": {
-    "defective_service_135bis": {
-      "display_name": "Service to the wrong address",
-      "summary": "",
-      "supporting_evidence": ["envelope_address_number_seven", "renewal_2019_number_twelve", "renumbering_2015_fact"],
-      "statute_anchor": "KPC Article 135-bis § 2",
+  "version": 3,
+  "elements": {
+    "non_current_address": {
+      "type": "required",
+      "rule_clause": "KPC Art. 135-bis § 2, first clause",
+      "supporting_evidence_any_of": ["envelope_address_number_seven", "renewal_2019_number_twelve", "renumbering_2015_fact"],
+      "supporting_evidence_strongest": ["envelope_address_number_seven", "renewal_2019_number_twelve"],
       "source_npc_primary": "crab",
-      "strength_rating": 5,           /* 0..5, 5 = strongest evidence chain when fully surfaced */
-      "well_fitted": true,
-      "court_round_unlock": "round_1_open",
-      "requires_flags": [
-        "chapter1.binder_read_envelope",
-        "chapter1.binder_read_renewal"
-      ],
-      "judge_reaction_template": "approving_set_aside",
-      "judicial_patience_delta_on_select": 0,
-      "halina_trust_delta_on_select": 0,
-      "burns_round_attempt": false
+      "establishes_fact_flag": "_fact.renumbering_2015_documented",
+      "auto_include_when_supporting_surfaced": true,
+      "display_name": "",
+      "summary": ""
     },
-    "substantive_defense": {
-      "display_name": "Argue the merits — Sikorska has paid the rent",
-      "supporting_evidence": ["payment_receipts_sikorska", "lease_1962_inheritance_1987"],
-      "statute_anchor": "Civil Code, lease obligations (out of place at the motion stage)",
-      "source_npc_primary": "halina",
-      "strength_rating": 3,
-      "well_fitted": false,
-      "court_round_unlock": "round_2_open",
-      "requires_flags": ["chapter1.surfaced_payment_receipts"],
-      "judge_reaction_template": "tolerant_try_again",
-      "judicial_patience_delta_on_select": -2,
-      "halina_trust_delta_on_select": 0,
-      "burns_round_attempt": true,
-      "wrong_shape_correction": "The merits are not before the court at this stage. Service is the door."
+    "landlord_knowledge": {
+      "type": "required",
+      "rule_clause": "KPC Art. 135-bis § 2, first clause (knowledge requirement)",
+      "supporting_evidence_any_of": ["renewal_2019_number_twelve", "return_to_sender_slip", "landlord_contact"],
+      "source_npc_primary": "crab",
+      "establishes_fact_flag": "_fact.landlord_knew_address",
+      "auto_include_when_supporting_surfaced": true,
+      "display_name": "",
+      "summary": ""
     },
-    "notice_period_failure": {
-      "display_name": "Notice period failure under the Tenancy Act",
-      "supporting_evidence": ["notice_timeline_april", "tenancy_act_notice_window_citation"],
-      "statute_anchor": "Tenancy Act § notice windows",
+    "timely_actual_notice_motion": {
+      "type": "required",
+      "rule_clause": "KPC Art. 135-bis § 2, second clause (14-day window from actual notice)",
+      "supporting_evidence_any_of": ["notice_timeline_april"],
       "source_npc_primary": "murrow",
-      "strength_rating": 3,
-      "well_fitted": false,
-      "court_round_unlock": "round_1_open",
-      "requires_flags": ["chapter1.surfaced_notice_timeline"],
-      "judge_reaction_template": "cool_dismissal",
-      "judicial_patience_delta_on_select": -2,
-      "halina_trust_delta_on_select": -1,
+      "establishes_fact_flag": "_fact.notice_received_april_28",
+      "auto_include_when_supporting_surfaced": true,
+      "display_name": "",
+      "summary": ""
+    },
+    "no_third_party_cure": {
+      "type": "required",
+      "rule_clause": "KPC Art. 135-bis § 2, third clause",
+      "supporting_evidence_any_of": ["resident_no_7_no_authority", "murrow_authority_fact"],
+      "source_npc_primary": "murrow",
+      "establishes_fact_flag": "_fact.resident_no_authority",
+      "auto_include_when_supporting_surfaced": true,
+      "display_name": "",
+      "summary": ""
+    }
+  },
+  "decoys": {
+    "merits": {
+      "type": "decoy",
+      "supporting_evidence_any_of": ["payment_receipts_sikorska", "lease_1962_inheritance_1987"],
+      "source_npc_primary": "halina",
+      "include_decision_state": "murrow.json:archive_walkthrough_decoy_merits",
+      "judicial_patience_delta_on_include": -2,
+      "halina_trust_delta_on_include": 0,
       "burns_round_attempt": true,
-      "wrong_shape_correction": "The timing is colorable. The locational defect ends the matter first."
+      "judge_reaction_template": "tolerant_try_again",
+      "display_name": "", "wrong_shape_correction": "", "present_cue": ""
+    },
+    "notice_period": {
+      "type": "decoy",
+      "supporting_evidence_any_of": ["notice_timeline_april", "tenancy_act_notice_window_citation"],
+      "source_npc_primary": "murrow",
+      "include_decision_state": "murrow.json:first_meeting_decoy_notice_period",
+      "judicial_patience_delta_on_include": -2,
+      "halina_trust_delta_on_include": -1,
+      "burns_round_attempt": true,
+      "judge_reaction_template": "cool_dismissal"
     },
     "standing_wrong_party": {
-      "display_name": "Standing — wrong plaintiff (post-2018 ownership transfer)",
-      "supporting_evidence": ["property_transfer_2018"],
-      "statute_anchor": "Civil Code, assignment of obligations on transfer",
+      "type": "decoy",
+      "supporting_evidence_any_of": ["property_transfer_2018"],
       "source_npc_primary": "whimsy",
-      "strength_rating": 2,
-      "well_fitted": false,
-      "court_round_unlock": "round_1_open",
-      "requires_flags": ["chapter1.surfaced_property_transfer"],
-      "judge_reaction_template": "sharper_really_your_theory",
-      "judicial_patience_delta_on_select": -3,
-      "halina_trust_delta_on_select": -1,
+      "include_decision_state": "whimsy.json:before_meeting_decoy_standing",
+      "judicial_patience_delta_on_include": -3,
+      "halina_trust_delta_on_include": -1,
       "burns_round_attempt": true,
-      "wrong_shape_correction": "The lease assigned forward at transfer. The prior owner remains a real party."
+      "judge_reaction_template": "sharper_really_your_theory"
     },
-    "incapacity_defense": {
-      "display_name": "Incapacity — Mrs. Sikorska elderly",
-      "supporting_evidence": ["sikorska_age_visible"],
-      "statute_anchor": "Civil Code, capacity (chronological age does not impute incapacity)",
+    "overbroad_remedy": {
+      "type": "decoy",
+      "supporting_evidence_any_of": [],
+      "source_npc_primary": "whimsy",
+      "include_decision_state": "whimsy.json:before_meeting_decoy_overbroad_remedy",
+      "judicial_patience_delta_on_include": -2,
+      "halina_trust_delta_on_include": 0,
+      "burns_round_attempt": false,
+      "narrows_win_by_one_tier": true,
+      "judge_reaction_template": "sharper_really_your_theory"
+    },
+    "incapacity": {
+      "type": "decoy_punished",
+      "supporting_evidence_any_of": ["sikorska_age_visible"],
       "source_npc_primary": "none",
-      "strength_rating": 0,
-      "well_fitted": false,
-      "court_round_unlock": "round_1_open",
-      "requires_flags": ["chapter1.halina_met"],
-      "judge_reaction_template": "icy_silence",
-      "judicial_patience_delta_on_select": -5,
-      "halina_trust_delta_on_select": -4,
+      "include_decision_state": "crab.json:post_halina_decoy_incapacity",
+      "judicial_patience_delta_on_include": -5,
+      "halina_trust_delta_on_include": -4,
       "burns_round_attempt": true,
-      "wrong_shape_correction": "Age does not impute incapacity. Mrs. Sikorska is competent. The argument insults her.",
-      "in_fiction_consequence": "Crab refuses to assist (`recruited_crab` unflipped if not yet); Halina visibly disapproves."
+      "in_fiction_consequence": "Crab refuses to assist the next round (recruited_crab is reset until a post-court Cula→Halina apology dialogue beat); Halina audibly disapproves in court ('I am quite competent, Dr. Cula'); the court reporter pauses typing.",
+      "judge_reaction_template": "icy_silence"
     }
   }
 }
 ```
 
-The auxiliary frames from the original §3 (`third_party_non_cure`, `fair_hearing_article_6`, `merits_defence`) are absorbed:
+### 3.2 New flags introduced by this revision
 
-- `third_party_non_cure` → moves out of the `frames{}` block and becomes a Phase 2 *sub-citation* under `defective_service_135bis`. The fact that the resident at no. 7 doesn't cure service is an argument within the defective-service case, not a separate frame.
-- `fair_hearing_article_6` → same — becomes a Phase 2 sub-citation available when the rights memo is collected. Within defective-service.
-- `merits_defence` → renamed to `substantive_defense` and reshaped as a real decoy with payment-receipts evidence rather than a straw "merits at the wrong stage."
+Per-element bools (4) and per-decoy bools (5), all default `false`:
 
-**State-flag inventory under this revision:**
+- `chapter1.element_non_current_address`
+- `chapter1.element_landlord_knowledge`
+- `chapter1.element_timely_actual_notice_motion`
+- `chapter1.element_no_third_party_cure`
+- `chapter1.decoy_merits`
+- `chapter1.decoy_notice_period`
+- `chapter1.decoy_standing_wrong_party`
+- `chapter1.decoy_overbroad_remedy`
+- `chapter1.decoy_incapacity`
 
-Existing v17 flags (committed at `bc45550`, unchanged): `binder_read_envelope`, `binder_read_renewal`, `binder_read_renumbering`, `proposed_frame` (enum expands per below), `whimsy_co_counsel_posture`, `judicial_patience`, `witness_cooperation`.
+Element bools are auto-set when the corresponding `supporting_evidence_any_of` is surfaced (the dialogue runner already emits `chapter1_flag_changed` on every flag write; a small `motion_packet.gd` system listening on that signal updates element bools from surfaced evidence — alternatively, dialogue `on_dismiss` blocks write the element bool directly alongside the evidence flag). Decoy bools are written by explicit `on_dismiss` blocks on the named include-decision states.
 
-The `chapter1.proposed_frame` enum expands from the original `{"" | "defective_service_135bis" | "third_party_non_cure" | "fair_hearing_article_6" | "merits_defence"}` to **`{"" | "defective_service_135bis" | "substantive_defense" | "notice_period_failure" | "standing_wrong_party" | "incapacity_defense"}`**. This is an enum value change, not a wire-format change. The dialogue editor enum validator (Agent 8's work at commit `81f82ae`) reads enum values from `chapter1.json.new_state_flags._enum`; the registry update lands in this revision's data-expansion commit. No SAVE_VERSION bump.
+The v2 `chapter1.proposed_frame` enum field is **retired** under v3 — there is no single frame to commit to. A v17→v18 save migration removes `proposed_frame` and adds the nine new bools. The five v2 `surfaced_*` flags from `evidence_ch1.json` v2 (`surfaced_payment_receipts`, `surfaced_notice_timeline`, `surfaced_property_transfer`, `surfaced_sikorska_age`, `surfaced_tenancy_act_window`) are also declared in the same v17→v18 migration — they were deferred in v2 and now have a natural reason to land. Total: SAVE_VERSION 17 → 18, removes 1 string, adds 14 bools, all defaulting `false` / `""`.
 
-New flags introduced by this revision (5 booleans, defer to v17→v18 migration when next required): `surfaced_payment_receipts`, `surfaced_notice_timeline`, `surfaced_property_transfer`, `surfaced_sikorska_age`, `surfaced_tenancy_act_window`. All default `false`. The migration is *not landed by this proposal* — it lands the *next time* a wire change requires a SAVE_VERSION bump. Until then, dialogue triggers can reference these via missing-key-fails-trigger semantics; runtime code that needs to read them must use `Dictionary.get(flag, false)`. The decoy dialogue drafts (committed alongside this proposal revision) author the trigger predicates *as if* the flags exist; they will resolve once declared.
+### 3.3 `evidence_ch1.json` extensions
 
-### Evidence-to-frame mapping rules — under/over-investigation behavior
+The v2 `evidence_ch1.json` `points_to_frames` field is **retired** under v3 — there are no frames to point to. Replace with `supports_element` (string element_id from `motion_elements_ch1.json:elements`) and `supports_decoy` (string decoy_id from `motion_elements_ch1.json:decoys`). One card may support multiple, but the semantics shift: surfacing the card establishes the supported element (auto-include); supporting a decoy means the decoy's include-decision option becomes selectable, not that the decoy is auto-included.
 
-The directive: "Under-investigation should leave multiple frames at ~60% supported. Over-investigation should make the right answer visible without forcing it."
+One new evidence card needed: **`resident_no_7_no_authority`** — Crab's stairwell observation that the current occupant of #7 is a young man unrelated to Halina and clearly not her authorised agent. Surfaceable via Crab `before_binder` (the gear-shift line "The building above us reads number twelve" already lands; one extra line about the occupant slots in). `sets_flag: chapter1.surfaced_resident_no_authority` (new bool, declared in the v17→v18 migration with the other `surfaced_*` set). `supports_element: no_third_party_cure`.
 
-The implementation: each frame has a `strength_rating` (0..5) and a `requires_flags` set. The synthesis UI (Crab's options block in v1; the binder UI in v2) computes per frame:
+### 3.4 `chapter1_round_1.json` — minimal changes
 
-- `frame_visible = all(requires_flags resolve to true)` — gate on whether the frame appears as an option at all
-- `frame_support = sum(card.points_to_frames[frame_id] for each surfaced card)` — running total
-- `frame_support_normalised = min(frame_support / frame.strength_rating, 1.0)` — 0..100% scale
+The Phase 1 `_fact.*` flags map 1:1 onto the four required elements. Phase 1 stays as authored. **Phase 2 frame_gates rewrite**: replace the `defective_service_135bis` / `third_party_non_cure` / `fair_hearing_article_6` / `merits_defence` gate set with packet-based gating:
 
-Under-investigation: a player who has read only the envelope reaches Crab with `defective_service_135bis` at ~18% (0.9 / 5), `notice_period_failure` not visible (`surfaced_notice_timeline` not set), `substantive_defense` not visible. The only frame visible is at 18% — Cula doesn't have enough to argue anything yet. The dialogue should signpost the player to keep investigating.
+```jsonc
+"phase_2_closing": {
+  "packet_gates": {
+    "_doc": "Phase 2 reads chapter1.element_* bools to determine which citations are available, and reads chapter1.decoy_* bools to apply patience/trust deltas + sharpen the bench's counter-questions. The available_counter_questions set is now derived from element coverage, not from a single frame_id.",
+    "element_to_counter_questions": {
+      "no_third_party_cure": ["jq_third_party_cure"],
+      "timely_actual_notice_motion": ["jq_article_6_civil"],
+      "any_three_or_more": ["jq_remedy_scope"]
+    },
+    "decoy_to_counter_questions": {
+      "merits": ["jq_merits_premature"],
+      "notice_period": ["jq_notice_period_subordinate"],
+      "standing_wrong_party": ["jq_standing_assignment"],
+      "overbroad_remedy": ["jq_remedy_scope"],
+      "incapacity": ["jq_capacity_chronological"]
+    },
+    "judicial_patience_starts_at": 5,
+    "judicial_patience_decoy_decrements": "applied at packet submission, before first counter-question"
+  },
+  "victory_resolution": {
+    "_doc": "Existing logic largely preserved; primary_fact_count is the count of element_* bools set to true (4/3/2/≤1 bucket).",
+    "branches": [
+      {"id": "strong_victory_with_costs", "when": "element_count == 4 && no_decoys_included && judicial_patience >= 4", "outcome": "procedural_reset_with_costs"},
+      {"id": "strong_victory", "when": "element_count == 4 && (decoy_count == 0 || (decoy_count == 1 && only_decoy_is_overbroad_remedy)) && judicial_patience >= 3", "outcome": "procedural_reset_full"},
+      {"id": "standard_victory", "when": "element_count >= 3 && judicial_patience >= 2 && !decoy_incapacity", "outcome": "procedural_reset_full"},
+      {"id": "narrow_victory", "when": "element_count >= 2 && judicial_patience >= 1", "outcome": "procedural_reset_narrow"},
+      {"id": "bench_initiative", "when": "element_count <= 1 || decoy_incapacity_with_no_apology", "outcome": "procedural_reset_bench_initiative"},
+      {"id": "after_apology", "when": "decoy_incapacity && post_court_apology_completed", "outcome": "procedural_reset_after_apology"}
+    ]
+  }
+}
+```
 
-Mid-investigation: a player who has read envelope + renewal + met Halina (sympathetic) sees `defective_service_135bis` at ~(0.9 + 0.85 + 0.1*sympathetic_evidence)/5 ≈ ~38%, `substantive_defense` at ~(0.85 + 0.5*lease)/3 ≈ ~45% (the receipts and the lease both point at substantive). Both at ~40-50% — the player has a real choice with credible alternatives.
+The two new counter-questions referenced (`jq_notice_period_subordinate`, `jq_standing_assignment`, `jq_capacity_chronological`) are Code-pass additions to the existing `judge_counter_questions` array. Text is Design-pass.
 
-Over-investigation: a player who has read envelope + renewal + renumbering + bonus evidence + met every NPC sees `defective_service_135bis` at 100% with strong support, the decoys at 60-80%. The right answer is *visible* without being *forced* — the wrong answers remain selectable, but the right answer's strength makes it the procedurally-obvious choice.
-
-### Judge reaction templates
-
-The `judge_reaction_template` field on each frame names a key into a new file `data/judge_reactions_ch1.json` (or into `data/court_rounds/chapter1_round_1.json` as a sub-block — Agent 2's existing court-round file structure makes the latter natural). Each template carries:
-
-- The judge's spoken response when the frame opens Phase 2.
-- The judicial-patience trajectory across the round (e.g., `tolerant_try_again` lets the player recover; `icy_silence` does not).
-- The Halina-observation lines (sometimes Halina audibly reacts — for incapacity, audibly disapproves).
-- The Crab/Whimsy reactions in court (Crab refuses to support incapacity; Whimsy reframes notice-period as "a defensible second-chair theory").
-
-Author the templates as part of Agent 2's `chapter1_round_1.json` Phase 2 block or as a separate file at Code's discretion. This revision specifies the names: `approving_set_aside`, `tolerant_try_again`, `cool_dismissal`, `sharper_really_your_theory`, `icy_silence`.
-
-**Tag-taxonomy compatibility.** No new tags required — the existing `data/tag_taxonomy.json` covers Chapter 1 entirely. The new evidence/frame files use currently-declared article/principle/context tags.
+**Tag-taxonomy compatibility.** No new tags required.
 
 ## 4. Failure modes
 
-The original §4 settled on soft-fail (wrong frame survives, costs `judicial_patience`, narrows remedy). This revision keeps the design and adds two new cost dimensions per the directive: **wrong frames also cost `halina_trust` and burn one of three court-round attempts**. The Chapter 1 court has three rounds (Round 1 — Defective Service; Round 2 — Fair Hearing; Round 3 — Remedy, per the existing `argument_opponents.json` structure). A burnt round is an attempt the player has spent on a wrong frame; the player gets the remaining rounds to recover. Recovery is procedurally possible on the right frame *if* `judicial_patience` and `halina_trust` are not exhausted. Three burnt rounds in a row is the worst case and still produces a narrow procedural-reset victory — the proposal §9 commitment that Halina wins on procedural reset is preserved.
+The v2 §4 design — soft-fail, no reloads, wrong choices survive — is preserved. The cost model is re-expressed against the packet:
 
-### Per-frame consequence matrix
+| Action | judicial_patience delta | halina_trust delta | Burns round attempt | Notes |
+|---|---|---|---|---|
+| Missing element from packet (per missing element, max 3) | -1 each | 0 | no | The bench notices and asks counsel about it during Phase 2; patience erodes by the question, not by the missing fact alone |
+| Include D1 (merits) | -2 | 0 | yes | Halina silent — she trusts the procedural angle |
+| Include D2 (notice-period) | -2 | -1 | yes | Halina mildly disappointed — wrong-door fact is on the documents she handed Cula |
+| Include D3 (standing) | -3 | -1 | yes | Halina disappointed — implies Cula thinks she doesn't know her landlord |
+| Include D4 (overbroad remedy) | -2 | 0 | no | Narrows the win by one tier; bench reaction sharpens |
+| Include D5 (incapacity) | -5 | -4 | yes | Crab refuses to assist next round; recovery via post-court apology |
 
-| Frame | well_fitted | judicial_patience delta on select | halina_trust delta on select | Burns round attempt | Judge reaction template |
-|---|---|---|---|---|---|
-| `defective_service_135bis` | true | 0 | 0 | no | `approving_set_aside` |
-| `substantive_defense` | false | -2 | 0 | yes | `tolerant_try_again` |
-| `notice_period_failure` | false | -2 | -1 | yes | `cool_dismissal` |
-| `standing_wrong_party` | false | -3 | -1 | yes | `sharper_really_your_theory` |
-| `incapacity_defense` | false | -5 | -4 | yes | `icy_silence` |
+**Judge reaction templates** retained from v2: `approving_set_aside`, `tolerant_try_again`, `cool_dismissal`, `sharper_really_your_theory`, `icy_silence`. The templates fire at Phase 2 open per the strongest decoy present (no decoys → `approving_set_aside`; D5 trumps everything → `icy_silence`). The `judicial_patience` trajectory across the round is unchanged from v2 §4.
 
-The deltas apply at the moment Cula commits to a frame in the Crab synthesis dialogue (when `proposed_frame` is written), NOT in court. The court-round controller reads the committed frame and applies the deltas plus the in-court round-by-round consequences. This separation is deliberate — the synthesis choice is the moment the player pays the cost; court is the moment the consequence plays out.
+**Recovery dynamics.** Round 1 is packet submission. Rounds 2 and 3 (the existing chapter1 court structure) become defence rounds: the bench's counter-questions per element/decoy play out as Press/Present exchanges (per PROPOSALS.md §10 Phase 1/Phase 2). The player who realises mid-court that a decoy is sinking the case may withdraw it ("strike that, Your Honour") at a cost of `judicial_patience -1` per withdrawn decoy. Withdrawing does not refund halina_trust.
 
-### Judge reaction templates — the feedback channel
+**Worst case.** Incapacity included → procedural_reset_bench_initiative + Crab withdrawal. The bench reaches for defective service itself because the procedural error is on the face of the documents; Halina wins on a narrow procedural reset, but Cula did not make the argument and Halina pays the fee with cooled regard. Apology dialogue is available post-court; once completed, `chapter1.court_outcome` becomes `procedural_reset_after_apology` and the Ch4 corridor-sighting scene gets the third recolor variant noted in v2 §4.
 
-The judge's reaction is the player's primary signal for "you've picked the wrong frame." Five templates, named per §3:
-
-- **`approving_set_aside`** — for the well-fitted defective-service frame. The judge accepts the procedural argument as stated and proceeds to consider the remedy. Lines are dry, professional, no rhetorical lift. The bench finds for Cula but does NOT congratulate.
-- **`tolerant_try_again`** — for substantive defense. The judge notes that the merits aren't before the court at the motion stage, asks counsel whether there's a procedural defect she'd like to argue instead. This is the most generous wrong-frame reaction; the player can pivot in the next round to defective-service and recover most of the lost ground. Halina is silent (`halina_trust_delta = 0`); she trusts Cula to find the procedural angle.
-- **`cool_dismissal`** — for notice-period failure. The judge notes the timing arithmetic, observes that the address itself was wrong, and asks counsel whether she'd care to address that first. Cooler than `tolerant_try_again` because the judge has noticed the locational defect and is now wondering why counsel didn't see it. Halina mildly disappointed (`-1`); she expected the procedural angle because the wrong-door fact is in plain sight on the documents.
-- **`sharper_really_your_theory`** — for standing/wrong-party. The judge raises an eyebrow at the assignment theory, observes that the lease runs with the property, and asks counsel whether the procedural angle has been considered. Sharper because standing is an aggressive theory that asks the court to do real work; getting it wrong reads as either inexperience or grandstanding. Halina disappointed (`-1`).
-- **`icy_silence`** — for incapacity defense. The judge says nothing for a beat too long, then asks counsel to confirm the theory. When confirmed, the judge moves immediately to the procedural defect without dignifying the incapacity argument with engagement. The court reporter pauses typing. Halina says "I am quite competent, Dr. Cula" audibly enough for the bench to hear (`halina_trust_delta = -4`). Crab refuses to argue the next round; recovery requires Cula to apologise to Halina (a new dialogue beat in the post-court scene). This is the game-punished hard-wrong.
-
-The judge reaction is **shown not told**: the templates produce dialogue lines and `judicial_patience` decrements; the player infers fit from the contrast between reactions. The dialogue surface of court is where this lands — the controller emits the judge's reaction lines after the player's frame opens Phase 2, before the opponent's counter-move.
-
-### Recovery dynamics
-
-The directive specifies: "Picking wrong costs `judicial_patience`, `halina_trust`, and burns one court-round attempt." Three rounds, one burn per wrong frame, so up to three wrong choices before the player is at zero rounds.
-
-Each round, the player can pivot: in Phase 1 (witness fact-finding), Press and Present actions can surface additional evidence that points at a different frame. The synthesis options are NOT a one-shot at the start of court — they re-open between rounds. The player who commits to substantive defense in Round 1 can pivot to defective-service in Round 2 if Phase 1 Press/Present in Round 1 surfaced the envelope+renewal evidence chain. The pivot itself costs `judicial_patience -1` (the bench notes the change of theory) but does not burn another round attempt — pivot is recovery, not a new commitment.
-
-If `judicial_patience` drops to 0, Phase 2 closing argument is constrained: the player gets one citation slot per round instead of three, and the bench delivers a curt narrow-procedural-reset judgment regardless of frame fit. If `halina_trust` drops to 0 or below, the post-court scene branches — Halina pays the fee but does not refer the firm to other clients (Chapter 2 onboarding shifts). If three rounds are burnt without finding the right frame, the chapter ends on `procedural_reset_narrow` (the bench reaches for the defective-service finding itself because the procedural error is on the face of the documents; Cula gets the win but the bench made the argument).
-
-The chapter `court_outcome` enum gains values to reflect this:
-
-- `procedural_reset_full` — Cula committed to defective-service Round 1, `judicial_patience >= 4`, `halina_trust` unchanged. The strong-victory case.
-- `procedural_reset_with_costs` — Cula committed to defective-service Round 1, `judicial_patience >= 4`, bonus evidence collected (any of the four). Costs assessed against landlord; firm gets an additional 1,000 PLN in costs.
-- `procedural_reset_narrow` — Cula pivoted to defective-service mid-court, OR `judicial_patience < 4`. Win, but narrow.
-- `procedural_reset_bench_initiative` — Cula never reached defective-service; bench made the argument itself. Win, but Cula didn't make it. Affects Chapter 4 corridor-sighting subtext.
-- `procedural_reset_after_apology` — Cula picked incapacity, recovered via post-court apology. Win, but the firm's standing with Halina is bruised; affects Chapter 4 differently.
-
-### Why this design avoids the failure modes already rejected
-
-- **Not loud-fail-and-retry:** every wrong frame survives. Reload is never necessary.
-- **Soft-fail-with-judicial-skepticism remains the spine:** but with *real* decoys, the skepticism is targeted (different reactions per wrong frame) rather than generic.
-- **Not branch-and-live-with-it:** Halina still wins on procedural reset. The chapter outcome calibrates; it does not fork into a "Halina is evicted" tail.
-
-The Ch4 corridor-sighting beat per PROPOSALS.md §11 has additional grain now. "The procedural reset was real. The harm continued anyway" lands differently when the player remembers having argued the wrong frame in Round 1 — the procedural reset was real *despite* Cula, not because of her.
+The chapter never forks into "Halina is evicted." This is the v1/v2/v3 invariant per PROPOSALS.md §9 and story.txt Beat 12 ("remedy discipline (load-bearing)").
 
 ## 5. Role split per godot/AGENTS.md
 
 | Sub-work | Owner | Notes |
 |---|---|---|
-| `state.gd` additions (the 7 new keys above) | Code | Single writer; per `.antigravity/skills/code.md` |
-| `save.gd` v16→v17 migration | Code | Plus `tests/test_save_migration_v16_v17.gd` |
-| `signals.gd` — new signal `evidence_card_read(card_id)` if needed by binder UI v2 | Code | Defer if Phase 0 ships without binder UI |
-| `scripts/systems/battle/*` restoration from commit c83feaa | Code | `git show c83feaa -- godot/scripts/systems/battle/` and re-apply, then iterate |
-| `data/evidence_ch1.json` — structural shape (schema, ids, flags) | Code | Mechanical fields |
-| `data/evidence_ch1.json` — display text, press_lines | Design | Per item, Taste Standard pass |
-| `data/argument_frames_ch1.json` — schema, ids, supporting_evidence lists, well_fitted flags | Code | Mechanical fields |
-| `data/argument_frames_ch1.json` — display_name, wrong_shape_correction text | Design | Per frame, Taste Standard pass |
-| `data/court_rounds/chapter1_round_*.json` — Phase 1 witness statements + press/present option trees | Design (text) + Code (state-machine fields) | Per §10's authoring shape |
-| `data/dialogues/crab.json` rewrites (states `before_binder`, `before_binder_briefing`, `first_meeting_with_binder`, `after_binder_first_engagement`, `crab_post_pitch_response`) | Design | Preserve existing on_dismiss flag writes; pass Taste Standard 5/5; comply with `AGENTS.md` §Address forms |
-| `data/dialogues/murrow.json` rewrites (states `murrow_first_meeting`, `has_binder_pre_crab`, `court_readiness_check`) | Design | Same constraints |
-| `data/dialogues/whimsy.json` rewrites (state `before_meeting`) | Design | Same constraints |
-| `data/dialogues/asia_hint_states_ch1.json` — new hint states keyed off the new binder-read flags | Design | Hint signposts to investigative gaps |
-| Binder UI scene (v2) — `scenes/ui/blue_binder.tscn`, `scripts/ui/blue_binder.gd` | Code (structure) + Design (page text/marginalia) + Art (paper texture, handwriting font, exhibit images) | Deferred to v2 sprint |
-| Phase 1 / Phase 2 controller integration | Code | Per §10; lives in `scripts/systems/battle/battle_controller.gd` |
-| Test suite extensions | QA | `tests/test_save_migration_v16_v17.gd`, `tests/test_argument_frame_synthesis.gd`, `tests/test_chapter1_phase_b.gd` updates |
+| `state.gd` additions (9 new chapter1 bools + 5 deferred v2 `surfaced_*` bools) | Code | Single writer |
+| `save.gd` v17→v18 migration: remove `proposed_frame`, add 14 bools | Code | Plus `tests/test_save_migration_v17_v18.gd` |
+| Rename `argument_frames_ch1.json` → `motion_elements_ch1.json` (or v3 schema in-place) | Code | Mechanical fields |
+| `motion_elements_ch1.json` — display_name, summary, wrong_shape_correction, present_cue text | Design | Per element/decoy, Taste Standard pass |
+| `evidence_ch1.json` schema bump: replace `points_to_frames` with `supports_element` + `supports_decoy` | Code | Mechanical fields |
+| New evidence card `resident_no_7_no_authority` (Code-pass shape, Design text) | Code + Design | One new entry |
+| `data/court_rounds/chapter1_round_1.json` Phase 2 packet_gates rewrite | Code | Replaces v2 frame_gates block |
+| Phase 2 counter-question additions (`jq_notice_period_subordinate`, `jq_standing_assignment`, `jq_capacity_chronological`) | Code (shape) + Design (text) | |
+| `data/dialogues/crab.json` rewrite: replace 3-tonal-option block with 3 packet-shaping options (per-element bools as `write_path`); add `post_halina_decoy_incapacity` state | Design | Preserve existing `on_dismiss` flag writes; address forms per AGENTS.md |
+| `data/dialogues/murrow.json` rewrite: 4 observation lines + `first_meeting_decoy_notice_period` + `archive_walkthrough_decoy_merits` decision states | Design | |
+| `data/dialogues/whimsy.json` rewrite: `before_meeting_decoy_standing` + `before_meeting_decoy_overbroad_remedy` decision states | Design | |
+| `data/dialogues/asia_hint_states_ch1.json` — element-missing hint signposts | Design | |
+| Optional `scripts/systems/motion_packet.gd` listener (auto-set element bools from surfaced evidence) | Code | If the per-state `on_dismiss` element writes prove brittle |
+| Binder UI scene (v2 deliverable, unchanged from v2 §5) | Code + Design + Art | Deferred |
+| Phase 1 / Phase 2 controller integration | Code | Per PROPOSALS.md §10 |
+| Test suite: `tests/test_save_migration_v17_v18.gd`, `tests/test_motion_packet_assembly.gd`, `tests/test_chapter1_phase_b.gd` updates | QA | |
 | `SPRINT_LOG.md` entries | All | Per-role on completion |
 
-Handoffs needed:
-
-1. Code authors the SAVE_VERSION 17 migration and the new state-keys before Design rewrites the dialogues, so Design can reference the new flags by name in triggers.
-2. Code authors the schema for `evidence_ch1.json` and `argument_frames_ch1.json` (empty or stub entries) before Design fills in the text fields, per the two-pass authoring discipline already used for `judgments.json` and `argument_opponents.json`.
-3. Code restores the battle controller from commit c83feaa before Design authors any Phase 1 or Phase 2 content, so Design knows the surface they are writing for.
-4. Design rewrites the three NPC dialogue files only after Code's flag writes are in place.
-
-The natural Phase 2 execution order is: Code state/save/schema → Code battle restoration → Design dialogue rewrites → Design court_rounds authoring → QA tests. Each is a separable commit.
+Handoff order: Code state/save/schema → Code rename/replace of `argument_frames_ch1.json` and `evidence_ch1.json` schema → Code Phase 2 packet_gates → Design dialogue rewrites → Design court_rounds text → QA tests.
 
 ## 6. Migration cost — honest scope
 
-Realistic estimate: **two to three sprint sessions** for a coherent Phase 0 + Phase 1 first cut. Single sprint is feasible if the binder UI is genuinely deferred and Phase 1 ships with text-only press/present dialogue rather than a custom court UI. Phase 2 (closing argument) can ship in the same sprint as Phase 1 because both phases reuse the dialogue-options mechanic.
+**Two to three sprint sessions** for a coherent Phase 0 + Phase 1 cut, same as v2's estimate. The v2 → v3 reshape is not free, but most of it is rename + reshape rather than net-new authoring:
 
-Recyclable from current Sikorska content:
+- Evidence cards: 13 entries authored in v2 carry forward unchanged; one new card (`resident_no_7_no_authority`).
+- Element/decoy entries in `motion_elements_ch1.json`: 9 total (4 + 5); the four elements absorb v2's `defective_service_135bis` content; the five decoys absorb v2's four decoy frames + add D4.
+- Dialogue rewrites: same three files as v2 (`crab.json`, `murrow.json`, `whimsy.json`). The Crab v2 rewrite already preserves the canonical greeting and gear-shift fact-stack; v3 only changes the options block payload (per-element bools instead of tonal-recruitment). The Murrow and Whimsy v2 rewrites need decoy-offer states appended; existing first-meeting content stays. Net dialogue word-count change: ≈ flat to slightly negative.
+- Save migration: v17 → v18, one schema bump, removes 1 string field and adds 14 bools, all defaulting safe.
+- Court rounds: `chapter1_round_1.json` Phase 1 stays; Phase 2 frame_gates block is the rewrite (≈ 50 lines).
 
-- All four bonus-evidence definitions in `data/items.json` (already shaped right — `argument_tags`, `context_tags`, `required_for_rounds`).
-- `data/judgments.json` `procedural_reset_ch1` — the four principle moves and tag sets are unchanged; only the gating predicate changes from "won three rounds" to "well-fitted frame + adequate judicial patience."
-- `data/argument_opponents.json` `landlord_counsel_ch1` — the three rounds, six moves, opening statements, and effectiveness tags are all reusable. The opponent's Phase 1 / Phase 2 split is additive; existing rounds become Phase 2 closing-argument rounds and Phase 1 fact-finding rounds get authored fresh.
-- `data/dialogues/halina.json` — the load-bearing rewrite reference. No changes required.
-- `tag_taxonomy.json` — unchanged.
-- `effectiveness.gd` — unchanged; the resolver and bucket math work as-is for the new flow.
+Recyclable: tag taxonomy, effectiveness.gd, halina.json, items.json bonus-evidence definitions, all v2 evidence cards.
 
-Rewriting required:
+If scope tightens, the minimum viable v3 ships:
+- Code state/save/migration
+- `motion_elements_ch1.json` Code-pass complete
+- `evidence_ch1.json` schema bump
+- The crab.json options-block reshape (the one load-bearing dialogue change)
+- Phase 2 packet_gates rewrite
 
-- Five state bodies in `crab.json` (specifics in §1).
-- Three state bodies in `murrow.json`.
-- One state body in `whimsy.json`.
-- Several hint states in `asia_hint_states_ch1.json`.
+That cut produces a meaningfully different chapter: the player establishes elements through evidence surfacing, the court evaluates packet completeness. The decoy decision states for Murrow and Whimsy can land in a follow-up sprint without breaking the spine — without them, the player simply cannot include those decoys, which is a strictly more conservative chapter shape.
 
-Net dialogue word-count change is roughly *flat* — Crab's current first-meeting state is dense; the rewrite redistributes the same content across an observation phase + a synthesis phase. The hard part is voice discipline. Each NPC has a voice agent in `narrative_revision/voice_agents/` and a constraints file in `narrative_revision/ai_voice_constraints.md` — the Phase 2 dialogue work must consult both, per the established Design workflow.
+## 7. Pokémon vs Ace Attorney — what motion-packet actually steals
 
-If Phase 2 ships only dialogue + state/save without restoring the battle controller, that is also a coherent stopping point. The dialogue rewrites alone produce a meaningfully different chapter — the player synthesises through dialogue choices and the eventual court round consumes the flags later. This is the *minimum viable Phase 2* if scope tightens.
+v2 §7 argued AA's PRESENT mechanic mapped onto frame-selection. With v3 it maps even more naturally — onto **dropping evidence into element slots** in the packet.
 
-## 7. Pokémon Yellow vs Ace Attorney — what we should actually steal
+- **Pokémon Yellow** — chassis unchanged. Turn-based selection from a fixed move set, type-effectiveness math. Still the Casebook backbone.
+- **Ace Attorney — surface 1 (packet assembly).** Each required element is an open slot. Surfacing the supporting evidence card is structurally identical to AA's PRESENT — the player is offering a piece of evidence against a specific procedural question ("does the rule's first clause apply here?") and the game checks fit. The fit check is binary (the card supports the element or it does not). Multiple cards can satisfy one element; the strongest combination yields the cleanest Phase 2 trajectory. The decoy decision states are AA PRESENT's polarity-flipped sibling: the player is offered a card and asked whether to deploy it as a theory; the game checks whether deploying it is procedurally wise.
+- **Ace Attorney — surface 2 (Phase 1 fact-finding).** Press costs `witness_cooperation` and elicits sub-statements; Present aims an evidence card at a specific statement and the resolver checks fit. Unchanged from v2.
+- **Ace Attorney — surface 3 (Phase 2 counter-questions).** The bench's counter-questions are AA's cross-examination polarity reversed: the bench presses Cula; Cula's citation moves are her PRESENT responses.
+- **Trust-meter calibration** — unchanged. Halina's trust reads in two places (her own meeting at Beat 8; the decoy-include moments). The trust meter is the through-line for Cula's professional relationship with the client.
 
-The original §7 concluded "Pokémon contributes the chassis; AA contributes the soul; the trust-meter contributes the consequence model." The decoy revision sharpens the AA contribution: with credible decoys, **AA's PRESENT-against-statement mechanic maps cleanly onto the frame-selection moment itself**, not just onto court-round moves.
+The deeper change: v2 treated PRESENT as a single moment (pick a frame). v3 treats PRESENT as a sustained activity across Beat 4–10 (assemble the packet, card by card and decision by decision). That maps better onto how AA actually feels in play — the player is constantly looking at evidence and asking "where does this go?" The v3 packet model gives the player that question to ask, throughout the chapter, not just once.
 
-**Pokémon Yellow** is still the chassis: menu-driven turn-based selection from a fixed move set, type-effectiveness math. The Casebook still uses this — `principle_moves[]`, `effectiveness.gd`, five buckets. Unchanged from the original analysis.
-
-**Ace Attorney is now load-bearing on TWO surfaces**, not one:
-
-1. **Synthesis as PRESENT (Phase 0 — pre-court).** Cula presents a frame as her theory of the case. The frame is a *claim*; the supporting evidence is the *exhibit*. The judge (and Crab, in the synthesis dialogue) reacts to the (frame, supporting-evidence) tuple. A frame with strong evidence support reads convincingly; a frame with thin support reads as a stretch. This is structurally identical to AA's *court Present* — the player is offering a piece of legal argumentation against the case's central question, and the game checks whether the offering fits. The difference from AA is that Cula's frame is opposing-counsel-shaped (positive argument for her client) rather than contradiction-shaped (negative argument against a witness statement). The mechanic is the same; the polarity differs.
-
-2. **Press / Present as court turns (Phase 1 — fact-finding, Phase 2 — closing).** As in the original §7. Press costs `witness_cooperation` and elicits witness sub-statements; Present aims an evidence card at a specific statement and the resolver checks fit.
-
-The first surface is what the original §7 missed. The original §7 treated synthesis as "the player picks a move from a menu" — Pokémon. With decoys, the player is **PRESENTING a theory** (which frame the case is about) and the **judge/Crab is the listener** who evaluates the offering. That's AA all the way down. Each decoy frame is a credible alternative theory the player could plausibly present; the wrong-frame consequences are AA's "penalty" mechanic ported to legal stakes (judicial_patience instead of HP, halina_trust instead of player score, burnt round attempt instead of "Wrong! Try again").
-
-**Synthesis the revised proposal commits to:**
-
-- Pokémon-shaped *turn structure and effectiveness math* — unchanged.
-- Ace-Attorney-shaped *frame-selection PRESENT* — new in this revision. The synthesis options are presenting-a-theory; the judge/Crab response is the listener's evaluation. The decoy frames are the credible alternative theories. Picking wrong costs `judicial_patience`, `halina_trust`, and burns a round attempt — AA's penalty mechanic adapted to legal stakes.
-- Ace-Attorney-shaped *court PRESS and PRESENT* — unchanged from original analysis.
-- Halina-trust-meter-shaped *consequence calibration* — extended. Trust meter now reads in two places: Halina's own meeting at Beat 8 (existing) AND the court synthesis moment via the `halina_trust_delta_on_select` per frame (new). The trust meter becomes the through-line for the player's professional relationship with the client across Beats 8–12.
-
-This is a *deeper* fusion than the original. Pokémon contributes the chassis. AA now contributes the soul on two surfaces — frame-selection and court turns. The trust-meter contributes the calibration model across both surfaces.
-
-**Why decoys make AA the better fit.** AA's appeal is that wrong PRESENTs are reachable and have proportional consequences. The original Chapter 1 had no decoys, so PRESENT collapsed to "pick the one option that exists" — the AA influence was decorative. With four credible frames and one hard-wrong, PRESENT is a real choice with real consequences. The AA mechanic finally has something to do.
+**Why v3 makes AA the right reference, not just a flattering one.** AA's appeal is that the evidence has a place to go and the player figures out where. v2 had evidence cards but only one decision moment for them. v3 has evidence cards and four element slots plus five decoy slots — every card has somewhere it could land, and the player works out the landing.
 
 ## 8. Open questions for the human
 
-Original three plus three new ones surfaced by the decoy revision.
-
-1. **Binder UI mood (case-file pages vs index cards vs AA evidence panel).** Default: case-file pages with paper texture and Murrow marginalia. The binder UI v0 prototype landed at commit `b790554` (overnight cohort) and reads `data/evidence_ch1.json` — when the new evidence cards land tonight, the v0 binder shows them as additional pages. Decision still needed before v1 sprint.
-2. **Should Phase 2 ship before the battle controller is restored?** Mooted — Agent 1 restored the battle controller at commit `603f65e`. The dialogue work and controller work are both landed; the integration pass is what remains.
-3. **Are the v17 state-keys acceptable as-shipped?** Mooted — committed at `bc45550`. The revision proposes 5 new boolean flags (the `surfaced_*` set in §3); decision needed on whether to land them with a v17→v18 migration now or defer until the next genuine wire change.
-4. **(NEW) Incapacity-defense frame: include or omit?** Default: include. The hard-wrong is the firm's moral compass made visible. Omit only if QA testing shows it disrupts the soft-fail balance — e.g., if the post-court apology beat doesn't have authoring bandwidth this sprint. The frame is independently revertable (one entry in `argument_frames_ch1.json`, one evidence pointer, no other system depends on it).
-5. **(NEW) Should the `proposed_frame` enum value rename `merits_defence` → `substantive_defense` cleanly, or carry both for migration safety?** Default: rename. The original `merits_defence` was a straw-shape decoy; the revised `substantive_defense` is the real one. Save files with `chapter1.proposed_frame == "merits_defence"` are unlikely to exist in the wild (the field shipped only at `bc45550` four days ago and most playtesters have flagged-default `""`). The dialogue-editor enum validator (Agent 8's commit `81f82ae`) reads from `chapter1.json` registry — update the registry, the editor catches the change. If extreme migration safety is wanted, a one-line v17→v18 migration step rewrites `"merits_defence"` → `"substantive_defense"` and bumps SAVE_VERSION to 18.
-6. **(NEW) Three burnt-round attempts vs unlimited pivoting?** Default: three burnt is the maximum cost; pivots cost `-1 judicial_patience` but don't burn. The directive specifies "burns one court-round attempt" — this revision implements that as a per-frame `burns_round_attempt` boolean that the controller reads. The bench-initiative `procedural_reset_bench_initiative` outcome is the failure floor — a guaranteed win on every playthrough but not a satisfying one. Confirm or override.
+1. **(NEW) `motion_elements_ch1.json` filename vs in-place schema v3.** Default: rename. Cleaner intent; the file is no longer about frames.
+2. **(NEW) Auto-include element bools via `motion_packet.gd` listener, or via per-state `on_dismiss` writes?** Default: `on_dismiss` writes. Less infrastructure; the listener becomes a v2-binder concern.
+3. **(NEW) Element 4 (no third-party cure) evidence: ship the new `resident_no_7_no_authority` card, or fold the authority fact into the existing `renumbering_2015_fact` card's `points_to_frames`-equivalent?** Default: new card. The authority fact is a distinct observation and deserves its own surfacing moment (Crab's gear-shift extension line).
+4. **(NEW) Should Halina's bonus-evidence enum gain `payment_receipts_sikorska` as a fifth canonical value, or stay derived from `client_meeting_stance != ""`?** Default: stay derived. v2 §3 noted this avoids a chapter1-enum expansion; v3 inherits the same reasoning.
+5. **(Carried from v2) Binder UI mood.** Default: case-file pages. Decision still needed before v2 binder sprint.
+6. **(Carried from v2) Incapacity decoy: include or omit?** Default: include. The hard-wrong is the firm's moral compass made visible.
+7. **(NEW) Should D4 (overbroad remedy) be reachable via a Cula self-prompt (no NPC asks), or only via Whimsy's rhetorical-flourish offer?** Default: only via Whimsy. Limits the surface and keeps Whimsy's role-as-temptation distinct.
 
 ## 9. What this proposal explicitly does *not* do
 
-- Does not alter the Casebook tag taxonomy.
-- Does not introduce new Polish legal doctrine.
-- Does not touch the Halina trust meter, the postcard chain, or the coffee minigame.
-- Does not deliver the binder UI in v1 (deferred to v2).
-- Does not extend the procedural-reset judgment's tag set or principle-move set.
-- Does not change the chapter outcome — Halina still wins on procedural reset, the firm still gets the 5,000 PLN fee, the corridor sighting in Ch4 still happens. The win is *narrower or wider* based on play; it is not turned into a loss.
+Same list as v2 §9. No Casebook tag taxonomy changes. No new Polish legal doctrine. No changes to the Halina trust meter mechanics, the postcard chain, the coffee minigame. No binder UI in v1 (deferred to v2). No new principle moves on `procedural_reset_ch1`. No chapter-outcome change — Halina still wins on procedural reset; the firm still gets the 5,000 PLN fee; the corridor sighting in Ch4 still happens. Win is wider or narrower based on packet completeness and decoy inclusion; never converted to a loss.
 
-## 10. Acceptance criteria for the Phase 2 first cut (decoy revision)
+## 10. Acceptance criteria for the v3 first cut
 
-The decoy implementation is "first cut acceptable" when:
+"First cut acceptable" when:
 
-- All four core headless commands pass (smoke, runner, save migration, Web export).
-- The four credible frames (`defective_service_135bis`, `substantive_defense`, `notice_period_failure`, `standing_wrong_party`) and the optional fifth (`incapacity_defense`) appear as authored entries in `data/argument_frames_ch1.json` with full Code-pass fields populated.
-- The five new evidence cards (`payment_receipts_sikorska`, `notice_timeline_april`, `property_transfer_2018`, `sikorska_age_visible`, `tenancy_act_notice_window_citation`) appear in `data/evidence_ch1.json` with Code-pass fields populated; `points_to_frames` weighted mappings present on every evidence entry; `source_npc` populated.
-- The three decoy dialogue drafts (`data/dialogues/_drafts/crab_decoys_2026-05-16.json`, `murrow_decoys_2026-05-16.json`, `whimsy_decoys_2026-05-16.json`) demonstrate the multi-frame-surface reshape with state IDs preserved, `on_dismiss` flag writes preserved, and the synthesis option-blocks expanded to 4 (or 5) frame choices.
-- A player walking the Beat 4 → Beat 9 path can reach the binder, the Crab synthesis dialogue with all credible frame options visible, the recruitment beat regardless of frame choice, the Halina meeting, the archive research, and the court-ready state — without dead-ending on any frame including incapacity.
-- Wrong-frame paths are reachable and survivable per §4 consequence matrix: a player who picks `substantive_defense` reaches a playable end-of-chapter state with `chapter1.court_outcome ∈ {procedural_reset_narrow, procedural_reset_bench_initiative}` after pivot or bench-initiative recovery.
-- The dialogue editor enum validator (Agent 8's commit `81f82ae`) accepts the new `proposed_frame` enum values from `chapter1.json` registry without manual override.
+- All four core headless commands pass (smoke, runner, save migration v17→v18, Web export).
+- `motion_elements_ch1.json` (or v3 in-place) contains the four required elements and the five decoys with full Code-pass fields populated.
+- `evidence_ch1.json` v3 schema applied: `points_to_frames` removed; `supports_element` / `supports_decoy` populated on every entry; the new `resident_no_7_no_authority` card present.
+- The v17→v18 save migration removes `chapter1.proposed_frame` and adds the 14 new bools (9 packet flags + 5 deferred `surfaced_*` from v2); migration test passes; reset_state declares all 14.
+- `chapter1_round_1.json` Phase 2 `packet_gates` block replaces `frame_gates`; victory_resolution reads element_count and decoy_count; the three new counter-questions present with Code-pass fields.
+- The three rewritten dialogue files (`crab.json`, `murrow.json`, `whimsy.json`) carry the per-element / per-decoy decision option-blocks; existing on_dismiss writes preserved; address forms per AGENTS.md.
+- A player walking Beat 4 → Beat 9 can: meet Crab, pick up the binder, surface all four required elements through dialogue + evidence, optionally accept or reject each decoy, meet Halina, complete archive research, reach court-ready.
+- A wrong-decoy path is reachable and survivable per §4 consequence matrix.
+- A player picking incapacity reaches a playable end-of-chapter state with `court_outcome ∈ {procedural_reset_bench_initiative, procedural_reset_after_apology}`.
+- The dialogue editor enum validator (Agent 8's commit 81f82ae) accepts the removal of `proposed_frame` from `chapter1.json` registry without manual override.
+
+## 11. SPEC_SYNC — root-spec changes the human should later apply
+
+These are creative-canon edits to the five root `.txt` files that v3 implies but does not perform per AGENTS.md "Forbidden patterns" (only the human edits the root specs). Listed for the human to apply in a future spec pass; the runtime will be authored against these targets and will be SLIGHTLY ahead of the specs until they catch up.
+
+1. **`story.txt` Beat 4 — renumbering target.** Current text: *"Halina's flat went from #7 to #5; the eviction notice was served to the current #7 (a different renter)."* Target: *"Halina's flat went from #7 to #12; the eviction notice was served to the current #7 (a different renter)."* Reason: runtime data (`evidence_ch1.json`: `renewal_2019_number_twelve`) and the v2 Crab rewrite (`crab.json` `before_binder`: "The building above us reads number twelve") have already committed to #12. Standardising on #7 → #12 per the v3 directive.
+2. **`story.txt` Beat 9 — Article 135-bis narration.** The Murrow narration block references "#7 → #5" — update to "#7 → #12" wherever the renumbering target is named.
+3. **`story.txt` Beat 12 — Court Round 1 framing.** Current text frames Round 1 as "Defective service" with required evidence listed flat. Target: reframe as "Motion-packet submission" with the four required elements named (non-current address; landlord knowledge; timely actual-notice motion; no third-party authority/cure) and the decoy roster acknowledged ("counsel may bolt on weaker theories — merits, notice-period under the Tenancy Act, standing/wrong-party, overbroad remedy ask, or — punished — incapacity by age"). Preserve "remedy discipline (load-bearing)" verbatim; the procedural-reset-only rule is unchanged.
+4. **`story.txt` Beat 12 — court_outcome enum extension.** The current Beat 12 names `won_court` and `court_won_procedural_reset` as flags. v3 adds `procedural_reset_with_costs`, `procedural_reset_narrow`, `procedural_reset_bench_initiative`, `procedural_reset_after_apology` as values of `court_outcome`. Document these in the Beat 12 result block so the spec and runtime agree on the outcome vocabulary.
+5. **`battle_mechanics.txt` — Phase 1 / Phase 2 split.** If not already documented (PROPOSALS.md §10 was marked DONE but the spec-side text reportedly never landed), add the two-phase round structure: Phase 1 = witness fact-finding with Press/Present; Phase 2 = closing argument with citation moves against bench counter-questions. v3 makes Phase 2 of Round 1 specifically packet submission; document if not already present.
+6. **`style_canon.txt` — register note for "packet" vs "frame".** Add a brief register note: Chapter 1 dialogue should prefer "motion", "the packet", "the four elements" over "theory", "frame", "argument shape" when characters discuss the work. The frame language was v2; the packet language is v3. (Optional; useful for keeping voice-pack drafters aligned.)
+
+These are spec changes only — no behaviour depends on the spec catching up before runtime work proceeds; per AGENTS.md the runtime is authored against the proposal and the spec follows.
 
 ---
 
-**Human, before next implementation pass.** Six open questions in §8 above. Defaults if unchanged: include incapacity frame; rename `merits_defence` → `substantive_defense` cleanly without migration step (or with a one-line v17→v18 if extreme safety is wanted); three burnt-round attempts as the cost ceiling; defer the 5 `surfaced_*` flag declarations to the next genuine SAVE_VERSION bump unless implementation needs them sooner.
+**Human, before next implementation pass.** Seven open questions in §8. Defaults: rename to `motion_elements_ch1.json`; per-state `on_dismiss` element writes (no listener); ship the new `resident_no_7_no_authority` card; keep payment receipts derived from `client_meeting_stance`; case-file binder mood; include incapacity; D4 reachable only via Whimsy. Six SPEC_SYNC items in §11 for a future spec pass; runtime authors against the v3 targets in the meantime.

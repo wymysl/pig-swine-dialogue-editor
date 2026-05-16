@@ -2,7 +2,7 @@ extends Node
 ## State autoload — single writer. Owns all persistent game state and save/load.
 ## Migration required for every shape change (see AGENTS.md §Save migration policy).
 
-const SAVE_VERSION: int = 17
+const SAVE_VERSION: int = 19
 
 const TILE_SIZE := 64
 const CHAR_HEIGHT := 64
@@ -82,23 +82,16 @@ func _ready() -> void:
 ##          the eventual court round. Two §10 resource counters
 ##          (judicial_patience, witness_cooperation) are pre-declared so
 ##          dialogue/court systems can read/write them cleanly once the
-##          battle controller is restored. See proposal §3 for full rationale.
-## Decoy revision (2026-05-16, no SAVE_VERSION bump): the proposed_frame enum
-##          value set changes from {defective_service_135bis, third_party_non_cure,
-##          fair_hearing_article_6, merits_defence} to {defective_service_135bis,
-##          substantive_defense, notice_period_failure, standing_wrong_party,
-##          incapacity_defense}. Wire format unchanged (still a string field with
-##          default ""); enum value change tracked in chapter1.json registry and
-##          argument_frames_ch1.json schema v2. Five new boolean flags
-##          (surfaced_payment_receipts, surfaced_notice_timeline,
-##          surfaced_property_transfer, surfaced_sikorska_age,
-##          surfaced_tenancy_act_window) are referenced by dialogue triggers in
-##          data/dialogues/_drafts/*_decoys_2026-05-16.json drafts but NOT yet
-##          declared here — they fail-trigger via missing-key semantics until
-##          declared. Declaration deferred to the next genuine wire change
-##          (likely v17→v18 for Chapter 2 additions). When declared, follow the
-##          v15→v16 / v16→v17 pattern: append to reset_state() chapter1 block,
-##          add migration step in save.gd, bump SAVE_VERSION, add test.
+##          battle controller is restored.
+## Motion-packet foundation (SAVE_VERSION 18): explicit chapter1 booleans for
+##          surfaced evidence (the deferred surfaced_* set plus
+##          surfaced_resident_no_authority) and packet-slot selection
+##          (element_* and decoy_*). This keeps packet assembly, frame/blunder
+##          proposal, and court readiness state explicit in save data.
+## Packet assembly persistence (SAVE_VERSION 19): four explicit evidence-slot
+##          strings + one requested-remedy string for the in-game motion packet
+##          UI. This keeps the player's assembled packet visible and stable
+##          across save/load before court.
 func reset_state() -> Dictionary:
 	return {
 		## room_transition.gd: which scene is currently loaded.
@@ -123,6 +116,9 @@ func reset_state() -> Dictionary:
 			"coffee_brew_grade": "",
 			"court_ready": false,
 			"entered_court": false,
+			## Court packet result enum: strong / standard / narrow /
+			## blunder-recovered. The procedural reset remains the Chapter 1
+			## floor; this string records quality, not pass/fail progression.
 			"court_outcome": "",
 			"met_asia": false,
 			"met_asia_via_behind": false,
@@ -182,12 +178,39 @@ func reset_state() -> Dictionary:
 			"binder_read_envelope": false,
 			"binder_read_renewal": false,
 			"binder_read_renumbering": false,
-			## proposed_frame — string enum. The argument frame Cula committed
-			## to in the Crab synthesis dialogue. Consumed by the court-round
-			## controller at Phase 2 start. Enum values declared in
-			## data/argument_frames_ch1.json: "" / "defective_service_135bis"
-			## / "third_party_non_cure" / "fair_hearing_article_6" /
-			## "merits_defence". Owner: crab.json synthesis options block.
+			## Explicit surfaced-evidence booleans (SAVE_VERSION 18).
+			"surfaced_payment_receipts": false,
+			"surfaced_notice_timeline": false,
+			"surfaced_tenancy_act_window": false,
+			"surfaced_property_transfer": false,
+			"surfaced_sikorska_age": false,
+			"surfaced_resident_no_authority": false,
+			## Motion-packet selected slots (SAVE_VERSION 18).
+			"element_non_current_address": false,
+			"element_landlord_knowledge": false,
+			"element_timely_actual_notice_motion": false,
+			"element_no_third_party_cure": false,
+			## Explicit selected evidence ids for each required packet slot
+			## (SAVE_VERSION 19). Empty string means unassigned.
+			"packet_slot_address_non_current": "",
+			"packet_slot_landlord_knowledge": "",
+			"packet_slot_actual_notice_window": "",
+			"packet_slot_no_third_party_authority": "",
+			## Requested remedy selected in the packet UI. Canonical values:
+			## procedural_reset / merits_dismissal / tenancy_ruling /
+			## dismissal_with_prejudice.
+			"packet_requested_remedy": "procedural_reset",
+			"decoy_merits": false,
+			"decoy_notice_period": false,
+			"decoy_standing_wrong_party": false,
+			"decoy_overbroad_remedy": false,
+			"decoy_incapacity": false,
+			## proposed_frame — string enum. Shared frame/blunder selector set
+			## by synthesis dialogue. Consumed by court-round orchestration.
+			## Enum values declared in data/argument_frames_ch1.json:
+			## "" / "defective_service_135bis" / "substantive_defense" /
+			## "notice_period_failure" / "standing_wrong_party" /
+			## "overbroad_remedy" / "incapacity_defense".
 			"proposed_frame": "",
 			## whimsy_co_counsel_posture — string enum. The rhetorical posture
 			## Whimsy adopted when recruited. Affects Phase 2 closing-argument

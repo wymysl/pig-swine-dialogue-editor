@@ -75,8 +75,48 @@
     }
   }
 
+  // Scan all trigger clauses in the file and return a {path: defaultValue} map
+  // so reset() can pre-seed the shadow. Type is inferred from each clause's op
+  // and value: >= / <= or numeric literal → 0; bool literal or truthy/falsy → false;
+  // plain string literal → ''. Numeric type wins over bool if the same path
+  // appears in both kinds of clause. Paths already reserved by the simulator
+  // itself (dialogue_states_seen) are excluded.
+  function extractTriggerFlags(states) {
+    if (!Array.isArray(states) || typeof parseTrigger !== 'function') return {};
+    const typeMap = {}; // path → 'bool' | 'num' | 'str'
+    for (const s of states) {
+      if (!s || !s.trigger) continue;
+      let clauses;
+      try { clauses = parseTrigger(s.trigger); } catch (_) { continue; }
+      for (const c of (clauses || [])) {
+        if (!c || !c.path || c.path === 'dialogue_states_seen') continue;
+        let t = 'bool';
+        if (c.op === '>=' || c.op === '<=' || typeof c.value === 'number') t = 'num';
+        else if (typeof c.value === 'boolean' || c.op === 'truthy' || c.op === 'falsy') t = 'bool';
+        else if (typeof c.value === 'string' && c.value !== 'true' && c.value !== 'false') t = 'str';
+        const prev = typeMap[c.path];
+        // num wins over bool wins over str
+        if (!prev || (prev === 'bool' && t === 'num') || (prev === 'str' && t !== 'str')) {
+          typeMap[c.path] = t;
+        }
+      }
+    }
+    const out = {};
+    for (const [path, t] of Object.entries(typeMap)) {
+      out[path] = t === 'num' ? 0 : t === 'str' ? '' : false;
+    }
+    return out;
+  }
+
   function reset() {
     State.shadow = { dialogue_states_seen: [] };
+    // Pre-seed every flag path referenced in any trigger so the Flags panel
+    // is populated on open and all flags are immediately interactive.
+    const json = (files[currentFile] && files[currentFile].json) || {};
+    const seed = extractTriggerFlags(json.states || []);
+    for (const [path, val] of Object.entries(seed)) {
+      setShadowPath(State.shadow, path, val);
+    }
     State.path = [];
     State.activeState = null;
     State.activeChoices = null;
@@ -718,8 +758,76 @@
       <div class="sim-obs-section">
         <div class="sim-obs-h">Flags</div>
         <div class="sim-flags">${flagsHtml || '<div class="sim-flags-empty">—</div>'}</div>
+        <form class="sim-flag-inject" title="inject a flag into shadow state (e.g. chapter1.met_pig=true)">
+          <input class="sim-flag-inject-input" placeholder="path=value" spellcheck="false" autocomplete="off">
+          <button type="submit" class="sim-btn sim-flag-inject-btn">Set</button>
+        </form>
       </div>
     `;
+    // Wire bool-flag click-to-toggle
+    State.observerPane.querySelectorAll('.sim-flag-bool[data-flag-path]').forEach(el => {
+      el.addEventListener('click', () => {
+        const path = el.dataset.flagPath;
+        const cur = resolveShadowPath(State.shadow, path);
+        setShadowPath(State.shadow, path, !cur);
+        if (!State.activeState) advance(); else render();
+      });
+    });
+    // Wire non-bool flag click-to-edit (inline input)
+    State.observerPane.querySelectorAll('.sim-flag-editable[data-flag-path]').forEach(el => {
+      el.addEventListener('click', (e) => {
+        if (el.querySelector('input')) return; // already editing
+        const path = el.dataset.flagPath;
+        const type = el.dataset.flagType || 'str';
+        const valEl = el.querySelector('.sim-flag-val');
+        const cur = resolveShadowPath(State.shadow, path);
+        const input = document.createElement('input');
+        input.className = 'sim-flag-inline-input';
+        input.value = (cur == null ? '' : String(cur));
+        input.type = type === 'num' ? 'number' : 'text';
+        valEl.replaceWith(input);
+        input.focus();
+        input.select();
+        const commit = () => {
+          let v = input.value.trim();
+          let parsed;
+          if (type === 'num') parsed = parseInt(v, 10) || 0;
+          else if (v === 'true') parsed = true;
+          else if (v === 'false') parsed = false;
+          else parsed = v;
+          setShadowPath(State.shadow, path, parsed);
+          if (!State.activeState) advance(); else render();
+        };
+        const revert = () => render();
+        input.addEventListener('keydown', (e) => {
+          if (e.key === 'Enter') { e.preventDefault(); commit(); }
+          if (e.key === 'Escape') { e.preventDefault(); revert(); }
+        });
+        input.addEventListener('blur', commit);
+        e.stopPropagation();
+      });
+    });
+    // Wire flag-inject form
+    const injectForm = State.observerPane.querySelector('.sim-flag-inject');
+    if (injectForm) {
+      const injectInput = injectForm.querySelector('.sim-flag-inject-input');
+      injectForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const raw = (injectInput.value || '').trim();
+        const eq = raw.indexOf('=');
+        if (eq < 1) return;
+        const path = raw.slice(0, eq).trim();
+        const valStr = raw.slice(eq + 1).trim();
+        let value;
+        if (valStr === 'true') value = true;
+        else if (valStr === 'false') value = false;
+        else if (/^-?\d+$/.test(valStr)) value = parseInt(valStr, 10);
+        else value = valStr;
+        setShadowPath(State.shadow, path, value);
+        injectInput.value = '';
+        if (!State.activeState) advance(); else render();
+      });
+    }
   }
 
   // Best-effort trust path lookup: the first options block with a trust_path
@@ -744,7 +852,12 @@
       if (val && typeof val === 'object' && !Array.isArray(val)) {
         rows.push(renderFlagsHtml(val, path));
       } else {
-        rows.push(`<div class="sim-flag"><code>${escapeHtml(path)}</code><b>${escapeHtml(formatVal(val))}</b></div>`);
+        const isBool = typeof val === 'boolean';
+        const isNum = typeof val === 'number';
+        const cls = isBool ? 'sim-flag sim-flag-bool' : 'sim-flag sim-flag-editable';
+        const pathAttr = ` data-flag-path="${escapeHtml(path)}"`;
+        const typeAttr = isBool ? ' data-flag-type="bool"' : (isNum ? ' data-flag-type="num"' : ' data-flag-type="str"');
+        rows.push(`<div class="${cls}"${pathAttr}${typeAttr}><code>${escapeHtml(path)}</code><b class="sim-flag-val">${escapeHtml(formatVal(val))}</b></div>`);
       }
     }
     return rows.join('');

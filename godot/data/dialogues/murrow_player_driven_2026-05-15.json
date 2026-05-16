@@ -1,0 +1,106 @@
+{
+  "version": 3,
+  "npc_id": "murrow",
+  "_status": "DRAFT — review artifact, not loaded by dialogue_runner. Per PROPOSAL_player_driven_argument.md §1 (Murrow subsection), reshapes murrow_first_meeting from an eight-line conclusion-naming briefing into a three-observation briefing that hands the synthesis to Cula. The fourteen-day window line stays (a KPC fact, not a case-specific conclusion). The 'motion to set aside' line moves to a later state, gated on Cula having proposed the defective-service frame. The friend/Mister-Murrow exchange and the meeting-room handoff to Halina are preserved.\n\nMerge strategy: when ready, the human (or Design) takes this draft, opens the live murrow.json, replaces ONLY the body of murrow_first_meeting and adds the new state murrow_post_frame_attaches_motion. All other states (before_pig, after_pig and its three response variants, post_briefing_pre_binder, has_binder_pre_crab, the two coffee_reaction states, court_readiness_check, idle_flavor) remain unchanged from the in-flight worktree state.\n\nVoice discipline: every line audited against narrative_revision/voice_agents/murrow.md (dry archival register, near-no adjectives). Murrow names what is in the file; he does not name what the file means.",
+  "_proposal_anchor": "PROPOSAL_player_driven_argument.md §1 (Murrow subsection) + §3 (proposed_frame consumer).",
+  "_design_role_handoff": "All `_status: DESIGN_TODO` line slots need final voicing. Murrow's voice constraint is the tightest: zero adjectives if possible, archival-noun-phrase shape, comma splice acceptable.",
+  "states": [
+    {
+      "id": "murrow_first_meeting",
+      "trigger": "chapter1.met_pig == true && !chapter1.met_murrow",
+      "_comment": "RESHAPED — LOAD-BEARING. The current eight-line case briefing collapses to three observation-shaped lines about THE FILE (the dates, the countersignature, the ex parte hearing). Murrow names facts; he does not name what the facts mean. The 'motion to set aside' line is removed from here and moved to murrow_post_frame_attaches_motion (which fires after Cula proposes a frame at Crab). The fourteen-day-from-actual-notice line stays — it is a fact about KPC time-limits, not a conclusion about Sikorska's case. The 'binder, second shelf, blue spine' line stays — it points to evidence, not to its meaning. The friend/Mister-Murrow exchange is preserved verbatim; Asia-friends comic beat preserved.",
+      "lines": [
+        "Welcome to Pig & Swine. You've picked a noisy day to begin.",
+        "The case is the Sikorska eviction defense. Halina Sikorska, at number twelve. The notice in the file was served to number seven.",
+        "The building was renumbered in two thousand and fifteen. The two thousand and nineteen renewal in the file carries the landlord's countersignature.",
+        "Hearing already ran ex parte. The current resident at number seven brought the notice down three weeks late. Actual notice reached her on the twenty-eighth of April.",
+        "Statute on time-limits is fourteen days from actual notice. The math is yours.",
+        "Procedural binder, second shelf, blue spine. Rights memo clipped inside the front cover. Hearing Friday at fourteen hundred, courtroom four.",
+        "She has not formally retained yet. She is coming in this afternoon.",
+        {"speaker": "cula", "text": "Thank you, Mr. Murrow."},
+        "It is Murrow, to friends. The 'Mister' I keep for invoices.",
+        {"speaker": "cula", "text": "Then it's Murrow."},
+        {"speaker": "murrow", "text": "I am still deciding whether reception staff qualify as friends or as workplace constellations."},
+        {"speaker": "cula", "text": "She'll be relieved either way."},
+        {"speaker": "murrow", "text": "Binder first. Memo second. Find me before fourteen hundred if anything in the binder reads wrong."}
+      ],
+      "on_dismiss": [
+        {"set": "chapter1.met_murrow", "value": true}
+      ]
+    },
+    {
+      "id": "murrow_post_frame_attaches_motion",
+      "trigger": "chapter1.met_murrow == true && chapter1.recruited_crab == true && chapter1.proposed_frame == 'defective_service_135bis' && !chapter1.halina_met",
+      "_comment": "NEW state. Fires after Cula has proposed the defective-service frame to Crab. Murrow attaches the procedural verb — 'motion to set aside' — to the shape Cula has now named. The line is moved here from murrow_first_meeting. If Cula proposed merits_defence at Crab, this state does not fire and a sibling state (murrow_post_frame_walks_back) takes over. `once: true` because this is a beat, not a hint.\n\nThe key contract: Cula has named the SHAPE (wrong-door service). Murrow attaches the PROCEDURAL VEHICLE (motion to set aside, fourteen-day window). Crab named the CITATION (Article 135-bis § 2). Three NPCs, three distinct contributions, none of them duplicating Cula's synthesis work.",
+      "lines": [
+        "Crab tells me you have read the binder.",
+        {"speaker": "cula", "text": "Wrong-door service. I told Crab we file."},
+        "We file a motion to set aside. Fourteen days from actual notice — we are inside the window. Hearing rescheduled, merits preserved.",
+        "Halina is at one. Mr. Pig will introduce; you will lead."
+      ],
+      "once": true
+    },
+    {
+      "id": "murrow_post_frame_walks_back",
+      "trigger": "chapter1.met_murrow == true && chapter1.recruited_crab == true && chapter1.proposed_frame == 'merits_defence' && !chapter1.halina_met",
+      "_comment": "NEW state — sibling to murrow_post_frame_attaches_motion. Fires when Cula carried the wrong-shape frame past Crab. Murrow does not block; he names the cost. The motion will still be filed, but on the procedural defect — Murrow has already filed on service before Cula speaks. The court_outcome will calibrate narrower at the chapter close. Soft-fail per PROPOSAL §4.\n\nMurrow's voice in this state: archival fact, not rebuke.",
+      "lines": [
+        "Crab tells me you proposed the merits.",
+        {"speaker": "cula", "text": "I did."},
+        "The merits are not the door we are at. The door we are at is service.",
+        "I have filed the motion to set aside on the service defect. The merits stay where they are. Halina is at one.",
+        {"speaker": "cula", "text": "Understood."}
+      ],
+      "once": true
+    },
+    {
+      "id": "has_binder_pre_crab",
+      "trigger": "chapter1.has_law_binder == true && !chapter1.recruited_crab",
+      "_comment": "RESHAPED. The current line ('Now Crab. Nothing else moves until service is checked') collapses Murrow's voice — Murrow does not say what needs checking. Reshaped to point Cula to Crab without naming the doctrinal task. Binder reads are now load-bearing flags (chapter1.binder_read_*) — Murrow can ask whether Cula has actually read.",
+      "lines": [
+        "Now Crab. Page one and page two of the binder, before you find him.",
+        {"speaker": "cula", "text": "Page one and page two."},
+        "Mm."
+      ]
+    },
+    {
+      "id": "court_readiness_check",
+      "trigger": "chapter1.has_law_binder == true && chapter1.has_rights_memo == true && chapter1.recruited_crab == true && chapter1.recruited_whimsy == true && !chapter1.court_ready",
+      "_comment": "RESHAPED. The current readiness check has Murrow asserting 'Service first. Fair hearing second. Remedy last.' Reshape: Murrow ASKS Cula for the order. Cula's reply is an options block; the chosen order writes... well, it would write into a new flag (chapter1.closing_order or similar) which I am NOT adding in this SAVE_VERSION 17 cut. For v1, the options block writes into chapter1.proposed_frame as a no-op overwrite (the player can confirm or revise her earlier choice). For v2, add a closing_order enum and a SAVE_VERSION bump.\n\nDESIGN_TODO: confirm v1 single-flag approach is acceptable, or pre-declare closing_order in v18 ahead of authoring this state. For this draft I'm keeping the line content equivalent to the current one minus the spoken-by-Murrow conclusion.",
+      "_design_role_handoff": "If the human prefers a third synthesis beat at court readiness, declare chapter1.closing_order at the next SAVE_VERSION bump and write the options block against it. For this draft, the readiness check stays close to the existing flow but moves the order-stating line from Murrow to a Cula option.",
+      "lines": [
+        "Cula.",
+        {"speaker": "cula", "text": "Murrow. We have the memo."},
+        "Procedural binder. On file.",
+        "Rights memo. On file.",
+        {"speaker": "pig", "text": "The printer lease has come back as a kraken. We renew next month, presumably with bait."},
+        "Crab and Whimsy on the appearance. Confirmed.",
+        "Hearing at fourteen hundred. Courtroom four.",
+        {"speaker": "pig", "text": "When I was an apprentice, we had no readiness check. Only fear. We navigated by panic alone."},
+        {"speaker": "murrow", "text": "Cula. State the order."},
+        {"speaker": "cula", "text": "Service first. Fair hearing second. Remedy last. We leave at thirteen-thirty."},
+        "Set.",
+        {"speaker": "cula", "text": "Asia, has Mrs. Sikorska been told we're coming?"},
+        {"speaker": "asia", "text": "She rang an hour ago, Dr. A. Cula. She'll be there at quarter to."}
+      ],
+      "on_dismiss": [
+        {"set": "chapter1.court_ready", "value": true}
+      ]
+    }
+  ],
+  "_states_unchanged_from_live_murrow_json": [
+    "before_pig",
+    "after_pig",
+    "state_2_response_friendly",
+    "state_2_response_professional",
+    "state_2_response_dry",
+    "post_briefing_pre_binder",
+    "murrow_coffee_reaction_perfect",
+    "murrow_coffee_reaction_bad"
+  ],
+  "idle_flavor": [
+    "The paperwork is current. Whether it is correct is a separate question.",
+    "Ensure every form is stamped in triplicate.",
+    "Two pages are out of sequence. Not yours."
+  ]
+}

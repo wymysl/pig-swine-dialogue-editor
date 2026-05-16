@@ -1,6 +1,8 @@
 {
-    "version": 2,
+    "version": 3,
     "npc_id": "murrow",
+    "_provenance": "v3 rewrite 2026-05-16: motion-packet pivot per PROPOSAL_player_driven_argument.md §1 (Murrow subsection) + §41 SPRINT_LOG checklist item 7. Briefing collapsed from eight-line case-summary (which named the motion to set aside and the winning frame in one breath) to four file-fact observations plus two doctrinal pointers (Tenancy Act notice-window citation, third-clause authority requirement). The motion-to-set-aside line moves to murrow_post_packet_motion_vehicle, gated on all four element_* bools. Two new decoy-decision states (murrow_first_meeting_decoy_notice_period, murrow_archive_walkthrough_decoy_merits) surface D1/D2 as named auxiliary theories the player may bolt on. A cold walk-back (murrow_post_decoy_incapacity) lands when decoy_incapacity is selected. Mrs. Borowski normalised to Mrs. Sikorska in court_readiness_check. Address forms per AGENTS.md §Address forms (Murrow says 'Dr. A. Cula' / 'Doctor Cula' to Cula; Cula opens with 'Mr. Murrow' and only earns bare 'Murrow' after the friend-invitation calibration line, which is preserved verbatim in murrow_first_meeting).",
+    "_anti_ai_voice_pass": "No contrastive antithesis; em-dashes capped per Murrow's archival register; no scrub-list vocabulary. 'Unkind' in murrow_post_decoy_incapacity is the only adjective in Murrow's chapter-1 catalogue and is load-bearing for the cold-pushback beat.",
     "states": [
         {
             "id": "before_pig",
@@ -48,14 +50,15 @@
         {
             "id": "murrow_first_meeting",
             "trigger": "chapter1.met_pig == true && !chapter1.met_murrow",
-            "_comment_v1_2_p6": "Phase 7 V1.2 pass 6 dialogue. Sikorska eviction defense (V1.4-canonical): 2015 renumbering, flat #7 -> #12, landlord knowledge via 2019 renewal countersignature, motion to set aside, Friday 14:00 courtroom 4, retention pending. Pass-3 'Mrs. Borowski' provisional state superseded; V1.4 has shipped and locks the case content.",
+            "_comment": "v3 motion-packet rewrite. Murrow gives the file as observation: four facts about what is in the docket, two doctrinal pointers, and the friend-invitation calibration. He does NOT name the procedural vehicle (motion to set aside) — that line moves to murrow_post_packet_motion_vehicle, gated on all four element_* bools. The Tenancy-Act citation surfaces as a pointer the player may later choose to deploy as D2; the third-clause authority requirement is the on-record E4 surfacing (he answers Cula's authority question with the doctrine, no editorial). on_dismiss sets met_murrow, the surfaced/binder flags Murrow has read aloud, and the two element bools his briefing establishes (E3 timely-notice and E4 no-third-party-cure). The element_non_current_address and element_landlord_knowledge bools stay false here and are written by Crab's post-binder state when Cula brings the binder back. Friend-invitation calibration verbatim. Asia-hedge verbatim.",
             "lines": [
                 "Welcome to Pig & Swine. You've picked a noisy day to begin.",
-                "We have a lot of work to do. The case is the Sikorska eviction defense. Halina Sikorska, at number twelve; the notice was served to old number seven.",
-                "The building was renumbered in two thousand and fifteen. The two thousand and nineteen renewal carries the landlord's countersignature. He served the old door anyway.",
-                "Hearing already ran ex parte. The current resident at number seven brought the notice down three weeks late. Actual notice reached her on the twenty-eighth of April.",
-                "We file a motion to set aside. Fourteen days from actual notice. We are inside the window.",
-                "Procedural binder, second shelf, blue spine. Rights memo clipped inside the front cover. Motion hearing Friday at fourteen hundred, courtroom four.",
+                "The Sikorska eviction. Halina Sikorska, at number twelve. The notice in the file was served to number seven.",
+                "The building was renumbered in two thousand and fifteen. The two thousand and nineteen renewal in the file carries the landlord's countersignature.",
+                "Hearing ran ex parte. The current resident at number seven brought the notice down three weeks late. Actual notice the twenty-eighth of April.",
+                "Two doctrinal points worth your attention. The Tenancy Act sets a fourteen-day window from notice; check the math against the envelope dates yourself.",
+                "And the third clause of one-thirty-five-bis, on cure by a third party in occupation. The shelf has it in green pen.",
+                "Procedural binder, second shelf, blue spine. Rights memo clipped inside the front cover. Friday at fourteen hundred, courtroom four.",
                 "She has not formally retained yet. She is coming in this afternoon.",
                 {"speaker": "cula", "text": "The resident at number seven. Does his accepting the notice cure service?"},
                 "No. Express authority is required. He had none.",
@@ -64,10 +67,14 @@
                 {"speaker": "cula", "text": "Then it's Cula."},
                 {"speaker": "murrow", "text": "I am still deciding whether reception staff qualify as friends or as workplace constellations."},
                 {"speaker": "cula", "text": "She'll be relieved either way."},
-                {"speaker": "murrow", "text": "Binder first. Memo second. Find me before fourteen hundred if anything in the binder reads wrong."}
+                {"speaker": "murrow", "text": "Binder first. Crab second. The shape is yours to name. Find me before fourteen hundred if anything in the binder reads wrong."}
             ],
             "on_dismiss": [
-                {"set": "chapter1.met_murrow", "value": true}
+                {"set": "chapter1.met_murrow", "value": true},
+                {"set": "chapter1.surfaced_notice_timeline", "value": true},
+                {"set": "chapter1.surfaced_tenancy_act_window", "value": true},
+                {"set": "chapter1.element_timely_actual_notice_motion", "value": true},
+                {"set": "chapter1.element_no_third_party_cure", "value": true}
             ]
         },
         {
@@ -78,7 +85,68 @@
         {
             "id": "has_binder_pre_crab",
             "trigger": "chapter1.has_law_binder == true && !chapter1.recruited_crab",
-            "lines": ["Now Crab. Nothing else moves until service is checked."]
+            "_comment": "v3 rewrite. HEAD line was 'Now Crab. Nothing else moves until service is checked.' — the second sentence pre-names the winning frame. v3 drops the conclusion and points Cula at Crab as the second pair of eyes; the shape is for Cula to name.",
+            "lines": [
+                "Now Crab. Take the binder; let him read it with you. The shape is in the file. Mr. Crab is the second pair of eyes you want."
+            ]
+        },
+        {
+            "id": "murrow_first_meeting_decoy_notice_period",
+            "trigger": "chapter1.met_murrow == true && chapter1.has_law_binder == true && chapter1.surfaced_tenancy_act_window == true && !chapter1.decoy_notice_period && !chapter1.court_ready && !chapter1.entered_court",
+            "_comment": "NEW state — D2 (notice-period failure) decision moment per PROPOSAL §1.2. Fires once after Cula has met Murrow and picked up the binder. Murrow names the Tenancy Act fourteen-day window again as a colorable auxiliary theory; the offer is procedurally credible, not endorsed. The options block writes chapter1.decoy_notice_period (true = include, false = leave out). once:true so the offer doesn't re-fire after the player commits. No chain — Murrow stays neutral on the choice and the player carries on.",
+            "lines": [
+                "While you have the file open. The Tenancy Act window. Counsel sometimes plead it in the alternative when the dates run close.",
+                "It is procedurally subordinate to the locational defect. The bench may hear it; the bench may not. Your call whether to include it in the motion."
+            ],
+            "options": {
+                "write_path": "chapter1.decoy_notice_period",
+                "choices": [
+                    {"text": "Leave it out. The address defect ends the matter on its own.", "value": false},
+                    {"text": "Include it in the alternative. Belt and braces.", "value": true}
+                ]
+            },
+            "once": true
+        },
+        {
+            "id": "murrow_archive_walkthrough_decoy_merits",
+            "trigger": "chapter1.met_murrow == true && chapter1.archive_research_complete == true && !chapter1.decoy_merits && !chapter1.court_ready && !chapter1.entered_court",
+            "_comment": "NEW state — D1 (merits / substantive defense) decision moment per PROPOSAL §1.2. Fires once after archive research is complete. Murrow notes that Halina's payment receipts are real and asks whether to plead the merits as a backup. The offer is wrong-priority for the motion stage; Murrow's framing makes that visible without rejecting the option. once:true.",
+            "lines": [
+                "One more question before we go. Mrs. Sikorska's receipts are in the file Crab brought back. The substantive case is real.",
+                "It is not before the court at the motion. It can be pleaded in the alternative if you want it on the record."
+            ],
+            "options": {
+                "write_path": "chapter1.decoy_merits",
+                "choices": [
+                    {"text": "Leave it. The merits live behind the procedural door.", "value": false},
+                    {"text": "Plead it as a backup. If the procedural angle slips, we want the merits in front of the judge.", "value": true}
+                ]
+            },
+            "once": true
+        },
+        {
+            "id": "murrow_post_packet_motion_vehicle",
+            "trigger": "chapter1.element_non_current_address == true && chapter1.element_landlord_knowledge == true && chapter1.element_timely_actual_notice_motion == true && chapter1.element_no_third_party_cure == true && chapter1.recruited_crab == true && !chapter1.decoy_incapacity && !chapter1.court_ready && !chapter1.entered_court",
+            "_comment": "NEW state — post-packet attachment of the procedural vehicle per PROPOSAL §1.4 (Murrow). Fires only when all four required elements have been surfaced (Crab's binder read-aloud sets E1/E2 and confirms E3; Murrow's briefing sets E3/E4; Crab's pre-binder stairwell observation also sets E4). Murrow now names what he refused to name in the briefing — the motion to set aside under Article 135-bis § 2, with the fourteen-day window. The line is reward, not preview. once:true. Trigger excludes decoy_incapacity so Murrow does not attach the motion warmly on a path he has cold-walked-back.",
+            "lines": [
+                "Crab tells me the four parts are in. Address out of date; landlord on notice of the change; motion within fourteen days of actual notice; no third party who could cure.",
+                "We file the motion to set aside under Article one-thirty-five-bis, paragraph two. Fourteen days from actual notice. We are inside the window.",
+                "Hearing rescheduled, merits preserved. That is the shape. Mrs. Sikorska is at one. You will lead."
+            ],
+            "once": true
+        },
+        {
+            "id": "murrow_post_decoy_incapacity",
+            "trigger": "chapter1.decoy_incapacity == true && !chapter1.entered_court",
+            "_comment": "NEW state — cold walk-back when decoy_incapacity is set. Murrow's voice here is colder than in any other state. 'Unkind' is the only adjective in his chapter-1 catalogue and is load-bearing for the in-fiction pushback per the task brief. The second clause ('procedurally wrong') keeps the rebuke doctrinal rather than personal — the firm's moral compass is rule-shaped, not sentimental. Murrow strips Cula's lead role and re-files the motion himself; the chapter still ships, the cost is loud. Address form 'Doctor Cula' (not 'Cula') — the friend-invitation is revoked for this beat. once:true.",
+            "lines": [
+                "Crab tells me you proposed incapacity.",
+                {"speaker": "cula", "text": "She is elderly. The service —"},
+                "She is elderly. She is not incompetent. The argument is unkind and procedurally wrong. I will file the motion on the service defect myself; you will not argue incapacity in my courtroom.",
+                "Mrs. Sikorska is at one. When she arrives, you will not raise her age. Is that clear, Doctor Cula.",
+                {"speaker": "cula", "text": "Clear."}
+            ],
+            "once": true
         },
         {
             "id": "murrow_coffee_reaction_perfect",
@@ -95,7 +163,7 @@
         {
             "id": "court_readiness_check",
             "trigger": "chapter1.has_law_binder == true && chapter1.has_rights_memo == true && chapter1.recruited_crab == true && chapter1.recruited_whimsy == true && !chapter1.court_ready",
-            "_comment_borowski_title": "PROVISIONAL: 'Mrs. Borowski' usage inherits the same provisional title flag as murrow.json's first_meeting and asia.json's readiness_borowski_confirmed.",
+            "_comment": "v3 minor edit. Mrs. Borowski → Mrs. Sikorska (provisional title flagged in the prior version's _comment_borowski_title resolved here; the case is Sikorska throughout). The 'order set' line stays Murrow's; v3 leaves the procedural order in Murrow's mouth because by this point Cula has named the shape (or not) and Murrow's confirmation is the architectural beat.",
             "lines": [
                 "Cula.",
                 {"speaker": "cula", "text": "Murrow. We have the memo."},
@@ -106,8 +174,8 @@
                 "Hearing at fourteen hundred. Courtroom four.",
                 {"speaker": "pig", "text": "When I was an apprentice, we had no readiness check. Only fear. We navigated by panic alone."},
                 "Order set. Service first. Fair hearing second. Remedy last. We leave at thirteen-thirty.",
-                {"speaker": "cula", "text": "Understood. Asia, has Mrs. Borowski been told we're coming?"},
-                {"speaker": "asia", "text": "She rang an hour ago, Mr. Cula. She'll be there at quarter to."}
+                {"speaker": "cula", "text": "Understood. Asia, has Mrs. Sikorska been told we're coming?"},
+                {"speaker": "asia", "text": "She rang an hour ago, Dr. A. Cula. She'll be there at quarter to."}
             ],
             "on_dismiss": [
                 {"set": "chapter1.court_ready", "value": true}

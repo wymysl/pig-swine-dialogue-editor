@@ -1,7 +1,66 @@
 {
     "version": 3,
-    "npc_id": "asia_rewrite",
-    "_scope": "Inert draft. Originally an alternate Asia voice pack. Stubbed 2026-05-14 because the runner now requires globally-unique state ids, and the canonical state ids in this file collide with asia.json. `git rm` whenever the rewrite is either abandoned or merged into asia.json proper.",
-    "states": [],
-    "idle_flavor": []
+    "npc_id": "asia",
+    "_provenance": "V3.0 (2026-05-14): full voice-brief rewrite. All lines reauthored to Asia voice spec (warm tone, dry content, domestic-administrative register, two-half sentence shape, attribution not editorializing, functional reception-desk lines, no legal opinions in her own voice, no maternal warmth, no sage detachment). Address forms verified: Cula = 'Dr. A. Cula' (outer-circle, honorific always); Murrow = 'Mr. Murrow' (first-name privileges still under review); Pig = 'Mr. Pig'; Swine = 'Mr. Swine'; Crab and Whimsy bare. Coffee reactions preserve V1.4 gate logic with voice-corrected lines. idle_flavor rewritten for reception-desk texture with one specific object per line. State IDs, triggers, and on_dismiss blocks unchanged from V1 for engine compatibility.",
+    "states": [
+        {
+            "id": "first_meeting_via_behind_counter",
+            "trigger": "chapter1.met_asia == false && chapter1.met_asia_via_behind == true",
+            "_comment": "Beat 2 — player walked behind the counter before pressing E. Asia's professional boundary, then immediate recognition. Bridges into the standard first-meeting flow without skipping content.",
+            "lines": [
+                "Ah — I'm sorry, this area is staff only. We have a — ",
+                "Oh. Dr. A. Cula. Of course. One moment.",
+                "Mr. Pig mentioned you'd be starting today. He mentioned it several times, actually.",
+                "He's at his desk. He'll want to speak with you first.",
+                "Your blue folder is on the second pile from the left. Mr. Murrow put a sticky note on it. The sticky note says 'Cula' and nothing else, which is how you know it's from Mr. Murrow.",
+                {
+                    "speaker": "asia",
+                    "text": "The archive is through that door — Mr. Murrow is in there with the case file when you need him."
+                }
+            ],
+            "on_dismiss": [
+                {
+                    "set": "chapter1.met_asia",
+                    "value": true
+                }
+            ]
+        },
+        {
+            "id": "first_welcome",
+            "trigger": "chapter1.met_asia == false",
+            "_comment": "Beat 2 — standard E-press first meeting. Asia greets, redirects to Pig, identifies the blue folder. Functional warmth: she is doing reception work, not narrating the office.",
+            "lines": [
+                "Dr. A. Cula. Good morning. We've been expecting you — well, Mr. Pig has been expecting you. I've been expecting the courier, but you're here first.",
+                "He's at his desk. He'll want to speak with you before anything else.",
+                "Your blue folder is on the second pile from the left. If it's not there, check the floor near the second pile. Filing has been approximate this week.",
+                {
+                    "speaker": "asia",
+                    "text": "The archive is through that door. Mr. Murrow is in there with the case file when you're ready for him."
+                }
+            ],
+            "on_dismiss": [
+                {
+                    "set": "chapter1.met_asia",
+                    "value": true
+                }
+            ]
+        },
+        {
+            "id": "post_pig_pre_murrow",
+            "trigger": "chapter1.pig_revealed_crisis == true && chapter1.met_murrow == false",
+            "_comment": "Hint redirect to Murrow. Attribution structure: she names Murrow as the source, stays out of the case content. The second clause is the diagnosis.",
+            "line": "Mr. Murrow is in the archive. He'll have the case. Mr. Pig has the feelings about the case, which is different."
+        },
+        {
+            "id": "post_binder",
+            "trigger": "chapter1.has_law_binder == true && chapter1.recruited_crab == false",
+            "_comment": "Post-binder, pre-Crab. Domestic translation: the binder rendered as a physical object with weight. No legal opinion.",
+            "line": "You found it. Good. Please don't set it on the reception counter — I had the counter levelled last month and I am not doing it again."
+        }
+    ],
+    "idle_flavor": [
+        "One moment — yes. The calendar. No, the other calendar.",
+        "The sandwich in the fridge labelled 'ASIA — TUESDAY' is mine. The label is clear. The label has always been clear.",
+        "Ah — Dr. A. Cula. I'm just on the phone. One moment."
+    ]
 }

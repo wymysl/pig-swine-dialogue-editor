@@ -72,7 +72,7 @@ Each `present_options[]` entry contains:
 - `judicial_patience_default` - integer, Code. Standard starting patience before frame overrides.
 - `frame_gates` - object map, Code. Keys are `chapter1.proposed_frame` enum values from `data/argument_frames_ch1.json`.
 - `judge_counter_questions` - array, Code+Design. Ordered question bank consumed by the closing-argument controller.
-- `victory_resolution` - object, Code+Design. Ordered branch resolution for strong / standard / narrow wins.
+- `victory_resolution` - object, Code+Design. Ordered branch resolution for `strong`, `standard`, `narrow`, and `blunder-recovered` packet outcomes. Chapter 1 still grants the procedural reset as the floor; this value grades the packet and recovery path.
 
 Each `frame_gates.<frame_id>` entry contains:
 

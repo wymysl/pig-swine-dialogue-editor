@@ -1,0 +1,52 @@
+## Agent 2 - Court round data handoff
+
+- Commit: `8de0ec2` - `Court round data: Chapter 1 Phase 1 + Phase 2 (PROPOSALS §10)`
+- Output sizes:
+  - `godot/data/court_rounds/_schema.md` - 144 lines / 8599 bytes
+  - `godot/data/court_rounds/chapter1_round_1.json` - 983 lines / 32157 bytes
+- Phase 1 counts:
+  - witnesses: 2
+  - statements: 8
+  - press_options: 4
+  - present_options: 5
+- Phase 2 counts:
+  - judge_counter_questions: 4
+  - citations per frame_gate:
+    - `defective_service_135bis`: 4
+    - `third_party_non_cure`: 4
+    - `fair_hearing_article_6`: 3
+    - `merits_defence`: 3
+- Cross-reference check:
+  - tag references checked: 253
+  - evidence_id references checked: 5
+  - judgment move_id references checked: 6
+  - frame gate references checked: 11
+  - opponent move references checked: 4
+  - fact-flag references checked: 15
+  - unresolved references: 0
+- Verification:
+  - `python3 -m json.tool godot/data/court_rounds/chapter1_round_1.json` -> OK
+  - static cross-reference audit -> OK
+  - `godot --headless --path godot --script tests/test_smoke.gd --log-file /tmp/agent2_smoke.log` -> PASS
+  - `godot --headless --path godot --script tests/test_runner.gd --log-file /tmp/agent2_runner.log` -> EXIT 0 (`GUT not yet installed. No tests to run.`)
+  - `godot --headless --path godot --export-release "Web" exports/web/index.html --log-file /tmp/agent2_export.log` -> PASS; non-empty `index.html`, `index.pck`, and `index.wasm`
+  - known host noise on smoke/export: macOS `get_system_ca_certificates` warning; export also prints the usual Godot editor-settings save warning after packing
+- `DESIGN_TODO` surface:
+  - witness display names: 2
+  - witness statements: 8
+  - press follow-ups: 4
+  - present reactions: 5
+  - judge counter-questions: 4
+  - citation flavor lines: 6
+  - defeat/partial lines: 8
+  - victory result lines: 3
+- Note for Agent 1:
+  - Loader surface is `version`, `id`, `chapter`, `opponent_id`, `judgment_unlock`, `phase_1_fact_finding`, and `phase_2_closing`.
+  - `phase_1_fact_finding.local_fact_flags` declares the transient `_fact.*` namespace. Treat these as round-local, distinct from `chapter1.*`.
+  - `present_options` enumerate only successful contradiction targets; wrong presents are implicit and should consume the default present cost unless the option itself says `cost: 0`.
+  - Tag data is duplicated intentionally as both flat tag arrays and weighted dictionaries (`pressure_weakness_tags`, `pressure_strength_tags`, `move_tags`) so the controller can validate taxonomy ids and either consume weighted fit directly or derive display groupings.
+  - `phase_2_closing.frame_gates` exists both at the top level (question schedule + patience start per frame) and per question (citation narrowing per frame). Missing per-question frame entries mean "all listed citations available".
+  - `victory_resolution.branches[].when` uses controller-supplied locals `primary_fact_count` and `judicial_patience` plus persisted `chapter1.proposed_frame`.
+- Note for Agents 4/5/6:
+  - Voice-shaped slots now waiting on the Design pass: both witness display names, all witness statement text, all press follow-up text, all present judge reactions, all four judge counter-question lines, all six citation flavor lines, all defeat/partial lines, and the three victory result lines.
+  - The highest-risk voice surfaces are the clerk/resident witness statements and the judge counter-question lines; those will set the register for the whole court-round pack.

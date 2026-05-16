@@ -519,6 +519,18 @@
             ]
         },
         {
+            "id": "halina_post_meeting_decoy_incapacity_cold",
+            "trigger": "chapter1.halina_met == true && chapter1.decoy_incapacity == true && !chapter1.entered_court",
+            "_comment": "v4 addition 2026-05-16 per task brief: 'Incapacity blunder gets cold in-fiction pushback from Halina/Crab/Murrow.' Fires when Cula went back to Crab post-meeting, picked D5, and re-engages Halina before court. In-fiction channel: Mr. Murrow has notified the client (the close establishes Murrow as the firm's contact point with her — 'Mr. Murrow will pass it to me'). Halina's voice stays measured; the cold is in the brevity and in the address-form Cula uses to her, not in volume. She does not raise her voice; she does not negotiate. The line preserves her dignity by treating the proposal as a procedural error to be corrected, not as a personal slight to be forgiven. once:true so the state doesn't loop on each re-engage.",
+            "lines": [
+                "Dr. A. Cula. Mr. Murrow rang. He read me the proposed argument on the question of my age.",
+                {"speaker": "cula", "text": "Mrs. Sikorska —"},
+                "I have lived in that flat since nineteen eighty-seven. I have paid the rent every month since my father died. I am not too old to be served with a letter. I am too inconvenient to be served with the right letter.",
+                "Please withdraw it. The case is not about whether I can read."
+            ],
+            "once": true
+        },
+        {
             "id": "post_meeting_ch1",
             "trigger": "chapter1.halina_met == true",
             "lines": [

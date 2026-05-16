@@ -1,220 +1,207 @@
 {
-  "version": 2,
-  "_doc": "Chapter 1 evidence cards. Per PROPOSAL_player_driven_argument.md §3 (decoy revision 2026-05-16). Each entry is a piece of evidence the player can surface during Beat 4 (binder) through Beat 9 (archive research). 'Surfacing' means reading the corresponding evidence card via dialogue (Crab/Murrow/Whimsy/Halina lines), the v0/v2 binder UI, or item pickup. Surfaced evidence is consumed by (a) the argument-frame proposal in crab.json's synthesis options block, (b) the binder UI's evidence panel, (c) the future court-round controller during Phase 1 Present actions.\n\nVersion 2 (2026-05-16) — decoy revision additions:\n  - New schema field: points_to_frames: Dictionary<frame_id, float> — weighted mapping showing which argument frames this evidence supports and by how much. Weights in [0.0, 1.0]; multiple frames can be supported by one card; weights need NOT sum to 1.0.\n  - New schema field: source_npc — which NPC primarily surfaces this evidence in conversation. Used by Asia hint surface for 'go talk to Mr. Crab' nudges and by binder UI marginalia attribution.\n  - Five new evidence entries: payment_receipts_sikorska, notice_timeline_april, property_transfer_2018, sikorska_age_visible, tenancy_act_notice_window_citation. These support the new decoy frames (substantive_defense / notice_period_failure / standing_wrong_party / incapacity_defense). Three carry NEW sets_flag values that require chapter1 flag declarations (deferred to next SAVE_VERSION bump per the proposal — dialogue triggers reference these via missing-key-fails-trigger semantics in the interim).\n\nTwo-pass authoring per AGENTS.md §Casebook authoring.\n  Code owns: id, source, source_npc, discovered_when, argument_tags, context_tags, sets_flag, points_to_frames.\n  Design owns: display_name, summary, press_lines, present_lines.\n\nSchema:\n  evidence: { <evidence_id>: {\n    display_name (Design — short noun phrase),\n    summary (Design — one-line description),\n    source (Code — where the card surfaces: 'binder_page_<n>' / 'archive_<doc_id>' / 'witness_<npc_id>' / 'item_<item_id>'),\n    source_npc (Code — primary NPC who surfaces this card in conversation: 'crab' / 'murrow' / 'whimsy' / 'halina' / 'asia' / 'cula' / 'none'),\n    discovered_when (Code — a dialogue-runner trigger predicate; when true, the card becomes surfaceable),\n    sets_flag (Code — chapter1 flag flipped true on surfacing; the binder_read_*, surfaced_*, and bonus-evidence flags are the v17+ set),\n    argument_tags (Code — principle_tags from data/tag_taxonomy.json),\n    context_tags (Code — context_tags from data/tag_taxonomy.json),\n    points_to_frames (Code — Dictionary<frame_id_from_argument_frames_ch1.json, float in [0,1]>; weighted support; need NOT sum to 1.0),\n    press_lines (Design — what Cula sees/says when reading the card),\n    present_lines (Design — what Cula says when presenting this card in court; one per court-round opening_statement it's relevant to)\n  } }",
-  "_owner_code": "id, source, source_npc, discovered_when, sets_flag, argument_tags, context_tags, points_to_frames",
+  "version": 3,
+  "_doc": "Chapter 1 evidence cards for motion-packet assembly. Evidence now points to packet slots (required elements and optional decoys/blunders), not only frame-weight dictionaries. Surfacing a card writes its sets_flag and enables the mapped packet slot(s) to be selected.",
+  "_owner_code": "id, source, source_npc, discovered_when, sets_flag, argument_tags, context_tags, supports_packet_slots",
   "_owner_design": "display_name, summary, press_lines, present_lines",
-  "_revision_note": "Schema version 2 — decoy revision per PROPOSAL_player_driven_argument.md §3 (2026-05-16). Existing v1 entries gain source_npc + points_to_frames. Five new entries support the four decoy frames + optional incapacity. The five new surfaced_* flags referenced via sets_flag are NOT yet declared in state.gd reset_state() — they're deferred to the next SAVE_VERSION bump per the proposal; dialogue triggers reference them via missing-key-fails-trigger semantics until declared.",
+  "packet_slots": {
+    "required_elements": [
+      "element_non_current_address",
+      "element_landlord_knowledge",
+      "element_timely_actual_notice_motion",
+      "element_no_third_party_cure"
+    ],
+    "optional_decoys": [
+      "decoy_merits",
+      "decoy_notice_period",
+      "decoy_standing_wrong_party",
+      "decoy_overbroad_remedy",
+      "decoy_incapacity"
+    ]
+  },
   "evidence": {
     "envelope_address_number_seven": {
-      "_status": "Code-pass complete; Design text pending. v2: added source_npc + points_to_frames. The envelope strongly supports defective_service (the central locational defect) and weakly hints at notice_period_failure (because the timing dates are also on the envelope).",
       "source": "binder_page_1",
       "source_npc": "crab",
       "discovered_when": "chapter1.has_law_binder == true",
       "sets_flag": "chapter1.binder_read_envelope",
       "argument_tags": ["service_of_process"],
       "context_tags": ["service_failure", "documentary"],
-      "points_to_frames": {
-        "defective_service_135bis": 0.9,
-        "notice_period_failure": 0.2
-      },
+      "supports_packet_slots": ["element_non_current_address"],
       "display_name": "",
       "summary": "",
       "press_lines": [],
       "present_lines": []
     },
     "renewal_2019_number_twelve": {
-      "_status": "Code-pass complete; Design text pending. v2: added source_npc + points_to_frames. The renewal page (countersigned by the landlord in 2019, address: number twelve) is the smoking gun for defective_service — proves landlord knowledge of the correct address. Weakly hints at standing_wrong_party because the renewal predates the 2018 transfer mentioned in property_transfer_2018 (some players may try to weave the two together).",
       "source": "binder_page_2",
       "source_npc": "crab",
       "discovered_when": "chapter1.has_law_binder == true",
       "sets_flag": "chapter1.binder_read_renewal",
       "argument_tags": ["service_of_process", "legal_certainty"],
       "context_tags": ["civil_proceedings", "documentary", "housing"],
-      "points_to_frames": {
-        "defective_service_135bis": 0.9,
-        "standing_wrong_party": 0.1
-      },
+      "supports_packet_slots": [
+        "element_non_current_address",
+        "element_landlord_knowledge"
+      ],
       "display_name": "",
       "summary": "",
       "press_lines": [],
       "present_lines": []
     },
     "renumbering_2015_fact": {
-      "_status": "Code-pass complete; Design text pending. v2: added source_npc + points_to_frames. The renumbering is not a document; it's a building-history fact. Surfaceable via Crab's stairwell observation OR by reading the binder cross-reference. Pure defective-service evidence.",
       "source": "binder_page_3",
       "source_npc": "crab",
       "discovered_when": "chapter1.has_law_binder == true || chapter1.met_crab == true",
       "sets_flag": "chapter1.binder_read_renumbering",
       "argument_tags": ["service_of_process"],
       "context_tags": ["service_failure"],
-      "points_to_frames": {
-        "defective_service_135bis": 0.7
-      },
+      "supports_packet_slots": ["element_non_current_address"],
+      "display_name": "",
+      "summary": "",
+      "press_lines": [],
+      "present_lines": []
+    },
+    "resident_no_7_no_authority": {
+      "source": "witness_crab",
+      "source_npc": "crab",
+      "discovered_when": "chapter1.met_crab == true || chapter1.has_law_binder == true",
+      "sets_flag": "chapter1.surfaced_resident_no_authority",
+      "argument_tags": ["service_of_process", "procedural_fairness"],
+      "context_tags": ["civil_proceedings", "service_failure", "housing"],
+      "supports_packet_slots": ["element_no_third_party_cure"],
       "display_name": "",
       "summary": "",
       "press_lines": [],
       "present_lines": []
     },
     "wojcik_witness_statement": {
-      "_status": "Hydrated from data/items.json. Surfaced by halina.json client_meeting_r0_response_high / client_meeting_r1_response_high. Bonus evidence — sympathetic-stance carrier. v2: added points_to_frames. Mrs. Wójcik's statement (continuous-resident testimony) supports defective_service (the witness can testify Halina has lived at the same flat, defeating any landlord 'maybe she moved' counter) and weakly supports substantive_defense (the long tenancy is part of the merits picture).",
       "source": "item_wojcik_witness_statement",
       "source_npc": "halina",
       "discovered_when": "chapter1.bonus_evidence_collected == 'wojcik_witness_statement'",
       "sets_flag": "chapter1.bonus_evidence_collected",
       "argument_tags": ["service_of_process", "procedural_fairness"],
       "context_tags": ["housing", "civil_proceedings", "documentary"],
-      "points_to_frames": {
-        "defective_service_135bis": 0.4,
-        "substantive_defense": 0.2
-      },
+      "supports_packet_slots": ["element_landlord_knowledge"],
       "display_name": "Mrs. Wójcik's Witness Statement",
       "summary": "",
       "press_lines": [],
       "present_lines": []
     },
     "return_to_sender_slip": {
-      "_status": "Hydrated from data/items.json. Surfaced by halina.json client_meeting_r0_response_blunt / client_meeting_r1_response_high. Bonus evidence — blunt-procedural-stance carrier; also volunteered on high-trust r1 from any stance. v2: added points_to_frames. The bounced October 2018 envelope is the second smoking gun for defective_service (prior knowledge of the correct address). Pure defective-service evidence; the timing isn't relevant to notice_period_failure (the envelope was a rent statement, not an eviction notice).",
       "source": "item_return_to_sender_slip",
       "source_npc": "halina",
       "discovered_when": "chapter1.bonus_evidence_collected == 'return_to_sender_slip'",
       "sets_flag": "chapter1.bonus_evidence_collected",
       "argument_tags": ["service_of_process", "procedural_fairness", "legal_certainty"],
       "context_tags": ["civil_proceedings", "service_failure", "documentary"],
-      "points_to_frames": {
-        "defective_service_135bis": 0.6
-      },
+      "supports_packet_slots": ["element_landlord_knowledge"],
       "display_name": "Postal Return-to-Sender Slip",
       "summary": "",
       "press_lines": [],
       "present_lines": []
     },
     "lease_1962_inheritance_1987": {
-      "_status": "Hydrated from data/items.json. Surfaced by halina.json client_meeting_r0_response_technical. Bonus evidence — technical-stance carrier. v2: added points_to_frames. The 1962/1987 lease chain supports substantive_defense (long unbroken tenancy is the merits picture) and weakly supports defective_service (the documented chain shows the correct address has been Halina's since 1987). Per the proposal §1, this evidence pointer is now load-bearing on the substantive-defense decoy.",
       "source": "item_lease_1962_inheritance_1987",
       "source_npc": "halina",
       "discovered_when": "chapter1.bonus_evidence_collected == 'lease_1962_inheritance_1987'",
       "sets_flag": "chapter1.bonus_evidence_collected",
       "argument_tags": ["service_of_process", "procedural_fairness", "prescribed_by_law"],
       "context_tags": ["housing", "civil_proceedings", "documentary"],
-      "points_to_frames": {
-        "substantive_defense": 0.6,
-        "defective_service_135bis": 0.2
-      },
+      "supports_packet_slots": ["decoy_merits"],
       "display_name": "1962 Lease + 1987 Inheritance Paperwork",
       "summary": "",
       "press_lines": [],
       "present_lines": []
     },
     "landlord_contact": {
-      "_status": "Hydrated from halina.json client_meeting_r2_response_high. Bonus evidence — high-trust reveal. Surfacing also flips chapter1.landlord_tip_received; seeds Ch4 landlord-intimidation thread. v2: added points_to_frames. The March personal visit ('think carefully about your situation') strengthens defective_service by establishing landlord knowledge AND a pattern of contact — the landlord clearly knew where Halina lived and chose to misaddress the formal notice deliberately.",
       "source": "witness_halina",
       "source_npc": "halina",
       "discovered_when": "chapter1.bonus_evidence_collected == 'landlord_contact'",
       "sets_flag": "chapter1.bonus_evidence_collected",
       "argument_tags": ["procedural_fairness"],
       "context_tags": ["housing", "civil_proceedings"],
-      "points_to_frames": {
-        "defective_service_135bis": 0.5
-      },
+      "supports_packet_slots": ["element_landlord_knowledge"],
       "display_name": "Landlord's Personal Visit (March)",
       "summary": "",
       "press_lines": [],
       "present_lines": []
     },
     "rights_memo_article_6": {
-      "_status": "Hydrated from data/items.json (rights_memo). The fair-hearing companion to the procedural binder; surfaced via Whimsy at Café Paragraf. v2: added points_to_frames. The Rights Memo supports defective_service indirectly via the Article-6 / fair-hearing Phase 2 sub-citation (no longer a top-level frame — see argument_frames_ch1.json defective_service_135bis.phase_2_sub_citations).",
       "source": "item_rights_memo",
       "source_npc": "whimsy",
       "discovered_when": "chapter1.has_rights_memo == true",
       "sets_flag": "chapter1.has_rights_memo",
       "argument_tags": ["procedural_fairness", "access_to_court", "effective_remedy"],
       "context_tags": ["fair_trial", "civil_proceedings"],
-      "points_to_frames": {
-        "defective_service_135bis": 0.3
-      },
+      "supports_packet_slots": [],
       "display_name": "Rights Memo with Coffee Ring",
       "summary": "",
       "press_lines": [],
       "present_lines": []
     },
     "payment_receipts_sikorska": {
-      "_status": "NEW in v2 — decoy revision. Anchor evidence for substantive_defense. Halina's records of six months of rent settlement (receipts kept in case the landlord 'forgets'). Surfaced during the client meeting on the sympathetic OR technical stance (when Halina produces her folder); also surfaceable via Crab's offhand mention during pre-binder dialogue ('she has paperwork — receipts, the kind you keep when you expect the landlord to forget'). The sets_flag chapter1.surfaced_payment_receipts is NOT yet declared in state.gd reset_state(); see _revision_note above. discovered_when uses Dictionary.get() semantics — when the flag is later declared, the predicate will resolve cleanly.",
       "source": "witness_halina",
       "source_npc": "halina",
       "discovered_when": "chapter1.client_meeting_stance != ''",
       "sets_flag": "chapter1.surfaced_payment_receipts",
       "argument_tags": ["legal_certainty", "prescribed_by_law"],
       "context_tags": ["housing", "civil_proceedings", "documentary"],
-      "points_to_frames": {
-        "substantive_defense": 0.85,
-        "defective_service_135bis": 0.1
-      },
+      "supports_packet_slots": ["decoy_merits"],
       "display_name": "",
       "summary": "",
       "press_lines": [],
       "present_lines": []
     },
     "notice_timeline_april": {
-      "_status": "NEW in v2 — decoy revision. Anchor evidence for notice_period_failure. The notice timing math: April 8 service to old number 7, April 28 actual receipt by Halina, hearing already run ex parte before April 28. The dates DO look short under the Tenancy Act notice windows — colorable enough to make this a credible decoy. Crab surfaces this implicitly when reading the binder envelope aloud; Murrow surfaces it explicitly with the Tenancy Act citation pointer in murrow_first_meeting. The sets_flag chapter1.surfaced_notice_timeline is deferred per _revision_note.",
       "source": "binder_page_1_dates",
       "source_npc": "crab",
       "discovered_when": "chapter1.met_crab == true && chapter1.has_law_binder == true",
       "sets_flag": "chapter1.surfaced_notice_timeline",
       "argument_tags": ["procedural_fairness", "legal_certainty"],
       "context_tags": ["civil_proceedings", "deadline", "documentary"],
-      "points_to_frames": {
-        "notice_period_failure": 0.9,
-        "defective_service_135bis": 0.2
-      },
+      "supports_packet_slots": [
+        "element_timely_actual_notice_motion",
+        "decoy_notice_period"
+      ],
       "display_name": "",
       "summary": "",
       "press_lines": [],
       "present_lines": []
     },
     "tenancy_act_notice_window_citation": {
-      "_status": "NEW in v2 — decoy revision. Doctrinal pointer for notice_period_failure. Murrow surfaces the Tenancy Act notice-window citation in his first_meeting (the doctrinal pointer that completes the notice-period frame). Without this, notice_timeline_april alone is colorable but undirected; with both, the player has a real notice-period argument to commit to. The sets_flag chapter1.surfaced_tenancy_act_window is deferred per _revision_note.",
       "source": "binder_page_4_citation",
       "source_npc": "murrow",
       "discovered_when": "chapter1.met_murrow == true && chapter1.has_law_binder == true",
       "sets_flag": "chapter1.surfaced_tenancy_act_window",
       "argument_tags": ["prescribed_by_law", "legal_certainty"],
       "context_tags": ["civil_proceedings", "housing", "deadline"],
-      "points_to_frames": {
-        "notice_period_failure": 0.7
-      },
+      "supports_packet_slots": ["decoy_notice_period"],
       "display_name": "",
       "summary": "",
       "press_lines": [],
       "present_lines": []
     },
     "property_transfer_2018": {
-      "_status": "NEW in v2 — decoy revision. Anchor evidence for standing_wrong_party. Whimsy's civic-records hobby produces a property-transfer record showing the building changed hands in 2018; the landlord-of-record on the eviction notice is the prior owner. The theory IS colorable (junior counsel sometimes tries it) but wrong because the lease assigned forward at transfer — Sikorska's obligations and the new owner's rights run together. Whimsy surfaces this offhand during recruitment ('I keep a folder of who-owns-what. Marginal pastime. Occasionally useful'). The sets_flag chapter1.surfaced_property_transfer is deferred per _revision_note.",
       "source": "archive_whimsy_civic_records",
       "source_npc": "whimsy",
       "discovered_when": "chapter1.met_whimsy == true",
       "sets_flag": "chapter1.surfaced_property_transfer",
       "argument_tags": ["legal_certainty", "prescribed_by_law"],
       "context_tags": ["civil_proceedings", "housing", "property"],
-      "points_to_frames": {
-        "standing_wrong_party": 0.9,
-        "defective_service_135bis": 0.1
-      },
+      "supports_packet_slots": ["decoy_standing_wrong_party"],
       "display_name": "",
       "summary": "",
       "press_lines": [],
       "present_lines": []
     },
     "sikorska_age_visible": {
-      "_status": "NEW in v2 — decoy revision. Anchor evidence for incapacity_defense (the optional hard-wrong frame). Sikorska's age is visible in the client meeting and documented in her file. The 'evidence' is Cula's projection — no NPC surfaces this AS a frame pointer; it's the player choosing to read Sikorska's age as procedurally significant. Game-punished per argument_frames_ch1.json incapacity_defense entry. The sets_flag chapter1.surfaced_sikorska_age is deferred per _revision_note.",
       "source": "observation_client_meeting",
       "source_npc": "none",
       "discovered_when": "chapter1.halina_met == true",
       "sets_flag": "chapter1.surfaced_sikorska_age",
       "argument_tags": ["procedural_fairness"],
       "context_tags": ["civil_proceedings"],
-      "points_to_frames": {
-        "incapacity_defense": 1.0
-      },
+      "supports_packet_slots": ["decoy_incapacity"],
       "display_name": "",
       "summary": "",
       "press_lines": [],

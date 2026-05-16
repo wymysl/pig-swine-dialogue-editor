@@ -38,6 +38,16 @@ extends Node
 ##         so once:true no longer cross-file-ghosts. No content uses once:true
 ##         today; the scrub is defensive against any save authored against an
 ##         early-adopter once-state.
+##   15 — chapter1.state_choice string declaration
+##   16 — chapter1.murrow_choice string declaration
+##   17 — player-driven argument scaffolding:
+##         binder_read_*, proposed_frame, whimsy_co_counsel_posture,
+##         judicial_patience, witness_cooperation
+##   18 — motion-packet foundation:
+##         surfaced_* evidence booleans + element_* / decoy_* packet-slot
+##         booleans for Chapter 1 synthesis flow
+##   19 — packet assembly persistence:
+##         packet_slot_* evidence-id strings + packet_requested_remedy
 
 const SAVE_PATH: String = "user://save.json"
 
@@ -354,4 +364,46 @@ func migrate_save(saved_data: Dictionary, old_version: int) -> Dictionary:
 				ch1["judicial_patience"] = 5
 			if not ch1.has("witness_cooperation"):
 				ch1["witness_cooperation"] = 0
+
+	## v17 -> v18: motion-packet foundation. Adds explicit surfaced-evidence
+	## booleans (the deferred v2 surfaced_* set plus surfaced_resident_no_authority)
+	## and explicit packet-slot booleans (four required elements + five decoys).
+	if old_version < 18:
+		if saved_data.has("chapter1"):
+			var ch1_v18: Dictionary = saved_data["chapter1"]
+			var v18_defaults: Dictionary = {
+				"surfaced_payment_receipts": false,
+				"surfaced_notice_timeline": false,
+				"surfaced_tenancy_act_window": false,
+				"surfaced_property_transfer": false,
+				"surfaced_sikorska_age": false,
+				"surfaced_resident_no_authority": false,
+				"element_non_current_address": false,
+				"element_landlord_knowledge": false,
+				"element_timely_actual_notice_motion": false,
+				"element_no_third_party_cure": false,
+				"decoy_merits": false,
+				"decoy_notice_period": false,
+				"decoy_standing_wrong_party": false,
+				"decoy_overbroad_remedy": false,
+				"decoy_incapacity": false,
+			}
+			for key in v18_defaults:
+				if not ch1_v18.has(key):
+					ch1_v18[key] = v18_defaults[key]
+
+	## v18 -> v19: persistent packet assembly fields for BlueBinder v1.
+	if old_version < 19:
+		if saved_data.has("chapter1"):
+			var ch1_v19: Dictionary = saved_data["chapter1"]
+			var v19_defaults: Dictionary = {
+				"packet_slot_address_non_current": "",
+				"packet_slot_landlord_knowledge": "",
+				"packet_slot_actual_notice_window": "",
+				"packet_slot_no_third_party_authority": "",
+				"packet_requested_remedy": "procedural_reset",
+			}
+			for key in v19_defaults:
+				if not ch1_v19.has(key):
+					ch1_v19[key] = v19_defaults[key]
 	return saved_data

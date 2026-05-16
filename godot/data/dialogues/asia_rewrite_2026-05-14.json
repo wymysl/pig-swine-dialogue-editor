@@ -1,0 +1,7 @@
+{
+    "version": 3,
+    "npc_id": "asia_rewrite",
+    "_scope": "Inert draft. Originally an alternate Asia voice pack. Stubbed 2026-05-14 because the runner now requires globally-unique state ids, and the canonical state ids in this file collide with asia.json. `git rm` whenever the rewrite is either abandoned or merged into asia.json proper.",
+    "states": [],
+    "idle_flavor": []
+}

@@ -767,11 +767,12 @@ func _spawn_note(note: Dictionary) -> void:
 	var bean_fallback: Texture2D = PROMPT_TEXTURES["bean"]
 	sprite.texture = PROMPT_TEXTURES.get(icon, bean_fallback) as Texture2D
 
-	## Position: lane determines X (lane center: 430 + lane*100 + 45 = 475 + lane*100),
-	## starts high (Y = 100), falls toward timing line at Y = 400.
+	## Position: lane determines X (lane center: 380 + lane*114 + 55 = 435 + lane*114),
+	## starts high (Y = 80), falls toward timing line at Y = 410.
 	var lane: int = note.get("lane", 0)
-	var lane_x: float = 475.0 + lane * 100.0
-	sprite.position = Vector2(lane_x, 100.0)
+	var lane_x: float = 435.0 + lane * 114.0
+	sprite.position = Vector2(lane_x, 80.0)
+	sprite.scale = Vector2(1.5, 1.5)
 
 	if _prompt_spawner:
 		_prompt_spawner.add_child(sprite)
@@ -789,9 +790,9 @@ func _spawn_note(note: Dictionary) -> void:
 
 
 func _update_active_notes(_delta: float) -> void:
-	## Timing line is at Y ~400 in the background panel.
-	var timing_line_y: float = 400.0
-	var spawn_y: float = 100.0
+	## Timing line is at Y ~410 in the background panel.
+	var timing_line_y: float = 410.0
+	var spawn_y: float = 80.0
 	var lead_time: float = 1.5
 
 	for note_data in _active_notes:
@@ -1044,6 +1045,11 @@ func _register_judgment(judgment: String, note_data: Dictionary) -> void:
 	if _combo > _max_combo:
 		_max_combo = _combo
 
+	## Flash the lane on successful hits.
+	var lane_idx: int = int(note_data.get("lane", -1))
+	if judgment != "miss" and lane_idx >= 0 and lane_idx < _lanes.size():
+		_flash_lane(lane_idx, judgment)
+
 	_update_meters()
 
 
@@ -1275,8 +1281,8 @@ func _spawn_fade_sprite(texture: Texture2D, at_position: Vector2, duration: floa
 
 func _note_position_or_timing_line(note_data: Dictionary) -> Vector2:
 	var lane: int = int(note_data.get("lane", 0))
-	var lane_x: float = 475.0 + float(lane) * 100.0
-	var timing_y: float = 400.0
+	var lane_x: float = 435.0 + float(lane) * 114.0
+	var timing_y: float = 410.0
 	var node = note_data.get("node")
 	if node is Node2D and is_instance_valid(node):
 		return (node as Node2D).position
@@ -1300,3 +1306,18 @@ func _play(key: String) -> void:
 	if stream is AudioStream:
 		_audio_player.stream = stream
 		_audio_player.play()
+
+
+## Flash a lane ColorRect briefly on hit for visual feedback.
+func _flash_lane(lane_idx: int, judgment: String) -> void:
+	if lane_idx < 0 or lane_idx >= _lanes.size():
+		return
+	var lane_rect: ColorRect = _lanes[lane_idx]
+	if lane_rect == null:
+		return
+	## Brass #b89868 tint at varying opacity based on judgment quality.
+	var flash_alpha: float = 0.35 if judgment == "perfect" else 0.2
+	var original_color: Color = lane_rect.color
+	lane_rect.color = Color(0.722, 0.596, 0.408, flash_alpha)
+	var tween := create_tween()
+	tween.tween_property(lane_rect, "color", original_color, 0.2)

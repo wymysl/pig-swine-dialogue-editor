@@ -13,11 +13,13 @@
                 "The rent is six weeks overdue.",
                 "Six weeks under the surface. The landlord knocks on the hull. Politely. The polite knock is somehow worse than a loud one.",
                 "Can a firm sail while six weeks underwater? I have asked myself this. The honest answer appears to be yes, on momentum.",
+                {"speaker": "pig", "text": "There is also the printer lease, which has lapsed, and which I have been renewing by telephone every Thursday, and which the leasing company has stopped answering the telephone about, which is new."},
                 "So. We float. In the way that boats with leaks float, which is to say, less every morning.",
                 {"speaker": "cula", "text": "Six weeks. Understood."},
                 "Anyway. I'm digressing. This is your first day, and we need you to start immediately. We have a case to take care of.",
                 "Mr. Murrow has the folder. Mr. Murrow knows the— ask Mr. Murrow.",
-                {"speaker": "cula", "text": "I'll find him."}
+                {"speaker": "cula", "text": "I'll find him."},
+                {"speaker": "pig", "text": "Right. Right. Yes. Welcome to Pig & Swine."}
             ],
             "on_dismiss": [
                 {"set": "chapter1.met_pig", "value": true},

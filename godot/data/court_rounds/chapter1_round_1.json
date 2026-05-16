@@ -918,9 +918,10 @@
     ],
     "victory_resolution": {
       "evaluation_order": [
-        "narrow_victory",
         "strong_victory",
-        "standard_victory"
+        "standard_victory",
+        "narrow_victory",
+        "blunder_recovered"
       ],
       "primary_fact_flags": [
         "_fact.landlord_knew_address",
@@ -929,22 +930,6 @@
         "_fact.renumbering_2015_documented"
       ],
       "branches": [
-        {
-          "id": "narrow_victory",
-          "when": "primary_fact_count <= 1 || judicial_patience <= 1 || chapter1.proposed_frame == 'merits_defence'",
-          "sets": [
-            {
-              "path": "chapter1.court_won_procedural_reset",
-              "value": true
-            },
-            {
-              "path": "chapter1.court_outcome",
-              "value": "procedural_reset_narrow"
-            }
-          ],
-          "result_text": "DESIGN_TODO",
-          "_status_note": "DESIGN_TODO - Narrow win only; the bench grants a reset but makes clear counsel reached it on a thinner record or thinner patience."
-        },
         {
           "id": "strong_victory",
           "when": "primary_fact_count >= 4 && judicial_patience >= 4",
@@ -955,7 +940,7 @@
             },
             {
               "path": "chapter1.court_outcome",
-              "value": "procedural_reset_with_costs"
+              "value": "strong"
             }
           ],
           "result_text": "DESIGN_TODO",
@@ -971,11 +956,43 @@
             },
             {
               "path": "chapter1.court_outcome",
-              "value": "procedural_reset_full"
+              "value": "standard"
             }
           ],
           "result_text": "DESIGN_TODO",
           "_status_note": "DESIGN_TODO - Standard procedural reset; competent result, no collapse, but without the stronger costs variant."
+        },
+        {
+          "id": "narrow_victory",
+          "when": "primary_fact_count >= 2 || chapter1.proposed_frame != 'defective_service_135bis'",
+          "sets": [
+            {
+              "path": "chapter1.court_won_procedural_reset",
+              "value": true
+            },
+            {
+              "path": "chapter1.court_outcome",
+              "value": "narrow"
+            }
+          ],
+          "result_text": "DESIGN_TODO",
+          "_status_note": "DESIGN_TODO - Narrow win only; the bench grants a reset but makes clear counsel reached it on a thinner record or thinner patience."
+        },
+        {
+          "id": "blunder_recovered",
+          "when": "primary_fact_count <= 1 || judicial_patience <= 1 || chapter1.decoy_incapacity == true",
+          "sets": [
+            {
+              "path": "chapter1.court_won_procedural_reset",
+              "value": true
+            },
+            {
+              "path": "chapter1.court_outcome",
+              "value": "blunder-recovered"
+            }
+          ],
+          "result_text": "DESIGN_TODO",
+          "_status_note": "DESIGN_TODO - The procedural reset remains available, but the court, Murrow, or an ally has to recover the motion from a bad packet."
         }
       ]
     }

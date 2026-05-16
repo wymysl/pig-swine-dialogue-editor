@@ -8,9 +8,12 @@
             "lines": [
                 "Excuse me, only employees are allowed... oh.",
                 "Of course. The new hire. Dr. A. Cula, good morning! We've been expecting you.",
-                "Mr. Pig is at the case board. He'll want to say hello first.",
-                "Then, you'll want to pick up your blue folder. It's on the second pile from the left.",
-                {"speaker": "asia", "text": "The archive is through that door, and Mr. Murrow is in there with the case file whenever you're ready for him."}
+                "Mr. Pig mentioned you'd be starting today. He mentioned it several times, actually.",
+                {"speaker": "cula", "text": "Oh..."},
+                {"speaker": "asia", "text": "He's at his desk. He'll want to speak with you first."},
+                "Then, you'll want to pick up your blue folder. It's on the second pile from the left. Mr. Murrow put a sticky note on it. The sticky note says 'Cula' and nothing else, which is how you know it's from Mr. Murrow.",
+                {"speaker": "asia", "text": "The archive is through that door, and Mr. Murrow is in there with the case file whenever you're ready for him."},
+                {"speaker": "cula", "text": "Thank you."}
             ],
             "on_dismiss": [
                 {"set": "chapter1.met_asia", "value": true}
@@ -25,9 +28,9 @@
             "options": {
                 "write_path": "chapter1.state_choice",
                 "choices": [
-                    {"text": "Good morning. Dr. A. Cula, reporting for duty.", "value": "professional", "trust_delta": 1},
-                    {"text": "Good morning, you must be Asia? I saw you on the website. Cula, the new hire. Pleasure to meet you.", "value": "friendly", "trust_delta": 2},
-                    {"text": "Dr. A Cula, here to see Mr. Pig.", "value": "dry", "trust_delta": 0}
+                    {"text": "Good morning. Dr. A. Cula, reporting for duty.", "value": "professional"},
+                    {"text": "Good morning, you must be Asia? I saw you on the website. Cula, the new hire. Pleasure to meet you.", "value": "friendly"},
+                    {"text": "Dr. A Cula, here to see Mr. Pig.", "value": "dry"}
                 ],
                 "chain": true
             },
@@ -36,25 +39,40 @@
         {
             "id": "cula_approach_response_dry",
             "trigger": "!chapter1.met_asia && chapter1.state_choice == 'dry'",
-            "lines": ["Oh."],
+            "lines": [
+                "Oh.",
+                {"speaker": "asia", "text": "Dr. A. Cula. Good morning. We've been expecting you — well, Mr. Pig has been expecting you. I've been expecting the courier, but you're here first."}
+            ],
             "once": true,
             "chain": true
         },
         {
             "id": "state_1_response_friendly",
             "trigger": "chapter1.state_choice == 'friendly'",
-            "lines": ["Oooh no, I told them not to upload that picture, I was hungover that day! I'm sorry, I meant to say..."],
+            "lines": [
+                "Oooh no, I told them not to upload that picture, I was hungover that day! I'm sorry, I meant to say...",
+                {"speaker": "asia", "text": "Dr. A. Cula, good morning! We've been expecting you."}
+            ],
             "chain": true,
             "once": true
+        },
+        {
+            "id": "state_1_response_professional",
+            "trigger": "chapter1.state_choice == 'professional'",
+            "lines": ["Dr. A. Cula, good morning! We've been expecting you."],
+            "once": true,
+            "chain": true
         },
         {
             "id": "first_welcome",
             "trigger": "!chapter1.met_asia",
             "lines": [
-                "Dr. A. Cula, good morning! We've been expecting you.",
-                "Mr. Pig is at the case board. He'll want to say hello first.",
-                "Then, you'll want to pick up your blue folder. It's on the second pile from the left.",
-                {"speaker": "asia", "text": "The archive is through that door, and Mr. Murrow is in there with the case file whenever you're ready for him."}
+                {"speaker": "asia", "text": "Mr. Pig mentioned you'd be starting today. He mentioned it several times, actually."},
+                {"speaker": "cula", "text": "Oh..."},
+                {"speaker": "asia", "text": "You should talk to him first, he'll want to say hello. He's the loudest crisis in the room."},
+                "Then, you'll want to pick up your blue folder. It's on the second pile from the left. Mr. Murrow put a sticky note on it. The sticky note says 'Cula' and nothing else, which is how you know it's from Mr. Murrow.",
+                {"speaker": "asia", "text": "The archive is through that door, and Mr. Murrow is in there with the case file whenever you're ready for him."},
+                {"speaker": "cula", "text": "Thank you."}
             ],
             "on_dismiss": [
                 {"set": "chapter1.met_asia", "value": true}
@@ -75,6 +93,9 @@
     "idle_flavor": [
         "I have filed three motions, answered five calls, and labelled a sandwich urgent. We are having a very productive collapse.",
         "Mr. Pig panics. Mr. Murrow thinks. Crab suspects. Whimsy performs. I schedule the apocalypse.",
-        "If anyone asks, the office is running smoothly. If no one asks, please bring me the blue folder."
+        "If anyone asks, the office is running smoothly. If no one asks, please bring me the blue folder.",
+        "The sandwich in the fridge labelled 'ASIA — TUESDAY' is mine. The label is clear. The label has always been clear.",
+        "Ah — Dr. A. Cula. I'm just on the phone. One moment.",
+        "One moment — yes. The calendar. No, the other calendar."
     ]
 }

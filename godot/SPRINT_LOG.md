@@ -1220,3 +1220,232 @@ Verification:
 - Acceptance to run on host: `godot --headless --path godot --script tests/test_save_migration_v14_v15.gd --log-file /tmp/pig_v14_v15.log` → expected EXIT 0, 7/7 PASS.
 - Regression: `godot --headless --path godot --script tests/test_save_migration_v12_v13.gd` → should still pass (no migration-chain changes).
 - `godot --headless --path godot --script tests/test_smoke.gd` → **EXIT 0** ✅ (confirmed by human, 2026-05-15).
+
+---
+
+**Session 39b — 2026-05-15 — Code/Design — Visual playtest (Godot MCP) + dialogue editor trust_path validation.**
+
+Ran project live via `mcp__godot__run_project` (bypasses macOS TCC crash). Debug output revealed `DialogueRunner: unresolved options.trust_path 'asia'` — a startup error in `data/dialogues/asia.json` `cula_approach` state.
+
+Root cause: `trust_path` was set to the bare string `"asia"` (no dot-namespace prefix). The engine's `_validate_state()` `push_error`s on any `trust_path` that doesn't resolve to a key in `State.data`. The value was entered via the dialogue editor, which accepted it without complaint.
+
+**Fix 1 — `data/dialogues/asia.json`:** Removed `trust_path: "asia"` and all `trust_delta` values from `cula_approach` choices. The block already had `write_path: "chapter1.state_choice"` which is sufficient for branching; no trust counter applies to Asia.
+
+**Fix 2 — `tools/Dialogue Editor.html`:** Added two-tier validation for the `trust_path` field:
+
+- `renderTrustPathFormatError(path)` — fires immediately on any non-empty value that doesn't match `^[a-z_][a-z0-9_]*(\.[a-z_][a-z0-9_]*)+$`. Shows inline ⚠ "invalid format — must be namespace.key" without requiring state.gd to be loaded. Bare words like `"asia"` are caught here.
+- `isTrustPathValid(path)` — shared helper used by both the format check and the trust_delta gate.
+- `trust_delta` inputs disabled when `trust_path` is absent or fails format check. Disabled style: 35% opacity + dashed border. Title changes to explain why. Sync fires on: initial options-block render, every `trust_path` keystroke, every `rebuildChoices` call (add/delete/reorder).
+- Format error takes priority over the existing "not declared in state.gd" undeclared warning.
+
+Human confirmed visual playtest: everything works after the asia.json fix.
+
+Files changed: `data/dialogues/asia.json`, `tools/Dialogue Editor.html`.
+Verification: dialogue editor is a standalone HTML file — no automated test; validated by code review of the four edit sites (CSS, `renderTrustPathFormatError`/`isTrustPathValid`, `makePathField` modification, trust_delta initial-disabled render).
+
+---
+
+**Session 40 — 2026-05-15 — Code/Art — Coffee minigame visual overhaul (Palette K: Praga Nowa).**
+
+The coffee minigame looked like a debug screen — flat near-black background, cold gray `ColorRect` lanes, default engine fonts, microscopic 32px prompt icons, and no connection to any game palette. Overhauled to use **Palette K (Praga Nowa)** — the gentrified Praga third-wave coffee palette, which is the natural fit for Café Paragraf.
+
+Visual changes:
+- **Background**: `Color(0.08, 0.06, 0.1)` → Espresso `#3a2a1c` — warm dark brown that reads as café wood.
+- **Lane tracks**: Cold gray `Color(0.15, 0.15, 0.2, 0.5)` → warm espresso-tinted `Color(0.165, 0.118, 0.067, 0.3)`.
+- **Timing line**: Rescaled from near-invisible `0.104` to `0.35` Y-scale; recolored from bright yellow to Brass `#b89868`.
+- **Meters**: Brew Quality fill → Sage Green `#98a888`; Bitterness fill → Exposed Brick `#a8543a`; backgrounds → Matte Black `#2a2826` with Mushroom Gray `#888078` border. Meter labels now use explicit font sizes and Chalk White `#ecebe8`.
+- **Phase label**: 38px → 42px, explicit Chalk White color.
+- **Key hints**: All hints recolored to Chalk White at 50% opacity, font 20→18px for less visual noise.
+- **Result panel**: Cold near-black → warm Espresso; Grade label in Brass (28px), Buff label in Chalk White (20px), Detail in Mushroom Gray (16px).
+- **Intro card**: Same Espresso tinting; title in Brass, instructions in Chalk White.
+- **Pause panel**: Backdrop tinted warm; panel uses Espresso.
+- **Sparkle particles**: Gold → Brass.
+- **Coffee machine/cup**: Repositioned for better balance (160→140, higher cup).
+- **Portrait**: Repositioned to `(140, 140)`.
+
+Script changes (`coffee_brewing.gd`):
+- Prompt icons now spawn at `scale = Vector2(1.5, 1.5)` — 32px icons render at ~48px for readability.
+- Lane positions updated to match new scene layout (`435 + lane * 114` instead of `475 + lane * 100`).
+- Added `_flash_lane()` — on Perfect/Good/Okay hits, the corresponding lane `ColorRect` briefly flashes Brass `#b89868` at 35%/20% opacity and tweens back over 0.2s. Gives immediate visual feedback that was completely missing.
+
+Asset changes:
+- Regenerated 4 meter sprites via `tools/regenerate_coffee_meters.py` with Praga Nowa palette colors.
+
+Outstanding Art-owned work:
+- Cup fill sprites (`coffee_cup_fill_01.png`, `coffee_cup_fill_02.png`) are broken (sub-200 byte placeholders).
+- Prompt icons (32×32) are single-color dots — need readable pixel-art at 48×64px.
+- Feedback sprites (`bitter_foam.png`, `sparkle.png`, `puff_offended.png`) are placeholder quality.
+
+Files changed: `scenes/minigames/coffee_brewing.tscn`, `scripts/systems/minigames/coffee_brewing.gd`, `art/minigames/coffee/meter_brew_bg.png`, `art/minigames/coffee/meter_brew_fill.png`, `art/minigames/coffee/meter_bitter_bg.png`, `art/minigames/coffee/meter_bitter_fill.png`.
+Files created: `tools/regenerate_coffee_meters.py`.
+Acceptance:
+- `godot --headless --path . --script tests/test_smoke.gd` → **EXIT 0** ✅
+- `godot --headless --path . --script tests/test_runner.gd` → **EXIT 0** ✅
+- Visual playtest delegated to human.
+
+---
+
+**Session 41 — 2026-05-16 — Design (proposal-only) — PROPOSAL_player_driven_argument.md v3 (motion-packet reshape).**
+
+Revised `godot/PROPOSAL_player_driven_argument.md` from v2 (decoy-frame selection) to v3 (motion-packet assembly) per human directive. No code or runtime data changed. Doc-only.
+
+Reshape:
+- Chapter 1 challenge is reframed from "pick which named theory the case is" (v2 frame-selection quiz) to "assemble the KPC Art. 135-bis § 2 motion-to-set-aside packet" — four required elements (non-current address; landlord knowledge; timely actual-notice motion; no third-party authority/cure), each established by surfacing supporting evidence. Maps 1:1 onto the four `resolution_weight: primary` fact flags already authored in `data/court_rounds/chapter1_round_1.json`.
+- Decoy roster preserved from v2 with one addition: D1 merits, D2 notice-period under Tenancy Act, D3 standing/wrong-party (post-2018 transfer), D4 overbroad-remedy (NEW in v3), D5 incapacity-by-age (the punished blunder; carried over with same -5/-4 deltas and Crab-refusal consequence).
+- Decoys become explicit "include this fallback theory?" decisions at named NPC moments (Crab/Murrow/Whimsy), not mutually-exclusive frame picks. Element bools auto-set when supporting evidence is surfaced.
+- Address-renumbering target standardised on #7 → #12 per directive — already matches the runtime data (`renewal_2019_number_twelve` in `evidence_ch1.json`; "The building above us reads number twelve" in `crab.json` `before_binder`). Story.txt still says #7 → #5; flagged in SPEC_SYNC (§11) for the human to apply in a future spec pass.
+
+Data-model changes the v3 proposal specifies (NOT IMPLEMENTED — proposal-only):
+- Rename `argument_frames_ch1.json` → `motion_elements_ch1.json` (or v3 schema in place). Replaces v2 frames with `elements{}` (4 required) and `decoys{}` (5).
+- `evidence_ch1.json` schema bump: replace `points_to_frames` with `supports_element` + `supports_decoy`. One new card (`resident_no_7_no_authority`) for element 4.
+- `chapter1_round_1.json` Phase 2: replace `frame_gates` with `packet_gates`; three new judge counter-questions (`jq_notice_period_subordinate`, `jq_standing_assignment`, `jq_capacity_chronological`); victory_resolution branches read element_count + decoy_count.
+- SAVE_VERSION 17 → 18: removes `chapter1.proposed_frame` string; adds 9 packet bools (4 element_*, 5 decoy_*) + the 5 deferred v2 `surfaced_*` bools. All defaulting safe.
+- Three NPC dialogue rewrites (`crab.json` options-block payload reshape; `murrow.json` + `whimsy.json` decoy-decision states appended).
+
+Files changed: `godot/PROPOSAL_player_driven_argument.md` (full v2→v3 rewrite; ~430 lines).
+Files NOT changed: any runtime `.gd`, `.tscn`, `.json` under `godot/`; root spec files per AGENTS.md "only the human edits these".
+
+Implementation checklist (handed to next pass, in suggested execution order):
+1. Code — SAVE_VERSION 17→18 migration: drop `chapter1.proposed_frame`; add 9 packet bools + 5 `surfaced_*` bools; update `State.reset_state()`; new `tests/test_save_migration_v17_v18.gd`.
+2. Code — rename/replace `argument_frames_ch1.json` → `motion_elements_ch1.json` per §3.1 schema (4 elements + 5 decoys, Code-pass fields).
+3. Code — `evidence_ch1.json` schema bump: strip `points_to_frames`, add `supports_element` / `supports_decoy` on every entry; add new `resident_no_7_no_authority` card.
+4. Code — `chapter1_round_1.json` Phase 2 `packet_gates` block replacing `frame_gates`; new counter-questions Code-pass; victory_resolution branches per §3.4.
+5. Code — `data/chapters/chapter1.json` `new_state_flags` updated; remove `proposed_frame`, add the 14 bools; dialogue editor enum registry catches change automatically per Session 39b precedent.
+6. Design — `crab.json`: replace `first_meeting_with_binder` / `after_binder_first_engagement` three-tonal-option blocks with packet-shaping options (per-element bool writes); add `post_halina_decoy_incapacity` state; preserve all existing on_dismiss writes; address forms per AGENTS.md.
+7. Design — `murrow.json`: collapse eight-line briefing to four observation lines; append `first_meeting_decoy_notice_period` + `archive_walkthrough_decoy_merits` decision states.
+8. Design — `whimsy.json`: append `before_meeting_decoy_standing` + `before_meeting_decoy_overbroad_remedy` decision states; integrate property-transfer evidence surfacing.
+9. Design — `motion_elements_ch1.json` text fields (display_name, summary, wrong_shape_correction, present_cue per element/decoy); `evidence_ch1.json` `resident_no_7_no_authority` text; `chapter1_round_1.json` counter-question text.
+10. Design — `asia_hint_states_ch1.json` element-missing hint signposts.
+11. QA — `tests/test_save_migration_v17_v18.gd`; new `tests/test_motion_packet_assembly.gd` (per-element auto-set; per-decoy explicit-write; packet-completeness scoring); extend `tests/test_chapter1_phase_b.gd` for the decoy-decision paths; extend `tests/test_chapter1_flag_coverage.gd`.
+12. QA — full headless suite (smoke, runner, save migrations chain v1→v18, focused phase-b, halina-intro-chain, postcard-chain) + Web export.
+13. Verification step (REQUIRED) — playable walk Beat 4 → court ready: surface all four elements without decoys → court_outcome should compute `procedural_reset_full` or `procedural_reset_with_costs`; second walkthrough including D5 (incapacity) → court_outcome `procedural_reset_bench_initiative` or `procedural_reset_after_apology` reachable; Crab refusal mechanic fires.
+
+Acceptance for THIS session (proposal-only):
+- `jq empty godot/PROPOSAL_player_driven_argument.md` — N/A (Markdown).
+- Markdown lint: not run; doc-only, no runtime impact.
+- No `godot --headless` runs required for a docs-only change per AGENTS.md §Verification expectations.
+
+Open questions for the human (proposal §8): seven items; defaults named in §8 closer. SPEC_SYNC items (§11): six root-spec changes for the human's future spec pass — story.txt Beat 4/9/12 renumbering target #7 → #12, court_outcome enum extension, packet-not-frame register note in style_canon.txt, Phase 1/Phase 2 documentation in battle_mechanics.txt if not already present.
+
+---
+
+**Session 42 — 2026-05-16 — Code/QA — motion-packet state/data foundation (v17→v18).**
+
+Implemented the Chapter 1 motion-packet data/state foundation requested after `PROPOSAL_player_driven_argument.md`.
+
+Changes:
+- `scripts/autoload/state.gd`
+  - `SAVE_VERSION` bumped `17 -> 18`.
+  - Added explicit Chapter 1 booleans for surfaced evidence:
+    - `surfaced_payment_receipts`, `surfaced_notice_timeline`, `surfaced_tenancy_act_window`, `surfaced_property_transfer`, `surfaced_sikorska_age`, `surfaced_resident_no_authority`.
+  - Added explicit packet-slot booleans:
+    - required elements: `element_non_current_address`, `element_landlord_knowledge`, `element_timely_actual_notice_motion`, `element_no_third_party_cure`.
+    - optional decoys/blunders: `decoy_merits`, `decoy_notice_period`, `decoy_standing_wrong_party`, `decoy_overbroad_remedy`, `decoy_incapacity`.
+  - Kept `proposed_frame`, `judicial_patience`, `witness_cooperation`, `court_outcome`; updated comments/enums to packet model.
+- `scripts/systems/save.gd`
+  - Added v18 version-history note.
+  - Added `if old_version < 18` migration step to backfill all 15 new v18 booleans (idempotent, non-destructive).
+- `tests/test_save_migration_v17_v18.gd` (new)
+  - Covers: SAVE_VERSION floor, v17→v18 defaults, preservation, idempotency, reset_state coverage, missing-chapter guard, full v1→v18 chain regressions.
+- `data/evidence_ch1.json`
+  - Rewritten to schema v3 where evidence maps to packet slots (`supports_packet_slots`) instead of `points_to_frames`.
+  - Added `resident_no_7_no_authority` evidence entry.
+  - Preserved Design-owned text fields as-is.
+- `data/argument_frames_ch1.json`
+  - Rewritten to schema v3 keeping selectable frames/blunders while adding packet-completeness consumption (`packet_completeness_inputs`, per-entry `packet_requirements`, `consumes_packet_completeness`).
+  - Kept `incapacity_defense` selectable with sharp penalties (`judicial_patience -5`, `halina_trust -4`, `burns_round_attempt: true`).
+  - Added selectable `overbroad_remedy` blunder entry.
+- `data/chapters/chapter1.json`
+  - Registry updated with every new v18 flag.
+  - `chapter1.proposed_frame` enum extended to include `overbroad_remedy`.
+  - Added explicit `chapter1.court_outcome` enum values:
+    - `procedural_reset_full`, `procedural_reset_with_costs`, `procedural_reset_narrow`, `procedural_reset_bench_initiative`, `procedural_reset_after_apology`.
+
+Verification:
+- `find godot/data -name '*.json' -print0 | xargs -0 -n1 jq empty` -> **EXIT 0**.
+- `godot --headless --path godot --script tests/test_save_migration_v17_v18.gd --log-file /tmp/pig_swine_save_migration_v17_v18.log` -> **EXIT 0**, `137/137 PASS`.
+- `godot --headless --path godot --script tests/test_smoke.gd --log-file /tmp/pig_swine_smoke_v18_motion_packet.log` -> **EXIT 0**.
+
+Notes:
+- Headless runs still print pre-existing dialogue-catalogue validation errors from draft/duplicate dialogue files already present in the worktree (unrelated to this state/data pass).
+- macOS headless logger crash workaround applied by always passing `--log-file /tmp/...`.
+
+---
+
+**Session 43 — 2026-05-16 — Code/QA — in-game motion packet assembly surface (BlueBinder v1).**
+
+Implemented the minimal in-game Chapter 1 motion-packet assembly surface using existing binder UI conventions.
+
+Changes:
+- `scenes/ui/blue_binder.tscn`
+  - Added right-side "Motion Packet" panel with:
+    - four required slot selectors
+      1) Address non-current
+      2) Landlord knowledge
+      3) Actual-notice window
+      4) No third-party authority
+    - separate requested-remedy selector
+    - optional theory toggles
+    - apply-assessment button + status line
+- `scripts/ui/blue_binder.gd`
+  - Upgraded binder from read-only to packet assembly interaction.
+  - Evidence visibility now uses surfaced-state flags only (no hidden-card hunting).
+  - Slot assignment writes selected evidence ids to `chapter1.packet_slot_*` and syncs `element_*` booleans.
+  - Requested remedy writes to `chapter1.packet_requested_remedy`.
+  - Optional theory toggles write `decoy_*` booleans.
+  - `decoy_incapacity` is gated until `chapter1.halina_met == true`.
+  - Packet scoring allows wrong-but-credible assemblies; only hard gate is minimum required elements from `argument_frames_ch1.json` (`defective_service_135bis.packet_requirements.minimum_required_elements`).
+  - `apply_packet_assessment()` writes `chapter1.proposed_frame`, `chapter1.judicial_patience`, and `chapter1.decoy_overbroad_remedy`.
+- `scripts/autoload/state.gd`, `scripts/systems/save.gd`, `data/chapters/chapter1.json`
+  - Added persistent packet-selection fields and migration support:
+    - `packet_slot_address_non_current`
+    - `packet_slot_landlord_knowledge`
+    - `packet_slot_actual_notice_window`
+    - `packet_slot_no_third_party_authority`
+    - `packet_requested_remedy`
+  - Save version advanced to 19 with v18→v19 migration backfill.
+- `scripts/systems/battle/battle_controller.gd`
+  - Added merits-frame compatibility helper so both legacy `merits_defence` and current `substantive_defense` are treated as merits pivots in round logic.
+- `tests/test_motion_packet_assembly.gd` (new)
+  - Focused binder/packet tests for surfaced evidence filtering, slot/remedy writes, incapacity gating, and packet apply gate/scoring writes.
+- `tests/test_save_migration_v18_v19.gd` (new)
+  - Migration coverage for new packet-selection persistence fields.
+
+Verification:
+- `godot --headless --path godot --script tests/test_motion_packet_assembly.gd --log-file /tmp/pig_swine_motion_packet_test.log` -> **EXIT 0**, `21/21 PASS`.
+- `godot --headless --path godot --script tests/test_save_migration_v18_v19.gd --log-file /tmp/pig_swine_save_v18_v19.log` -> **EXIT 0**, `35/35 PASS`.
+- `godot --headless --path godot --script tests/test_smoke.gd --log-file /tmp/pig_swine_smoke_motion_packet.log` -> **EXIT 0**.
+
+Notes:
+- Test runs still emit pre-existing dialogue-catalogue validation errors from duplicate/draft dialogue files present in the current worktree; these are unchanged by this packet assembly implementation.
+
+---
+
+**Session 44 - 2026-05-16 - Code/QA - court consumes assembled Chapter 1 packet.**
+
+Wired the court-round controller to grade the in-game motion packet instead of relying only on the older frame string.
+
+Changes:
+- `scripts/systems/battle/battle_controller.gd`
+  - Added packet scoring for the four Chapter 1 elements: non-current address, landlord knowledge, timely actual-notice motion, and no-third-party authority.
+  - Round 1 now consumes the assembled packet once and sets starting court state from supported evidence, chosen frame, remedy, and blunder flags.
+  - Strong / standard / narrow / blunder-recovered outcomes now drive `chapter1.court_outcome`.
+  - Blunder packets apply judicial-patience penalties and report recovery source from court redirect, Whimsy, or Crab.
+  - Incapacity blunder applies the Halina trust penalty, withdraws/refuses Crab support, records an icy judge reaction, and still preserves the Chapter 1 procedural-reset floor.
+- `data/chapters/chapter1.json`, `data/court_rounds/_schema.md`, `data/court_rounds/chapter1_round_1.json`
+  - Updated court outcome vocabulary and round-one victory-resolution notes to the packet-result model.
+- `tests/test_court_packet_scoring.gd` (new)
+  - Covers strong, standard, narrow, ordinary blunder recovery, incapacity consequences, and final court flag outcomes.
+
+Verification:
+- `godot --headless --path godot --script tests/test_court_packet_scoring.gd --log-file /tmp/pig_swine_court_packet.log` -> **EXIT 0**, `25/25 PASS`.
+- `godot --headless --path godot --script tests/test_battle_controller.gd --log-file /tmp/pig_swine_battle_controller_packet.log` -> **EXIT 0**, `18/18 PASS`.
+- `find godot/data -name '*.json' -print0 | xargs -0 -n1 jq empty` -> **EXIT 0**.
+- `godot --headless --path godot --script tests/test_smoke.gd --log-file /tmp/pig_swine_smoke_packet_court.log` -> **EXIT 0**.
+- `godot --headless --path godot --script tests/test_runner.gd --log-file /tmp/pig_swine_runner_packet_court.log` -> **EXIT 0**.
+- `godot --headless --path godot --export-release "Web" exports/web/index.html --log-file /tmp/pig_swine_export_packet_court.log` -> **EXIT 0**; export artifact present at `godot/exports/web/index.html`.
+- `git diff --check` -> **EXIT 0**.
+
+Notes:
+- Headless runs still print pre-existing dialogue-catalogue validation errors from duplicate/draft dialogue files already present in the worktree; this court packet pass did not change those files.
+- The web export completed with exit 0 but Godot printed its existing macOS editor-settings save warning for `/Users/piotr/Library/Application Support/Godot/editor_settings-4.6.tres`.

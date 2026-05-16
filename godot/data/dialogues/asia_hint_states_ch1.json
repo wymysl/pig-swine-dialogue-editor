@@ -1,14 +1,16 @@
 {
-    "version": 2,
+    "version": 3,
     "npc_id": "asia_hint_states_ch1",
     "display_name": "Asia",
+    "_provenance": "v3 motion-packet update 2026-05-16 per PROPOSAL_player_driven_argument.md §1 (Asia subsection) + §41 SPRINT_LOG checklist item 10. Insertions hint toward missing packet elements via front-desk observation (binder pages not yet turned, neighbour rang to confirm the witness slot, postal ink looks right) — Asia signposts gaps without naming doctrine. The cold-acknowledgement state for decoy_incapacity gives Asia one beat of removed warmth (no doctrine, no rebuke; a withheld smile). Bonus-evidence states adapted from the player-driven hint draft at data/dialogues/asia_hints_player_driven_2026-05-16.json. Address forms unchanged per AGENTS.md §Address forms: Asia uses 'Dr. A. Cula' and 'Mr. Murrow' / 'Mr. Crab' / 'Mr. Whimsy' always.",
     "states": [
         {
             "id": "hint_pig_revealed_crisis",
-            "trigger": "!chapter1.pig_revealed_crisis",
+            "trigger": "!chapter1.pig_revealed_crisis && chapter1.met_asia",
             "_comment": "State 1 — player has not yet seen Pig's Beat-2 panic line; point toward Mr. Pig.",
             "lines": ["You should talk to Mr. Pig first. He's the loudest crisis in the room."],
-            "tags": ["hint_state", "pig_revealed_crisis", "warm_direct", "phase7_v1_a_p3"]
+            "tags": ["hint_state", "pig_revealed_crisis", "warm_direct", "phase7_v1_a_p3"],
+            "once": true
         },
         {
             "id": "hint_met_murrow",
@@ -25,30 +27,44 @@
             "tags": ["hint_state", "has_law_binder", "warm_direct", "phase7_v1_a_p3"]
         },
         {
+            "id": "hint_binder_unread_envelope",
+            "trigger": "chapter1.has_law_binder == true && !chapter1.binder_read_envelope && !chapter1.recruited_crab",
+            "_comment": "v3 NEW hint — packet-element gap (E1 / E2 evidence). Fires after binder pickup but before Cula has read the envelope page with Crab. Asia signposts the binder is open on Cula's desk; no doctrine named. Adapted from data/dialogues/asia_hints_player_driven_2026-05-16.json.",
+            "lines": ["Mr. Murrow left the binder open on your desk this morning, Dr. A. Cula. Page one is the envelope."],
+            "tags": ["hint_state", "binder_unread_envelope", "warm_direct", "player_driven_v3"]
+        },
+        {
+            "id": "hint_binder_unread_renewal",
+            "trigger": "chapter1.has_law_binder == true && chapter1.binder_read_envelope == true && !chapter1.binder_read_renewal && !chapter1.recruited_crab",
+            "_comment": "v3 NEW hint — packet-element gap (E2 evidence). Fires after the envelope page has been read but the renewal page has not. 'In three colours' references the canonical binder pickup line. Adapted from the player-driven hint draft.",
+            "lines": ["The next tab, Dr. A. Cula. Mr. Murrow flagged it in three colours."],
+            "tags": ["hint_state", "binder_unread_renewal", "warm_direct", "player_driven_v3"]
+        },
+        {
             "id": "hint_recruited_crab",
             "trigger": "chapter1.has_law_binder && !chapter1.recruited_crab",
             "_comment": "State 4 — binder collected; Crab not yet recruited; point toward Crab.",
-            "lines": ["If it's a service problem, Crab will have an opinion. He always has an opinion."],
+            "lines": ["If it's a service problem, Mr. Crab will have an opinion. He always has an opinion."],
             "tags": ["hint_state", "recruited_crab", "warm_direct", "phase7_v1_a_p3"]
         },
         {
             "id": "hint_has_rights_memo",
             "trigger": "chapter1.recruited_crab && !chapter1.has_rights_memo",
             "_comment": "State 5 — Crab recruited; Rights Memo not yet collected; point toward Whimsy at Café Paragraf. Single sanctioned em-dash.",
-            "lines": ["The rights memo may be near Whimsy. Try Café Paragraf — or wherever someone is talking too loudly about fairness."],
+            "lines": ["The rights memo may be near Mr. Whimsy. Try Café Paragraf — or wherever someone is talking too loudly about fairness."],
             "tags": ["hint_state", "has_rights_memo", "warm_direct", "phase7_v1_a_p3"]
         },
         {
             "id": "hint_recruited_whimsy",
             "trigger": "chapter1.has_rights_memo && !chapter1.recruited_whimsy",
-            "_comment": "State 6 — Rights Memo collected; Whimsy not yet recruited; point toward Whimsy and the fair-hearing angle.",
-            "lines": ["Whimsy is useful if pointed at the right legal issue. Try asking him about fair hearing."],
+            "_comment": "State 6 — Rights Memo collected; Whimsy not yet recruited; point toward Whimsy and the fair-hearing register.",
+            "lines": ["Mr. Whimsy is useful if pointed at the right page. Ask him what's in the memo."],
             "tags": ["hint_state", "recruited_whimsy", "briskly_prioritising", "phase7_v1_a_p3"]
         },
         {
             "id": "hint_halina_arrived_announcement",
             "trigger": "chapter1.recruited_whimsy && !chapter1.halina_arrived",
-            "_comment": "Chapter 1 Phase B.3 — Beat 7 close announcement. Fires when Cula returns to the office after recruiting Whimsy. On dismiss, sets halina_arrived=true which (a) flips Halina's NPC presence_flags gate so she becomes visible in the meeting room, and (b) makes hint_halina_met (state 7) the next reachable line. Single line lifted from halina.json client_meeting_<stance> opening, repositioned as a pre-meeting cue per V1.4 pack §B.2. Priority-ordered ahead of hint_halina_met because both triggers match when recruited_whimsy=true && halina_arrived=false.",
+            "_comment": "Chapter 1 Phase B.3 — Beat 7 close announcement. Fires when Cula returns to the office after recruiting Whimsy. On dismiss, sets halina_arrived=true which (a) flips Halina's NPC presence_flags gate so she becomes visible in the meeting room, and (b) makes hint_halina_met (state 7) the next reachable line.",
             "lines": ["Mrs. Sikorska is here. I've shown her into the meeting room."],
             "on_dismiss": [
                 {"set": "chapter1.halina_arrived", "value": true}
@@ -58,14 +74,50 @@
         {
             "id": "hint_halina_met",
             "trigger": "chapter1.recruited_whimsy && !chapter1.halina_met",
-            "_comment": "State 7 — Whimsy recruited; Halina has arrived for Beat 8 client meeting; point toward Mrs. Sikorska in the meeting room. Phase-8 new state.",
+            "_comment": "State 7 — Whimsy recruited; Halina has arrived for Beat 8 client meeting; point toward Mrs. Sikorska in the meeting room.",
             "lines": ["Mrs. Sikorska is in the meeting room. She brought her own folder."],
             "tags": ["hint_state", "halina_met", "warm_direct", "phase7_v1_a_p3"]
         },
         {
+            "id": "hint_decoy_incapacity_office_chill",
+            "trigger": "chapter1.halina_met == true && chapter1.decoy_incapacity == true && !chapter1.entered_court",
+            "_comment": "v3 NEW hint — front-desk acknowledgement of the incapacity blunder. Per the task brief, the incapacity decoy gets cold in-fiction pushback from the firm; Asia's register is the warmth-removed one (she does not lecture; she lands a domestic-admin observation in a colder key). No doctrine named. once:true.",
+            "lines": ["Mr. Murrow asked me to hold his calls, Dr. A. Cula. He didn't say for how long."],
+            "tags": ["hint_state", "decoy_incapacity_office_chill", "warm_direct", "player_driven_v3"],
+            "once": true
+        },
+        {
+            "id": "hint_bonus_evidence_wojcik",
+            "trigger": "chapter1.bonus_evidence_collected == 'wojcik_witness_statement' && !chapter1.entered_court",
+            "_comment": "v3 NEW hint — bonus-evidence acknowledgement. Mrs. Wójcik rang reception to confirm the Friday slot; Asia handles building-corridor calls when the lift breaks, so the second-floor neighbour is in her phonebook. Adapted from the player-driven hint draft.",
+            "lines": ["Mrs. Wójcik rang earlier. She wanted to know whether Friday at fourteen hundred was the time, Dr. A. Cula. I said yes."],
+            "tags": ["hint_state", "bonus_evidence_wojcik", "warm_direct", "player_driven_v3"]
+        },
+        {
+            "id": "hint_bonus_evidence_slip",
+            "trigger": "chapter1.bonus_evidence_collected == 'return_to_sender_slip' && !chapter1.entered_court",
+            "_comment": "v3 NEW hint — bonus-evidence acknowledgement. Asia handles the post every day; she reads the return-to-sender slip as a postal object, not a legal one. The ink-standardisation year is a domestic fact of the kind Asia plausibly knows. Adapted from the player-driven hint draft.",
+            "lines": ["The return-to-sender stamps look right, Dr. A. Cula. Poczta Polska prints the same ink they did in two thousand and ten."],
+            "tags": ["hint_state", "bonus_evidence_slip", "warm_direct", "player_driven_v3"]
+        },
+        {
+            "id": "hint_bonus_evidence_lease",
+            "trigger": "chapter1.bonus_evidence_collected == 'lease_1962_inheritance_1987' && !chapter1.entered_court",
+            "_comment": "v3 NEW hint — bonus-evidence acknowledgement via transit-warmth. Per style_canon.txt Asia voice, transit-system warmth is her idiom; here it surfaces as a railways-housing-stock connection between her grandfather and Halina's father. Adapted from the player-driven hint draft.",
+            "lines": ["Mrs. Sikorska's father worked on the railways, Dr. A. Cula. My grandfather did too. They both had flats from the housing stock."],
+            "tags": ["hint_state", "bonus_evidence_lease", "warm_direct", "transit_warmth", "player_driven_v3"]
+        },
+        {
+            "id": "hint_bonus_evidence_landlord_contact",
+            "trigger": "chapter1.bonus_evidence_collected == 'landlord_contact' && !chapter1.entered_court",
+            "_comment": "v3 NEW hint — bonus-evidence acknowledgement of the high-trust landlord-intimidation reveal. Asia observes affect from the front desk; 'Friday-fourteen-hundred-tired' is court-date anxiety she has seen before, 'Older' is the heavier thing she notices here. Adapted from the player-driven hint draft.",
+            "lines": ["Mrs. Sikorska looked tired today, Dr. A. Cula. Not Friday-fourteen-hundred-tired. Older."],
+            "tags": ["hint_state", "bonus_evidence_landlord_contact", "warm_direct", "player_driven_v3"]
+        },
+        {
             "id": "hint_archive_research_complete",
             "trigger": "chapter1.halina_met && !chapter1.archive_research_complete",
-            "_comment": "State 8 — Beat 8 client meeting concluded; Murrow in archive with binder for Beat 9 research; point toward Mr. Murrow in the archive. Phase-8 new state.",
+            "_comment": "State 8 — Beat 8 client meeting concluded; Murrow in archive with binder for Beat 9 research; point toward Mr. Murrow in the archive.",
             "lines": ["Mr. Murrow is in the archive with the binder. He's been making the disappointed-page-turn sound."],
             "tags": ["hint_state", "archive_research_complete", "warm_direct", "phase7_v1_a_p3"]
         },
@@ -100,7 +152,7 @@
         {
             "id": "hint_coffee_skipped",
             "trigger": "!chapter1.coffee_tutorial_seen && chapter1.court_ready && !chapter1.entered_court",
-            "_comment": "Coffee-result V1.4 — skipped reaction. Per user instruction, the load-bearing gate is chapter1.coffee_tutorial_seen == false; the additional (court_ready && !entered_court) clause scopes the line to the post-readiness, pre-court window so the hint does not fire from game start (when coffee_tutorial_seen is also false). Line verbatim from minigames.txt §Chapter integration — Chapter 1 §Asia return comments, 'Skipped' variant.",
+            "_comment": "Coffee-result V1.4 — skipped reaction. Per user instruction, the load-bearing gate is chapter1.coffee_tutorial_seen == false; the additional (court_ready && !entered_court) clause scopes the line to the post-readiness, pre-court window so the hint does not fire from game start.",
             "lines": ["No coffee? Brave. Not wise, necessarily, but brave."],
             "tags": ["hint_state", "coffee_skipped", "warm_direct", "v1_4_coffee"]
         },

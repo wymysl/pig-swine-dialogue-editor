@@ -369,6 +369,48 @@
     color: var(--text);
   }
   .sim-flags-empty { color: var(--mute, var(--dim)); font-style: italic; padding: 4px 0; }
+  /* Bool flags are clickable — show pointer + accent on hover */
+  .sim-flag-bool {
+    cursor: pointer;
+    border-radius: 2px;
+  }
+  .sim-flag-bool:hover { background: var(--surface-3, var(--surface-2)); }
+  .sim-flag-bool:hover b { color: var(--accent); }
+  /* Non-bool flags are click-to-edit */
+  .sim-flag-editable { cursor: text; border-radius: 2px; }
+  .sim-flag-editable:hover { background: var(--surface-3, var(--surface-2)); }
+  .sim-flag-inline-input {
+    background: var(--bg);
+    color: var(--accent);
+    border: 1px solid var(--accent);
+    border-radius: 2px;
+    font-family: var(--font-mono, monospace);
+    font-size: 10px;
+    padding: 1px 4px;
+    width: 80px;
+    outline: none;
+  }
+  /* Flag-inject form sits below the flags list */
+  .sim-flag-inject {
+    display: flex;
+    gap: 4px;
+    margin-top: 8px;
+  }
+  .sim-flag-inject-input {
+    flex: 1;
+    min-width: 0;
+    background: var(--bg);
+    color: var(--text);
+    border: 1px solid var(--border, var(--divider));
+    border-radius: 3px;
+    font-family: var(--font-mono, monospace);
+    font-size: 9px;
+    padding: 3px 6px;
+    outline: none;
+  }
+  .sim-flag-inject-input:focus { border-color: var(--accent); }
+  .sim-flag-inject-input::placeholder { color: var(--mute, var(--dim)); }
+  .sim-flag-inject-btn { font-size: 10px; padding: 3px 8px; flex-shrink: 0; }
 
   /* Graph-trail integration (optional — module sets sim-visited / sim-current
      classes on .gnode elements while the simulator is open). */

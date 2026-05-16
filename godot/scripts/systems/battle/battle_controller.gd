@@ -129,6 +129,45 @@ const TAXONOMY_PATH: String = "res://data/tag_taxonomy.json"
 const EVIDENCE_PATH: String = "res://data/evidence_ch1.json"
 const FRAMES_PATH: String = "res://data/argument_frames_ch1.json"
 
+const PACKET_SLOT_ADDRESS: String = "element_non_current_address"
+const PACKET_SLOT_KNOWLEDGE: String = "element_landlord_knowledge"
+const PACKET_SLOT_WINDOW: String = "element_timely_actual_notice_motion"
+const PACKET_SLOT_AUTHORITY: String = "element_no_third_party_cure"
+const PACKET_SLOT_ORDER: Array[String] = [
+	PACKET_SLOT_ADDRESS,
+	PACKET_SLOT_KNOWLEDGE,
+	PACKET_SLOT_WINDOW,
+	PACKET_SLOT_AUTHORITY,
+]
+const PACKET_SLOT_STATE_KEYS: Dictionary = {
+	PACKET_SLOT_ADDRESS: "packet_slot_address_non_current",
+	PACKET_SLOT_KNOWLEDGE: "packet_slot_landlord_knowledge",
+	PACKET_SLOT_WINDOW: "packet_slot_actual_notice_window",
+	PACKET_SLOT_AUTHORITY: "packet_slot_no_third_party_authority",
+}
+
+const FRAME_DEFAULT: String = "defective_service_135bis"
+const DEFAULT_REMEDY: String = "procedural_reset"
+const OUTCOME_STRONG: String = "strong"
+const OUTCOME_STANDARD: String = "standard"
+const OUTCOME_NARROW: String = "narrow"
+const OUTCOME_BLUNDER_RECOVERED: String = "blunder-recovered"
+
+const DECOY_FLAG_TO_FRAME: Dictionary = {
+	"decoy_merits": "substantive_defense",
+	"decoy_notice_period": "notice_period_failure",
+	"decoy_standing_wrong_party": "standing_wrong_party",
+	"decoy_overbroad_remedy": "overbroad_remedy",
+	"decoy_incapacity": "incapacity_defense",
+}
+const DECOY_FRAME_PRIORITY: Array[String] = [
+	"incapacity_defense",
+	"standing_wrong_party",
+	"notice_period_failure",
+	"substantive_defense",
+	"overbroad_remedy",
+]
+
 const PHASE_ONE_STARTING_COOPERATION: int = 3
 const PHASE_TWO_DEFAULT_PATIENCE: int = 5
 const WRONG_SHAPE_PATIENCE: int = 3
@@ -164,6 +203,8 @@ var _round_index: int = 0
 var _current_move_index: int = 0
 var _round_buckets: Dictionary = {}
 var _last_result: Dictionary = {}
+var _packet_submission_applied: bool = false
+var _packet_submission_result: Dictionary = {}
 var _phase_one: PhaseOneController = PhaseOneController.new()
 var _phase_two: PhaseTwoController = PhaseTwoController.new()
 
@@ -184,6 +225,8 @@ func load_data() -> bool:
 	_taxonomy.clear()
 	_loaded = false
 	_taxonomy_valid = false
+	_packet_submission_applied = false
+	_packet_submission_result = {}
 
 	if not _load_judgments():
 		return false
@@ -234,16 +277,20 @@ func start_round(opponent_id: String, round_index: int) -> void:
 	_last_result = {}
 
 	if _is_phase_one_round(round_index):
+		if round_index == 1:
+			consume_assembled_packet()
 		_phase_one.start(PHASE_ONE_STARTING_COOPERATION)
 		_write_chapter1_flag("witness_cooperation", _phase_one.witness_cooperation)
 	else:
+		if not _packet_submission_applied:
+			consume_assembled_packet()
 		var proposed_frame: String = str(_chapter1().get("proposed_frame", ""))
-		var starting_patience: int = PHASE_TWO_DEFAULT_PATIENCE
-		if proposed_frame == "merits_defence":
-			starting_patience = WRONG_SHAPE_PATIENCE
+		var starting_patience: int = int(_chapter1().get("judicial_patience", PHASE_TWO_DEFAULT_PATIENCE))
+		if _is_merits_frame(proposed_frame):
+			starting_patience = min(starting_patience, WRONG_SHAPE_PATIENCE)
 		_phase_two.start(starting_patience, proposed_frame, _frames, _chapter1(), state_rank_for_tag(round.round_tag))
 		_write_chapter1_flag("judicial_patience", _phase_two.judicial_patience)
-		if proposed_frame == "merits_defence":
+		if _is_merits_frame(proposed_frame) or not _packet_submission_result.get("selected_blunders", []).is_empty():
 			_emit_judge_skepticism(round_index, proposed_frame)
 
 	_write_chapter1_flag("casebook_judge_state", round.round_tag)
@@ -382,21 +429,127 @@ func end_round() -> Dictionary:
 			all_non_backfire = false
 			break
 
-	var outcome: String = "procedural_reset_weak"
-	if all_non_backfire:
-		if str(_chapter1().get("proposed_frame", "")) == "merits_defence":
-			outcome = "procedural_reset_narrow"
-		else:
-			outcome = "procedural_reset_full"
-		_write_chapter1_flag("court_won_procedural_reset", true)
-		_write_chapter1_flag("won_court", true)
+	var packet_result: Dictionary = consume_assembled_packet()
+	var outcome: String = str(packet_result.get("outcome", OUTCOME_BLUNDER_RECOVERED))
+	if not all_non_backfire and (outcome == OUTCOME_STRONG or outcome == OUTCOME_STANDARD):
+		outcome = OUTCOME_NARROW
+	_write_chapter1_flag("court_won_procedural_reset", true)
+	_write_chapter1_flag("won_court", true)
 
 	_write_chapter1_flag("court_outcome", outcome)
+	result["packet_score"] = packet_result
 	result["court_won_procedural_reset"] = bool(_chapter1().get("court_won_procedural_reset", false))
 	result["court_outcome"] = outcome
 	result["casebook_judge_state"] = str(_chapter1().get("casebook_judge_state", ""))
 	_last_result = result
 	return result
+
+
+func evaluate_packet_submission() -> Dictionary:
+	if not _ensure_loaded():
+		return {}
+	var ch1: Dictionary = _chapter1()
+	var supported_slots: Dictionary = {}
+	var selected_evidence: Dictionary = {}
+	var supported_count: int = 0
+
+	for slot_key in PACKET_SLOT_ORDER:
+		var evidence_id: String = _packet_evidence_for_slot(slot_key, ch1)
+		var supported: bool = _packet_slot_supported(slot_key, evidence_id, ch1)
+		supported_slots[slot_key] = supported
+		selected_evidence[slot_key] = evidence_id
+		if supported:
+			supported_count += 1
+
+	var has_address_defect: bool = bool(supported_slots.get(PACKET_SLOT_ADDRESS, false))
+	var supporting_detail_count: int = 0
+	for slot_key in [PACKET_SLOT_KNOWLEDGE, PACKET_SLOT_WINDOW, PACKET_SLOT_AUTHORITY]:
+		if bool(supported_slots.get(slot_key, false)):
+			supporting_detail_count += 1
+
+	var selected_blunders: Array[String] = _selected_blunder_frames(ch1)
+	var dominant_frame: String = _dominant_frame(selected_blunders)
+	var blunder_count: int = selected_blunders.size()
+	var has_incapacity: bool = selected_blunders.has("incapacity_defense")
+	var burns_round_attempt: bool = false
+	var patience_delta: int = 0
+	var trust_delta: int = 0
+	for frame_id in selected_blunders:
+		var frame: Dictionary = _frames.get(frame_id, {})
+		patience_delta += int(frame.get("judicial_patience_delta_on_select", 0))
+		trust_delta += int(frame.get("halina_trust_delta_on_select", 0))
+		burns_round_attempt = burns_round_attempt or bool(frame.get("burns_round_attempt", false))
+
+	var support_patience_delta: int = 0
+	if selected_blunders.is_empty():
+		if supported_count <= 1:
+			support_patience_delta = -2
+		elif not has_address_defect:
+			support_patience_delta = -1
+	patience_delta += support_patience_delta
+
+	var outcome: String = _packet_outcome(
+		supported_count,
+		has_address_defect,
+		supporting_detail_count,
+		blunder_count,
+		has_incapacity,
+		burns_round_attempt
+	)
+	var starting_patience: int = max(0, PHASE_TWO_DEFAULT_PATIENCE + patience_delta)
+	var recovery_source: String = _packet_recovery_source(ch1, outcome, has_incapacity)
+	var crab_withdrawn: bool = has_incapacity and bool(ch1.get("recruited_crab", false))
+
+	return {
+		"outcome": outcome,
+		"supported_count": supported_count,
+		"supported_total": PACKET_SLOT_ORDER.size(),
+		"has_address_defect": has_address_defect,
+		"supporting_detail_count": supporting_detail_count,
+		"supported_slots": supported_slots,
+		"selected_evidence": selected_evidence,
+		"selected_blunders": selected_blunders,
+		"blunder_count": blunder_count,
+		"dominant_frame": dominant_frame,
+		"reaction_template": _packet_reaction_template(selected_blunders),
+		"judicial_patience_delta": patience_delta,
+		"packet_support_patience_delta": support_patience_delta,
+		"halina_trust_delta": trust_delta,
+		"starting_judicial_patience": starting_patience,
+		"burns_round_attempt": burns_round_attempt,
+		"has_incapacity_blunder": has_incapacity,
+		"crab_support_withdrawn": crab_withdrawn,
+		"recovery_source": recovery_source,
+	}
+
+
+func consume_assembled_packet() -> Dictionary:
+	if _packet_submission_applied:
+		return _packet_submission_result.duplicate(true)
+
+	var score: Dictionary = evaluate_packet_submission()
+	if score.is_empty():
+		return {}
+
+	_write_chapter1_flag("judicial_patience", int(score.get("starting_judicial_patience", PHASE_TWO_DEFAULT_PATIENCE)))
+	var trust_delta: int = int(score.get("halina_trust_delta", 0))
+	if trust_delta != 0:
+		_write_chapter1_flag("halina_trust", int(_chapter1().get("halina_trust", 0)) + trust_delta)
+
+	var dominant_frame: String = str(score.get("dominant_frame", FRAME_DEFAULT))
+	if dominant_frame == "":
+		dominant_frame = FRAME_DEFAULT
+	_write_chapter1_flag("proposed_frame", dominant_frame)
+
+	if str(_chapter1().get("packet_requested_remedy", DEFAULT_REMEDY)) != DEFAULT_REMEDY:
+		_write_chapter1_flag("decoy_overbroad_remedy", true)
+	if bool(score.get("crab_support_withdrawn", false)):
+		_write_chapter1_flag("recruited_crab", false)
+
+	_write_chapter1_flag("court_outcome", str(score.get("outcome", OUTCOME_BLUNDER_RECOVERED)))
+	_packet_submission_applied = true
+	_packet_submission_result = score.duplicate(true)
+	return _packet_submission_result.duplicate(true)
 
 
 func _ensure_loaded() -> bool:
@@ -597,6 +750,148 @@ func _establish_evidence(evidence_id: String) -> void:
 		_write_chapter1_flag(key, true)
 
 
+func _packet_evidence_for_slot(slot_key: String, chapter1: Dictionary) -> String:
+	var state_key: String = str(PACKET_SLOT_STATE_KEYS.get(slot_key, ""))
+	if state_key == "":
+		return ""
+	return str(chapter1.get(state_key, ""))
+
+
+func _packet_slot_supported(slot_key: String, evidence_id: String, chapter1: Dictionary) -> bool:
+	if evidence_id != "":
+		return _evidence_supports_packet_slot(evidence_id, slot_key) \
+			and _is_evidence_surfaced_for_packet(evidence_id, chapter1)
+	if not bool(chapter1.get(slot_key, false)):
+		return false
+	for candidate_id in _evidence.keys():
+		var candidate: String = str(candidate_id)
+		if _evidence_supports_packet_slot(candidate, slot_key) \
+				and _is_evidence_surfaced_for_packet(candidate, chapter1):
+			return true
+	return false
+
+
+func _evidence_supports_packet_slot(evidence_id: String, slot_key: String) -> bool:
+	var entry: Dictionary = {}
+	if _evidence.get(evidence_id, {}) is Dictionary:
+		entry = _evidence.get(evidence_id, {})
+	var support: Variant = entry.get("supports_packet_slots", [])
+	if not support is Array:
+		return false
+	for raw_slot in support:
+		if str(raw_slot) == slot_key:
+			return true
+	return false
+
+
+func _is_evidence_surfaced_for_packet(evidence_id: String, chapter1: Dictionary) -> bool:
+	var entry: Dictionary = {}
+	if _evidence.get(evidence_id, {}) is Dictionary:
+		entry = _evidence.get(evidence_id, {})
+	var flag_path: String = str(entry.get("sets_flag", ""))
+	if flag_path == "" or not flag_path.begins_with("chapter1."):
+		return true
+	var key: String = flag_path.substr(9)
+	if not chapter1.has(key):
+		return false
+	var value: Variant = chapter1[key]
+	if value is bool:
+		return bool(value)
+	if value is String:
+		return str(value) == evidence_id
+	return false
+
+
+func _selected_blunder_frames(chapter1: Dictionary) -> Array[String]:
+	var selected: Array[String] = []
+	for flag_name in DECOY_FLAG_TO_FRAME.keys():
+		if bool(chapter1.get(str(flag_name), false)):
+			_append_unique_frame(selected, str(DECOY_FLAG_TO_FRAME[flag_name]))
+	if str(chapter1.get("packet_requested_remedy", DEFAULT_REMEDY)) != DEFAULT_REMEDY:
+		_append_unique_frame(selected, "overbroad_remedy")
+
+	var proposed_frame: String = _normalise_frame_id(str(chapter1.get("proposed_frame", "")))
+	if proposed_frame != "" and proposed_frame != FRAME_DEFAULT:
+		_append_unique_frame(selected, proposed_frame)
+
+	var ordered: Array[String] = []
+	for frame_id in DECOY_FRAME_PRIORITY:
+		if selected.has(frame_id):
+			ordered.append(frame_id)
+	for frame_id in selected:
+		if not ordered.has(frame_id):
+			ordered.append(frame_id)
+	return ordered
+
+
+func _append_unique_frame(frames: Array[String], frame_id: String) -> void:
+	var normalised: String = _normalise_frame_id(frame_id)
+	if normalised != "" and not frames.has(normalised):
+		frames.append(normalised)
+
+
+func _normalise_frame_id(frame_id: String) -> String:
+	if frame_id == "merits_defence":
+		return "substantive_defense"
+	return frame_id
+
+
+func _dominant_frame(selected_blunders: Array[String]) -> String:
+	if selected_blunders.is_empty():
+		return FRAME_DEFAULT
+	for frame_id in DECOY_FRAME_PRIORITY:
+		if selected_blunders.has(frame_id):
+			return frame_id
+	return selected_blunders[0]
+
+
+func _packet_outcome(
+	supported_count: int,
+	has_address_defect: bool,
+	supporting_detail_count: int,
+	blunder_count: int,
+	has_incapacity: bool,
+	burns_round_attempt: bool
+) -> String:
+	if has_incapacity or burns_round_attempt or supported_count <= 1:
+		return OUTCOME_BLUNDER_RECOVERED
+	if blunder_count > 0:
+		return OUTCOME_NARROW
+	if supported_count == PACKET_SLOT_ORDER.size():
+		return OUTCOME_STRONG
+	if has_address_defect and supporting_detail_count >= 1:
+		return OUTCOME_STANDARD
+	if supported_count >= 2:
+		return OUTCOME_NARROW
+	return OUTCOME_BLUNDER_RECOVERED
+
+
+func _packet_reaction_template(selected_blunders: Array[String]) -> String:
+	if selected_blunders.has("incapacity_defense"):
+		return "icy_silence"
+	if selected_blunders.has("standing_wrong_party") or selected_blunders.has("overbroad_remedy"):
+		return "sharper_really_your_theory"
+	if selected_blunders.has("notice_period_failure"):
+		return "cool_dismissal"
+	if selected_blunders.has("substantive_defense"):
+		return "tolerant_try_again"
+	return "approving_set_aside"
+
+
+func _packet_recovery_source(chapter1: Dictionary, outcome: String, has_incapacity: bool) -> String:
+	if outcome != OUTCOME_BLUNDER_RECOVERED and outcome != OUTCOME_NARROW:
+		return ""
+	if has_incapacity:
+		if bool(chapter1.get("recruited_crab", false)):
+			return "crab_withdrawal"
+		return "crab_refusal"
+	if bool(chapter1.get("recruited_crab", false)):
+		return "crab_rescue"
+	if bool(chapter1.get("recruited_whimsy", false)):
+		return "whimsy_rescue"
+	return "court_redirect"
+
+
 func _base_result(resolved: Dictionary) -> Dictionary:
 	return {
 		"bucket": str(resolved.get("bucket", "no_effect")),
@@ -641,3 +936,9 @@ func _emit_judge_skepticism(round_index: int, proposed_frame: String) -> void:
 	var sigs: Node = get_node_or_null("/root/Signals")
 	if sigs != null and sigs.has_signal("judge_skepticism_raised"):
 		sigs.judge_skepticism_raised.emit(round_index, proposed_frame)
+
+
+func _is_merits_frame(frame_id: String) -> bool:
+	## Legacy compatibility: earlier dialogue drafts and tests used
+	## 'merits_defence'. Runtime v3 frame id is 'substantive_defense'.
+	return frame_id == "merits_defence" or frame_id == "substantive_defense"
