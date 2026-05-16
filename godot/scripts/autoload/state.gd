@@ -83,6 +83,22 @@ func _ready() -> void:
 ##          (judicial_patience, witness_cooperation) are pre-declared so
 ##          dialogue/court systems can read/write them cleanly once the
 ##          battle controller is restored. See proposal §3 for full rationale.
+## Decoy revision (2026-05-16, no SAVE_VERSION bump): the proposed_frame enum
+##          value set changes from {defective_service_135bis, third_party_non_cure,
+##          fair_hearing_article_6, merits_defence} to {defective_service_135bis,
+##          substantive_defense, notice_period_failure, standing_wrong_party,
+##          incapacity_defense}. Wire format unchanged (still a string field with
+##          default ""); enum value change tracked in chapter1.json registry and
+##          argument_frames_ch1.json schema v2. Five new boolean flags
+##          (surfaced_payment_receipts, surfaced_notice_timeline,
+##          surfaced_property_transfer, surfaced_sikorska_age,
+##          surfaced_tenancy_act_window) are referenced by dialogue triggers in
+##          data/dialogues/_drafts/*_decoys_2026-05-16.json drafts but NOT yet
+##          declared here — they fail-trigger via missing-key semantics until
+##          declared. Declaration deferred to the next genuine wire change
+##          (likely v17→v18 for Chapter 2 additions). When declared, follow the
+##          v15→v16 / v16→v17 pattern: append to reset_state() chapter1 block,
+##          add migration step in save.gd, bump SAVE_VERSION, add test.
 func reset_state() -> Dictionary:
 	return {
 		## room_transition.gd: which scene is currently loaded.

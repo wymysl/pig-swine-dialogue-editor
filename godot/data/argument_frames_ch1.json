@@ -1,74 +1,137 @@
 {
-  "version": 1,
-  "_doc": "Chapter 1 argument frames — the synthesis units the player commits to in the Crab dialogue (crab.json first_meeting_with_binder / after_binder_first_engagement options block). Each frame names the SHAPE of a legal argument: which evidence supports it, which statute it anchors to, and whether it's well-fitted to the case.\n\nThe player's selected frame writes to chapter1.proposed_frame (string enum, declared in state.gd at SAVE_VERSION 17). The court-round controller reads proposed_frame at Phase 2 start and gates which Casebook citations are available.\n\nThe 'well_fitted' boolean is the soft-fail axis per PROPOSAL_player_driven_argument.md §4. A well-fitted frame survives Phase 2 with full citations available; a not-well-fitted frame survives but Phase 2 citations are gated narrower and judicial_patience starts lower.\n\nTwo-pass authoring. Code owns: id, supporting_evidence, statute_anchor, court_round_unlock, well_fitted, requires_flags. Design owns: display_name, summary, wrong_shape_correction, present_cue.\n\nSchema:\n  frames: { <frame_id>: {\n    display_name (Design — short noun phrase shown in the options block),\n    summary (Design — one-line description for the binder UI),\n    supporting_evidence (Code — Array[String] of evidence_ids from evidence_ch1.json),\n    statute_anchor (Code — string label; not a tag, just a reference for the present_cue),\n    court_round_unlock (Code — which casebook_judge_state value this frame unlocks Phase 2 citation for: 'round_1_open' / 'round_2_open' / 'round_3_open'),\n    requires_flags (Code — Array[String] of chapter1.* flags that must be true to propose this frame; e.g. binder_read_envelope + binder_read_renewal for the defective-service frame),\n    well_fitted (Code — bool; calibrates soft-fail behavior),\n    wrong_shape_correction (Design — Crab's quiet correction line when this frame is the wrong shape),\n    present_cue (Design — Cula's first-spoken-line when the frame opens Phase 2)\n  } }",
-  "_owner_code": "id, supporting_evidence, statute_anchor, court_round_unlock, requires_flags, well_fitted",
-  "_owner_design": "display_name, summary, wrong_shape_correction, present_cue",
+  "version": 2,
+  "_doc": "Chapter 1 argument frames — the synthesis units the player commits to in the Crab dialogue (crab.json first_meeting_with_binder / after_binder_first_engagement options block). Each frame names the SHAPE of a legal argument: which evidence supports it, which statute it anchors to, whether it's well-fitted to the case, and what consequences selecting it carries (judicial_patience, halina_trust, burns_round_attempt).\n\nVersion 2 (2026-05-16) per PROPOSAL_player_driven_argument.md §3 decoy revision: replaces v1's funnelled single-answer design with four credible decoys plus one optional hard-wrong. The decoys are reachable, credible at the moment of choice, and consequential per §4. The previous auxiliary frames (third_party_non_cure, fair_hearing_article_6) are absorbed as Phase 2 sub-citations under defective_service_135bis rather than top-level frames. The previous wrong-shape frame (merits_defence) is renamed to substantive_defense and reshaped with real evidence support (payment receipts + lease chain).\n\nThe player's selected frame writes to chapter1.proposed_frame (string enum). The court-round controller reads proposed_frame at Phase 2 start and applies (judicial_patience_delta_on_select, halina_trust_delta_on_select, burns_round_attempt) per the field values below. Phase 2 then plays out the judge_reaction_template's lines and patience trajectory.\n\nTwo-pass authoring per AGENTS.md §Casebook authoring.\n  Code owns: id, supporting_evidence, statute_anchor, source_npc_primary, strength_rating, well_fitted, court_round_unlock, requires_flags, judge_reaction_template, judicial_patience_delta_on_select, halina_trust_delta_on_select, burns_round_attempt.\n  Design owns: display_name, summary, wrong_shape_correction, present_cue.\n\nSchema:\n  frames: { <frame_id>: {\n    display_name (Design — short noun phrase shown in the options block),\n    summary (Design — one-line description for the binder UI),\n    supporting_evidence (Code — Array[String] of evidence_ids from evidence_ch1.json),\n    statute_anchor (Code — string label; not a tag, just a reference for the present_cue),\n    source_npc_primary (Code — which NPC primarily surfaces this frame's evidence: 'crab' / 'murrow' / 'whimsy' / 'halina' / 'none'),\n    strength_rating (Code — 0..5 int; max support a fully-surfaced evidence chain can give this frame),\n    well_fitted (Code — bool; the canonically correct frame for Chapter 1),\n    court_round_unlock (Code — which casebook_judge_state value this frame unlocks Phase 2 citation for),\n    requires_flags (Code — Array[String] of chapter1.* flags / predicates that must resolve true to propose this frame),\n    judge_reaction_template (Code — string id into data/judge_reactions_ch1.json or equivalent; templates: 'approving_set_aside' / 'tolerant_try_again' / 'cool_dismissal' / 'sharper_really_your_theory' / 'icy_silence'),\n    judicial_patience_delta_on_select (Code — int applied to chapter1.judicial_patience at frame-commit moment),\n    halina_trust_delta_on_select (Code — int applied to chapter1.halina_trust at frame-commit moment),\n    burns_round_attempt (Code — bool; true means committing this frame consumes one of three court-round attempts),\n    wrong_shape_correction (Design — Crab's / Murrow's / Whimsy's quiet correction line when this frame is selected),\n    present_cue (Design — Cula's first-spoken-line when the frame opens Phase 2),\n    in_fiction_consequence (Design — additional narrative consequence beyond the meter deltas, e.g. NPC refusals)\n  } }",
+  "_owner_code": "id, supporting_evidence, statute_anchor, source_npc_primary, strength_rating, well_fitted, court_round_unlock, requires_flags, judge_reaction_template, judicial_patience_delta_on_select, halina_trust_delta_on_select, burns_round_attempt",
+  "_owner_design": "display_name, summary, wrong_shape_correction, present_cue, in_fiction_consequence",
+  "_revision_note": "Schema version 2 — decoy revision per PROPOSAL_player_driven_argument.md §3 (2026-05-16). proposed_frame enum value renames: merits_defence → substantive_defense; the previous third_party_non_cure and fair_hearing_article_6 are absorbed as Phase 2 sub-citations under defective_service_135bis (not top-level frames). The dialogue-editor enum validator reads chapter1.json registry; chapter1.json updated in this commit.",
   "frames": {
     "defective_service_135bis": {
-      "_status": "Code-pass complete; Design text pending. The canonical well-fitted frame: defective service under KPC Article 135-bis § 2. Requires binder_read_envelope and binder_read_renewal (the player must have seen BOTH the wrong-address envelope and the right-address renewal). renumbering is not strictly required because the address mismatch suffices on its face, but reading it strengthens the Phase 1 fact-finding round.",
+      "_status": "Code-pass complete; Design text pending. The canonical well-fitted frame: defective service under KPC Article 135-bis § 2. Strength 5 (max) when fully surfaced — envelope + renewal + renumbering + optional bonus evidence. Phase 2 sub-citations available under this frame (formerly top-level frames): third_party_non_cure (resident at no. 7 cannot cure service — surfaces when Murrow's first_meeting fact about authority is read) and fair_hearing_article_6 (ECHR Article 6 supplementary — surfaces when has_rights_memo is true).",
       "supporting_evidence": [
         "envelope_address_number_seven",
         "renewal_2019_number_twelve",
         "renumbering_2015_fact"
       ],
       "statute_anchor": "KPC Article 135-bis § 2",
+      "source_npc_primary": "crab",
+      "strength_rating": 5,
+      "well_fitted": true,
       "court_round_unlock": "round_1_open",
       "requires_flags": [
         "chapter1.binder_read_envelope",
         "chapter1.binder_read_renewal"
       ],
-      "well_fitted": true,
+      "judge_reaction_template": "approving_set_aside",
+      "judicial_patience_delta_on_select": 0,
+      "halina_trust_delta_on_select": 0,
+      "burns_round_attempt": false,
+      "phase_2_sub_citations": [
+        {
+          "id": "third_party_non_cure",
+          "display_name": "Third-party acceptance does not cure",
+          "requires_flags": ["chapter1.met_murrow"],
+          "court_round_unlock": "round_1_react",
+          "_doc": "Absorbed from v1 top-level frame. The resident at no. 7 accepting the notice does NOT cure service under § 135-bis third clause. Available once Murrow's first_meeting has surfaced the authority-required fact."
+        },
+        {
+          "id": "fair_hearing_article_6",
+          "display_name": "ECHR Article 6 — fair hearing supplementary",
+          "requires_flags": ["chapter1.has_rights_memo"],
+          "court_round_unlock": "round_2_open",
+          "_doc": "Absorbed from v1 top-level frame. ECHR Article 6 procedural-fairness supplementary citation, available when the Rights Memo (Whimsy at Café Paragraf) is collected."
+        }
+      ],
       "display_name": "",
       "summary": "",
       "wrong_shape_correction": "",
       "present_cue": ""
     },
-    "third_party_non_cure": {
-      "_status": "Code-pass complete; Design text pending. The auxiliary well-fitted frame for Round 1 react: the resident at no. 7 accepting the notice does NOT cure service. Available once defective_service is proposed AND the third-party fact has been surfaced (currently surfaced by Murrow in murrow_first_meeting). Requires the same binder reads.",
+    "substantive_defense": {
+      "_status": "Code-pass complete; Design text pending. Renamed and reshaped from v1's merits_defence — now a real decoy with payment-receipt evidence support. Wrong because Friday is too close to develop merits substance AND the procedural defect already wins the immediate hearing. Halina is silent on this frame (halina_trust_delta = 0) — she expects Cula to find the procedural angle but doesn't penalise the merits move; the substantive case is genuinely her position and Cula raising it isn't an insult.",
       "supporting_evidence": [
-        "envelope_address_number_seven",
-        "renewal_2019_number_twelve"
-      ],
-      "statute_anchor": "KPC Article 135-bis § 2 (third-clause)",
-      "court_round_unlock": "round_1_react",
-      "requires_flags": [
-        "chapter1.binder_read_envelope",
-        "chapter1.binder_read_renewal",
-        "chapter1.proposed_frame == 'defective_service_135bis'"
-      ],
-      "well_fitted": true,
-      "display_name": "",
-      "summary": "",
-      "wrong_shape_correction": "",
-      "present_cue": ""
-    },
-    "fair_hearing_article_6": {
-      "_status": "Code-pass complete; Design text pending. Round 2 frame. ECHR Article 6 fair-hearing. Requires the rights memo (Whimsy at Café Paragraf). Well-fitted as Round 2 supplementary; not well-fitted as a Round 1 substitute (the procedural-fairness argument needs the service-defect predicate to live in the same hearing).",
-      "supporting_evidence": [
-        "rights_memo_article_6"
-      ],
-      "statute_anchor": "ECHR Article 6 / pl_const_45",
-      "court_round_unlock": "round_2_open",
-      "requires_flags": [
-        "chapter1.has_rights_memo"
-      ],
-      "well_fitted": true,
-      "display_name": "",
-      "summary": "",
-      "wrong_shape_correction": "",
-      "present_cue": ""
-    },
-    "merits_defence": {
-      "_status": "Code-pass complete; Design text pending. The wrong-shape frame. Arguing the underlying tenancy validity at the motion-to-set-aside hearing is procedurally premature — the merits aren't before the court at this stage. Requires reading the lease/inheritance paperwork (technical-stance Halina meeting). Reachable, soft-fails: court_outcome narrows to procedural_reset_narrow, judicial_patience starts at 3 instead of 5. The wrong_shape_correction line is Crab walking the player back.",
-      "supporting_evidence": [
+        "payment_receipts_sikorska",
         "lease_1962_inheritance_1987"
       ],
-      "statute_anchor": "Underlying tenancy (out of place at the motion stage)",
+      "statute_anchor": "Civil Code — lease obligations (out of place at the motion stage)",
+      "source_npc_primary": "halina",
+      "strength_rating": 3,
+      "well_fitted": false,
       "court_round_unlock": "round_2_open",
       "requires_flags": [
-        "chapter1.bonus_evidence_collected == 'lease_1962_inheritance_1987'"
+        "chapter1.surfaced_payment_receipts"
       ],
+      "judge_reaction_template": "tolerant_try_again",
+      "judicial_patience_delta_on_select": -2,
+      "halina_trust_delta_on_select": 0,
+      "burns_round_attempt": true,
+      "display_name": "",
+      "summary": "",
+      "wrong_shape_correction": "",
+      "present_cue": ""
+    },
+    "notice_period_failure": {
+      "_status": "Code-pass complete; Design text pending. Notice-period defenses are the standard junior move when an eviction notice arrives mis-served; plausible because the dates DO look short. Wrong because the locational defect (wrong door) ends the matter before timing arithmetic gets to do work — the timing argument is colorable but procedurally subordinate. Halina mildly disappointed (-1) — the procedural angle (wrong door) is in plain sight on the documents she handed Cula; reaching for timing instead reads as missing the obvious.",
+      "supporting_evidence": [
+        "notice_timeline_april",
+        "tenancy_act_notice_window_citation"
+      ],
+      "statute_anchor": "Tenancy Act — notice-period windows",
+      "source_npc_primary": "murrow",
+      "strength_rating": 3,
       "well_fitted": false,
+      "court_round_unlock": "round_1_open",
+      "requires_flags": [
+        "chapter1.surfaced_notice_timeline"
+      ],
+      "judge_reaction_template": "cool_dismissal",
+      "judicial_patience_delta_on_select": -2,
+      "halina_trust_delta_on_select": -1,
+      "burns_round_attempt": true,
+      "display_name": "",
+      "summary": "",
+      "wrong_shape_correction": "",
+      "present_cue": ""
+    },
+    "standing_wrong_party": {
+      "_status": "Code-pass complete; Design text pending. The 'sharp counsel testing a theory' frame. Aggressive, defensible, and the sort of argument a procedurally-literate junior would consider. Wrong because the lease assigned forward at the 2018 ownership transfer — the prior landlord remains a real party in interest under the assignment, and the bench will note this. Halina disappointed (-1) — she signed the lease with the prior owner and continues to deal with him; the standing theory implies she doesn't know who her landlord is, which is mildly insulting.",
+      "supporting_evidence": [
+        "property_transfer_2018"
+      ],
+      "statute_anchor": "Civil Code — assignment of obligations on property transfer",
+      "source_npc_primary": "whimsy",
+      "strength_rating": 2,
+      "well_fitted": false,
+      "court_round_unlock": "round_1_open",
+      "requires_flags": [
+        "chapter1.surfaced_property_transfer"
+      ],
+      "judge_reaction_template": "sharper_really_your_theory",
+      "judicial_patience_delta_on_select": -3,
+      "halina_trust_delta_on_select": -1,
+      "burns_round_attempt": true,
+      "display_name": "",
+      "summary": "",
+      "wrong_shape_correction": "",
+      "present_cue": ""
+    },
+    "incapacity_defense": {
+      "_status": "Code-pass complete; Design text pending. The hard-wrong frame — the firm's moral compass made visible. Argues Mrs. Sikorska is elderly and therefore not competent to be served. Wrong because Polish civil procedure does not impute incapacity from age; the test is cognitive, not chronological. Game-punished: Halina audibly disapproves ('I am quite competent, Dr. Cula'), Crab refuses to assist the next round (recruited_crab path requires a post-court apology dialogue beat), judge icy silence. Halina_trust drops sharply (-4). The optional fifth frame per PROPOSAL_player_driven_argument.md §1; include unless QA balance breaks. Source_npc_primary is 'none' because no NPC surfaces this evidence as a frame pointer — it's Cula's own projection based on Halina's age being visible in the client meeting.",
+      "supporting_evidence": [
+        "sikorska_age_visible"
+      ],
+      "statute_anchor": "Civil Code — capacity (chronological age does not impute incapacity)",
+      "source_npc_primary": "none",
+      "strength_rating": 0,
+      "well_fitted": false,
+      "court_round_unlock": "round_1_open",
+      "requires_flags": [
+        "chapter1.halina_met"
+      ],
+      "judge_reaction_template": "icy_silence",
+      "judicial_patience_delta_on_select": -5,
+      "halina_trust_delta_on_select": -4,
+      "burns_round_attempt": true,
+      "in_fiction_consequence": "Crab refuses to assist the next court round (post-court Cula→Halina apology dialogue beat required to restore Crab's participation); Halina visibly disapproves in court via a one-line interjection; the court reporter pauses typing.",
       "display_name": "",
       "summary": "",
       "wrong_shape_correction": "",
