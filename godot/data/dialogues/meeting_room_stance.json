@@ -1,8 +1,0 @@
-{
-    "version": 2,
-    "npc_id": "meeting_room_stance",
-    "display_name": "Cula",
-    "_scope": "Retired 2026-05-14. The stance choice now lives inline in halina.json::client_meeting_intro (chain:true options). meeting_room_trigger.gd dispatches halina directly; nothing emits dialogue_requested('meeting_room_stance', ...) anymore. This file is kept as an empty stub so the dialogue runner still loads it without errors. `git rm` whenever the legacy npc reference is fully gone.",
-    "states": [],
-    "idle_flavor": []
-}
