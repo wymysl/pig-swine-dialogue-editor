@@ -48,8 +48,24 @@ extends Node
 ##         booleans for Chapter 1 synthesis flow
 ##   19 — packet assembly persistence:
 ##         packet_slot_* evidence-id strings + packet_requested_remedy
+##   20 — Blue Folder foundation:
+##         chapter1.has_case_folder, top-level case_folder{}, inventory{},
+##         and active_case_id
 
 const SAVE_PATH: String = "user://save.json"
+
+var _save_path: String = SAVE_PATH
+
+
+func _ready() -> void:
+	process_mode = Node.PROCESS_MODE_ALWAYS
+	var sigs: Node = get_node_or_null("/root/Signals")
+	if sigs != null and sigs.has_signal("manual_save_requested"):
+		sigs.manual_save_requested.connect(save_game)
+
+
+func set_save_path_for_tests(path: String) -> void:
+	_save_path = path if path != "" else SAVE_PATH
 
 
 ## _state — runtime accessor for the State autoload.
@@ -62,11 +78,11 @@ func _state() -> Node:
 
 
 ## save_game — serialises State.data to disk with version metadata.
-func save_game() -> void:
+func save_game() -> bool:
 	var st: Node = _state()
 	if st == null:
-		push_error("Save: State autoload missing; cannot save.")
-		return
+		_fail_save("State data is unavailable.")
+		return false
 	var payload: Dictionary = {
 		"version": st.SAVE_VERSION,
 		"data": st.data,
@@ -75,37 +91,39 @@ func save_game() -> void:
 	if not DirAccess.dir_exists_absolute(user_dir):
 		var dir_err: Error = DirAccess.make_dir_recursive_absolute(user_dir)
 		if dir_err != OK:
-			push_error("Save: cannot create save directory: " + user_dir)
-			return
-	var file := FileAccess.open(SAVE_PATH, FileAccess.WRITE)
+			_fail_save("Cannot create the save directory.")
+			return false
+	var file := FileAccess.open(_save_path, FileAccess.WRITE)
 	if file == null:
-		push_error("Save: cannot open save path for writing: " + SAVE_PATH)
-		return
+		_fail_save("Cannot open the save file for writing.")
+		return false
 	file.store_string(JSON.stringify(payload, "\t"))
 	file.close()
+	_emit_save_completed()
+	return true
 
 
 ## load_game — reads save file, migrates if needed, applies to State.data.
 ## Returns true on success, false if file missing or unrecoverable.
 func load_game() -> bool:
-	if not FileAccess.file_exists(SAVE_PATH):
+	if not FileAccess.file_exists(_save_path):
 		return false
 
 	var st: Node = _state()
 	if st == null:
-		push_error("Save: State autoload missing; cannot load.")
+		_fail_load("State data is unavailable.")
 		return false
 
-	var file := FileAccess.open(SAVE_PATH, FileAccess.READ)
+	var file := FileAccess.open(_save_path, FileAccess.READ)
 	if file == null:
-		push_error("Save: cannot open save file for reading.")
+		_fail_load("Cannot open the save file for reading.")
 		return false
 	var text: String = file.get_as_text()
 	file.close()
 
 	var parsed = JSON.parse_string(text)
 	if parsed == null or not parsed is Dictionary:
-		push_error("Save: corrupt save file (JSON parse failed). Resetting.")
+		_fail_load("The save file is corrupt; progress was reset.")
 		st.data = st.reset_state()
 		return false
 
@@ -115,6 +133,28 @@ func load_game() -> bool:
 	saved_data = migrate_save(saved_data, version)
 	st.data = saved_data
 	return true
+
+
+func _fail_save(reason: String) -> void:
+	push_error("Save: " + reason)
+	_emit_save_failed(reason)
+
+
+func _fail_load(reason: String) -> void:
+	push_error("Save: " + reason)
+	_emit_save_failed(reason)
+
+
+func _emit_save_completed() -> void:
+	var sigs: Node = get_node_or_null("/root/Signals")
+	if sigs != null and sigs.has_signal("save_completed"):
+		sigs.save_completed.emit()
+
+
+func _emit_save_failed(reason: String) -> void:
+	var sigs: Node = get_node_or_null("/root/Signals")
+	if sigs != null and sigs.has_signal("save_failed"):
+		sigs.save_failed.emit(reason)
 
 
 ## migrate_save — advances saved_data from old_version to State.SAVE_VERSION.
@@ -406,4 +446,37 @@ func migrate_save(saved_data: Dictionary, old_version: int) -> Dictionary:
 			for key in v19_defaults:
 				if not ch1_v19.has(key):
 					ch1_v19[key] = v19_defaults[key]
+
+	## v19 -> v20: Blue Folder foundation. Adds the pickup gate,
+	## persistent argument-fragment storage, read-state map, inventory
+	## membership map, and active case id used by the Motion Packet tab.
+	if old_version < 20:
+		var ch1_v20: Dictionary = {}
+		if saved_data.has("chapter1") and saved_data["chapter1"] is Dictionary:
+			ch1_v20 = saved_data["chapter1"]
+			if not ch1_v20.has("has_case_folder"):
+				ch1_v20["has_case_folder"] = false
+
+		if not saved_data.has("case_folder") or not saved_data["case_folder"] is Dictionary:
+			saved_data["case_folder"] = {}
+		var folder: Dictionary = saved_data["case_folder"]
+		if not folder.has("argument_fragments") or not folder["argument_fragments"] is Array:
+			folder["argument_fragments"] = []
+		if not folder.has("notes_seen") or not folder["notes_seen"] is Dictionary:
+			folder["notes_seen"] = {}
+
+		if not saved_data.has("inventory") or not saved_data["inventory"] is Dictionary:
+			saved_data["inventory"] = {}
+		var inventory: Dictionary = saved_data["inventory"]
+		if bool(ch1_v20.get("has_law_binder", false)):
+			inventory["procedural_binder"] = true
+		if bool(ch1_v20.get("has_rights_memo", false)):
+			inventory["rights_memo"] = true
+		var bonus_id: String = str(ch1_v20.get("bonus_evidence_collected", ""))
+		if bonus_id != "":
+			inventory[bonus_id] = true
+		if not saved_data.has("active_case_id") or not saved_data["active_case_id"] is String:
+			saved_data["active_case_id"] = ""
+		if str(saved_data["active_case_id"]) == "" and bool(ch1_v20.get("has_law_binder", false)):
+			saved_data["active_case_id"] = "chapter1_sikorska"
 	return saved_data

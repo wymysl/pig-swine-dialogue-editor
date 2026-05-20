@@ -7,6 +7,19 @@ This directory contains character portraits for the dialogue system. The visual 
 
 See `CONVENTIONS.md` §Art direction for the full two-layer system.
 
+## Current Runtime Cut
+
+The current dialogue UI loads one flat portrait per character from:
+
+```gdscript
+res://art/portraits/%s.png
+```
+
+Until Code adds expression-specific portrait paths, the cost-efficient cut is
+one runtime portrait per character. Generate 512x512 sources if useful for
+quality, but commit only the runtime export the UI can display. Full expression
+sets are a future pass, not a prerequisite for Chapter 1.
+
 ## Register Assignment
 
 ### Characters with BOTH registers:
@@ -78,9 +91,10 @@ Each Casebook judgment/legal concept gets a **full Waliszewska** illustration �
 
 ## Technical Notes
 
-- **Resolution:** 512×512 px
+- **Source Resolution:** 512×512 px
+- **Current Runtime Export:** flat PNG per character in `art/portraits/`
 - **Format:** PNG with transparent background (character only, no scene)
-- **Storage:** `art/portraits/<char>/` — e.g., `art/portraits/mr_pig/dark_panic.png`
+- **Future Expression Storage:** `art/portraits/<char>/` — e.g., `art/portraits/mr_pig/dark_panic.png`
 - **Tool:** Any AI image generator (Midjourney, DALL-E, etc.) — NOT Pixellab (which is for pixel sprites)
 - **Session discipline:** Generate all warm portraits for one character in one session. Generate all dark portraits in a separate session. Never mix.
 - **Palette latitude:** Portraits have wider color latitude than world sprites but must stay tonally aligned with the game palettes. Dark portraits may introduce off-palette darks and sickly highlights.

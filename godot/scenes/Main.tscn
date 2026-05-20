@@ -3,6 +3,9 @@
 [ext_resource type="Script" uid="uid://biwk6r4mwfdjn" path="res://scripts/main_controller.gd" id="1_main"]
 [ext_resource type="Script" uid="uid://debe5odo7gn81" path="res://scripts/systems/room_transition.gd" id="2_rt"]
 [ext_resource type="PackedScene" path="res://scenes/ui/dialogue_box.tscn" id="4_db"]
+[ext_resource type="PackedScene" path="res://scenes/ui/case_folder.tscn" id="5_cf"]
+[ext_resource type="Script" path="res://scripts/systems/save.gd" id="6_save"]
+[ext_resource type="PackedScene" path="res://scenes/ui/save_status_toast.tscn" id="7_toast"]
 
 [node name="Main" type="Node2D" unique_id=1930503515]
 script = ExtResource("1_main")
@@ -10,6 +13,13 @@ script = ExtResource("1_main")
 [node name="RoomTransition" type="Node" parent="." unique_id=1779229194]
 script = ExtResource("2_rt")
 
+[node name="Save" type="Node" parent="."]
+script = ExtResource("6_save")
+
 [node name="CurrentScene" type="Node2D" parent="." unique_id=379408008]
 
 [node name="DialogueBox" parent="." unique_id=559429336 instance=ExtResource("4_db")]
+
+[node name="CaseFolder" parent="." unique_id=226649570 instance=ExtResource("5_cf")]
+
+[node name="SaveStatusToast" parent="." instance=ExtResource("7_toast")]

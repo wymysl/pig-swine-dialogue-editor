@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "_doc": "Door/transition definitions. Schema per entry: { id, map_pos, target_scene, target_spawn_id, required_flag (Code), locked_text (Design) }.",
+  "_doc": "Door/transition definitions. Schema per entry: { id, map_pos, target_scene, target_spawn_id, required_flag (Code), locked_text (Design) }. required_flag is a dotted path into State.data, e.g. chapter1.has_law_binder; empty string means always unlocked.",
   "doors": [
     {
       "id": "office_front_door",

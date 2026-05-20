@@ -1,0 +1,30 @@
+{
+  "version": 1,
+  "_doc": "Cula's collected argument fragments. Design owns text fields; Code owns structure and the loader. DRAFT - human to finalize all text fields.",
+  "fragments": [
+    {
+      "id": "fragment_ch1_actual_notice",
+      "title": "_doc: DRAFT - short title, human to finalize",
+      "body": "_doc: DRAFT - argument fragment about actual notice and the motion window, human to finalize",
+      "tags": ["procedural", "notice"],
+      "source_state": "_doc: DRAFT - dialogue state that adds this fragment",
+      "draft": true
+    },
+    {
+      "id": "fragment_ch1_landlord_knowledge",
+      "title": "_doc: DRAFT - short title, human to finalize",
+      "body": "_doc: DRAFT - argument fragment about landlord knowledge of the address problem, human to finalize",
+      "tags": ["evidence", "service"],
+      "source_state": "_doc: DRAFT - dialogue state that adds this fragment",
+      "draft": true
+    },
+    {
+      "id": "fragment_ch1_no_third_party_cure",
+      "title": "_doc: DRAFT - short title, human to finalize",
+      "body": "_doc: DRAFT - argument fragment about why a stranger at the wrong flat cannot cure service, human to finalize",
+      "tags": ["procedural", "authority"],
+      "source_state": "_doc: DRAFT - dialogue state that adds this fragment",
+      "draft": true
+    }
+  ]
+}

@@ -1,0 +1,35 @@
+{
+    "_draft_note": "INERT STAGING. Lives under godot/data/_drafts/, never loaded by dialogue_runner. Promote to godot/data/dialogues/mail_carrier_ch1.json once Piotr authors the lines. Mail carrier is a transactional street NPC on office_street.tscn (sidewalk middle band). The 2026-05-18 sprint deferred a patrol behaviour — for now the carrier is static and the dialogue covers a single delivery-themed exchange. Per the transactional carve-out in godot/AGENTS.md §First-meeting introductions, no name-exchange first-meeting state is required, but the carrier may legitimately know the firm name from his round and acknowledge it.",
+    "_chapter_ref": "Chapter 1 ambient. Beat 1-2 (arrival window) but reusable anywhere in Ch1. No quest-critical content.",
+    "_address_form_note": "Toward Cula: 'Dr. A. Cula' if direct address is used. The carrier likely reads the firm signage (Pig & Swine) before he reads the man, so opening 'Pig & Swine?' or 'For Pig & Swine?' is on-register. Avoid 'Pan mecenasie' / 'Pan doktorze' — English-first per godot/AGENTS.md.",
+    "_authoring_todo": [
+        "Replace each '_doc:' placeholder with the finished line.",
+        "Decide whether mail_carrier_first_approach should hand the player a diegetic envelope (would require an inventory mutation in on_dismiss + a pickup item — out of scope for the skeleton).",
+        "Decide whether the carrier reacts to Beat 13 (firm-survives) with a different repeat line; if yes, gate a third state on chapter1.case_won."
+    ],
+    "version": 1,
+    "npc_id": "mail_carrier_ch1",
+    "display_name": "Mail carrier",
+    "states": [
+        {
+            "id": "mail_carrier_first_approach",
+            "trigger": "",
+            "once": true,
+            "lines": [
+                "_doc: DRAFT — one line. Carrier checks his ledger or his sack, names the firm out loud ('Pig & Swine?'), no envelope handed over in this skeleton."
+            ],
+            "tags": ["chapter1", "ambient", "office_street"]
+        },
+        {
+            "id": "mail_carrier_repeat",
+            "trigger": "",
+            "lines": [
+                "_doc: DRAFT — one line, repeatable. The route continues. A second observation about the round or the weight of the sack; nothing that advances quest state."
+            ],
+            "tags": ["chapter1", "ambient", "office_street"]
+        }
+    ],
+    "idle_flavor": [
+        "_doc: DRAFT — one short idle line. Optional; can be dropped if the carrier feels too chatty."
+    ]
+}

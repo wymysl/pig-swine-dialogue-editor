@@ -1,130 +1,171 @@
 {
-    "_draft_note": "Nightly design agent draft 2026-05-15. Covers Beat 9 Archive Room states for murrow.json — the Article 135-bis narration sequence. Not yet promoted to runtime. Verify voice against narrative_revision/bibles/murrow.md and V1.4 pack §B.5 before promotion.",
-    "_beat_ref": "story.txt §Beat 9 — Archive Room research (NEW; phase-8 addition). V1.4 pack §Beat 9 spec.",
-    "_address_form_check": "Murrow uses bare 'Cula' in private contexts post-befriending (confirmed in murrow.json court_readiness_check line 1: 'Cula.'). Beat 9 is private — Halina has left. No 'Doctor Cula' in this pack.",
-    "_flags_used": [
-        "chapter1.met_murrow — declared in state.gd; confirmed in murrow.json existing states.",
-        "chapter1.halina_met — declared in chapter1.json new_state_flags (set by halina.json client_meeting_<stance> on_dismiss).",
-        "chapter1.archive_research_complete — declared in chapter1.json new_state_flags; note: 'not yet authored; flag declared for V1.A state 8 dispatch'. These states author it.",
-        "chapter1.murrow_beat9_dwell — NOT YET DECLARED. Code must add to state.gd reset_state() chapter1 block (string, default '', enum ['archival_aside', 'prior_case', 'next_steps']) and chapter1.json new_state_flags before these states are playable.",
-        "chapter1.article_135bis_understood — NOT YET DECLARED. Referenced in story.txt §Beat 12 as gating Cula's strongest court arguments. Must be added to state.gd (bool, default false) and chapter1.json new_state_flags."
+  "_status": "PENDING — promote 4 Beat-9 archive-room states to dialogues/murrow.json (append before idle_flavor). Blocked on: Code declaring chapter1.murrow_beat9_dwell (string enum) and chapter1.article_135bis_understood (bool) in state.gd and chapter1.json new_state_flags, then SAVE_VERSION bump.",
+  "_draft_note": "Nightly design agent draft 2026-05-15. Covers Beat 9 Archive Room states for murrow.json — the Article 135-bis narration sequence. Not yet promoted to runtime. Verify voice against narrative_revision/bibles/murrow.md and V1.4 pack §B.5 before promotion.",
+  "_beat_ref": "story.txt §Beat 9 — Archive Room research (NEW; phase-8 addition). V1.4 pack §Beat 9 spec.",
+  "_address_form_check": "Murrow uses bare 'Cula' in private contexts post-befriending (confirmed in murrow.json court_readiness_check line 1: 'Cula.'). Beat 9 is private — Halina has left. No 'Doctor Cula' in this pack.",
+  "_flags_used": [
+    "chapter1.met_murrow — declared in state.gd; confirmed in murrow.json existing states.",
+    "chapter1.halina_met — declared in chapter1.json new_state_flags (set by halina.json client_meeting_<stance> on_dismiss).",
+    "chapter1.archive_research_complete — declared in chapter1.json new_state_flags; note: 'not yet authored; flag declared for V1.A state 8 dispatch'. These states author it.",
+    "chapter1.murrow_beat9_dwell — NOT YET DECLARED. Code must add to state.gd reset_state() chapter1 block (string, default '', enum ['archival_aside', 'prior_case', 'next_steps']) and chapter1.json new_state_flags before these states are playable.",
+    "chapter1.article_135bis_understood — NOT YET DECLARED. Referenced in story.txt §Beat 12 as gating Cula's strongest court arguments. Must be added to state.gd (bool, default false) and chapter1.json new_state_flags."
+  ],
+  "_taste_standard_notes": {
+    "murrow_archive_narration": [
+      "1 (Laugh): 'He served old number seven. He knew the address was twelve. Service is invalid.' — flat delivery of a conclusion that demolishes the landlord's case. 'Nine days remaining.' said like a stock inventory.",
+      "2 (Clever): Three clauses apply real fabricated-KPC doctrine (Article 135-bis § 2) to specific facts in evidence. The landlord's anticipated defense (third-party acceptance cures service) is preempted before it is filed.",
+      "3 (Alive): Every line in Murrow's terse-instructional register. Three-word declaratives. No adjectives. The rhythm is an audit, not a lecture.",
+      "4 (Clear): After this state the player knows: (a) the legal hook, (b) the deadline, (c) why the likely counter-argument fails.",
+      "5 (Future-proof): No content that would break on Ch2–5 reread. 'Nine days remaining' is a fixed historical fact in Ch1."
     ],
-    "_taste_standard_notes": {
-        "murrow_archive_narration": [
-            "1 (Laugh): 'He served old number seven. He knew the address was twelve. Service is invalid.' — flat delivery of a conclusion that demolishes the landlord's case. 'Nine days remaining.' said like a stock inventory.",
-            "2 (Clever): Three clauses apply real fabricated-KPC doctrine (Article 135-bis § 2) to specific facts in evidence. The landlord's anticipated defense (third-party acceptance cures service) is preempted before it is filed.",
-            "3 (Alive): Every line in Murrow's terse-instructional register. Three-word declaratives. No adjectives. The rhythm is an audit, not a lecture.",
-            "4 (Clear): After this state the player knows: (a) the legal hook, (b) the deadline, (c) why the likely counter-argument fails.",
-            "5 (Future-proof): No content that would break on Ch2–5 reread. 'Nine days remaining' is a fixed historical fact in Ch1."
-        ],
-        "murrow_archive_dwell_archival": [
-            "1 (Laugh): Murrow gives the shelf coordinates for a statute. The joke is the completeness and the year.",
-            "2 (Clever): Calls back the 'second shelf, blue spine' from murrow_first_meeting — the binder Murrow named there is the same binder.",
-            "3 (Alive): Pure Murrow register — spatial, archival, unfazed.",
-            "4 (Clear): Satisfies Cula's curiosity (and the player's) about why Murrow knows this article.",
-            "5 (Future-proof): No Ch2+ content entangled."
-        ],
-        "murrow_archive_dwell_prior": [
-            "1 (Laugh): Deadpan progression — 'once / the motion failed / the case settled after' — the dry humor is in the sequence and the gap between each answer.",
-            "2 (Clever): Timeliness is real KPC doctrine. The prior use failing on the same clause Cula is now inside reinforces that 'nine days remaining' is not just procedural flavor.",
-            "3 (Alive): Murrow's two-word answers are the character.",
-            "4 (Clear): The implication — being inside the window matters; Murrow has seen it not matter — lands without explanation.",
-            "5 (Future-proof): No client named; no detail that would bind Ch5."
-        ],
-        "murrow_archive_dwell_next": [
-            "1 (Laugh): The checklist ends with a printer joke. Mrożek-surface register. The printer's feelings are a running gag that never gets old in this office.",
-            "2 (Clever): The checklist items (Crab service / Whimsy fair-hearing / filing window) are the actual Beat 10 readiness check items, so this line is simultaneously funny and accurate.",
-            "3 (Alive): The printer flicker breaks the otherwise purely mechanical tone in a way that feels like Murrow relaxing for one sentence.",
-            "4 (Clear): The player knows exactly what the next three tasks are.",
-            "5 (Future-proof): Printer running joke is a permanent fixture per AGENTS.md §Humor rules."
-        ]
-    },
-
-    "npc_id": "murrow",
-    "display_name": "Murrow",
-    "_scope": "Beat 9 Archive Room narration (new states). To promote: append these four states to murrow.json's states array before the idle_flavor key. Do not modify existing states.",
-
-    "states": [
-        {
-            "id": "murrow_archive_narration",
-            "trigger": "chapter1.met_murrow == true && chapter1.halina_met == true && !chapter1.archive_research_complete",
-            "_comment": "Beat 9. Fires when Murrow is in the Archive Room with Cula (Halina has left; met_murrow and halina_met are both true; archive research is not yet done). Murrow narrates Article 135-bis § 2 KPC clause by clause, applying each clause to Halina's facts now in evidence. Ends with options block (chapter1.murrow_beat9_dwell, chain:true) for Cula's three dwell choices. Murrow uses bare 'Cula' throughout (private context, post-befriending).",
-            "lines": [
-                "Cula.",
-                {"speaker": "cula", "text": "Murrow."},
-                "The binder. Article 135-bis, section two of the Code of Civil Procedure.",
-                "Service is invalid when the address used has been renumbered to the knowledge of the serving party.",
-                "The building was renumbered in two thousand and fifteen. The landlord authorized the renumbering — his countersignature is on the two thousand and nineteen renewal.",
-                "He served old number seven. He knew the address was twelve. Service is invalid.",
-                {"speaker": "cula", "text": "And the filing window?"},
-                "A hearing held on invalid service shall, on motion of the party not properly served, be set aside, provided the motion is filed within fourteen days of actual notice.",
-                "She received the notice on the twenty-eighth of April. Today is the fifth of May.",
-                "Nine days remaining.",
-                {"speaker": "cula", "text": "We are inside the window."},
-                "Yes. Third clause. Appearance of a third party at the served address does not cure service unless that party held the express authority of the served party.",
-                "The current occupant of number seven is not her authorized agent. The landlord's objection fails before he files it."
-            ],
-            "options": {
-                "write_path": "chapter1.murrow_beat9_dwell",
-                "chain": true,
-                "choices": [
-                    {
-                        "text": "How did you find this article?",
-                        "value": "archival_aside"
-                    },
-                    {
-                        "text": "Have you used this clause before?",
-                        "value": "prior_case"
-                    },
-                    {
-                        "text": "What do we need next?",
-                        "value": "next_steps"
-                    }
-                ]
-            }
-        },
-        {
-            "id": "murrow_archive_dwell_archival",
-            "trigger": "chapter1.murrow_beat9_dwell == 'archival_aside'",
-            "_comment": "Beat 9 dwell — archival-aside register. Murrow gives shelf coordinates for the statute. Calls back the 'second shelf, blue spine' from murrow_first_meeting. on_dismiss sets both Beat 9 completion flags.",
-            "lines": [
-                {"speaker": "cula", "text": "How did you find this article?"},
-                "Second shelf from the left. Blue spine. It has been there since two thousand and eight."
-            ],
-            "on_dismiss": [
-                {"set": "chapter1.archive_research_complete", "value": true},
-                {"set": "chapter1.article_135bis_understood", "value": true}
-            ]
-        },
-        {
-            "id": "murrow_archive_dwell_prior",
-            "trigger": "chapter1.murrow_beat9_dwell == 'prior_case'",
-            "_comment": "Beat 9 dwell — terse-instructional register. Murrow confirms one prior use; the motion failed on timeliness. The dry progression (once / failed / settled after) is the joke. Sets both Beat 9 completion flags.",
-            "lines": [
-                {"speaker": "cula", "text": "Have you used this clause before?"},
-                "Once. Several years ago.",
-                {"speaker": "cula", "text": "Did it work?"},
-                "The motion failed on timeliness. The client received actual notice too late.",
-                {"speaker": "cula", "text": "What happened to the client?"},
-                "The case settled. After the motion failed."
-            ],
-            "on_dismiss": [
-                {"set": "chapter1.archive_research_complete", "value": true},
-                {"set": "chapter1.article_135bis_understood", "value": true}
-            ]
-        },
-        {
-            "id": "murrow_archive_dwell_next",
-            "trigger": "chapter1.murrow_beat9_dwell == 'next_steps'",
-            "_comment": "Beat 9 dwell — practical bridge to Beat 10. Murrow gives the readiness checklist (Crab, Whimsy, filing window). Printer gag ends the scene in Mrożek-surface register. Sets both Beat 9 completion flags. After this state fires, the existing murrow.json court_readiness_check state is the next meaningful Murrow interaction.",
-            "lines": [
-                {"speaker": "cula", "text": "What do we need next?"},
-                "Crab confirms service. Whimsy confirms the fair-hearing argument. You confirm the filing window with the clerk. Then we establish whether the printer will let us leave."
-            ],
-            "on_dismiss": [
-                {"set": "chapter1.archive_research_complete", "value": true},
-                {"set": "chapter1.article_135bis_understood", "value": true}
-            ]
-        }
+    "murrow_archive_dwell_archival": [
+      "1 (Laugh): Murrow gives the shelf coordinates for a statute. The joke is the completeness and the year.",
+      "2 (Clever): Calls back the 'second shelf, blue spine' from murrow_first_meeting — the binder Murrow named there is the same binder.",
+      "3 (Alive): Pure Murrow register — spatial, archival, unfazed.",
+      "4 (Clear): Satisfies Cula's curiosity (and the player's) about why Murrow knows this article.",
+      "5 (Future-proof): No Ch2+ content entangled."
+    ],
+    "murrow_archive_dwell_prior": [
+      "1 (Laugh): Deadpan progression — 'once / the motion failed / the case settled after' — the dry humor is in the sequence and the gap between each answer.",
+      "2 (Clever): Timeliness is real KPC doctrine. The prior use failing on the same clause Cula is now inside reinforces that 'nine days remaining' is not just procedural flavor.",
+      "3 (Alive): Murrow's two-word answers are the character.",
+      "4 (Clear): The implication — being inside the window matters; Murrow has seen it not matter — lands without explanation.",
+      "5 (Future-proof): No client named; no detail that would bind Ch5."
+    ],
+    "murrow_archive_dwell_next": [
+      "1 (Laugh): The checklist ends with a printer joke. Mrożek-surface register. The printer's feelings are a running gag that never gets old in this office.",
+      "2 (Clever): The checklist items (Crab service / Whimsy fair-hearing / filing window) are the actual Beat 10 readiness check items, so this line is simultaneously funny and accurate.",
+      "3 (Alive): The printer flicker breaks the otherwise purely mechanical tone in a way that feels like Murrow relaxing for one sentence.",
+      "4 (Clear): The player knows exactly what the next three tasks are.",
+      "5 (Future-proof): Printer running joke is a permanent fixture per AGENTS.md §Humor rules."
     ]
+  },
+  "npc_id": "murrow",
+  "display_name": "Murrow",
+  "_scope": "Beat 9 Archive Room narration (new states). To promote: append these four states to murrow.json's states array before the idle_flavor key. Do not modify existing states.",
+  "states": [
+    {
+      "id": "murrow_archive_narration",
+      "trigger": "chapter1.met_murrow == true && chapter1.halina_met == true && !chapter1.archive_research_complete",
+      "_comment": "Beat 9. Fires when Murrow is in the Archive Room with Cula (Halina has left; met_murrow and halina_met are both true; archive research is not yet done). Murrow narrates Article 135-bis § 2 KPC clause by clause, applying each clause to Halina's facts now in evidence. Ends with options block (chapter1.murrow_beat9_dwell, chain:true) for Cula's three dwell choices. Murrow uses bare 'Cula' throughout (private context, post-befriending).",
+      "lines": [
+        "Cula.",
+        {
+          "speaker": "cula",
+          "text": "Murrow."
+        },
+        "The binder. Article 135-bis, section two of the Code of Civil Procedure.",
+        "Service is invalid when the address used has been renumbered to the knowledge of the serving party.",
+        "The building was renumbered in two thousand and fifteen. The landlord authorized the renumbering — his countersignature is on the two thousand and nineteen renewal.",
+        "He served old number seven. He knew the address was twelve. Service is invalid.",
+        {
+          "speaker": "cula",
+          "text": "And the filing window?"
+        },
+        "A hearing held on invalid service shall, on motion of the party not properly served, be set aside, provided the motion is filed within fourteen days of actual notice.",
+        "She received the notice on the twenty-eighth of April. Today is the fifth of May.",
+        "Nine days remaining.",
+        {
+          "speaker": "cula",
+          "text": "We are inside the window."
+        },
+        "Yes. Third clause. Appearance of a third party at the served address does not cure service unless that party held the express authority of the served party.",
+        "The current occupant of number seven is not her authorized agent. The landlord's objection fails before he files it."
+      ],
+      "options": {
+        "write_path": "chapter1.murrow_beat9_dwell",
+        "chain": true,
+        "choices": [
+          {
+            "text": "How did you find this article?",
+            "value": "archival_aside"
+          },
+          {
+            "text": "Have you used this clause before?",
+            "value": "prior_case"
+          },
+          {
+            "text": "What do we need next?",
+            "value": "next_steps"
+          }
+        ]
+      }
+    },
+    {
+      "id": "murrow_archive_dwell_archival",
+      "trigger": "chapter1.murrow_beat9_dwell == 'archival_aside'",
+      "_comment": "Beat 9 dwell — archival-aside register. Murrow gives shelf coordinates for the statute. Calls back the 'second shelf, blue spine' from murrow_first_meeting. on_dismiss sets both Beat 9 completion flags.",
+      "lines": [
+        {
+          "speaker": "cula",
+          "text": "How did you find this article?"
+        },
+        "Second shelf from the left. Blue spine. It has been there since two thousand and eight."
+      ],
+      "on_dismiss": [
+        {
+          "set": "chapter1.archive_research_complete",
+          "value": true
+        },
+        {
+          "set": "chapter1.article_135bis_understood",
+          "value": true
+        }
+      ]
+    },
+    {
+      "id": "murrow_archive_dwell_prior",
+      "trigger": "chapter1.murrow_beat9_dwell == 'prior_case'",
+      "_comment": "Beat 9 dwell — terse-instructional register. Murrow confirms one prior use; the motion failed on timeliness. The dry progression (once / failed / settled after) is the joke. Sets both Beat 9 completion flags.",
+      "lines": [
+        {
+          "speaker": "cula",
+          "text": "Have you used this clause before?"
+        },
+        "Once. Several years ago.",
+        {
+          "speaker": "cula",
+          "text": "Did it work?"
+        },
+        "The motion failed on timeliness. The client received actual notice too late.",
+        {
+          "speaker": "cula",
+          "text": "What happened to the client?"
+        },
+        "The case settled. After the motion failed."
+      ],
+      "on_dismiss": [
+        {
+          "set": "chapter1.archive_research_complete",
+          "value": true
+        },
+        {
+          "set": "chapter1.article_135bis_understood",
+          "value": true
+        }
+      ]
+    },
+    {
+      "id": "murrow_archive_dwell_next",
+      "trigger": "chapter1.murrow_beat9_dwell == 'next_steps'",
+      "_comment": "Beat 9 dwell — practical bridge to Beat 10. Murrow gives the readiness checklist (Crab, Whimsy, filing window). Printer gag ends the scene in Mrożek-surface register. Sets both Beat 9 completion flags. After this state fires, the existing murrow.json court_readiness_check state is the next meaningful Murrow interaction.",
+      "lines": [
+        {
+          "speaker": "cula",
+          "text": "What do we need next?"
+        },
+        "Crab confirms service. Whimsy confirms the fair-hearing argument. You confirm the filing window with the clerk. Then we establish whether the printer will let us leave."
+      ],
+      "on_dismiss": [
+        {
+          "set": "chapter1.archive_research_complete",
+          "value": true
+        },
+        {
+          "set": "chapter1.article_135bis_understood",
+          "value": true
+        }
+      ]
+    }
+  ]
 }

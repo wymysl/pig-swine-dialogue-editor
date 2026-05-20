@@ -1,7 +1,7 @@
 {
   "version": 3,
   "npc_id": "murrow",
-  "_status": "DRAFT — review artifact, not loaded by dialogue_runner. Voice-finalized cut of murrow_player_driven_2026-05-15.json. Per PROPOSAL_player_driven_argument.md §1 (Murrow subsection): murrow_first_meeting reshapes from an eight-line conclusion-naming briefing into a three-observation briefing that hands synthesis to Cula. The fourteen-day window line stays (KPC fact, not case-specific conclusion). The motion-to-set-aside line moves into murrow_post_frame_attaches_motion (post-Crab, gated on Cula having proposed the defective-service frame). murrow_post_frame_walks_back handles the soft-fail wrong-shape path — Murrow files the procedural defect motion regardless and walks Cula back as archival fact, not rebuke. has_binder_pre_crab reshapes to point at binder pages without naming the doctrinal task. court_readiness_check shifts the order-stating line from Murrow to a Cula option.\n\nMerge strategy: the human (or Design) takes this draft, opens the live murrow.json, replaces ONLY the bodies of murrow_first_meeting, has_binder_pre_crab, and court_readiness_check, and adds the two new states murrow_post_frame_attaches_motion and murrow_post_frame_walks_back. All other states (before_pig, after_pig, the three state_2_response_* variants, post_briefing_pre_binder, the two coffee_reaction states) remain unchanged from the in-flight worktree state.",
+  "_status": "PENDING — merge into dialogues/murrow.json per merge strategy in _proposal_anchor. has_binder_pre_crab body differs from canonical (draft is the intended replacement). murrow_post_frame_attaches_motion and murrow_post_frame_walks_back are new states. murrow_first_meeting and court_readiness_check already match canonical. Supersedes murrow_player_driven_2026-05-15.json (removed). Blocked on: SAVE_VERSION bump for chapter1.proposed_frame (Code task).",
   "_proposal_anchor": "PROPOSAL_player_driven_argument.md §1 (Murrow subsection) + §3 (proposed_frame consumer) + §4 (soft-fail design).",
   "_design_role_handoff": "Voice pass complete. All line content audited against style_canon.txt §Murrow (the authority per ai_voice_constraints.md authority hierarchy), narrative_revision/voice_agents/murrow.md (the voice bible — note: bible has been revised toward an 'explanatory mentor' register that has not yet propagated to canon or to the worktree voice-pack; this draft matches canon + worktree discipline), and narrative_revision/ai_voice_constraints.md §Murrow. Two canonical anchors preserved verbatim: the friend invitation and the Asia hedge.",
   "_voice_pass_2026_05_16": {
@@ -44,15 +44,33 @@
         "The time-limit is fourteen days from actual notice. The math is yours.",
         "Procedural binder, second shelf, blue spine. Rights memo clipped inside the front cover. Hearing Friday at fourteen hundred, courtroom four.",
         "She has not formally retained yet. She is coming in this afternoon.",
-        {"speaker": "cula", "text": "Thank you, Mr. Murrow."},
+        {
+          "speaker": "cula",
+          "text": "Thank you, Mr. Murrow."
+        },
         "It is Murrow, to friends. The 'Mister' I keep for invoices.",
-        {"speaker": "cula", "text": "Then it's Cula."},
-        {"speaker": "murrow", "text": "I am still deciding whether reception staff qualify as friends or as workplace constellations."},
-        {"speaker": "cula", "text": "She'll be relieved either way."},
-        {"speaker": "murrow", "text": "Binder first. Memo second. Find me before fourteen hundred if anything in the binder reads wrong."}
+        {
+          "speaker": "cula",
+          "text": "Then it's Cula."
+        },
+        {
+          "speaker": "murrow",
+          "text": "I am still deciding whether reception staff qualify as friends or as workplace constellations."
+        },
+        {
+          "speaker": "cula",
+          "text": "She'll be relieved either way."
+        },
+        {
+          "speaker": "murrow",
+          "text": "Binder first. Memo second. Find me before fourteen hundred if anything in the binder reads wrong."
+        }
       ],
       "on_dismiss": [
-        {"set": "chapter1.met_murrow", "value": true}
+        {
+          "set": "chapter1.met_murrow",
+          "value": true
+        }
       ]
     },
     {
@@ -61,7 +79,10 @@
       "_comment": "NEW state. Fires after Cula has proposed the defective-service frame to Crab. Murrow attaches the procedural verb — 'motion to set aside' — to the shape Cula has now named. The line is moved here from murrow_first_meeting. If Cula proposed merits_defence at Crab, this state does not fire and its sibling state (murrow_post_frame_walks_back) takes over. `once: true` because this is a beat, not a hint.\n\nThe contract: Cula has named the SHAPE (wrong-door service). Murrow attaches the PROCEDURAL VEHICLE (motion to set aside, fourteen-day window). Crab named the CITATION (Article 135-bis § 2). Three NPCs, three distinct contributions, none of them duplicating Cula's synthesis.\n\nVoice: four short factual sentences. No em-dash; Murrow's rhythm is period-separated. 'Mrs. Sikorska is at one' uses the honorific because the client is about to arrive — the firm's collective client-meeting register applies.",
       "lines": [
         "Crab tells me you have read the binder.",
-        {"speaker": "cula", "text": "Wrong-door service. I told Crab we file."},
+        {
+          "speaker": "cula",
+          "text": "Wrong-door service. I told Crab we file."
+        },
         "We file a motion to set aside. Fourteen days from actual notice. We are inside the window. Hearing rescheduled, merits preserved.",
         "Mrs. Sikorska is at one. Mr. Pig will introduce; you will lead."
       ],
@@ -73,10 +94,16 @@
       "_comment": "NEW state — sibling to murrow_post_frame_attaches_motion. Fires when Cula carried the wrong-shape frame past Crab. Murrow does not block; he names what is true. The motion has already been filed on the service defect — Murrow filed it himself before Cula speaks here, because the deadline runs on a KPC clock that does not wait for Cula to find the shape. court_outcome calibrates narrower at the chapter close. Soft-fail per PROPOSAL §4.\n\nVoice: archival fact, not rebuke. 'The merits are not before the court. Service is.' replaces the seed's 'door we are at' metaphor; metaphor is Whimsy's register, not Murrow's. The walk-back lands as inventory of what has happened (filed / merits stay / Mrs. Sikorska is at one) rather than as correction of Cula's mistake. Cula's 'I did.' owns without defense; Cula's 'Understood.' closes without further negotiation.",
       "lines": [
         "Crab tells me you proposed the merits.",
-        {"speaker": "cula", "text": "I did."},
+        {
+          "speaker": "cula",
+          "text": "I did."
+        },
         "The merits are not before the court. Service is.",
         "I have filed the motion to set aside on the service defect. The merits stay where they are. Mrs. Sikorska is at one.",
-        {"speaker": "cula", "text": "Understood."}
+        {
+          "speaker": "cula",
+          "text": "Understood."
+        }
       ],
       "once": true
     },
@@ -86,7 +113,10 @@
       "_comment": "RESHAPED. The worktree line ('Now Crab. Nothing else moves until service is checked.') has Murrow naming the doctrinal task (service); the reshape pulls that synthesis back so Cula must produce it at Crab. Reshaped line points to the binder pages without naming their contents — archival shape, not doctrinal. Cula's callback echo preserved.",
       "lines": [
         "Now Crab. Page one and page two of the binder, before you find him.",
-        {"speaker": "cula", "text": "Page one and page two."},
+        {
+          "speaker": "cula",
+          "text": "Page one and page two."
+        },
         "Mm."
       ]
     },
@@ -97,21 +127,45 @@
       "_design_role_handoff": "v2 follow-on: declare chapter1.closing_order enum at the next SAVE_VERSION bump and write the order-stating line as a Cula options block that writes that flag. Phase 2 closing-argument controller can then read closing_order alongside proposed_frame and whimsy_co_counsel_posture. For this cut, the order is a spoken Cula line.",
       "lines": [
         "Cula.",
-        {"speaker": "cula", "text": "Murrow. We have the memo."},
+        {
+          "speaker": "cula",
+          "text": "Murrow. We have the memo."
+        },
         "Procedural binder. On file.",
         "Rights memo. On file.",
-        {"speaker": "pig", "text": "The printer lease has come back as a kraken. We renew next month, presumably with bait."},
+        {
+          "speaker": "pig",
+          "text": "The printer lease has come back as a kraken. We renew next month, presumably with bait."
+        },
         "Crab and Whimsy on the appearance. Confirmed.",
         "Hearing at fourteen hundred. Courtroom four.",
-        {"speaker": "pig", "text": "When I was an apprentice, we had no readiness check. Only fear. We navigated by panic alone."},
-        {"speaker": "murrow", "text": "Cula. State the order."},
-        {"speaker": "cula", "text": "Service first. Fair hearing second. Remedy last. We leave at thirteen-thirty."},
+        {
+          "speaker": "pig",
+          "text": "When I was an apprentice, we had no readiness check. Only fear. We navigated by panic alone."
+        },
+        {
+          "speaker": "murrow",
+          "text": "Cula. State the order."
+        },
+        {
+          "speaker": "cula",
+          "text": "Service first. Fair hearing second. Remedy last. We leave at thirteen-thirty."
+        },
         "Set.",
-        {"speaker": "cula", "text": "Asia, has Mrs. Sikorska been told we're coming?"},
-        {"speaker": "asia", "text": "She rang an hour ago, Dr. A. Cula. She'll be there at quarter to."}
+        {
+          "speaker": "cula",
+          "text": "Asia, has Mrs. Sikorska been told we're coming?"
+        },
+        {
+          "speaker": "asia",
+          "text": "She rang an hour ago, Dr. A. Cula. She'll be there at quarter to."
+        }
       ],
       "on_dismiss": [
-        {"set": "chapter1.court_ready", "value": true}
+        {
+          "set": "chapter1.court_ready",
+          "value": true
+        }
       ]
     }
   ],

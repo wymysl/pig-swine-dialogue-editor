@@ -1,0 +1,191 @@
+{
+  "_draft_note": "INERT DRAFT. Lives under godot/data/_drafts/, which the dialogue runner does not scan (only godot/data/dialogues/*.json loads). Consolidated Chapter 1 voice draft for Whimsy covering Beats 7, 8, 12, 13. Intended for Phase-7 voice review and eventual promotion (in whole or in part) into godot/data/dialogues/whimsy.json. Not authoritative; not loaded at boot. State ids prefixed whimsy_b{N}_ to avoid collision with the live whimsy.json id namespace; if promoted, the live before_meeting / coffee_reaction_* states must be reconciled against whimsy_b7_first_meeting (which intentionally re-covers the procedural-vibes line). Address-form rule per godot/AGENTS.md §Address forms: pre-recruit Whimsy says 'Dr. A. Cula'; post-recruit bare 'Cula'. Cula uses 'Mr. Whimsy' on first meeting (per godot/AGENTS.md §First-meeting introductions). Toward Halina: 'Mrs. Sikorska' (per whimsy bible §Co-stars and §Address forms — clients get full honorific plus one small warmth). Toward Murrow: 'Murrow' (always). Toward Crab: 'Crab' or sparing mock-honorific. Toward Pig: 'Mr. Pig'. Register: theatrical-cynic with three interior modes (aesthetic-flourish / archaic-deflection / protective-distancing) per whimsy.md §interior range. Pet idiom: declamation (one sanctioned em-dash per declamatory line; see whimsy.json v4 'Behold — a black-robed liquid of justice' precedent). No em-dashes in player-facing options text. No contrastive antithesis anywhere. No fake Latin. No internet voice. Beat 8 audit-point handling is load-bearing — see whimsy_b8_* _comments for the specific compliance check on each state.",
+  "_chapter_ref": "narrative_revision/beats/chapter_1.md — Beats 7 (L163-175 Café Paragraf recruitment + dwell options), 8 (L178-227 client meeting; AUDIT POINT at L209), 12 (L279-310 court rounds; Whimsy carries Round 2, L299-302), 13 (L313-333 celebration; musical proposal at L324 + dwell options at L330).",
+  "_flags_used": [
+    "chapter1.met_whimsy",
+    "chapter1.recruited_whimsy",
+    "chapter1.has_rights_memo",
+    "chapter1.coffee_tutorial_seen",
+    "chapter1.coffee_buff",
+    "chapter1.coffee_brew_grade",
+    "chapter1.halina_met",
+    "chapter1.halina_close_done",
+    "chapter1.bonus_evidence_collected",
+    "chapter1.entered_court",
+    "chapter1.court_outcome",
+    "chapter1.court_won_procedural_reset",
+    "chapter1.received_swine_postcard",
+    "chapter1.whimsy_postcard_deflection_shown",
+    "chapter1.met_pig",
+    "chapter1.met_murrow",
+    "chapter1.met_crab"
+  ],
+  "version": 1,
+  "npc_id": "whimsy",
+  "display_name": "Whimsy",
+  "states": [
+    {
+      "id": "whimsy_b7_first_meeting",
+      "trigger": "!chapter1.met_whimsy",
+      "_comment": "Beat 7 — Café Paragraf recruitment. Cula's first meeting with Whimsy. Address forms: Cula → 'Mr. Whimsy' (first-meeting honorific per godot/AGENTS.md §First-meeting introductions, with self-identification); Whimsy → 'Dr. A. Cula' (pre-recruit per whimsy.md §Address forms). Cula's opener satisfies the first-meeting rule (name + self-ID). The canonical 'procedural vibes' line is preserved verbatim from existing whimsy.json before_meeting. The joining motivation is 'rhetorical playground' — Whimsy joins because the rights memo is a rhetorical specimen worth handling, NOT because he is convinced of the cause (per beats/chapter_1.md L167 phase-4 commitment preserved). One sanctioned declamation em-dash on the closing 'lend my voice' line. Lines 7 NPC lines including the joining line, well under the ≤8 rule (rule A). Jokes: 'procedural vibes', 'wrong-door file with the right door also in the file', 'argument can sing'. NPC-line count breakdown: Cula opens (1), Whimsy 'Dr. A. Cula. Sit. Have you anything beyond procedural vibes' (NPC 1), Cula (2), Whimsy 'wrong-door file' (NPC 2), Cula 'Rights Memo' (3), Whimsy memo flourish (NPC 3), Whimsy joining line (NPC 4). 4 NPC lines — well under cap. on_dismiss flips met_whimsy + recruited_whimsy (the recruitment is single-state per existing canon).",
+      "lines": [
+        {
+          "speaker": "cula",
+          "text": "Mr. Whimsy. Cula, Pig & Swine. We need a second voice in court tomorrow."
+        },
+        "Dr. A. Cula. Sit. Have you anything beyond procedural vibes, or am I to be recruited on atmosphere?",
+        {
+          "speaker": "cula",
+          "text": "Notice went to an address the client left two years ago. The objection is in the papers; the record does not show it. Hearing at fourteen hundred."
+        },
+        "Ah. A wrong-door file, with the right door also in the file. I have heard worse music.",
+        {
+          "speaker": "cula",
+          "text": "The Rights Memo."
+        },
+        "Marginalia in espresso. Equality of arms, fair hearing, and a coffee ring. The law arrives properly stained.",
+        "Very well. I will lend my voice tomorrow at fourteen hundred. The shape you bring, I will sing."
+      ],
+      "on_dismiss": [
+        {
+          "set": "chapter1.met_whimsy",
+          "value": true
+        },
+        {
+          "set": "chapter1.recruited_whimsy",
+          "value": true
+        }
+      ]
+    },
+    {
+      "id": "whimsy_b7_dwell_office_distance",
+      "trigger": "chapter1.recruited_whimsy && !chapter1.halina_met && !chapter1.entered_court",
+      "once": true,
+      "_comment": "Beat 7 dwell — 'Why do you work from here?' Cynicism via aesthetics, not principle. Plants Whimsy's physical distance from the office for chapter-5 retraversal (per beats/chapter_1.md L171). Address forms: Cula → 'Whimsy' (post-recruit informal, normal protagonist register); Whimsy → 'Cula' (post-recruit per whimsy.md §Address forms). The flourish is the aesthetic-flourish interior mode. Joke 1: 'stripped of rhetorical air' (the office described as airless). Joke 2: 'inadequate to the work' (cynic deflection — pretends he's complaining about acoustics, actually he is putting distance between himself and the firm's earnestness). NEITHER joke costs anyone in the room dignity — Whimsy is mocking himself and the building, not Cula or the firm. 2 NPC lines, well under ≤8. once: true so it does not re-fire after first use. Replaces the old met_<x> flag pattern per dialogue_states_seen mechanic (project_pig_swine_dialogue_once memory).",
+      "lines": [
+        {
+          "speaker": "cula",
+          "text": "Whimsy. Why do you work from here?"
+        },
+        "The office is inadequate to the work, Cula. Stripped of rhetorical air. The Café has worse coffee and better acoustics; a fair trade.",
+        "Pig & Swine I love at a distance. Closer than that, the wallpaper begins to argue."
+      ]
+    },
+    {
+      "id": "whimsy_b7_dwell_case_read",
+      "trigger": "chapter1.recruited_whimsy && !chapter1.halina_met && !chapter1.entered_court",
+      "once": true,
+      "_comment": "Beat 7 dwell — 'What's your read on the case?' Case-as-rhetorical-specimen register, per beats/chapter_1.md L172 ('treats the case as a rhetorical specimen rather than as a person's life'). The cynic registers the case before he registers the person — this is the protective-distancing interior mode. CRITICAL: this is the line Phase-7 audit will check for, because it is the dress rehearsal for Beat 8. The case is named in flourish; the person (Halina) is NOT named or referenced. The cynic addresses the procedural shape, not the human. Address: Whimsy → 'Cula' post-recruit. Joke 1: 'procedural defect dressed in a residential coat' (literal task-brief phrasing — load-bearing). Joke 2: 'tailoring is exquisite' (the flourish lands on the case's craft, not on the client). 2 NPC lines, well under cap. once: true.",
+      "lines": [
+        {
+          "speaker": "cula",
+          "text": "What's your read on the case?"
+        },
+        "A procedural defect dressed in a residential coat. The tailoring is exquisite; the notice walks past the right door and into a stranger's living room, and the court is asked to call that delivery.",
+        "It is the kind of case that will sing if you let it. Whether anyone in the choir is having a good week is a separate question."
+      ]
+    },
+    {
+      "id": "whimsy_b7_dwell_office_visit",
+      "trigger": "chapter1.recruited_whimsy && !chapter1.halina_met && !chapter1.entered_court",
+      "once": true,
+      "_comment": "Beat 7 dwell — 'Do you ever go to the office?' Cynic-deflection register; brief, evasive; reinforces the physical-distancing plant (per beats/chapter_1.md L173). This is the archaic-deflection interior mode — Whimsy answers without answering. Address: Whimsy → 'Cula' post-recruit. Joke 1: 'I have been seen there' (the passive construction is the deflection — he won't claim agency over his own attendance). Joke 2: 'Murrow files the sightings; I have not contested them' (mock-archival, leans on Murrow's filing temperament without belittling him — affectionate, per whimsy.md §Co-stars 'Reverence with a slight competitive edge'). 2 NPC lines, under cap. once: true.",
+      "lines": [
+        {
+          "speaker": "cula",
+          "text": "Do you ever go to the office?"
+        },
+        "I have been seen there, Cula. Murrow files the sightings; I have not contested them.",
+        "When the work requires presence, the work has my presence. The rest of the time, presence is negotiable."
+      ]
+    },
+    {
+      "id": "whimsy_b8_arrival_courtesy",
+      "trigger": "chapter1.recruited_whimsy && chapter1.halina_met && !chapter1.halina_close_done && !chapter1.entered_court",
+      "once": true,
+      "_comment": "Beat 8 — client meeting at office, arrival staging. AUDIT-POINT COMPLIANCE: this state exists specifically to satisfy the audit. Halina is in the room. Whimsy's flourish addresses the case (rhetorical pleasure at the procedural shape), and Halina herself receives a brief courteous acknowledgment in his LOWER register — the second line is plain, formal, address-form correct, no flourish. The 'Mrs. Sikorska. We're pleased you're here' shape is verbatim from whimsy.md §Address forms ('full honorifics, often with one small warmth'). The flourish lands on the procedural fact ('a notice that took a wrong turn at the corridor'); the dignity-bearing line lands on the person. Address forms: Whimsy → Cula 'Cula' (post-recruit private; Beat 8 is the team's internal meeting with the client, not court — post-recruit private form is correct per AGENTS.md). Whimsy → Halina 'Mrs. Sikorska' (formal, lower register, no first-name informality, per task brief). Audit-point compliance: flourish addresses case not person; Halina dignity preserved. Joke 1: 'notice that took a wrong turn at the corridor and ended up in a stranger's living room'. Joke 2: 'the wrong-door file is unusual; the wrong door is not' (cynic-deflection on the system's familiarity with the move, NOT on Halina). 3 NPC lines, under cap. once: true.",
+      "lines": [
+        "Mrs. Sikorska. We're pleased you're here.",
+        {
+          "speaker": "cula",
+          "text": "Whimsy. Your read?"
+        },
+        "A notice that took a wrong turn at the corridor and ended up in a stranger's living room, Cula. The wrong-door file is unusual. The wrong door, regrettably, is not.",
+        "We will speak to the door."
+      ]
+    },
+    {
+      "id": "whimsy_b8_dwell_protective_register",
+      "trigger": "chapter1.recruited_whimsy && chapter1.halina_met && !chapter1.halina_close_done && !chapter1.entered_court",
+      "once": true,
+      "_comment": "Beat 8 dwell — Cula asks Whimsy his view on the strongest argument while Halina is in the room. AUDIT-POINT COMPLIANCE: the flourish stays attached to the case's procedural shape; Halina receives a second brief courteous acknowledgment in lower register at the end. The cynic register holds — Whimsy does not become 'secretly soft' (per ai_voice_constraints.md §Whimsy 'no genuine warmth that breaks the cynic stance'), but the cynicism is directed at the institutional move (the renumbering, the wrong-door delivery, the court's willingness to accept service it should not), NOT at Halina. The protective-distancing interior mode is the load-bearing register here: Whimsy is performing detachment IN HALINA'S PRESENCE; the performance must not cost her dignity. Sample text checked line by line: 'the move is old' (cynic-on-system, not on her); 'a renumbering became an eviction' (factual rhetorical-frame, not personal); 'we are arguing about the door' (case-frame, not person-frame); closing line lands on her with a clean address-form. Audit-point compliance: flourish addresses case not person; Halina dignity preserved. Joke 1: 'the move is old; the costume is new' (cynic on the institutional reuse of a familiar tactic). Joke 2: 'a renumbering became an eviction by way of the post office' (cynic-precision on the absurd causal chain — bureaucracy-mocking, never client-mocking). Address: Whimsy → Cula 'Cula'; Whimsy → Halina 'Mrs. Sikorska'. 3 NPC lines, under cap. once: true.",
+      "lines": [
+        {
+          "speaker": "cula",
+          "text": "Whimsy. The shape of the argument."
+        },
+        "The move is old, Cula. The costume is new. A renumbering became an eviction by way of the post office, and the court is being asked to call the delivery clean. It is not.",
+        "We are arguing about the door, not about the woman behind it. The court does not need to meet her to find for her.",
+        "Mrs. Sikorska. The procedural defect is the case. You came in with the evidence already on top of it. We will handle the music."
+      ]
+    },
+    {
+      "id": "whimsy_b12_round2_fair_hearing",
+      "trigger": "chapter1.recruited_whimsy && chapter1.has_rights_memo && chapter1.entered_court && !chapter1.court_won_procedural_reset",
+      "_comment": "Beat 12 — Round 2 fair-hearing. Whimsy carries the round; the Rights Memo is his evidence (per beats/chapter_1.md L300 '(K) Whimsy's evidence carries the round (Rights Memo)'). Round 2 argument shape: a hearing held without the served party constitutes a denial of fair hearing — equality of arms; the procedural floor that lets the bench correct itself. Per beats/chapter_1.md L301-302: 'Whimsy's argument shape may incorporate Beat 8 reaction (per cynic register — case-as-rhetorical-specimen). Must respect the Beat 8 audit point: flourish addresses the case, not the person.' This state holds that line: the argument is case-shaped, never person-shaped. The court-formal register applies (Whimsy addresses Cula as 'Dr. A. Cula' in formal contexts per whimsy.md §Address forms — 'Cula' in private and 'Dr. A. Cula' in formal contexts including court). One sanctioned declamation em-dash on the lander. Joke 1: 'a hearing where one chair was empty is not a hearing; it is a recitation' (cynic-precision; the legal point lands at the human scale without naming a human). Joke 2: 'the bench is not asked to forgive the defect; it is asked to notice it' (the half-step-ironic closer — court will reset because procedure requires reset, not from generosity). Trigger does NOT require court_won_procedural_reset because this state IS one of the lines that drives toward that flag; the round itself reads the line, then on_dismiss is left empty so the court orchestration owns the outcome flag write. 4 NPC lines, under cap. NOT once:true — the line should be available across whatever round-pacing Cula picks; the court system gates re-entry by setting entered_court and eventually court_won_procedural_reset.",
+      "lines": [
+        {
+          "speaker": "cula",
+          "text": "Dr. A. Cula for the firm. Round Two, fair hearing."
+        },
+        "The Rights Memo, Your Honour; equality of arms, the right to be heard. The Code does not ask the court to be generous. It asks the court to be present to the absence.",
+        "A hearing where one chair was empty is not a hearing. It is a recitation. The party who was not served could not appear; the party who was not served therefore could not answer; and the court is now asked to treat that answerless proceeding as if it had been answered.",
+        "The bench is not asked to forgive the defect. It is asked to notice it. Once noticed, the remedy is the rehearing. Modest, procedurally clean, and within the fourteen-day window the Code reserves for exactly this correction."
+      ]
+    },
+    {
+      "id": "whimsy_b13_musical_proposal",
+      "trigger": "chapter1.court_won_procedural_reset && !chapter1.received_swine_postcard",
+      "once": true,
+      "_comment": "Beat 13 — return to office, celebration. Whimsy's musical-proposal flourish (per beats/chapter_1.md L324 'Whimsy proposes turning the judgment into a musical. Per Whimsy bible. Phase-7 voice work: theatrical-cynic register. Musical proposal as protective gesture'). The proposal is the protective gesture: Whimsy puts theatre between himself and the firm's relief because relief is the dangerous register — it is where the cynic stance could slip. The musical proposal HOLDS the cynic stance because absurd theatre is the cynic's native language. Address: Whimsy → 'Cula' post-recruit; Whimsy → 'Mr. Pig'; Whimsy → 'Murrow'. Joke 1: 'a procedural reset is not, technically, a finale — it is more of an intermission' (cynic-precision on the modest remedy; lands at human scale without sentimentality). Joke 2: 'Murrow has already objected to the score' (mock-affection for Murrow's archival temperament — affection in performance form, per whimsy.md §Co-stars). 3 NPC lines, under cap. once: true.",
+      "lines": [
+        "Cula. We have a procedural reset, a housed client, and a firm still standing. The natural conclusion is a musical.",
+        "Working title: The Wrong Door. Mr. Pig will compose the panic numbers; he is already in rehearsal; and Murrow has already objected to the score on archival grounds.",
+        "A procedural reset is not, technically, a finale. It is more of an intermission. But the lights are up, the bar is open, and the court has not yet sent corrections."
+      ]
+    },
+    {
+      "id": "whimsy_b13_dwell_contingency",
+      "trigger": "chapter1.court_won_procedural_reset && !chapter1.received_swine_postcard",
+      "once": true,
+      "_comment": "Beat 13 dwell — cynical aside about the win's contingency (per beats/chapter_1.md L330 'one or two cynical-asides about the win's contingency; the dwell options should not break the cynic register'). Whimsy registers that the procedural reset is exactly that — procedural, reset — and the underlying problem (the landlord, the renumbering, the system that finds wrong-door delivery acceptable) is unchanged. The cynic stance is the moral core; this dwell is where it shows clearest in Chapter 1. The line is contingency-aware WITHOUT sliding into sentimentality (no 'but we did what we could' uplift; no 'and that is enough' — that is in the ai_voice_constraints.md scrub list). Address: Whimsy → 'Cula' post-recruit. Joke 1: 'the door is the same door' (cynic-precision; the win moved nothing structural). Joke 2: 'the court will see her again, or it will see her successor' (cynic-on-system, not cynic-on-Halina — the line names the systemic re-occurrence, not the woman). Audit-point continuity from Beat 8: even in the celebration register, Whimsy does not punch down at Halina. Her dignity is preserved here too. 2 NPC lines, under cap. once: true.",
+      "lines": [
+        {
+          "speaker": "cula",
+          "text": "Whimsy."
+        },
+        "I know that face, Cula. You are about to ask whether we won. We won a hearing. The door is the same door.",
+        "The court will see her again, or it will see her successor. The procedural reset bought the calendar a fortnight. The landlord still owns the building. Pour the coffee. The next case is on its way."
+      ]
+    },
+    {
+      "id": "whimsy_b13_dwell_musical_followup",
+      "trigger": "chapter1.court_won_procedural_reset && !chapter1.received_swine_postcard",
+      "once": true,
+      "_comment": "Beat 13 second dwell option — Cula presses the musical bit. Continues the musical-proposal flourish without breaking the cynic register (per beats/chapter_1.md L330 'the dwell options should not break the cynic register'). The follow-up is the affectionate-cynic mode — Whimsy keeps the absurdity going, drops one mock-honorific for Crab (sparing, per whimsy.md §Address forms 'may, occasionally, deploy a small mock-elevated honorific as part of an affectionate flourish. Sparingly. Once a scene at most'), and lands on a cynic-precise observation about the firm's relationship to its own survival. Address forms: Whimsy → 'Cula'; Whimsy → 'Crab' with mock-honorific 'my learned colleague Crab'; Whimsy → 'Asia'. The mock-honorific is affection in performance form, not derision — Crab tolerates it, Whimsy knows. Joke 1: 'a casebook entry in three-quarter time' (cynic on the Casebook system itself; the legal-comedy referent is the firm's own combat metaphor). Joke 2: 'Asia is already drafting the playbill, in the time she has not been given' (the line salutes Asia's overwork without sentimentalizing — the cheerful-while-drowning plant lands sideways, per beats/chapter_1.md L320). 3 NPC lines, under cap. once: true.",
+      "lines": [
+        {
+          "speaker": "cula",
+          "text": "Tell me about the casting."
+        },
+        "My learned colleague Crab will refuse on principle, and then arrive on time with his lines memorised. He plays the deadline. The deadline is the antagonist; this is established casebook doctrine.",
+        "Murrow narrates from a single index card. Mr. Pig improvises the ending each evening. Asia is already drafting the playbill, in the time she has not been given.",
+        "It is a casebook entry in three-quarter time, Cula. The firm celebrates by writing itself a part."
+      ]
+    }
+  ],
+  "idle_flavor": [
+    "Cula. A procedural argument without a metaphor is like coffee without water. Dry and slightly offensive.",
+    "Somewhere nearby, a right is being reduced to administration. Let us be irritating about it."
+  ]
+}

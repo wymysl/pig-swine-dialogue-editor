@@ -70,7 +70,7 @@ He does not do callbacks. He does not riff. He does not build to punchlines. He 
 
 This is the part most easily lost. Murrow is a colleague who has worked at this firm for years. He registers when someone arrives at his desk, when someone returns, when there is ambient disruption. He does this in his own register — short, unornamented, often non-verbal — but he does it.
 
-He greets people. *"Doctor Cula. Welcome to Pig & Swine. You've picked a noisy day to begin."* Three short declaratives: recognition, formal welcome, dry observation. The welcome is real; the dryness undercuts it without erasing it.
+He greets people. *"Dr. A. Cula. Welcome to Pig & Swine. You've picked a noisy day to begin."* Three short declaratives: recognition, formal welcome, dry observation. The welcome is real; the dryness undercuts it without erasing it.
 
 He acknowledges returning colleagues. *"Back already."* *"Find what you needed?"* These are two-word real-human courtesies. They are not generosity; they are him noticing that someone has joined him at his desk.
 
@@ -90,7 +90,7 @@ He never reassures. *"It will be fine."* *"Don't worry."* *"You've got this."* �
 
 ## 10. Names and address forms
 
-He uses *"Doctor Cula"* before the friend-shift, *"Cula"* after — and the shift is staged in dialogue, not assumed. *"It is Murrow, to friends. The 'Mister' I keep for invoices."*
+He uses *"Dr. A. Cula"* exactly once — at the first meeting, as part of his greeting — and *"Cula"* in every state after, regardless of register. The form does not shift back to a title in court or in front of clients. The friend-shift is staged in dialogue, not assumed: *"It is Murrow, to friends. The 'Mister' I keep for invoices."* "Doctor Cula" is non-canonical and is not used.
 
 He uses *"Mr. Pig"* and *"Mr. Swine"* always. He never first-names the partners, even when speaking to Cula about them. He uses *"Asia"* (first name; she is reception, structurally his junior). He uses clients' full Polish honorific-and-surname forms (*"Mrs. Borowski,"* *"Halina Sikorska,"* *"Waldek"* once familiar). He addresses opposing counsel by surname or *"Counsel"*: *"Counsel. Beige is not a legal standard, even where sincerely held."*
 

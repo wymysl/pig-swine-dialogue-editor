@@ -1,44 +1,45 @@
-[gd_scene format=4]
+[gd_scene format=4 uid="uid://i3k8p11amhfe"]
 
-[ext_resource type="AudioStream" path="res://audio/music/office.mp3" id="1_bc20a"]
-[ext_resource type="TileSet" path="res://art/tilesets/office_tileset.tres" id="2_j3jgm"]
-[ext_resource type="Texture2D" path="res://art/props/office/window.png" id="3_33r1m"]
-[ext_resource type="Texture2D" path="res://art/props/office/wall_calendar.png" id="4_7llle"]
-[ext_resource type="Texture2D" path="res://art/props/office/certificate.png" id="5_fktjs"]
-[ext_resource type="Texture2D" path="res://art/props/office/wall_clock.png" id="6_5x3k5"]
-[ext_resource type="Texture2D" path="res://art/props/office/office_door.png" id="7_5j5w7"]
-[ext_resource type="Texture2D" path="res://art/props/office/bookshelf.png" id="8_a4i0b"]
-[ext_resource type="Texture2D" path="res://art/props/office/chair_pig.png" id="9_smnd7"]
-[ext_resource type="Texture2D" path="res://art/props/office/desk_pig.png" id="10_ibmul"]
-[ext_resource type="Texture2D" path="res://art/props/office/desk_lamp.png" id="11_ejcxh"]
-[ext_resource type="Texture2D" path="res://art/props/office/coffee_mug.png" id="12_dkjrj"]
-[ext_resource type="Texture2D" path="res://art/props/office/trash_bin.png" id="13_e62gu"]
-[ext_resource type="Texture2D" path="res://art/props/office/desk_murrow.png" id="14_mmq06"]
-[ext_resource type="Texture2D" path="res://art/props/office/desk_swine.png" id="15_dshi6"]
-[ext_resource type="Texture2D" path="res://art/props/office/desk_rak.png" id="16_lbgtv"]
-[ext_resource type="Texture2D" path="res://art/props/office/desk_wymysl.png" id="17_4a2wo"]
-[ext_resource type="Texture2D" path="res://art/props/office/desk_kula.png" id="18_1bhqt"]
-[ext_resource type="Texture2D" path="res://art/props/office/archive_boxes.png" id="19_v5k7j"]
-[ext_resource type="Texture2D" path="res://art/props/office/printer.png" id="20_jkdff"]
-[ext_resource type="Texture2D" path="res://art/props/office/coffee_machine.png" id="21_hdxpt"]
-[ext_resource type="Texture2D" path="res://art/props/office/desk_asia_new.png" id="22_pakq6"]
-[ext_resource type="Texture2D" path="res://art/props/office/fern.png" id="23_fvxa7"]
-[ext_resource type="Script" path="res://scripts/actors/door.gd" id="24_hr67r"]
-[ext_resource type="Script" path="res://scripts/actors/asia.gd" id="25_hu6h8"]
+[ext_resource type="AudioStream" uid="uid://r7l4v57vcnjp" path="res://audio/music/office.mp3" id="1_bc20a"]
+[ext_resource type="TileSet" uid="uid://d4nf6vj8sxrcd" path="res://art/tilesets/office_tileset.tres" id="2_j3jgm"]
+[ext_resource type="Texture2D" uid="uid://b5n5qu46k452i" path="res://art/props/office/window.png" id="3_33r1m"]
+[ext_resource type="Texture2D" uid="uid://do5j0d1wjyh8n" path="res://art/props/office/wall_calendar.png" id="4_7llle"]
+[ext_resource type="Texture2D" uid="uid://c0kb31uqjltcu" path="res://art/props/office/certificate.png" id="5_fktjs"]
+[ext_resource type="Texture2D" uid="uid://psug7uvj4rqt" path="res://art/props/office/wall_clock.png" id="6_5x3k5"]
+[ext_resource type="Texture2D" uid="uid://bthn2bhiubfrp" path="res://art/props/office/office_door.png" id="7_5j5w7"]
+[ext_resource type="Texture2D" uid="uid://b5uc4qi6dkibn" path="res://art/props/office/bookshelf.png" id="8_a4i0b"]
+[ext_resource type="Texture2D" uid="uid://lp585k71xalv" path="res://art/props/office/chair_pig.png" id="9_smnd7"]
+[ext_resource type="Texture2D" uid="uid://ce8np20446022" path="res://art/props/office/desk_pig.png" id="10_ibmul"]
+[ext_resource type="Texture2D" uid="uid://bxruelyth1n48" path="res://art/props/office/desk_lamp.png" id="11_ejcxh"]
+[ext_resource type="Texture2D" uid="uid://7tfp81ldhf8c" path="res://art/props/office/coffee_mug.png" id="12_dkjrj"]
+[ext_resource type="Texture2D" uid="uid://t4eurkjd3wdh" path="res://art/props/office/trash_bin.png" id="13_e62gu"]
+[ext_resource type="Texture2D" uid="uid://lw073qn0ub7w" path="res://art/props/office/desk_murrow.png" id="14_mmq06"]
+[ext_resource type="Texture2D" uid="uid://d2h1limgdtfed" path="res://art/props/office/desk_swine.png" id="15_dshi6"]
+[ext_resource type="Texture2D" uid="uid://bbjg23jo15ahp" path="res://art/props/office/desk_rak.png" id="16_lbgtv"]
+[ext_resource type="Texture2D" uid="uid://dxftq7lldln3s" path="res://art/props/office/desk_wymysl.png" id="17_4a2wo"]
+[ext_resource type="Texture2D" uid="uid://vech3mxkw53m" path="res://art/props/office/desk_kula.png" id="18_1bhqt"]
+[ext_resource type="Texture2D" uid="uid://bvn0weitao5s5" path="res://art/props/office/archive_boxes.png" id="19_v5k7j"]
+[ext_resource type="Texture2D" uid="uid://ldcvtcwcjpd5" path="res://art/props/office/printer.png" id="20_jkdff"]
+[ext_resource type="Texture2D" uid="uid://ctmo1i276h63q" path="res://art/props/office/coffee_machine.png" id="21_hdxpt"]
+[ext_resource type="Texture2D" uid="uid://casmttpenc4wy" path="res://art/props/office/desk_asia_new.png" id="22_pakq6"]
+[ext_resource type="Texture2D" uid="uid://vwkugt3nx7te" path="res://art/props/office/fern.png" id="23_fvxa7"]
+[ext_resource type="Script" uid="uid://ckwlgat482exj" path="res://scripts/actors/door.gd" id="24_hr67r"]
+[ext_resource type="Script" uid="uid://dqlupyp37tohw" path="res://scripts/actors/asia.gd" id="25_hu6h8"]
 [ext_resource type="PackedScene" path="res://scenes/components/npc_walking_canon.tscn" id="26_upoca"]
 [ext_resource type="SpriteFrames" path="res://art/sprites/asia/asia_sprite_frames.tres" id="27_50k2b"]
-[ext_resource type="Script" path="res://scripts/actors/npc.gd" id="28_qql6w"]
+[ext_resource type="Script" uid="uid://bbi3trkp5jpng" path="res://scripts/actors/npc.gd" id="28_qql6w"]
 [ext_resource type="SpriteFrames" path="res://art/sprites/mr_pig/mr_pig_sprite_frames.tres" id="29_li1sm"]
 [ext_resource type="SpriteFrames" path="res://art/sprites/murrow/murrow_sprite_frames.tres" id="30_1glju"]
 [ext_resource type="SpriteFrames" path="res://art/sprites/halina/halina_sprite_frames.tres" id="31_jvfr5"]
-[ext_resource type="Script" path="res://scripts/actors/meeting_room_trigger.gd" id="32_thi3l"]
-[ext_resource type="Script" path="res://scripts/actors/pickup.gd" id="33_u8rnu"]
-[ext_resource type="Script" path="res://scripts/actors/minigame_trigger.gd" id="34_6t4ao"]
-[ext_resource type="Script" path="res://scripts/actors/pig_idle_zone.gd" id="35_jqi0j"]
-[ext_resource type="Script" path="res://scripts/actors/behind_desk_zone.gd" id="36_uygdg"]
-[ext_resource type="Script" path="res://scripts/actors/player.gd" id="37_sk3mr"]
+[ext_resource type="Script" uid="uid://d3cbqybfky711" path="res://scripts/actors/meeting_room_trigger.gd" id="32_thi3l"]
+[ext_resource type="Script" uid="uid://kopitkvcinqh" path="res://scripts/actors/pickup.gd" id="33_u8rnu"]
+[ext_resource type="Script" uid="uid://c4ydsjk7hc21x" path="res://scripts/actors/minigame_trigger.gd" id="34_6t4ao"]
+[ext_resource type="Script" uid="uid://b4usmtwmbvxkl" path="res://scripts/actors/pig_idle_zone.gd" id="35_jqi0j"]
+[ext_resource type="Script" uid="uid://di4ddb40aei4h" path="res://scripts/actors/behind_desk_zone.gd" id="36_uygdg"]
+[ext_resource type="Script" uid="uid://vwn6hsy0ypn7" path="res://scripts/actors/player.gd" id="37_sk3mr"]
 [ext_resource type="SpriteFrames" path="res://art/sprites/cula/cula_sprite_frames.tres" id="38_51pkw"]
-[ext_resource type="Script" path="res://scripts/systems/persistent_music.gd" id="music_script"]
+[ext_resource type="Script" uid="uid://dcjoyrgbbssk4" path="res://scripts/systems/persistent_music.gd" id="music_script"]
+[ext_resource type="Script" path="res://scripts/actors/blue_folder_pickup.gd" id="39_bluefolder"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_bc20a"]
 size = Vector2(48, 24)
@@ -69,6 +70,9 @@ size = Vector2(342, 40)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_coffee"]
 size = Vector2(48, 48)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_blue_folder"]
+size = Vector2(42, 28)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_pigzone"]
 size = Vector2(144, 128)
@@ -341,11 +345,9 @@ npc_id = "asia"
 display_name = "Asia"
 default_facing = "front_left"
 
-[node name="Visual" type="AnimatedSprite2D" parent="Asia" unique_id=9048632 instance=ExtResource("26_upoca")]
-y_sort_enabled = true
+[node name="Visual" parent="Asia" unique_id=9048632 instance=ExtResource("26_upoca")]
 position = Vector2(0, -6)
 sprite_frames = ExtResource("27_50k2b")
-offset = Vector2(0, -56)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Asia" unique_id=1477340108]
 shape = SubResource("RectangleShape2D_npc")
@@ -385,11 +387,9 @@ npc_id = "pig"
 display_name = "Mr. Pig"
 npc_color = Color(0.83, 0.54, 0.54, 1)
 
-[node name="Visual" type="AnimatedSprite2D" parent="MrPig" unique_id=1556823945 instance=ExtResource("26_upoca")]
-y_sort_enabled = true
+[node name="Visual" parent="MrPig" unique_id=1556823945 instance=ExtResource("26_upoca")]
 position = Vector2(0, -6)
 sprite_frames = ExtResource("29_li1sm")
-offset = Vector2(0, -56)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="MrPig" unique_id=695008208]
 shape = SubResource("RectangleShape2D_npc")
@@ -405,11 +405,9 @@ display_name_after_meeting = "Murrow"
 first_meeting_flag = "met_murrow"
 npc_color = Color(0.48, 0.42, 0.29, 1)
 
-[node name="Visual" type="AnimatedSprite2D" parent="Murrow" unique_id=560085974 instance=ExtResource("26_upoca")]
-y_sort_enabled = true
+[node name="Visual" parent="Murrow" unique_id=560085974 instance=ExtResource("26_upoca")]
 position = Vector2(0, -6)
 sprite_frames = ExtResource("30_1glju")
-offset = Vector2(0, -56)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Murrow" unique_id=1142274005]
 shape = SubResource("RectangleShape2D_npc")
@@ -424,11 +422,9 @@ display_name = "Mrs. Sikorska"
 presence_flags = Array[String](["halina_arrived"])
 presence_logic = "all"
 
-[node name="Visual" type="AnimatedSprite2D" parent="Halina" unique_id=1295171888 instance=ExtResource("26_upoca")]
-y_sort_enabled = true
+[node name="Visual" parent="Halina" unique_id=1295171888 instance=ExtResource("26_upoca")]
 position = Vector2(0, -6)
 sprite_frames = ExtResource("31_jvfr5")
-offset = Vector2(0, -56)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Halina" unique_id=1278107682]
 shape = SubResource("RectangleShape2D_npc")
@@ -464,6 +460,22 @@ offset_top = -6.0
 offset_right = 8.0
 offset_bottom = 6.0
 color = Color(0.74, 0.58, 0.22, 1)
+
+[node name="BlueFolder" type="Area2D" parent="."]
+position = Vector2(832, 190)
+collision_layer = 4
+collision_mask = 2
+script = ExtResource("39_bluefolder")
+
+[node name="Visual" type="ColorRect" parent="BlueFolder"]
+offset_left = -18.0
+offset_top = -10.0
+offset_right = 18.0
+offset_bottom = 10.0
+color = Color(0.18, 0.28, 0.52, 1)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="BlueFolder"]
+shape = SubResource("RectangleShape2D_blue_folder")
 
 [node name="OfficeCoffeeMachine" type="Area2D" parent="." unique_id=2096571809]
 position = Vector2(982, 560)

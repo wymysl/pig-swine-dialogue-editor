@@ -1,0 +1,13 @@
+{
+  "version": 19,
+  "data": {
+    "current_scene_path": "res://scenes/world/routes/office_street.tscn",
+    "current_spawn_id": "default",
+    "chapter1": {
+      "met_asia": true,
+      "has_law_binder": true,
+      "has_rights_memo": false,
+      "bonus_evidence_collected": ""
+    }
+  }
+}

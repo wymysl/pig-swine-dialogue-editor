@@ -1,0 +1,36 @@
+{
+  "group_id": null,
+  "states": [
+    {
+      "character": {
+        "id": "bd6b03d2-417d-4e24-96b4-fee4cef4457d",
+        "name": "Late-60s female, wide build, slightly stooped posture with weight on the left foot. Long winter coat in eggplant #5a2a4a. Plaster grey hair #9a9088 pulled back under a faded mint headscarf #88b0a0. Warm skin #e6b08a. A bulky tote bag #6a4a30 attached as a body prop hanging from the right shoulder \u2014 NOT held in hand, just slung across the body. Hands at sides.\nSTYLE: minimal synthetic line drawing, sparse flat shapes, institutional\nmood, neutral observational rendering, pixel-art, adult 1:5 proportions,\nfull body, hands at sides, 124\u00d7124 character sprite, 8-direction idle.\n\nNEGATIVE: detailed, shaded, gradient, anime, chibi, cute, big head,\ndecorative, fantasy, realistic, 3D, held objects, facial expressions,\nsatirical caricature",
+        "prompt": "Late-60s female, wide build, slightly stooped posture with weight on the left foot. Long winter coat in eggplant #5a2a4a. Plaster grey hair #9a9088 pulled back under a faded mint headscarf #88b0a0. Warm skin #e6b08a. A bulky tote bag #6a4a30 attached as a body prop hanging from the right shoulder \u2014 NOT held in hand, just slung across the body. Hands at sides.\nSTYLE: minimal synthetic line drawing, sparse flat shapes, institutional\nmood, neutral observational rendering, pixel-art, adult 1:5 proportions,\nfull body, hands at sides, 124\u00d7124 character sprite, 8-direction idle.\n\nNEGATIVE: detailed, shaded, gradient, anime, chibi, cute, big head,\ndecorative, fantasy, realistic, 3D, held objects, facial expressions,\nsatirical caricature",
+        "size": {
+          "width": 180,
+          "height": 180
+        },
+        "template_id": "mannequin",
+        "directions": 8,
+        "view": "low top-down",
+        "created_at": "2026-05-18T13:49:13.433256+00:00"
+      },
+      "folder": "Late-60s_female_wide_build_slightly_stooped_postur",
+      "frames": {
+        "rotations": {
+          "south": "Late-60s_female_wide_build_slightly_stooped_postur/rotations/south.png",
+          "south-east": "Late-60s_female_wide_build_slightly_stooped_postur/rotations/south-east.png",
+          "east": "Late-60s_female_wide_build_slightly_stooped_postur/rotations/east.png",
+          "north-east": "Late-60s_female_wide_build_slightly_stooped_postur/rotations/north-east.png",
+          "north": "Late-60s_female_wide_build_slightly_stooped_postur/rotations/north.png",
+          "north-west": "Late-60s_female_wide_build_slightly_stooped_postur/rotations/north-west.png",
+          "west": "Late-60s_female_wide_build_slightly_stooped_postur/rotations/west.png",
+          "south-west": "Late-60s_female_wide_build_slightly_stooped_postur/rotations/south-west.png"
+        },
+        "animations": {}
+      }
+    }
+  ],
+  "export_version": "3.0",
+  "export_date": "2026-05-18T13:59:25.827814"
+}

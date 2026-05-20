@@ -47,6 +47,7 @@ const ASIA_HINT_STATES_PATH: String = "res://data/dialogues/asia_hint_states_ch1
 ## dir-loop pass — it is loaded once, explicitly, and merged into "asia").
 const ASIA_HINT_STATES_FILENAME: String = "asia_hint_states_ch1.json"
 const CHARACTER_REGISTRY_PATH: String = "res://data/character_registry.json"
+const ARGUMENT_FRAGMENTS_PATH: String = "res://data/argument_fragments.json"
 const FALLBACK_LINE: String = "..."
 
 ## _catalogue — map of npc_id -> parsed dialogue Dict.
@@ -54,6 +55,10 @@ var _catalogue: Dictionary = {}
 ## _known_speaker_ids — populated from character_registry.json. Used by
 ## _validate_catalogue to flag unregistered speakers as load-time errors.
 var _known_speaker_ids: Dictionary = {}
+## _argument_fragments — id -> definition, loaded once at boot from data.
+var _argument_fragments: Dictionary = {}
+## _validation_errors — dialogue-catalogue errors captured for smoke tests.
+var _validation_errors: Array[String] = []
 
 ## ActiveStateContext — the implicit state machine that lives between a
 ## dialogue_requested and the next dismiss/commit pair, extracted from
@@ -111,6 +116,9 @@ class ActiveStateContext:
 		state_chain = false
 		once_state_id = ""
 
+	func install_mutations(raw_mutations: Array) -> void:
+		mutations = raw_mutations.duplicate(true)
+
 var _ctx: ActiveStateContext = ActiveStateContext.new()
 
 ## _character_registry — map of character_id -> display name String.
@@ -118,6 +126,7 @@ var _character_registry: Dictionary = {}
 
 
 func _ready() -> void:
+	_validation_errors.clear()
 	var sigs = get_node_or_null("/root/Signals")
 	if sigs:
 		sigs.dialogue_requested.connect(_on_dialogue_requested)
@@ -125,6 +134,7 @@ func _ready() -> void:
 		if sigs.has_signal("dialogue_option_committed"):
 			sigs.dialogue_option_committed.connect(_on_dialogue_option_committed)
 	_load_character_registry()
+	_load_argument_fragments()
 	_load_all_dialogues()
 
 func _on_dialogue_dismissed() -> void:
@@ -194,7 +204,78 @@ func _apply_mutations() -> void:
 					sigs.route_unlocked.emit(route_id)
 			else:
 				push_warning("DialogueRunner: unlock_route unknown route_id '%s'; declare it in State.reset_state().routes_unlocked first" % route_id)
+		elif mut is Dictionary and mut.has("add_argument_fragment"):
+			var fragment_id: String = str(mut["add_argument_fragment"])
+			_add_argument_fragment(state_node.data, fragment_id, sigs)
 	_ctx.mutations.clear()
+
+
+func _add_argument_fragment(data: Dictionary, fragment_id: String, sigs: Node) -> void:
+	if fragment_id == "":
+		push_warning("DialogueRunner: add_argument_fragment received an empty fragment id")
+		return
+	if not data.has("case_folder") or not data["case_folder"] is Dictionary:
+		push_warning("DialogueRunner: case_folder state missing; cannot add argument fragment '%s'" % fragment_id)
+		return
+	var folder: Dictionary = data["case_folder"]
+	if not folder.has("argument_fragments") or not folder["argument_fragments"] is Array:
+		push_warning("DialogueRunner: case_folder.argument_fragments missing; cannot add argument fragment '%s'" % fragment_id)
+		return
+	var fragments: Array = folder["argument_fragments"]
+	for existing in fragments:
+		if existing is Dictionary and str(existing.get("id", "")) == fragment_id:
+			return
+
+	var fragment_def: Dictionary = _argument_fragment_definition(fragment_id)
+	if fragment_def.is_empty():
+		push_warning("DialogueRunner: add_argument_fragment unknown fragment_id '%s'; declare it in argument_fragments.json first" % fragment_id)
+		return
+
+	var stored: Dictionary = {
+		"id": fragment_id,
+		"title": str(fragment_def.get("title", "")),
+		"body": str(fragment_def.get("body", "")),
+		"tags": _string_array(fragment_def.get("tags", [])),
+		"source_state": str(fragment_def.get("source_state", "")),
+		"added_at_chapter": int(fragment_def.get("added_at_chapter", 1)),
+	}
+	fragments.append(stored)
+	if sigs != null and sigs.has_signal("case_folder_fragment_added"):
+		sigs.case_folder_fragment_added.emit(fragment_id)
+
+
+func _argument_fragment_definition(fragment_id: String) -> Dictionary:
+	var definition: Variant = _argument_fragments.get(fragment_id, {})
+	if definition is Dictionary:
+		return definition
+	return {}
+
+
+func _load_argument_fragments() -> void:
+	_argument_fragments.clear()
+	var file := FileAccess.open(ARGUMENT_FRAGMENTS_PATH, FileAccess.READ)
+	if file == null:
+		push_warning("DialogueRunner: argument_fragments.json not found at " + ARGUMENT_FRAGMENTS_PATH)
+		return
+	var parsed: Variant = JSON.parse_string(file.get_as_text())
+	file.close()
+	if not parsed is Dictionary:
+		push_warning("DialogueRunner: argument_fragments.json parse failed")
+		return
+	var fragments: Array = parsed.get("fragments", [])
+	for raw in fragments:
+		if raw is Dictionary:
+			var fragment_id: String = str(raw.get("id", ""))
+			if fragment_id != "":
+				_argument_fragments[fragment_id] = raw
+
+
+func _string_array(raw: Variant) -> Array[String]:
+	var out: Array[String] = []
+	if raw is Array:
+		for value in raw:
+			out.append(str(value))
+	return out
 
 
 ## _on_dialogue_option_committed — fired by DialogueBox when the player
@@ -313,7 +394,7 @@ func _load_character_registry() -> void:
 	file.close()
 	var parsed = JSON.parse_string(text)
 	if parsed == null or not parsed is Dictionary:
-		push_error("DialogueRunner: character_registry.json parse failed")
+		_validation_error("DialogueRunner: character_registry.json parse failed")
 		return
 	## Strip internal doc key; copy only id->name pairs.
 	for key in parsed:
@@ -326,6 +407,25 @@ func _load_character_registry() -> void:
 		for alias_id in parsed["_portrait_aliases"]:
 			_known_speaker_ids[str(alias_id)] = true
 
+
+
+func get_validation_errors() -> Array[String]:
+	return _validation_errors.duplicate()
+
+
+func has_validation_errors() -> bool:
+	return not _validation_errors.is_empty()
+
+
+func _validation_error(message: String) -> void:
+	_validation_errors.append(message)
+	push_error(message)
+
+
+## resolve_speaker — public speaker-name lookup for UI renderers.
+## Falls back to `fallback` if the id is not in the registry.
+func resolve_speaker(character_id: String, fallback: String) -> String:
+	return _resolve_speaker(character_id, fallback)
 
 
 ## _resolve_speaker — returns the display name for a character_id.
@@ -412,22 +512,22 @@ func _validate_state(st: Dictionary, npc_id: String, seen_ids: Dictionary, decla
 	## State-id uniqueness. Global across all dialogue files: dialogue_states_seen
 	## is a flat Array, so a colliding id makes once:true cross-file ghost.
 	if sid == "":
-		push_error("DialogueRunner: state in npc '%s' has no id." % npc_id)
+		_validation_error("DialogueRunner: state in npc '%s' has no id." % npc_id)
 	elif seen_ids.has(sid):
-		push_error("DialogueRunner: duplicate state id '%s' (in '%s' and '%s'). State ids must be globally unique across all dialogue files." % [sid, seen_ids[sid], npc_id])
+		_validation_error("DialogueRunner: duplicate state id '%s' (in '%s' and '%s'). State ids must be globally unique across all dialogue files." % [sid, seen_ids[sid], npc_id])
 	else:
 		seen_ids[sid] = npc_id
 
 	## Speaker references — state-level + per-line objects.
 	var st_speaker: String = str(st.get("speaker", ""))
 	if st_speaker != "" and not _known_speaker_ids.has(st_speaker):
-		push_error("DialogueRunner: unknown speaker id '%s' in state '%s' (npc '%s'). Add it to character_registry.json or fix the typo." % [st_speaker, sid, npc_id])
+		_validation_error("DialogueRunner: unknown speaker id '%s' in state '%s' (npc '%s'). Add it to character_registry.json or fix the typo." % [st_speaker, sid, npc_id])
 	if st.has("lines") and st["lines"] is Array:
 		for ln in st["lines"]:
 			if ln is Dictionary and ln.has("speaker"):
 				var ls: String = str(ln["speaker"])
 				if ls != "" and not _known_speaker_ids.has(ls):
-					push_error("DialogueRunner: unknown speaker id '%s' in line of state '%s' (npc '%s')." % [ls, sid, npc_id])
+					_validation_error("DialogueRunner: unknown speaker id '%s' in line of state '%s' (npc '%s')." % [ls, sid, npc_id])
 
 	## Trigger paths.
 	var trig: String = str(st.get("trigger", ""))
@@ -435,7 +535,7 @@ func _validate_state(st: Dictionary, npc_id: String, seen_ids: Dictionary, decla
 		for m in path_re.search_all(trig):
 			var p: String = m.get_string(1)
 			if not declared_paths.has(p):
-				push_error("DialogueRunner: unresolved flag path '%s' in trigger of state '%s' (npc '%s'). Declare it in State.reset_state() or fix the typo." % [p, sid, npc_id])
+				_validation_error("DialogueRunner: unresolved flag path '%s' in trigger of state '%s' (npc '%s'). Declare it in State.reset_state() or fix the typo." % [p, sid, npc_id])
 
 	## on_dismiss.set paths.
 	if st.has("on_dismiss") and st["on_dismiss"] is Array:
@@ -443,31 +543,31 @@ func _validate_state(st: Dictionary, npc_id: String, seen_ids: Dictionary, decla
 			if mut is Dictionary and mut.has("set") and not declared_paths.is_empty():
 				var sp: String = str(mut["set"])
 				if not declared_paths.has(sp):
-					push_error("DialogueRunner: unresolved on_dismiss.set path '%s' in state '%s' (npc '%s')." % [sp, sid, npc_id])
+					_validation_error("DialogueRunner: unresolved on_dismiss.set path '%s' in state '%s' (npc '%s')." % [sp, sid, npc_id])
 
 	## options paths.
 	if st.has("options") and st["options"] is Dictionary:
 		var opts: Dictionary = st["options"]
 		var wp: String = str(opts.get("write_path", ""))
 		if wp != "" and not declared_paths.is_empty() and not declared_paths.has(wp):
-			push_error("DialogueRunner: unresolved options.write_path '%s' in state '%s' (npc '%s')." % [wp, sid, npc_id])
+			_validation_error("DialogueRunner: unresolved options.write_path '%s' in state '%s' (npc '%s')." % [wp, sid, npc_id])
 		var tp: String = str(opts.get("trust_path", ""))
 		if tp != "" and not declared_paths.is_empty() and not declared_paths.has(tp):
-			push_error("DialogueRunner: unresolved options.trust_path '%s' in state '%s' (npc '%s')." % [tp, sid, npc_id])
+			_validation_error("DialogueRunner: unresolved options.trust_path '%s' in state '%s' (npc '%s')." % [tp, sid, npc_id])
 
 	## Content shape — must have lines (>=1 entry), OR options.choices (>=1),
 	## OR silent:true. Singular `line: "x"` is no longer accepted; the Phase 2
 	## migration rewrote every singular line to a one-element lines array.
 	var has_lines: bool = st.has("lines") and st["lines"] is Array and (st["lines"] as Array).size() > 0
 	if st.has("line"):
-		push_error("DialogueRunner: state '%s' (npc '%s') uses the legacy `line: \"x\"` field. Convert to `lines: [\"x\"]` — see _schema.md." % [sid, npc_id])
+		_validation_error("DialogueRunner: state '%s' (npc '%s') uses the legacy `line: \"x\"` field. Convert to `lines: [\"x\"]` — see _schema.md." % [sid, npc_id])
 	var has_opts_choices: bool = false
 	if st.has("options") and st["options"] is Dictionary:
 		var choices = (st["options"] as Dictionary).get("choices", [])
 		has_opts_choices = choices is Array and (choices as Array).size() > 0
 	var is_silent: bool = bool(st.get("silent", false))
 	if not (has_lines or has_opts_choices or is_silent):
-		push_error("DialogueRunner: state '%s' (npc '%s') has no lines, no options.choices, and is not marked silent:true. Add content or set silent:true to declare deliberate silence." % [sid, npc_id])
+		_validation_error("DialogueRunner: state '%s' (npc '%s') has no lines, no options.choices, and is not marked silent:true. Add content or set silent:true to declare deliberate silence." % [sid, npc_id])
 
 
 ## _flatten_state_paths — walk State.reset_state()'s nested Dictionary into a
@@ -494,7 +594,7 @@ func _merge_asia_hint_states() -> void:
 	file.close()
 	var parsed = JSON.parse_string(text)
 	if parsed == null or not parsed is Dictionary:
-		push_error("DialogueRunner: V1.A Asia hint states JSON parse failed")
+		_validation_error("DialogueRunner: V1.A Asia hint states JSON parse failed")
 		return
 
 	var v1a_states: Array = parsed.get("states", [])
@@ -530,7 +630,7 @@ func _load_file(npc_id: String, path: String) -> void:
 	file.close()
 	var parsed = JSON.parse_string(text)
 	if parsed == null:
-		push_error("DialogueRunner: JSON parse failed for " + path)
+		_validation_error("DialogueRunner: JSON parse failed for " + path)
 		return
 	_catalogue[npc_id] = parsed
 
@@ -574,7 +674,7 @@ func _on_dialogue_requested(npc_id: String, display_name: String) -> void:
 		var trigger: String = entry.get("trigger", "")
 		if _evaluate_trigger(trigger):
 			var raw_mutations: Array = entry.get("on_dismiss", [])
-			_ctx.mutations = raw_mutations.duplicate(true)
+			_ctx.install_mutations(raw_mutations)
 			_ctx.once_state_id = entry_id if bool(entry.get("once", false)) else ""
 			## state-level `chain: true` (distinct from options.chain) re-walks
 			## states on dismiss so non-choice states can sequence into the
@@ -612,7 +712,7 @@ func _on_dialogue_requested(npc_id: String, display_name: String) -> void:
 			## loaded. Re-assert the matched state's dismiss mutations after the
 			## line/options notifications so the state now on screen owns the next
 			## dialogue_dismissed event.
-			_ctx.mutations = raw_mutations.duplicate(true)
+			_ctx.install_mutations(raw_mutations)
 			return
 
 	## Fall back to idle_flavor (random).

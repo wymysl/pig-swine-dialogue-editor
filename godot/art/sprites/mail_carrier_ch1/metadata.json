@@ -1,0 +1,36 @@
+{
+  "group_id": null,
+  "states": [
+    {
+      "character": {
+        "id": "01dd5787-ca93-4a34-a461-aa0045220599",
+        "name": "Mid-30s male, average build, brisk posture with slight forward lean.\nBright cheap-gold jacket #e8c840 with navy trim #1c2a40 on the cuffs\nand collar \u2014 recognisably postal worker uniform but no readable logo\ntext. Navy trousers #1c2a40. Dark short hair #1a1410. Warm skin\n#e6b08a. A walnut messenger bag #6a4a30 attached as a body prop\ncrossing the torso diagonally \u2014 NOT held in hand. Hands at sides.\nSTYLE: minimal synthetic line drawing, sparse flat shapes, institutional\nmood, neutral observational rendering, pixel-art, adult 1:5 proportions,\nfull body, hands at sides, 124\u00d7124 character sprite, 8-direction idle.\n\nNEGATIVE: detailed, shaded, gradient, anime, chibi, cute, big head,\ndecorative, fantasy, realistic, 3D, held objects, facial expressions,\nsatirical caricature",
+        "prompt": "Mid-30s male, average build, brisk posture with slight forward lean.\nBright cheap-gold jacket #e8c840 with navy trim #1c2a40 on the cuffs\nand collar \u2014 recognisably postal worker uniform but no readable logo\ntext. Navy trousers #1c2a40. Dark short hair #1a1410. Warm skin\n#e6b08a. A walnut messenger bag #6a4a30 attached as a body prop\ncrossing the torso diagonally \u2014 NOT held in hand. Hands at sides.\nSTYLE: minimal synthetic line drawing, sparse flat shapes, institutional\nmood, neutral observational rendering, pixel-art, adult 1:5 proportions,\nfull body, hands at sides, 124\u00d7124 character sprite, 8-direction idle.\n\nNEGATIVE: detailed, shaded, gradient, anime, chibi, cute, big head,\ndecorative, fantasy, realistic, 3D, held objects, facial expressions,\nsatirical caricature",
+        "size": {
+          "width": 180,
+          "height": 180
+        },
+        "template_id": "mannequin",
+        "directions": 8,
+        "view": "low top-down",
+        "created_at": "2026-05-18T13:39:28.454549+00:00"
+      },
+      "folder": "Mid-30s_male_average_build_brisk_posture_with_slig",
+      "frames": {
+        "rotations": {
+          "south": "Mid-30s_male_average_build_brisk_posture_with_slig/rotations/south.png",
+          "south-east": "Mid-30s_male_average_build_brisk_posture_with_slig/rotations/south-east.png",
+          "east": "Mid-30s_male_average_build_brisk_posture_with_slig/rotations/east.png",
+          "north-east": "Mid-30s_male_average_build_brisk_posture_with_slig/rotations/north-east.png",
+          "north": "Mid-30s_male_average_build_brisk_posture_with_slig/rotations/north.png",
+          "north-west": "Mid-30s_male_average_build_brisk_posture_with_slig/rotations/north-west.png",
+          "west": "Mid-30s_male_average_build_brisk_posture_with_slig/rotations/west.png",
+          "south-west": "Mid-30s_male_average_build_brisk_posture_with_slig/rotations/south-west.png"
+        },
+        "animations": {}
+      }
+    }
+  ],
+  "export_version": "3.0",
+  "export_date": "2026-05-18T13:59:50.242722"
+}

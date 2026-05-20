@@ -1,66 +1,94 @@
 {
     "version": 2,
     "npc_id": "barista",
+    "display_name": "Barista",
+    "_provenance": "Promoted 2026-05-17 from godot/data/_drafts/ch1_barista_2026-05-17.json (Ch1 sweep).",
     "states": [
         {
-            "id": "coffee_order",
+            "id": "barista_b7_first_approach",
+            "trigger": "!chapter1.coffee_tutorial_seen && !chapter1.met_whimsy",
+            "once": true,
+            "lines": ["Court coffee? It will not make you wiser, but it may make your mistakes faster.", "New face. Pig and Swine logo. That combination usually means something is due."],
+            "_comment": "Fires once on first approach before Whimsy is met. Service register reads the firm logo as social context — no name exchange needed. once:true so the orientation line only plays once. Falls through to barista_b7_brew_prompt on the next interaction."
+        },
+        {
+            "id": "barista_b7_brew_prompt",
             "trigger": "!chapter1.coffee_tutorial_seen",
-            "lines": [
-                {"speaker": "cula", "text": "Black coffee."},
-                "Court coffee, then. It will not make you wiser, but it may make your mistakes faster.",
-                "How strong?"
-            ],
-            "on_dismiss": []
-        },
-        {
-            "id": "coffee_outcome_alert_plus",
-            "trigger": "chapter1.coffee_buff == 'procedurally_alert_plus'",
-            "_comment": "S-grade. Barista perfect line per minigames.txt §Character reactions.",
-            "lines": ["That cup has structure, balance, and suspicious appellate energy.", "Two zloty."],
-            "on_dismiss": []
-        },
-        {
-            "id": "coffee_outcome_alert",
-            "trigger": "chapter1.coffee_buff == 'procedurally_alert'",
-            "_comment": "A/B-grade. Barista good line per minigames.txt §Character reactions.",
-            "lines": ["Solid. The court may now tolerate you.", "Two zloty."],
-            "on_dismiss": []
-        },
-        {
-            "id": "coffee_outcome_caffeinated",
-            "trigger": "chapter1.coffee_buff == 'caffeinated'",
-            "_comment": "C-grade. Barista okay line per minigames.txt §Character reactions.",
-            "lines": ["Drinkable. Not beautiful. Many pleadings are similar.", "Two zloty."],
-            "on_dismiss": []
-        },
-        {
-            "id": "coffee_outcome_machine_objects",
-            "trigger": "chapter1.coffee_buff == 'over_caffeinated' && chapter1.coffee_brew_grade == 'F'",
-            "_comment": "F-grade. Distinct from generic over_caffeinated (D) because the machine's objection is the joke. Placed BEFORE coffee_outcome_over_caffeinated so the more specific F-grade clause wins priority. Barista machine-objects line per minigames.txt §Character reactions.",
-            "lines": ["The machine refuses service. I respect the clarity.", "You know what... It's on the house."],
-            "on_dismiss": []
-        },
-        {
-            "id": "coffee_outcome_over_caffeinated",
-            "trigger": "chapter1.coffee_buff == 'over_caffeinated'",
-            "_comment": "D-grade catch-all (procedural_mud). The F-grade match above consumes that branch first. Barista bad line per minigames.txt §Character reactions.",
-            "lines": ["This coffee has lodged a complaint against itself.", "Two zloty. Drink it standing."],
-            "on_dismiss": []
-        },
-        {
-            "id": "coffee_retry_prompt",
-            "trigger": "chapter1.coffee_buff != ''",
-            "_comment": "Retry prompt — fires after an outcome state has been acknowledged. Currently unreachable on the FIRST post-minigame interaction because the more specific outcome triggers above match first; reachable only once Code wires an acknowledgement flag (see PROPOSAL_coffee_engine_followups.md). The options block writes the player's choice to chapter1.coffee_retry_decision; that flag is declared, but Code still needs to consume value=='retry' by clearing coffee state and re-launching the minigame.",
-            "lines": ["Are you drinking it? Or are we waiting for your appeal?"],
+            "lines": ["Going to court today?"],
             "options": {
                 "write_path": "chapter1.coffee_retry_decision",
                 "choices": [
-                    {"text": "Appeal the coffee.", "value": "retry"},
-                    {"text": "Accept the beverage.", "value": "accept"}
+                    {"text": "Brew coffee.", "value": "accept"},
+                    {"text": "What does this machine actually do?", "value": "retry"},
+                    {"text": "Just passing through.", "value": "accept"}
                 ]
             },
-            "on_dismiss": []
+            "_comment": "Tutorial gate. Reuses canonical flag coffee_retry_decision. 'Just passing through' writes accept so the player can skip without a dead-end. Code reads coffee_retry_decision == 'accept' to launch or bypass the mini-game. The machine-explainer state catches 'retry' on the next interaction."
+        },
+        {
+            "id": "barista_b7_machine_explainer",
+            "trigger": "!chapter1.coffee_tutorial_seen && chapter1.coffee_retry_decision == 'retry'",
+            "lines": ["You press the right buttons at the right time, and the coffee becomes less legally alarming.", "The machine grades you. I watch the grade. Clients used to do the same to their lawyers, but this is cheaper.", "Brew coffee?"],
+            "options": {
+                "write_path": "chapter1.coffee_retry_decision",
+                "choices": [
+                    {"text": "Brew coffee.", "value": "accept"},
+                    {"text": "On second thought, skip it.", "value": "accept"}
+                ]
+            },
+            "_comment": "Explainer state. First line is verbatim from minigames.txt §Narrative placement. Second line is the Beat 7 joke — clients grading lawyers is the institutional anchor. Both choices write 'accept' so Code can proceed uniformly."
+        },
+        {
+            "id": "barista_b7_grade_perfect_whimsy",
+            "trigger": "chapter1.coffee_tutorial_seen && chapter1.coffee_buff == 'procedurally_alert_plus' && chapter1.met_whimsy",
+            "once": true,
+            "lines": ["That cup has structure, balance, and suspicious appellate energy.", "Even Whimsy looked up.", "Two zloty."],
+            "_comment": "S-grade reaction when Whimsy is present. Place BEFORE canonical coffee_outcome_alert_plus in merged file. once:true. 'Whimsy looked up' is the observable social fact — the cynic registers quality without speaking to Cula directly."
+        },
+        {
+            "id": "barista_b7_grade_good_whimsy",
+            "trigger": "chapter1.coffee_tutorial_seen && chapter1.coffee_buff == 'procedurally_alert' && chapter1.met_whimsy",
+            "once": true,
+            "lines": ["Solid. The court may now tolerate you.", "Two zloty."],
+            "_comment": "A/B-grade with Whimsy present. Register-stable; voice sample from the canonical barista.json. once:true."
+        },
+        {
+            "id": "barista_b7_grade_poor_whimsy",
+            "trigger": "chapter1.coffee_tutorial_seen && chapter1.coffee_buff == 'over_caffeinated' && chapter1.met_whimsy",
+            "once": true,
+            "lines": ["Whimsy has a theory that bad coffee correlates with procedural overreach.", "I have no opinion on that.", "Two zloty. Drink it at the table."],
+            "_comment": "D/F-grade with Whimsy present. Joke: the barista's 'no opinion' is delivered while clearly having one. 'Procedural overreach' is the legal anchor. Place BEFORE canonical coffee_outcome_over_caffeinated in merged file. once:true."
+        },
+        {
+            "id": "barista_b7_tutorial_complete_whimsy_ambient",
+            "trigger": "chapter1.coffee_tutorial_seen && !chapter1.recruited_whimsy",
+            "lines": ["He's been at the corner table since eight. Orders one coffee, refills the cup with objections.", "When you are ready."],
+            "_comment": "Ambient bridge after tutorial is complete, before Whimsy is recruited. Points the player toward Whimsy without naming the objective. 'Refills the cup with objections' is the joke — barista reads Whimsy's rhetorical mode as a service behavior."
+        },
+        {
+            "id": "barista_b7_post_recruit_ambient_a",
+            "trigger": "chapter1.recruited_whimsy && chapter1.coffee_buff == ''",
+            "lines": ["So the firm has another lawyer now.", "The queue is longer already."],
+            "_comment": "Post-recruitment, no buff active. Dry social register. 'Queue is longer' is simultaneously literal and a light institutional observation about firm growth."
+        },
+        {
+            "id": "barista_b7_post_recruit_ambient_b",
+            "trigger": "chapter1.recruited_whimsy && chapter1.coffee_buff == 'procedurally_alert'",
+            "lines": ["Good coffee before court. That is a firm with standards.", "Two zloty when you get back."],
+            "_comment": "Post-recruitment, A/B buff active. Warm service register held. 'Two zloty when you get back' is the joke — payment deferred like a procedural filing step."
+        },
+        {
+            "id": "barista_b7_post_recruit_ambient_c",
+            "trigger": "chapter1.recruited_whimsy && chapter1.coffee_buff == 'procedurally_alert_plus'",
+            "lines": ["That was a very good cup. Try not to mention it to the office machine.", "Professional rivalry is real."],
+            "_comment": "Post-recruitment, S-grade buff active. Coffee-machine-as-character running joke from minigames.txt — the café machine and the office machine are positioned as competitors. Keeps the gag alive without overloading."
         }
     ],
-    "idle_flavor": ["The queue does not pause for procedure.", "Order at the counter. Confessions cost extra."]
+    "idle_flavor": [
+        "The queue does not pause for procedure.",
+        "Order at the counter. Confessions cost extra.",
+        "The table by the window is occupied by Whimsy's scarf and, sometimes, Whimsy.",
+        "Do not move the napkin pile. Last time someone did that, a rights memo fell out.",
+        "A queue is just a deadline with witnesses."
+    ]
 }

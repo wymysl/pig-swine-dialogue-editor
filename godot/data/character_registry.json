@@ -1,7 +1,8 @@
 {
     "_doc": "Character display-name registry. Maps character_id (as used in dialogue tree npc_id and multi-speaker line 'speaker' fields) to the display name shown in the dialogue box. Sourced from voice_references/*.jsonl display_name meta fields. Maintained by Code role.",
-    "_portrait_aliases": { "murrow_stranger": "murrow" },
+    "_portrait_aliases": { "murrow_stranger": "murrow", "cula_internal": "cula" },
     "cula": "Dr. A. Cula",
+    "cula_internal": "Dr. A. Cula",
     "pig": "Mr. Pig",
     "murrow": "Murrow",
     "murrow_stranger": "Mr. Murrow",

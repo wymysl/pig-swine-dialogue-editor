@@ -12,6 +12,7 @@ extends CanvasLayer
 
 const EVIDENCE_FILE: String = "res://data/evidence_ch1.json"
 const FRAMES_FILE: String = "res://data/argument_frames_ch1.json"
+const PACKET_SCORER = preload("res://scripts/systems/battle/packet_scorer.gd")
 
 const SLOT_NON_CURRENT_ADDRESS: String = "element_non_current_address"
 const SLOT_LANDLORD_KNOWLEDGE: String = "element_landlord_knowledge"
@@ -80,14 +81,6 @@ const DECOY_DEFINITIONS: Array[Dictionary] = [
 	},
 ]
 
-const FRAME_PRIORITY: Array[String] = [
-	"incapacity_defense",
-	"overbroad_remedy",
-	"standing_wrong_party",
-	"notice_period_failure",
-	"substantive_defense",
-]
-
 const FRAME_DEFAULT: String = "defective_service_135bis"
 const DEFAULT_REMEDY: String = "procedural_reset"
 
@@ -127,8 +120,8 @@ func _ready() -> void:
 	refresh_from_state()
 
 
-## refresh_from_state — called by BinderUI autoload before each open() so the
-## surface reflects current chapter state.
+## refresh_from_state — called before each open() so the surface reflects
+## current chapter state.
 func refresh_from_state() -> void:
 	_ensure_state_defaults()
 	_refresh_ordered_ids_from_surface()
@@ -201,58 +194,7 @@ func set_decoy_selected(decoy_flag: String, selected: bool) -> bool:
 
 ## evaluate_packet — computes packet completeness + scoring, without writing.
 func evaluate_packet() -> Dictionary:
-	var ch1: Dictionary = _chapter1()
-	var required_count: int = 0
-	for slot_key in SLOT_ORDER:
-		var state_key: String = SLOT_STATE_KEYS.get(slot_key, "")
-		if state_key != "" and String(ch1.get(state_key, "")) != "":
-			required_count += 1
-
-	var minimum_required: int = _minimum_required_elements()
-	var remedy_id: String = String(ch1.get(REMEDY_STATE_KEY, DEFAULT_REMEDY))
-	if not _is_known_remedy(remedy_id):
-		remedy_id = DEFAULT_REMEDY
-
-	var selected_frames: Array[String] = []
-	for decoy in DECOY_DEFINITIONS:
-		var flag_name: String = str(decoy.get("flag", ""))
-		var frame_id: String = str(decoy.get("frame_id", ""))
-		if flag_name == "decoy_incapacity" and not bool(ch1.get("halina_met", false)):
-			continue
-		if bool(ch1.get(flag_name, false)) and frame_id != "":
-			selected_frames.append(frame_id)
-
-	if remedy_id != DEFAULT_REMEDY and not selected_frames.has("overbroad_remedy"):
-		selected_frames.append("overbroad_remedy")
-
-	var proposed_frame: String = FRAME_DEFAULT
-	for frame_id in FRAME_PRIORITY:
-		if selected_frames.has(frame_id):
-			proposed_frame = frame_id
-			break
-
-	var patience_delta_total: int = 0
-	var trust_delta_total: int = 0
-	for frame_id in selected_frames:
-		var frame: Dictionary = _frames.get(frame_id, {})
-		patience_delta_total += int(frame.get("judicial_patience_delta_on_select", 0))
-		trust_delta_total += int(frame.get("halina_trust_delta_on_select", 0))
-
-	var starting_patience: int = max(0, 5 + patience_delta_total)
-	var meets_minimum: bool = required_count >= minimum_required
-
-	return {
-		"required_count": required_count,
-		"required_total": SLOT_ORDER.size(),
-		"minimum_required": minimum_required,
-		"meets_minimum": meets_minimum,
-		"requested_remedy": remedy_id,
-		"selected_frames": selected_frames,
-		"proposed_frame": proposed_frame,
-		"judicial_patience_delta": patience_delta_total,
-		"halina_trust_delta": trust_delta_total,
-		"starting_judicial_patience": starting_patience,
-	}
+	return PACKET_SCORER.score(_chapter1(), _frames, _evidence)
 
 
 ## apply_packet_assessment — writes proposed_frame + patience when minimum
@@ -278,12 +220,38 @@ func apply_packet_assessment() -> Dictionary:
 
 
 func _connect_packet_controls() -> void:
+	for option in [
+		_slot_address_option,
+		_slot_landlord_option,
+		_slot_notice_option,
+		_slot_authority_option,
+		_remedy_option,
+	]:
+		option.focus_mode = Control.FOCUS_ALL
+		option.gui_input.connect(_on_packet_option_gui_input.bind(option))
+	_apply_packet_button.focus_mode = Control.FOCUS_ALL
+	_apply_packet_button.gui_input.connect(_on_apply_button_gui_input)
 	_slot_address_option.item_selected.connect(_on_slot_option_selected.bind(SLOT_NON_CURRENT_ADDRESS))
 	_slot_landlord_option.item_selected.connect(_on_slot_option_selected.bind(SLOT_LANDLORD_KNOWLEDGE))
 	_slot_notice_option.item_selected.connect(_on_slot_option_selected.bind(SLOT_ACTUAL_NOTICE_WINDOW))
 	_slot_authority_option.item_selected.connect(_on_slot_option_selected.bind(SLOT_NO_THIRD_PARTY_AUTHORITY))
 	_remedy_option.item_selected.connect(_on_remedy_option_selected)
 	_apply_packet_button.pressed.connect(_on_apply_packet_pressed)
+
+
+func _on_packet_option_gui_input(event: InputEvent, option: OptionButton) -> void:
+	if _is_up(event):
+		_step_option_button(option, -1)
+		option.accept_event()
+	elif _is_down(event):
+		_step_option_button(option, 1)
+		option.accept_event()
+
+
+func _on_apply_button_gui_input(event: InputEvent) -> void:
+	if event.is_action_pressed("ui_accept") or event.is_action_pressed("interact"):
+		_on_apply_packet_pressed()
+		_apply_packet_button.accept_event()
 
 
 func _on_slot_option_selected(index: int, slot_key: String) -> void:
@@ -372,7 +340,7 @@ func _make_tab(evidence_id: String, card: Dictionary, active: bool) -> Button:
 	btn.button_pressed = active
 	btn.custom_minimum_size = Vector2(128.0, 36.0)
 	btn.clip_text = true
-	btn.focus_mode = Control.FOCUS_NONE
+	btn.focus_mode = Control.FOCUS_ALL
 	btn.pressed.connect(_on_tab_pressed.bind(evidence_id))
 	return btn
 
@@ -537,7 +505,7 @@ func _build_decoy_options() -> void:
 			continue
 
 		var checkbox := CheckBox.new()
-		checkbox.focus_mode = Control.FOCUS_NONE
+		checkbox.focus_mode = Control.FOCUS_ALL
 		checkbox.button_pressed = bool(ch1.get(flag_name, false))
 
 		var frame_id: String = str(defn.get("frame_id", ""))
@@ -585,16 +553,6 @@ func _is_card_surfaced(evidence_id: String, card: Dictionary) -> bool:
 	return false
 
 
-func _minimum_required_elements() -> int:
-	var frame: Dictionary = _frames.get(FRAME_DEFAULT, {})
-	if frame.is_empty():
-		return 3
-	var requirements: Dictionary = frame.get("packet_requirements", {})
-	if requirements.is_empty():
-		return 3
-	return int(requirements.get("minimum_required_elements", 3))
-
-
 func _render_packet_status_preview() -> void:
 	var score: Dictionary = evaluate_packet()
 	var required_count: int = int(score.get("required_count", 0))
@@ -624,6 +582,34 @@ func _is_known_remedy(remedy_id: String) -> bool:
 		if str(entry.get("id", "")) == remedy_id:
 			return true
 	return false
+
+
+func _step_option_button(option: OptionButton, delta: int) -> void:
+	if option == null or option.item_count <= 0:
+		return
+	var selected_index: int = option.selected + delta
+	if selected_index < 0:
+		selected_index = option.item_count - 1
+	elif selected_index >= option.item_count:
+		selected_index = 0
+	option.select(selected_index)
+	var slot_key: String = _slot_key_for_option(option)
+	if slot_key != "":
+		_on_slot_option_selected(selected_index, slot_key)
+	elif option == _remedy_option:
+		_on_remedy_option_selected(selected_index)
+
+
+func _slot_key_for_option(option: OptionButton) -> String:
+	if option == _slot_address_option:
+		return SLOT_NON_CURRENT_ADDRESS
+	if option == _slot_landlord_option:
+		return SLOT_LANDLORD_KNOWLEDGE
+	if option == _slot_notice_option:
+		return SLOT_ACTUAL_NOTICE_WINDOW
+	if option == _slot_authority_option:
+		return SLOT_NO_THIRD_PARTY_AUTHORITY
+	return ""
 
 
 func _ensure_state_defaults() -> void:
@@ -691,6 +677,14 @@ func _humanize_token(value: String) -> String:
 	return " ".join(words)
 
 
+func _is_up(event: InputEvent) -> bool:
+	return event.is_action_pressed("ui_up") or event.is_action_pressed("move_up")
+
+
+func _is_down(event: InputEvent) -> bool:
+	return event.is_action_pressed("ui_down") or event.is_action_pressed("move_down")
+
+
 func _unhandled_input(event: InputEvent) -> void:
 	if not visible:
 		return
@@ -700,11 +694,5 @@ func _unhandled_input(event: InputEvent) -> void:
 		return
 	if event.is_action_pressed("ui_left"):
 		_show_page(max(_active_index - 1, 0))
-		get_viewport().set_input_as_handled()
-		return
-	if event.is_action_pressed("ui_cancel"):
-		var binder_ui: Node = get_node_or_null("/root/BinderUI")
-		if binder_ui != null and binder_ui.has_method("close"):
-			binder_ui.close()
 		get_viewport().set_input_as_handled()
 		return

@@ -1,0 +1,36 @@
+{
+  "group_id": null,
+  "states": [
+    {
+      "character": {
+        "id": "9bfcbb67-0150-40c6-9fdc-0001aa74b888",
+        "name": "Late-30s male, broad build, rigid posture with slight chest-out. Sharp dark suit #1a1410, white shirt #e8e4d8, oxblood tie #7a1f2a. Dark short hair #1a1410. Light skin #e6b08a. Small earpiece coil #3a3838 attached at the right ear as a body prop. Hands at sides, slightly closed fists. The silhouette must read \"private-sector security\" at a glance \u2014 broad shoulders, narrow waist, suit fits tight.\nSTYLE: minimal synthetic line drawing, sparse flat shapes, institutional\nmood, neutral observational rendering, pixel-art, adult 1:5 proportions,\nfull body, hands at sides, 124\u00d7124 character sprite, 8-direction idle.\n\nNEGATIVE: detailed, shaded, gradient, anime, chibi, cute, big head,\ndecorative, fantasy, realistic, 3D, held objects, facial expressions,\nsatirical caricature",
+        "prompt": "Late-30s male, broad build, rigid posture with slight chest-out. Sharp dark suit #1a1410, white shirt #e8e4d8, oxblood tie #7a1f2a. Dark short hair #1a1410. Light skin #e6b08a. Small earpiece coil #3a3838 attached at the right ear as a body prop. Hands at sides, slightly closed fists. The silhouette must read \"private-sector security\" at a glance \u2014 broad shoulders, narrow waist, suit fits tight.\nSTYLE: minimal synthetic line drawing, sparse flat shapes, institutional\nmood, neutral observational rendering, pixel-art, adult 1:5 proportions,\nfull body, hands at sides, 124\u00d7124 character sprite, 8-direction idle.\n\nNEGATIVE: detailed, shaded, gradient, anime, chibi, cute, big head,\ndecorative, fantasy, realistic, 3D, held objects, facial expressions,\nsatirical caricature",
+        "size": {
+          "width": 180,
+          "height": 180
+        },
+        "template_id": "mannequin",
+        "directions": 8,
+        "view": "low top-down",
+        "created_at": "2026-05-18T13:43:27.345537+00:00"
+      },
+      "folder": "Late-30s_male_broad_build_rigid_posture_with_sligh",
+      "frames": {
+        "rotations": {
+          "south": "Late-30s_male_broad_build_rigid_posture_with_sligh/rotations/south.png",
+          "south-east": "Late-30s_male_broad_build_rigid_posture_with_sligh/rotations/south-east.png",
+          "east": "Late-30s_male_broad_build_rigid_posture_with_sligh/rotations/east.png",
+          "north-east": "Late-30s_male_broad_build_rigid_posture_with_sligh/rotations/north-east.png",
+          "north": "Late-30s_male_broad_build_rigid_posture_with_sligh/rotations/north.png",
+          "north-west": "Late-30s_male_broad_build_rigid_posture_with_sligh/rotations/north-west.png",
+          "west": "Late-30s_male_broad_build_rigid_posture_with_sligh/rotations/west.png",
+          "south-west": "Late-30s_male_broad_build_rigid_posture_with_sligh/rotations/south-west.png"
+        },
+        "animations": {}
+      }
+    }
+  ],
+  "export_version": "3.0",
+  "export_date": "2026-05-18T14:00:30.306802"
+}

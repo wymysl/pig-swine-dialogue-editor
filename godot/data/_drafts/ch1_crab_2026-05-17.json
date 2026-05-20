@@ -1,0 +1,310 @@
+{
+  "_draft_note": "INERT STAGING FILE — name contains '_drafts/' path segment; dialogue runner skips this directory at boot. Promote to godot/data/dialogues/crab.json only after Piotr review and JSON validation.",
+  "_chapter_ref": "Chapter 1, Beats 5 / 8 / 12 / 13. Phase-8 beat sheet 2026-05-07. Voice agent: narrative_revision/voice_agents/crab.md. AI constraints: narrative_revision/ai_voice_constraints.md.",
+  "_flags_used": [
+    "chapter1.met_crab",
+    "chapter1.recruited_crab",
+    "chapter1.has_law_binder",
+    "chapter1.binder_read_envelope",
+    "chapter1.binder_read_renewal",
+    "chapter1.binder_read_renumbering",
+    "chapter1.halina_met",
+    "chapter1.halina_close_done",
+    "chapter1.bonus_evidence_collected",
+    "chapter1.client_meeting_stance",
+    "chapter1.entered_court",
+    "chapter1.court_outcome",
+    "chapter1.court_won_procedural_reset",
+    "chapter1.element_landlord_knowledge",
+    "chapter1.element_no_third_party_cure",
+    "chapter1.element_non_current_address",
+    "chapter1.element_timely_actual_notice_motion",
+    "chapter1.met_murrow"
+  ],
+  "version": 1,
+  "npc_id": "crab",
+  "display_name": "Crab",
+  "states": [
+    {
+      "id": "crab_b5_pre_gate_no_binder",
+      "trigger": "!chapter1.met_crab && !chapter1.has_law_binder",
+      "_comment": "Beat 5 — first approach, gate not satisfied. Binder absent; Murrow visit state not checked yet (handled separately). Resistance is professional, not principled. 'Uncompensated work isn't my model' must NOT appear verbatim (will-not-say: no self-explaining stance lines per ai_voice_constraints §Crab). The resistance lands through limitation of commitment. Address form: 'Dr. A. Cula' pre-recruit.",
+      "lines": [
+        {
+          "speaker": "cula",
+          "text": "Crab. I'm Cula."
+        },
+        "Dr. A. Cula. Heard. The binder first. Murrow keeps it on the second shelf, blue spine. Without it I am reading a notice I cannot verify against anything that counts.",
+        {
+          "speaker": "cula",
+          "text": "I'll get it."
+        },
+        "And Murrow. If he has walked you through the case at all. The service problem has four parts; I need to know which ones are already on the table before I spend a morning on it."
+      ],
+      "on_dismiss": [
+        {
+          "set": "chapter1.met_crab",
+          "value": true
+        }
+      ]
+    },
+    {
+      "id": "crab_b5_pre_gate_binder_only",
+      "trigger": "chapter1.met_crab == true && chapter1.has_law_binder == true && !chapter1.met_murrow && !chapter1.recruited_crab",
+      "_comment": "Beat 5 — binder in hand but Murrow not yet visited. Phase-8 gate is AND: both required. Crab holds on Murrow condition without melodrama. Opportunist register: work is tractable only when both inputs are in.",
+      "lines": [
+        "Dr. A. Cula. Good; the binder. Still need Murrow's read first. I want to know what he has already put on the table before I duplicate it.",
+        {
+          "speaker": "cula",
+          "text": "He hasn't briefed me yet on this specifically."
+        },
+        "Then do that first. Ten minutes with Murrow and the case has a shape. Without the shape, I am cataloguing contradictions that may not matter. Efficient use of a morning is the point."
+      ]
+    },
+    {
+      "id": "crab_b5_pre_gate_murrow_only",
+      "trigger": "chapter1.met_crab == true && chapter1.met_murrow == true && !chapter1.has_law_binder && !chapter1.recruited_crab",
+      "_comment": "Beat 5 — Murrow visited but binder not yet collected. Crab names the remaining gap.",
+      "lines": [
+        "Dr. A. Cula. Murrow; good. The binder is still the missing piece. Second shelf. The service certificate is in there; I need the address line before I can tell you whether the envelope was sent somewhere that exists.",
+        "The notice may not have reached her at all. That is the argument. The binder is where we check."
+      ]
+    },
+    {
+      "id": "crab_b5_gate_open",
+      "trigger": "chapter1.met_crab == true && chapter1.has_law_binder == true && chapter1.met_murrow == true && !chapter1.recruited_crab",
+      "_comment": "Beat 5 — both conditions met; engagement fires. Opportunist register: case is tractable, Crab engages because the facts are workable. Gear-shift closer on the engagement line. Three dwell options follow (separate states: crab_b5_dwell_background, crab_b5_dwell_why_firm, crab_b5_dwell_read). Address form: 'Dr. A. Cula' until on_dismiss sets recruited_crab, then 'Cula' in subsequent states.",
+      "once": true,
+      "lines": [
+        {
+          "speaker": "cula",
+          "text": "Crab. Murrow walked me through the Sikorska case. The eviction notice went to the wrong address; building was renumbered in 2015, notice went to the old number. She got it three weeks late from the current occupant of that flat."
+        },
+        "Dr. A. Cula. The renumbering is the problem, the delay is the clock, and the occupant receiving it is the third-party gap. Three things, one notice. That is checkable.",
+        {
+          "speaker": "cula",
+          "text": "The hearing has already run ex parte. We have a fourteen-day window from actual notice."
+        },
+        "Which started when she received the envelope from the occupant, not from the original service date. The clock is the argument. I will take the post records and the register. I need the certificate that shows when number seven became number twelve, and I need the name on the landlord's return address. You take the drafting.",
+        "Service is defective under the Code of Civil Procedure. Translated: the landlord sent a writ to a building that stopped being hers eleven years ago, and the person who got it had no authority to accept it for her. That is not service. That is postal theatre."
+      ],
+      "on_dismiss": [
+        {
+          "set": "chapter1.recruited_crab",
+          "value": true
+        },
+        {
+          "set": "chapter1.binder_read_envelope",
+          "value": true
+        },
+        {
+          "set": "chapter1.binder_read_renumbering",
+          "value": true
+        },
+        {
+          "set": "chapter1.element_non_current_address",
+          "value": true
+        },
+        {
+          "set": "chapter1.element_landlord_knowledge",
+          "value": true
+        },
+        {
+          "set": "chapter1.element_no_third_party_cure",
+          "value": true
+        },
+        {
+          "set": "chapter1.element_timely_actual_notice_motion",
+          "value": true
+        }
+      ]
+    },
+    {
+      "id": "crab_b5_dwell_background",
+      "trigger": "chapter1.recruited_crab == true && !chapter1.halina_met && !chapter1.entered_court",
+      "_comment": "Beat 5 dwell option A: player asks about background. Bored-professional interior range. Clipped CV-style. No self-pity. Once:true so it does not loop.",
+      "once": true,
+      "lines": [
+        {
+          "speaker": "cula",
+          "text": "[What's your background?]"
+        },
+        "Cula. Finished the apprenticeship eighteen months ago. Service and procedural defects are the interesting problem set; addresses that change, envelopes that travel, dates that do not land. The rest is drafting, which is fine.",
+        {
+          "speaker": "cula",
+          "text": "Why procedural defects specifically?"
+        },
+        "The documents are already there. You just read them in order. Three things out of order and the argument writes itself. I find that efficient."
+      ]
+    },
+    {
+      "id": "crab_b5_dwell_why_firm",
+      "trigger": "chapter1.recruited_crab == true && !chapter1.halina_met && !chapter1.entered_court",
+      "_comment": "Beat 5 dwell option B: why Pig and Swine. Mildly-amused-professional range. Brief, no self-pity. Gear-shift closer.",
+      "once": true,
+      "lines": [
+        {
+          "speaker": "cula",
+          "text": "[Why are you at Pig and Swine?]"
+        },
+        "Cula. They offered when others did not. The caseload is genuinely complicated for a two-partner practice, which is useful for the apprenticeship record. Also Murrow is here, and Murrow reads files the way most people do not.",
+        {
+          "speaker": "cula",
+          "text": "That's it?"
+        },
+        "The cases are real. The clients have nowhere else. That is a workable reason for a morning."
+      ]
+    },
+    {
+      "id": "crab_b5_dwell_read_of_case",
+      "trigger": "chapter1.recruited_crab == true && !chapter1.halina_met && !chapter1.entered_court",
+      "_comment": "Beat 5 dwell option C: read of case. Scenting-leverage-professional range. Crab saw the binder on Murrow's desk earlier; has a procedural observation. Gear-shift with dry observation closer. Two jokes embedded (renumbering-as-alibi; 'a map from a different city').",
+      "once": true,
+      "lines": [
+        {
+          "speaker": "cula",
+          "text": "[Do you have any read on the case already?]"
+        },
+        "Cula. I saw the binder on Murrow's desk two days ago. The renumbering decision is dated 2015; the eviction notice is dated this year; the address on the notice uses the pre-2015 number. That is eleven years of geography the landlord claims not to have noticed.",
+        "The renewal paperwork countersigned by the landlord uses the new number. So he knew; at minimum by the renewal, probably earlier. The notice is addressed with a map from a different city.",
+        {
+          "speaker": "cula",
+          "text": "And the fourteen-day window?"
+        },
+        "Still open. Three weeks delay in delivery is the gap. The clock started late and the argument starts there. This is the tractable part."
+      ]
+    },
+    {
+      "id": "crab_b8_client_meeting_base",
+      "trigger": "chapter1.recruited_crab == true && chapter1.halina_met == true && !chapter1.halina_close_done && !chapter1.entered_court && !chapter1.bonus_evidence_collected",
+      "_comment": "Beat 8 — client meeting, no bonus evidence collected yet. Scenting-leverage-professional register throughout. Crab engages with the structural features of the case as Halina presents documents, not with Halina as a person. Lines stay technical in front of the client per voice agent rule. One or two reaction lines tied to evidence Halina presents. The return-to-sender slip engages him most.",
+      "lines": [
+        "The tenancy agreement is continuous from 1987. The original lease has the father's name; the inheritance paperwork transfers it to Mrs. Sikorska. The chain is clean.",
+        {
+          "speaker": "cula",
+          "text": "And the eviction notice?"
+        },
+        "Number seven; old number. The notice uses the pre-renumbering address. The renewal the landlord countersigned uses the new number. He has signed two documents with two different addresses for the same building. That is a useful document to have."
+      ]
+    },
+    {
+      "id": "crab_b8_client_meeting_blunt_procedural",
+      "trigger": "chapter1.recruited_crab == true && chapter1.halina_met == true && !chapter1.halina_close_done && !chapter1.entered_court && chapter1.client_meeting_stance == 'blunt_procedural'",
+      "_comment": "Beat 8 — blunt-procedural stance. The return-to-sender slip is the bonus evidence for this stance; it particularly engages Crab. Two lines in scenting-leverage-professional register. Beat sheet says 'the return-to-sender slip particularly engages him in blunt-procedural stance.' Gear-shift closer on second line. No em-dashes. Client is present so no colloquial gear-shift in front of her — Crab stays technical with one dry observation that is plainly professional.",
+      "lines": [
+        "The return slip is from six months ago. A prior landlord letter also sent to old number seven; returned undelivered. The post office confirmed it in writing. He was told in writing that the address was wrong and sent the notice there anyway.",
+        "That slip is the case, Mrs. Sikorska. The notice, the hearing, the deadline; the landlord's own records show he knew the address was not yours. The paper has already said the useful thing."
+      ]
+    },
+    {
+      "id": "crab_b8_client_meeting_sympathetic",
+      "trigger": "chapter1.recruited_crab == true && chapter1.halina_met == true && !chapter1.halina_close_done && !chapter1.entered_court && chapter1.client_meeting_stance == 'sympathetic'",
+      "_comment": "Beat 8 — sympathetic stance. Bonus evidence is the Wojcik witness statement. Crab registers the structural value: continuous-resident testimony establishes the address history factually. He stays professional in front of Halina. One dry observation lands as both technically useful and as Crab momentarily acknowledging a neighbor-level fact without making it about character.",
+      "lines": [
+        "Mrs. Wojcik has been on the second floor since 1991. She can place Mrs. Sikorska at this building under the old address number and the new one. That is the address history from someone who watched the brass plate change.",
+        "Character-witness texture is useful in Round One. The judge hears a neighbor who kept track. Continuity is the argument."
+      ]
+    },
+    {
+      "id": "crab_b8_client_meeting_technical",
+      "trigger": "chapter1.recruited_crab == true && chapter1.halina_met == true && !chapter1.halina_close_done && !chapter1.entered_court && chapter1.client_meeting_stance == 'technical'",
+      "_comment": "Beat 8 — technical stance. Bonus evidence is the 1962 lease plus 1987 inheritance. Crab registers the chain as procedurally clean. This evidence is held for Round 3 (tenancy_validity); Crab signals its value without over-explaining. Gear-shift: procedural observation then plain closer.",
+      "lines": [
+        "The 1962 lease has the father's name and the cooperative's stamp. The 1987 inheritance transfer is notarized. The tenancy chain is documented across sixty-three years without a gap.",
+        "The landlord's eviction argument assumes the tenancy is thin. It is not thin. We use this in the remedy round; the hearing reset lands harder when the underlying tenancy is this well documented."
+      ]
+    },
+    {
+      "id": "crab_b12_round1_no_bonus",
+      "trigger": "chapter1.entered_court == true && !chapter1.court_won_procedural_reset && !chapter1.bonus_evidence_collected",
+      "_comment": "Beat 12 — Round 1, defective service argument, no bonus evidence. Crab's evidence carries the round per beat sheet. Argument tag: notice_defect. In court: no colloquial gear-shift per voice agent rule. Short technical fact-stacks. 'Three problems. One notice. One Friday.' shape from calibration anchors.",
+      "lines": [
+        "The address on the notice is the pre-renumbering number. The building has carried the current number since 2015. The landlord's renewal paperwork, countersigned, uses the current number. Service went to an address the landlord's own records do not recognize as current.",
+        "The occupant who received the envelope has no authority to accept process on behalf of Mrs. Sikorska. Actual notice reached her three weeks after service was deemed complete. The fourteen-day motion window runs from actual notice. The motion is timely."
+      ]
+    },
+    {
+      "id": "crab_b12_round1_bonus_sympathetic",
+      "trigger": "chapter1.entered_court == true && !chapter1.court_won_procedural_reset && chapter1.bonus_evidence_collected == 'wojcik_witness' && chapter1.client_meeting_stance == 'sympathetic'",
+      "_comment": "Beat 12 — Round 1, sympathetic bonus (Wojcik). Beat sheet: 'provides character-witness texture; produces a stronger judge reaction.' Crab adds the Wojcik statement as corroboration of the address history. In court: all-technical register, no gear-shift. Judge reaction is stronger per beat sheet note.",
+      "lines": [
+        "The address on the notice is the pre-renumbering number. The building has carried the current number since 2015. The landlord's own renewal, countersigned, uses the current number.",
+        "In support: a statement from Mrs. Wojcik, second-floor resident since 1991. She attests to Mrs. Sikorska's continuous presence at this building under both address designations, before and after the 2015 renumbering. The defective address was not an administrative gap that went unnoticed. It was a number that stopped existing at this location eleven years ago, and a neighbor watched it change.",
+        "The occupant who received the envelope has no authority to accept process for Mrs. Sikorska. Actual notice reached her three weeks after deemed service. The motion is timely."
+      ]
+    },
+    {
+      "id": "crab_b12_round1_bonus_blunt_procedural",
+      "trigger": "chapter1.entered_court == true && !chapter1.court_won_procedural_reset && chapter1.bonus_evidence_collected == 'return_to_sender_slip' && chapter1.client_meeting_stance == 'blunt_procedural'",
+      "_comment": "Beat 12 — Round 1, blunt-procedural bonus (return-to-sender slip). Beat sheet: 'provides knockout-style proof-of-knowledge; produces the strongest argument shape; landlord knowledge becomes irrefutable.' Crab presents this as the closing point of the Round 1 argument. All-technical court register. This is the strongest Round 1 shape per beat sheet.",
+      "lines": [
+        "The address on the notice is the pre-renumbering number. The building has carried the current number since 2015.",
+        "Six months before the eviction notice, the landlord sent a separate letter to the same old address; number seven. That letter was returned by the post office marked undelivered. The return slip is in evidence. The landlord was notified in writing by the post office that no mail could be delivered to that address for Mrs. Sikorska, and subsequently served the eviction notice at the same address.",
+        "The Code of Civil Procedure requires that service use an address current to the knowledge of the serving party. The landlord's knowledge is documented. The service is defective. The motion is timely."
+      ]
+    },
+    {
+      "id": "crab_b12_round1_bonus_technical",
+      "trigger": "chapter1.entered_court == true && !chapter1.court_won_procedural_reset && chapter1.bonus_evidence_collected == 'lease_inheritance' && chapter1.client_meeting_stance == 'technical'",
+      "_comment": "Beat 12 — Round 1, technical bonus. Beat sheet: 'Technical bonus held for Round 3.' So in Round 1 Crab's core argument runs without that bonus. This state signals the evidence is present but notes its proper home. In court, Crab's Round 1 lines are the same core argument — bonus evidence does not change Round 1 for technical stance.",
+      "lines": [
+        "The address on the notice is the pre-renumbering number. The building has carried the current number since 2015. The landlord's renewal, countersigned, uses the current number. Service went to an address the landlord's own records do not recognize.",
+        "The occupant at the old number has no authority to accept process for Mrs. Sikorska. Actual notice reached her three weeks after deemed service. The motion is timely.",
+        "The tenancy documentation is available for Round Three. The defective service argument stands on its own record."
+      ]
+    },
+    {
+      "id": "crab_b13_post_court_base",
+      "trigger": "chapter1.court_won_procedural_reset == true && !chapter1.halina_close_done",
+      "_comment": "Beat 13 — post-court celebration, pretends-not-to-be-impressed. Beat sheet: 'brief comment about the result being expected given the evidence; no enthusiasm.' Opportunist register: result described as expected outcome given the material Crab assembled, not as achievement. Gear-shift closer is dry observation, not warmth. No exclamation marks. No sincerity budget spent here — one per chapter and this is not the moment.",
+      "lines": [
+        "The landlord's own renewal paperwork was the argument. We submitted it; he could not contradict it without contradicting himself. The result followed from the evidence.",
+        {
+          "speaker": "cula",
+          "text": "You could sound slightly pleased."
+        },
+        "The return slip was in the file. The renewal was in the file. The result was in the file before we got to the courtroom. Pleased implies it was close."
+      ]
+    },
+    {
+      "id": "crab_b13_dwell_next_move",
+      "trigger": "chapter1.court_won_procedural_reset == true && !chapter1.halina_close_done",
+      "_comment": "Beat 13 dwell option A: next professional move. CV-implication register without announcing it. Opportunist stance surfaces through what Crab pays attention to (the case record, the competence demonstrated), not through announcing exit-planning. No self-explaining stance lines.",
+      "once": true,
+      "lines": [
+        {
+          "speaker": "cula",
+          "text": "[What's next for you?]"
+        },
+        "Cula. The case record is clean; defective service, timely motion, successful reset. That is a procedurally complete file. I will finish the post-hearing paperwork by Thursday.",
+        {
+          "speaker": "cula",
+          "text": "I meant beyond Thursday."
+        },
+        "The next interesting file, probably. The service problem here had four testable parts. Most cases do not arrive that well documented. When they do, they are worth the morning."
+      ]
+    },
+    {
+      "id": "crab_b13_dwell_firm_sustainability",
+      "trigger": "chapter1.court_won_procedural_reset == true && !chapter1.halina_close_done",
+      "_comment": "Beat 13 dwell option B: read on firm sustainability. Mild leverage-aware register. Must NOT reveal Ch4 inflection (the 285,400 PLN reserve, Swine's redirections). Crab reads what is visible — the fee, the rent breathing room, the caseload — without naming any internal structural diagnosis. 'He sees it; he doesn't crusade' per will-not-say.",
+      "once": true,
+      "lines": [
+        {
+          "speaker": "cula",
+          "text": "[What's your read on the firm?]"
+        },
+        "Cula. The Sikorska fee covers the rent. The printer lease is still the printer lease. Murrow is here, which means the cases have a structure they would not otherwise have.",
+        {
+          "speaker": "cula",
+          "text": "That's not exactly an enthusiastic verdict."
+        },
+        "The cases are real. The clients have nowhere else. That is a workable model for a firm that is not primarily interested in becoming a different firm."
+      ]
+    }
+  ],
+  "idle_flavor": [
+    "The office is quiet. Either nothing has happened or the evidence is hiding better than usual.",
+    "Half the legal questions in this office begin with someone reading the address on an envelope twice."
+  ]
+}

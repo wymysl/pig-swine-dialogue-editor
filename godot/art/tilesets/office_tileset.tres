@@ -2,6 +2,7 @@
 
 [ext_resource type="Texture2D" uid="uid://cn4e1ejbdhesf" path="res://art/tiles/office_marble_tiles.png" id="1_tex"]
 [ext_resource type="Texture2D" uid="uid://sxctrestiaq8" path="res://art/tiles/office_wall.png" id="2_tex"]
+[ext_resource type="Texture2D" uid="uid://dwr01bwb13di4" path="res://art/tiles/office_herringbone.png" id="3_meoy5"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_floor"]
 texture = ExtResource("1_tex")
@@ -149,6 +150,15 @@ texture_region_size = Vector2i(64, 64)
 5:0/0/terrains_peering_bit/top_side = 1
 5:0/0/terrains_peering_bit/top_right_corner = 1
 
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_ss8h4"]
+texture = ExtResource("3_meoy5")
+separation = Vector2i(1, 1)
+texture_region_size = Vector2i(64, 64)
+0:0/0 = 0
+1:0/0 = 0
+0:1/0 = 0
+1:1/0 = 0
+
 [resource]
 tile_size = Vector2i(64, 64)
 physics_layer_0/collision_layer = 1
@@ -159,3 +169,4 @@ terrain_set_0/terrain_1/name = "Wall"
 terrain_set_0/terrain_1/color = Color(0.25, 0.5, 0.34375, 1)
 sources/0 = SubResource("TileSetAtlasSource_floor")
 sources/1 = SubResource("TileSetAtlasSource_wall")
+sources/2 = SubResource("TileSetAtlasSource_ss8h4")

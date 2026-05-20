@@ -4,6 +4,22 @@ This directory contains the canonical world-layer character sprites for the Pig 
 
 For the full two-layer art direction (world sprites + portraits), see `CONVENTIONS.md` §Art direction.
 
+## Current Runtime Warning
+
+Do not start a full sprite regeneration pass until the sprite-size decision is
+normalized. Current project facts disagree:
+
+- `State.CHAR_HEIGHT` is 64.
+- This protocol describes a 128-to-64 workflow.
+- Many committed character PNGs are 112x112.
+- `art/sprites/new/cula` contains 124x124 Pixellab output.
+- `CONVENTIONS.md` currently mentions both 124x124 canonical sprites and
+  64x64 y-sort examples.
+
+For Chapter 1, use the existing runtime assets. New full walking sets should
+wait for a single Art/Code decision on source size, runtime size, and y-sort
+offset policy.
+
 ## The Świdziński Principle
 
 **If a feature isn't visible at arm's length as a silhouette, remove it from the prompt.**

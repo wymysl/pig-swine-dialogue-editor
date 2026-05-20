@@ -1,181 +1,195 @@
 {
-    "version": 3,
+    "version": 4,
     "npc_id": "asia_hint_states_ch1",
     "display_name": "Asia",
-    "_provenance": "v3 motion-packet update 2026-05-16 per PROPOSAL_player_driven_argument.md §1 (Asia subsection) + §41 SPRINT_LOG checklist item 10. Insertions hint toward missing packet elements via front-desk observation (binder pages not yet turned, neighbour rang to confirm the witness slot, postal ink looks right) — Asia signposts gaps without naming doctrine. The cold-acknowledgement state for decoy_incapacity gives Asia one beat of removed warmth (no doctrine, no rebuke; a withheld smile). Bonus-evidence states adapted from the player-driven hint draft at data/dialogues/asia_hints_player_driven_2026-05-16.json. Address forms unchanged per AGENTS.md §Address forms: Asia uses 'Dr. A. Cula' and 'Mr. Murrow' / 'Mr. Crab' / 'Mr. Whimsy' always.",
+    "_provenance": "Promoted 2026-05-17 from godot/data/_drafts/ch1_asia_2026-05-17.json (Ch1 sweep). Hint states (renamed from hint_states[] to states[] per _schema.md). won_court unified.",
     "states": [
         {
             "id": "hint_pig_revealed_crisis",
             "trigger": "!chapter1.pig_revealed_crisis && chapter1.met_asia",
-            "_comment": "State 1 — player has not yet seen Pig's Beat-2 panic line; point toward Mr. Pig.",
-            "lines": ["You should talk to Mr. Pig first. He's the loudest crisis in the room."],
-            "tags": ["hint_state", "pig_revealed_crisis", "warm_direct", "phase7_v1_a_p3"],
-            "once": true
+            "_comment": "Hint state 1 — met_asia set but Pig's crisis not yet surfaced. Point toward Mr. Pig. Verbatim from asia_hint_states_ch1.json v3.",
+            "tags": ["hint_state", "warm_direct", "phase7_v1_a_p3"],
+            "once": true,
+            "lines": ["You should talk to Mr. Pig first. He's the loudest crisis in the room."]
         },
         {
             "id": "hint_met_murrow",
             "trigger": "chapter1.pig_revealed_crisis && !chapter1.met_murrow",
-            "_comment": "State 2 — Pig crisis revealed; Murrow not yet met; point toward Mr. Murrow.",
-            "lines": ["Mr. Murrow will know what the case is actually about. He's somewhere between the files and disappointment."],
-            "tags": ["hint_state", "met_murrow", "warm_direct", "phase7_v1_a_p3"]
+            "_comment": "Hint state 2 — Pig crisis revealed; Murrow not yet met. Verbatim from asia_hint_states_ch1.json v3.",
+            "tags": ["hint_state", "warm_direct", "phase7_v1_a_p3"],
+            "lines": ["Mr. Murrow will know what the case is actually about. He's somewhere between the files and disappointment."]
         },
         {
             "id": "hint_has_law_binder",
             "trigger": "chapter1.met_murrow && !chapter1.has_law_binder",
-            "_comment": "State 3 — Murrow met; binder not yet collected; point toward the archive and the procedural binder.",
-            "lines": ["You're looking for the procedural binder? I tried lifting it once and briefly saw another dimension."],
-            "tags": ["hint_state", "has_law_binder", "warm_direct", "phase7_v1_a_p3"]
+            "_comment": "Hint state 3 — Murrow met; binder not yet collected. Verbatim from asia_hint_states_ch1.json v3.",
+            "tags": ["hint_state", "warm_direct", "phase7_v1_a_p3"],
+            "lines": ["You're looking for the procedural binder? I tried lifting it once and briefly saw another dimension."]
         },
         {
             "id": "hint_binder_unread_envelope",
             "trigger": "chapter1.has_law_binder == true && !chapter1.binder_read_envelope && !chapter1.recruited_crab",
-            "_comment": "v3 NEW hint — packet-element gap (E1 / E2 evidence). Fires after binder pickup but before Cula has read the envelope page with Crab. Asia signposts the binder is open on Cula's desk; no doctrine named. Adapted from data/dialogues/asia_hints_player_driven_2026-05-16.json.",
-            "lines": ["Mr. Murrow left the binder open on your desk this morning, Dr. A. Cula. Page one is the envelope."],
-            "tags": ["hint_state", "binder_unread_envelope", "warm_direct", "player_driven_v3"]
+            "_comment": "Hint state v3 NEW — binder collected but envelope page not yet read with Crab. Verbatim from asia_hint_states_ch1.json v3.",
+            "tags": ["hint_state", "warm_direct", "player_driven_v3"],
+            "lines": ["Mr. Murrow left the binder open on your desk this morning, Dr. A. Cula. Page one is the envelope."]
         },
         {
             "id": "hint_binder_unread_renewal",
             "trigger": "chapter1.has_law_binder == true && chapter1.binder_read_envelope == true && !chapter1.binder_read_renewal && !chapter1.recruited_crab",
-            "_comment": "v3 NEW hint — packet-element gap (E2 evidence). Fires after the envelope page has been read but the renewal page has not. 'In three colours' references the canonical binder pickup line. Adapted from the player-driven hint draft.",
-            "lines": ["The next tab, Dr. A. Cula. Mr. Murrow flagged it in three colours."],
-            "tags": ["hint_state", "binder_unread_renewal", "warm_direct", "player_driven_v3"]
+            "_comment": "Hint state v3 NEW — envelope page read, renewal page not yet read. Verbatim from asia_hint_states_ch1.json v3.",
+            "tags": ["hint_state", "warm_direct", "player_driven_v3"],
+            "lines": ["The next tab, Dr. A. Cula. Mr. Murrow flagged it in three colours."]
         },
         {
             "id": "hint_recruited_crab",
             "trigger": "chapter1.has_law_binder && !chapter1.recruited_crab",
-            "_comment": "State 4 — binder collected; Crab not yet recruited; point toward Crab.",
-            "lines": ["If it's a service problem, Mr. Crab will have an opinion. He always has an opinion."],
-            "tags": ["hint_state", "recruited_crab", "warm_direct", "phase7_v1_a_p3"]
+            "_comment": "Hint state 4 — binder collected; Crab not yet recruited. Bare 'Crab' per bible + asia_hint_states_ch1.md §address-forms (Crab, Whimsy bare). v3 asymmetry corrected 2026-05-19 per critique F2.",
+            "tags": ["hint_state", "warm_direct", "phase7_v1_a_p3"],
+            "lines": ["If it's a service problem, Crab will have an opinion. He always has an opinion."]
         },
         {
             "id": "hint_has_rights_memo",
             "trigger": "chapter1.recruited_crab && !chapter1.has_rights_memo",
-            "_comment": "State 5 — Crab recruited; Rights Memo not yet collected; point toward Whimsy at Café Paragraf. Single sanctioned em-dash.",
-            "lines": ["The rights memo may be near Mr. Whimsy. Try Café Paragraf — or wherever someone is talking too loudly about fairness."],
-            "tags": ["hint_state", "has_rights_memo", "warm_direct", "phase7_v1_a_p3"]
+            "_comment": "Hint state 5 — Crab recruited; Rights Memo not yet collected. Verbatim from asia_hint_states_ch1.json v3. Single sanctioned em-dash is pre-existing in v3.",
+            "tags": ["hint_state", "warm_direct", "phase7_v1_a_p3"],
+            "lines": ["The rights memo may be near Whimsy. Try Café Paragraf — or wherever someone is talking too loudly about fairness."]
         },
         {
             "id": "hint_recruited_whimsy",
             "trigger": "chapter1.has_rights_memo && !chapter1.recruited_whimsy",
-            "_comment": "State 6 — Rights Memo collected; Whimsy not yet recruited; point toward Whimsy and the fair-hearing register.",
-            "lines": ["Mr. Whimsy is useful if pointed at the right page. Ask him what's in the memo."],
-            "tags": ["hint_state", "recruited_whimsy", "briskly_prioritising", "phase7_v1_a_p3"]
+            "_comment": "Hint state 6 — Rights Memo collected; Whimsy not yet recruited. Verbatim from asia_hint_states_ch1.json v3.",
+            "tags": ["hint_state", "briskly_prioritising", "phase7_v1_a_p3"],
+            "lines": ["Whimsy is useful if pointed at the right page. Ask him what's in the memo."]
+        },
+        {
+            "id": "hint_pre_b8_client_arriving",
+            "trigger": "chapter1.recruited_whimsy && !chapter1.halina_arrived",
+            "_comment": "NEW hint state — pre-Beat-8 per chapter_1.md §Asia hint-state logic L385: 'Before Beat 8 (after Whimsy recruited, before client meeting): hint Asia toward the client's imminent arrival.' Register: warm_direct. Two jokes (Rule C): 'due in shortly' casual professional tone + 'the one that looks intentional' dry observation about the meeting room vs. the rest of the office. Fires from the hint-desk interaction; fires before halina_arrived_announcement so Asia has a line on any desk revisit during this window.",
+            "tags": ["hint_state", "warm_direct", "phase8_new"],
+            "lines": ["Mrs. Sikorska is due in shortly. I've set out the meeting room. The meeting room is the one that looks intentional."]
         },
         {
             "id": "hint_halina_arrived_announcement",
             "trigger": "chapter1.recruited_whimsy && !chapter1.halina_arrived",
-            "_comment": "Chapter 1 Phase B.3 — Beat 7 close announcement. Fires when Cula returns to the office after recruiting Whimsy. On dismiss, sets halina_arrived=true which (a) flips Halina's NPC presence_flags gate so she becomes visible in the meeting room, and (b) makes hint_halina_met (state 7) the next reachable line.",
+            "_comment": "Beat 8 bridging hint — fires from hint-desk when Cula returns after Whimsy recruitment. on_dismiss sets halina_arrived=true, flipping Halina's NPC presence gate for the meeting room. Verbatim from asia_hint_states_ch1.json v3.",
+            "tags": ["hint_state", "warm_direct", "phase_b_ch1"],
             "lines": ["Mrs. Sikorska is here. I've shown her into the meeting room."],
             "on_dismiss": [
                 {"set": "chapter1.halina_arrived", "value": true}
-            ],
-            "tags": ["hint_state", "halina_arrived_announcement", "warm_direct", "phase_b_ch1"]
+            ]
         },
         {
             "id": "hint_halina_met",
             "trigger": "chapter1.recruited_whimsy && !chapter1.halina_met",
-            "_comment": "State 7 — Whimsy recruited; Halina has arrived for Beat 8 client meeting; point toward Mrs. Sikorska in the meeting room.",
-            "lines": ["Mrs. Sikorska is in the meeting room. She brought her own folder."],
-            "tags": ["hint_state", "halina_met", "warm_direct", "phase7_v1_a_p3"]
+            "_comment": "Hint state 7 — Whimsy recruited, Halina arrived; point toward Mrs. Sikorska in the meeting room. Verbatim from asia_hint_states_ch1.json v3.",
+            "tags": ["hint_state", "warm_direct", "phase7_v1_a_p3"],
+            "lines": ["Mrs. Sikorska is in the meeting room. She brought her own folder."]
         },
         {
             "id": "hint_decoy_incapacity_office_chill",
             "trigger": "chapter1.halina_met == true && chapter1.decoy_incapacity == true && !chapter1.entered_court",
-            "_comment": "v3 NEW hint — front-desk acknowledgement of the incapacity blunder. Per the task brief, the incapacity decoy gets cold in-fiction pushback from the firm; Asia's register is the warmth-removed one (she does not lecture; she lands a domestic-admin observation in a colder key). No doctrine named. once:true.",
-            "lines": ["Mr. Murrow asked me to hold his calls, Dr. A. Cula. He didn't say for how long."],
-            "tags": ["hint_state", "decoy_incapacity_office_chill", "warm_direct", "player_driven_v3"],
-            "once": true
+            "_comment": "Hint state v3 NEW — cold acknowledgement of incapacity blunder. once:true. Verbatim from asia_hint_states_ch1.json v3.",
+            "tags": ["hint_state", "warm_direct", "player_driven_v3"],
+            "once": true,
+            "lines": ["Mr. Murrow asked me to hold his calls, Dr. A. Cula. He didn't say for how long."]
         },
         {
             "id": "hint_bonus_evidence_wojcik",
             "trigger": "chapter1.bonus_evidence_collected == 'wojcik_witness_statement' && !chapter1.entered_court",
-            "_comment": "v3 NEW hint — bonus-evidence acknowledgement. Mrs. Wójcik rang reception to confirm the Friday slot; Asia handles building-corridor calls when the lift breaks, so the second-floor neighbour is in her phonebook. Adapted from the player-driven hint draft.",
-            "lines": ["Mrs. Wójcik rang earlier. She wanted to know whether Friday at fourteen hundred was the time, Dr. A. Cula. I said yes."],
-            "tags": ["hint_state", "bonus_evidence_wojcik", "warm_direct", "player_driven_v3"]
+            "_comment": "Hint state v3 NEW — sympathetic-stance bonus evidence. Verbatim from asia_hint_states_ch1.json v3.",
+            "tags": ["hint_state", "warm_direct", "player_driven_v3"],
+            "lines": ["Mrs. Wojcik rang earlier. She wanted to know whether Friday at fourteen hundred was the time, Dr. A. Cula. I said yes."]
         },
         {
             "id": "hint_bonus_evidence_slip",
             "trigger": "chapter1.bonus_evidence_collected == 'return_to_sender_slip' && !chapter1.entered_court",
-            "_comment": "v3 NEW hint — bonus-evidence acknowledgement. Asia handles the post every day; she reads the return-to-sender slip as a postal object, not a legal one. The ink-standardisation year is a domestic fact of the kind Asia plausibly knows. Adapted from the player-driven hint draft.",
-            "lines": ["The return-to-sender stamps look right, Dr. A. Cula. Poczta Polska prints the same ink they did in two thousand and ten."],
-            "tags": ["hint_state", "bonus_evidence_slip", "warm_direct", "player_driven_v3"]
+            "_comment": "Hint state v3 NEW — blunt-procedural-stance bonus evidence. Verbatim from asia_hint_states_ch1.json v3.",
+            "tags": ["hint_state", "warm_direct", "player_driven_v3"],
+            "lines": ["The return-to-sender stamps look right, Dr. A. Cula. Poczta Polska prints the same ink they did in two thousand and ten."]
         },
         {
             "id": "hint_bonus_evidence_lease",
             "trigger": "chapter1.bonus_evidence_collected == 'lease_1962_inheritance_1987' && !chapter1.entered_court",
-            "_comment": "v3 NEW hint — bonus-evidence acknowledgement via transit-warmth. Per style_canon.txt Asia voice, transit-system warmth is her idiom; here it surfaces as a railways-housing-stock connection between her grandfather and Halina's father. Adapted from the player-driven hint draft.",
-            "lines": ["Mrs. Sikorska's father worked on the railways, Dr. A. Cula. My grandfather did too. They both had flats from the housing stock."],
-            "tags": ["hint_state", "bonus_evidence_lease", "warm_direct", "transit_warmth", "player_driven_v3"]
+            "_comment": "Hint state v3 NEW — technical-stance bonus evidence. Transit-warmth idiom. Verbatim from asia_hint_states_ch1.json v3.",
+            "tags": ["hint_state", "warm_direct", "transit_warmth", "player_driven_v3"],
+            "lines": ["Mrs. Sikorska's father worked on the railways, Dr. A. Cula. My grandfather did too. They both had flats from the housing stock."]
         },
         {
             "id": "hint_bonus_evidence_landlord_contact",
             "trigger": "chapter1.bonus_evidence_collected == 'landlord_contact' && !chapter1.entered_court",
-            "_comment": "v3 NEW hint — bonus-evidence acknowledgement of the high-trust landlord-intimidation reveal. Asia observes affect from the front desk; 'Friday-fourteen-hundred-tired' is court-date anxiety she has seen before, 'Older' is the heavier thing she notices here. Adapted from the player-driven hint draft.",
-            "lines": ["Mrs. Sikorska looked tired today, Dr. A. Cula. Not Friday-fourteen-hundred-tired. Older."],
-            "tags": ["hint_state", "bonus_evidence_landlord_contact", "warm_direct", "player_driven_v3"]
+            "_comment": "Hint state v3 NEW — landlord-intimidation reveal. Asia observes affect from the front desk. Verbatim from asia_hint_states_ch1.json v3.",
+            "tags": ["hint_state", "warm_direct", "player_driven_v3"],
+            "lines": ["Mrs. Sikorska looked tired today, Dr. A. Cula. Not Friday-fourteen-hundred-tired. Older."]
+        },
+        {
+            "id": "hint_pre_b9_archive",
+            "trigger": "chapter1.halina_met && !chapter1.archive_research_complete",
+            "_comment": "NEW hint state — pre-Beat-9 per chapter_1.md §Asia hint-state logic L387: 'Before Beat 9 (after client meeting, before archive room): hint Asia toward Murrow at the Archive Room.' Register: warm_direct. Two jokes (Rule C): 'focused face / disappointed face / exactly one eyebrow' domestic-admin character reading + the line itself is a hint delivered as an observation about Murrow's affect rather than a direction. Cheerful-while-drowning register: she noticed; she is reporting it while doing something else.",
+            "tags": ["hint_state", "warm_direct", "phase8_new"],
+            "lines": ["Mr. Murrow took the binder to the archive after the meeting. He was making his focused face, which is different from his disappointed face by exactly one eyebrow."]
         },
         {
             "id": "hint_archive_research_complete",
             "trigger": "chapter1.halina_met && !chapter1.archive_research_complete",
-            "_comment": "State 8 — Beat 8 client meeting concluded; Murrow in archive with binder for Beat 9 research; point toward Mr. Murrow in the archive.",
-            "lines": ["Mr. Murrow is in the archive with the binder. He's been making the disappointed-page-turn sound."],
-            "tags": ["hint_state", "archive_research_complete", "warm_direct", "phase7_v1_a_p3"]
+            "_comment": "Hint state 8 — Beat 8 client meeting concluded; Murrow in archive for Beat 9. Verbatim from asia_hint_states_ch1.json v3.",
+            "tags": ["hint_state", "warm_direct", "phase7_v1_a_p3"],
+            "lines": ["Mr. Murrow is in the archive with the binder. He's been making the disappointed-page-turn sound."]
         },
         {
             "id": "hint_court_ready",
             "trigger": "chapter1.archive_research_complete && !chapter1.court_ready",
-            "_comment": "State 9 — archive research complete; Beat 10 readiness check not yet completed; point toward Mr. Murrow's check.",
-            "lines": ["Mr. Murrow should check the case before court. He has a special face for missing documents."],
-            "tags": ["hint_state", "court_ready", "briefly_conspiratorial", "phase7_v1_a_p3"]
+            "_comment": "Hint state 9 — archive research complete; readiness check not yet done. Verbatim from asia_hint_states_ch1.json v3.",
+            "tags": ["hint_state", "briefly_conspiratorial", "phase7_v1_a_p3"],
+            "lines": ["Mr. Murrow should check the case before court. He has a special face for missing documents."]
         },
         {
             "id": "hint_coffee_alert_plus",
             "trigger": "chapter1.coffee_buff == 'procedurally_alert_plus' && chapter1.court_ready && !chapter1.entered_court",
-            "_comment": "Coffee-result V1.4 — S-grade reaction. Window: post-readiness, pre-court. Asia notices the unusually well-behaved café machine. Line drawn from minigames.txt §Character reactions §Asia Perfect, lightly adapted for the office-return setting.",
-            "lines": ["You made the café machine sound less haunted. That's new."],
-            "tags": ["hint_state", "coffee_alert_plus", "warm_direct", "v1_4_coffee"]
+            "_comment": "Coffee V1.4 S-grade. Post-readiness, pre-court window. Verbatim from asia_hint_states_ch1.json v3.",
+            "tags": ["hint_state", "warm_direct", "v1_4_coffee"],
+            "lines": ["You made the café machine sound less haunted. That's new."]
         },
         {
             "id": "hint_coffee_alert",
             "trigger": "chapter1.coffee_buff == 'procedurally_alert' && chapter1.court_ready && !chapter1.entered_court",
-            "_comment": "Coffee-result V1.4 — A/B-grade reaction. Line verbatim from minigames.txt §Chapter integration — Chapter 1 §Asia return comments, 'Procedurally Alert' variant.",
-            "lines": ["You look prepared. Or at least caffeinated in a legally promising way."],
-            "tags": ["hint_state", "coffee_alert", "warm_direct", "v1_4_coffee"]
+            "_comment": "Coffee V1.4 A/B-grade. Verbatim from asia_hint_states_ch1.json v3.",
+            "tags": ["hint_state", "warm_direct", "v1_4_coffee"],
+            "lines": ["You look prepared. Or at least caffeinated in a legally promising way."]
         },
         {
             "id": "hint_coffee_over_caffeinated",
             "trigger": "chapter1.coffee_buff == 'over_caffeinated' && chapter1.court_ready && !chapter1.entered_court",
-            "_comment": "Coffee-result V1.4 — D/F-grade reaction. Line verbatim from minigames.txt §Chapter integration — Chapter 1 §Asia return comments, 'Over-Caffeinated' variant.",
-            "lines": ["You are vibrating near the case board. I'll mark that as readiness-adjacent."],
-            "tags": ["hint_state", "coffee_over_caffeinated", "warm_direct", "v1_4_coffee"]
+            "_comment": "Coffee V1.4 D/F-grade. Verbatim from asia_hint_states_ch1.json v3.",
+            "tags": ["hint_state", "warm_direct", "v1_4_coffee"],
+            "lines": ["You are vibrating near the case board. I'll mark that as readiness-adjacent."]
         },
         {
             "id": "hint_coffee_skipped",
             "trigger": "!chapter1.coffee_tutorial_seen && chapter1.court_ready && !chapter1.entered_court",
-            "_comment": "Coffee-result V1.4 — skipped reaction. Per user instruction, the load-bearing gate is chapter1.coffee_tutorial_seen == false; the additional (court_ready && !entered_court) clause scopes the line to the post-readiness, pre-court window so the hint does not fire from game start.",
-            "lines": ["No coffee? Brave. Not wise, necessarily, but brave."],
-            "tags": ["hint_state", "coffee_skipped", "warm_direct", "v1_4_coffee"]
+            "_comment": "Coffee V1.4 skipped. Gate narrowed to post-readiness, pre-court window per asia_hint_states_ch1.md note. Verbatim from asia_hint_states_ch1.json v3.",
+            "tags": ["hint_state", "warm_direct", "v1_4_coffee"],
+            "lines": ["No coffee? Brave. Not wise, necessarily, but brave."]
         },
         {
             "id": "hint_won_court",
-            "trigger": "chapter1.court_ready && !chapter1.won_court",
-            "_comment": "State 10 — readiness check passed; court not yet resolved; point toward the District Court walk north.",
-            "lines": ["If Mr. Murrow says you're ready, go north to the District Court. And maybe drink water."],
-            "tags": ["hint_state", "won_court", "briskly_prioritising", "phase7_v1_a_p3"]
+            "trigger": "chapter1.court_ready && !chapter1.court_won_procedural_reset",
+            "_comment": "Hint state 10 — readiness check passed; court not yet resolved. Verbatim from asia_hint_states_ch1.json v3.",
+            "tags": ["hint_state", "briskly_prioritising", "phase7_v1_a_p3"],
+            "lines": ["If Mr. Murrow says you're ready, go north to the District Court. And maybe drink water."]
         },
         {
             "id": "hint_received_swine_postcard",
-            "trigger": "chapter1.won_court && !chapter1.received_swine_postcard",
-            "_comment": "State 11 — court won; Beat-14 Swine postcard not yet arrived; anticipates postcard arrival.",
-            "lines": ["Something arrived from Mr. Swine. The stamp looks expensive and irresponsible."],
-            "tags": ["hint_state", "received_swine_postcard", "warm_direct", "phase7_v1_a_p3"]
+            "trigger": "chapter1.court_won_procedural_reset && !chapter1.received_swine_postcard",
+            "_comment": "Hint state 11 — court won; Beat-14 Swine postcard not yet arrived. Verbatim from asia_hint_states_ch1.json v3.",
+            "tags": ["hint_state", "warm_direct", "phase7_v1_a_p3"],
+            "lines": ["Something arrived from Mr. Swine. The stamp looks expensive and irresponsible."]
         },
         {
             "id": "hint_default",
             "trigger": "chapter1.received_swine_postcard",
-            "_comment": "State 12 — default; all chapter-1 flags satisfied; post-postcard chapter coda. No further hint needed; line is a chapter-close register.",
-            "lines": ["For the first time today, nothing is actively on fire. I give it twelve minutes."],
-            "tags": ["hint_state", "default", "briefly_conspiratorial", "phase7_v1_a_p3"]
+            "_comment": "Hint state 12 (default) — all chapter-1 flags satisfied; chapter-close register. Verbatim from asia_hint_states_ch1.json v3.",
+            "tags": ["hint_state", "briefly_conspiratorial", "phase7_v1_a_p3"],
+            "lines": ["For the first time today, nothing is actively on fire. I give it twelve minutes."]
         }
     ]
 }

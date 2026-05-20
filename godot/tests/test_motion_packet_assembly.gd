@@ -38,6 +38,7 @@ func _init() -> void:
 	_test_slot_and_remedy_state_writes()
 	_test_incapacity_gate()
 	_test_packet_scoring_and_apply_gate()
+	_test_packet_controls_are_keyboard_focusable()
 
 	if _binder != null:
 		_binder.queue_free()
@@ -139,6 +140,43 @@ func _test_packet_scoring_and_apply_gate() -> void:
 	_assert(ch1["proposed_frame"] == "overbroad_remedy", "remedy choice drives overbroad_remedy frame")
 	_assert(ch1["decoy_overbroad_remedy"] == true, "overbroad-remedy decoy set from non-procedural remedy")
 	_assert(ch1["judicial_patience"] == 3, "judicial patience starts at 3 after overbroad-remedy penalty")
+
+
+func _test_packet_controls_are_keyboard_focusable() -> void:
+	print("[T5] keyboard focusable packet controls")
+	_reset_state()
+	var ch1: Dictionary = _ch1()
+	ch1["binder_read_envelope"] = true
+	ch1["halina_met"] = true
+	_refresh_binder()
+
+	for path in [
+		"BinderRoot/PageBody/PacketPanel/PacketVBox/AddressSlotOption",
+		"BinderRoot/PageBody/PacketPanel/PacketVBox/LandlordSlotOption",
+		"BinderRoot/PageBody/PacketPanel/PacketVBox/NoticeSlotOption",
+		"BinderRoot/PageBody/PacketPanel/PacketVBox/AuthoritySlotOption",
+		"BinderRoot/PageBody/PacketPanel/PacketVBox/RemedyOption",
+		"BinderRoot/PageBody/PacketPanel/PacketVBox/ApplyPacketButton",
+	]:
+		var control: Control = _binder.get_node_or_null(path) as Control
+		_assert(control != null, path + " exists")
+		_assert(control != null and control.focus_mode != Control.FOCUS_NONE, path + " accepts focus")
+
+	var tab_bar: HBoxContainer = _binder.get_node_or_null("BinderRoot/PageTabs") as HBoxContainer
+	_assert(tab_bar != null, "PageTabs exists")
+	_assert(tab_bar != null and tab_bar.get_child_count() > 0, "surfaced evidence builds a tab")
+	if tab_bar != null:
+		for child in tab_bar.get_children():
+			if child is Control:
+				_assert(child.focus_mode != Control.FOCUS_NONE, "evidence tab accepts focus")
+
+	var decoy_container: VBoxContainer = _binder.get_node_or_null("BinderRoot/PageBody/PacketPanel/PacketVBox/DecoyOptions") as VBoxContainer
+	_assert(decoy_container != null, "DecoyOptions exists")
+	_assert(decoy_container != null and decoy_container.get_child_count() > 0, "decoy checkboxes are built")
+	if decoy_container != null:
+		for child in decoy_container.get_children():
+			if child is CheckBox:
+				_assert(child.focus_mode != Control.FOCUS_NONE, "decoy checkbox accepts focus")
 
 
 func _assert(condition: bool, msg: String) -> void:

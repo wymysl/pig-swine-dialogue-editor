@@ -74,6 +74,7 @@ func _init() -> void:
 	## from pre-empting V1.A states during asia-dialogue tests.
 	var reset_ch1 := func() -> void:
 		state_node.data["chapter1"]["met_asia"] = true
+		state_node.data["chapter1"]["has_case_folder"] = true
 		state_node.data["chapter1"]["recruited_whimsy"] = false
 		state_node.data["chapter1"]["halina_arrived"] = false
 		state_node.data["chapter1"]["halina_met"] = false

@@ -1,120 +1,126 @@
 {
-    "_draft_note": "Nightly design agent draft 2026-05-14. Covers Beat 13 post-court states for pig.json, with reference lines for murrow.json, crab.json, and whimsy.json. Not yet promoted to runtime. Review against voice_references/ before promotion.",
-    "_beat_ref": "story.txt §Beat 13 — Return to Pig & Swine: celebration, ledger, fee reference, Swine retainer plant.",
-    "_address_form_check": "Pig uses 'Dr. A. Cula' always. Murrow uses 'Cula' post-befriending (first_meeting on_dismiss sets met_murrow). Crab and Whimsy use 'Cula' post-recruit. All verified against AGENTS.md §Address forms.",
-    "_flags_used": [
-        "chapter1.won_court — declared in state.gd SAVE_VERSION 13; confirmed via grep.",
-        "chapter1.complete — declared in state.gd; confirmed via grep.",
-        "chapter1.client_fee_collected — referenced in story.txt Beat 13 quest flags; NOT YET declared in state.gd. Code task: declare in reset_state(), bump SAVE_VERSION, add migration."
-    ],
-
-    "pig_beat13": {
-        "npc_id": "pig",
-        "display_name": "Mr. Pig",
-        "_comment": "Primary draft target. story.txt Beat 13 spec: celebration framed around firm survival; 5,000 PLN Sikorska fee named alongside rent and printer; maritime register active (emotional escalation moment); 'back in my day' pattern NOT here (placed at Beat 10 per Phase-6 revision); Swine retainer as the anxious undercut to the celebration. Phase-7 spec: 'We have survived another impossible thing. The rent will breathe. The Sikorska fee came through. The printer can wait. The client — yes, the client — also survived. The firm will see another month.' Three maritime-flavored lines followed by Swine undercut.",
-        "proposed_state": {
-            "id": "pig_court_win_celebration",
-            "trigger": "chapter1.won_court == true",
-            "_comment": "Beat 13. Fires once Cula returns from court. No chapter1.complete gate — this beat IS the celebration before the Swine postcard closes the chapter. Once chapter1.complete is set (Beat 14), the complete flag can gate repeat interactions if Pig needs a post-chapter line.",
-            "lines": [
-                "Dr. A. Cula! We have survived another impossible thing.",
-                "The rent will breathe. The Sikorska fee came through. The printer can wait.",
-                "The client — yes, the client — also survived. The firm will see another month.",
-                {"speaker": "cula", "text": "The motion was granted. Halina Sikorska will have her hearing."},
-                "Yes. Good. That too.",
-                "Mr. Swine's retainer is still — somewhere. Sea of Japan. Presumably alive.",
-                {"speaker": "cula", "text": "Presumably."}
-            ],
-            "on_dismiss": [
-                {"set": "chapter1.client_fee_collected", "value": true}
-            ],
-            "_voice_refs": [
-                "pig_ch01_celebration (story.txt Beat 13 Phase-7 spec shape, verbatim)",
-                "pig_swine_retainer_aside (story.txt Beat 13 Phase-6: 'Mr. Swine's retainer is still — somewhere. Sea of Japan. Presumably alive.')",
-                "pig_global maritime register: ~1 in 4 lines; Beat 13 is emotional escalation, warranting one maritime-adjacent line. 'The rent will breathe' is the maritime-infused image (the firm was underwater in Beat 3; now it can breathe)."
-            ],
-            "_taste_standard": [
-                "1 (Funny): 'The client — yes, the client — also survived' lands because Pig's firm-first framing is visible and self-aware. The pause ('yes, the client') is the joke.",
-                "2 (Clever): 'The rent will breathe' echoes the Beat 3 'six weeks underwater' maritime register without repeating it. The firm was drowning; now it breathes.",
-                "3 (Alive): 'Presumably alive' about Mr. Swine is a genuine laugh and plants the postcard stinger.",
-                "4 (Clear): All firm-financial claims (rent, fee, printer) are named concretely, matching story.txt's requirement to anchor firm-survival framing with specific numbers.",
-                "5 (Future-proof): No content that would break at ch2–5 rereads. The Swine retainer undercut is a running motif that pays off when Swine returns in ch5."
-            ]
+  "_status": "PENDING — promote to dialogues/pig.json (pig_beat13 states) and reference lines for murrow/crab/whimsy. Blocked on: Code declaring chapter1.client_fee_collected in state.gd reset_state(), bumping SAVE_VERSION, adding migration. Review voice against voice_references/ before promotion.",
+  "_draft_note": "Nightly design agent draft 2026-05-14. Covers Beat 13 post-court states for pig.json, with reference lines for murrow.json, crab.json, and whimsy.json. Not yet promoted to runtime. Review against voice_references/ before promotion.",
+  "_beat_ref": "story.txt §Beat 13 — Return to Pig & Swine: celebration, ledger, fee reference, Swine retainer plant.",
+  "_address_form_check": "Pig uses 'Dr. A. Cula' always. Murrow uses 'Cula' post-befriending (first_meeting on_dismiss sets met_murrow). Crab and Whimsy use 'Cula' post-recruit. All verified against AGENTS.md §Address forms.",
+  "_flags_used": [
+    "chapter1.won_court — declared in state.gd SAVE_VERSION 13; confirmed via grep.",
+    "chapter1.complete — declared in state.gd; confirmed via grep.",
+    "chapter1.client_fee_collected — referenced in story.txt Beat 13 quest flags; NOT YET declared in state.gd. Code task: declare in reset_state(), bump SAVE_VERSION, add migration."
+  ],
+  "pig_beat13": {
+    "npc_id": "pig",
+    "display_name": "Mr. Pig",
+    "_comment": "Primary draft target. story.txt Beat 13 spec: celebration framed around firm survival; 5,000 PLN Sikorska fee named alongside rent and printer; maritime register active (emotional escalation moment); 'back in my day' pattern NOT here (placed at Beat 10 per Phase-6 revision); Swine retainer as the anxious undercut to the celebration. Phase-7 spec: 'We have survived another impossible thing. The rent will breathe. The Sikorska fee came through. The printer can wait. The client — yes, the client — also survived. The firm will see another month.' Three maritime-flavored lines followed by Swine undercut.",
+    "proposed_state": {
+      "id": "pig_court_win_celebration",
+      "trigger": "chapter1.won_court == true",
+      "_comment": "Beat 13. Fires once Cula returns from court. No chapter1.complete gate — this beat IS the celebration before the Swine postcard closes the chapter. Once chapter1.complete is set (Beat 14), the complete flag can gate repeat interactions if Pig needs a post-chapter line.",
+      "lines": [
+        "Dr. A. Cula! We have survived another impossible thing.",
+        "The rent will breathe. The Sikorska fee came through. The printer can wait.",
+        "The client — yes, the client — also survived. The firm will see another month.",
+        {
+          "speaker": "cula",
+          "text": "The motion was granted. Halina Sikorska will have her hearing."
+        },
+        "Yes. Good. That too.",
+        "Mr. Swine's retainer is still — somewhere. Sea of Japan. Presumably alive.",
+        {
+          "speaker": "cula",
+          "text": "Presumably."
         }
-    },
-
-    "murrow_beat13": {
-        "npc_id": "murrow",
-        "display_name": "Murrow",
-        "_comment": "Companion draft (not the primary target — promote murrow.json separately). story.txt Beat 13: 'Murrow quietly updates the ledger' (visual scripting, no dialogue) + 'Murrow's brief post-update line to Cula. Dry-collegial register. One sentence acknowledging the win without celebrating it. Recommended shape: a checklist-style remark about the next case, sets up chapter close.'",
-        "proposed_state": {
-            "id": "murrow_post_court_ledger",
-            "trigger": "chapter1.won_court == true && !chapter1.complete",
-            "_comment": "Beat 13. Single-line state. The ledger update is a visual-scripting beat handled by Code (Murrow opens drawer, writes, replaces ledger — no dialogue). This state fires when Cula speaks to Murrow directly after the win. Gated !chapter1.complete so repeat interactions post-Beat-14 fall through to a new post-complete idle line if authored later.",
-            "lines": [
-                "Cula. The motion is on the record. The ledger is current. The next file is already on the shelf."
-            ],
-            "_voice_refs": [
-                "murrow_dry_collegial: one-sentence, checklist register, no adjectives.",
-                "murrow_ch01_idle: 'The paperwork is current. Whether it is correct is a separate question.' — the new line echoes this idiom but as an affirmative post-win."
-            ],
-            "_taste_standard": [
-                "1 (Funny): The anti-celebration is the joke — everyone else is celebrating, Murrow is already on the next file.",
-                "2 (Clever): 'The ledger is current' echoes the visual-scripting ledger beat described in story.txt without explaining it; the player who saw Murrow close the ledger will feel the connection.",
-                "3 (Alive): Three short beats (motion / ledger / next file) make Murrow's rhythm audible.",
-                "4 (Clear): No ambiguity.",
-                "5 (Future-proof): The 'next file' plant is intentionally vague; ch2 can reveal what it is without this line requiring revision."
-            ]
+      ],
+      "on_dismiss": [
+        {
+          "set": "chapter1.client_fee_collected",
+          "value": true
         }
-    },
-
-    "crab_beat13": {
-        "npc_id": "crab",
-        "display_name": "Crab",
-        "_comment": "Companion draft. story.txt Beat 13: 'Crab pretends not to be impressed. (Opportunist register; professional indifference made visible.)' Post-recruit; bare 'Cula' per AGENTS.md.",
-        "proposed_state": {
-            "id": "crab_court_win",
-            "trigger": "chapter1.won_court == true",
-            "_comment": "Beat 13. One-line state. 'Correctly presented' is the concession Crab makes while pretending there is nothing to concede.",
-            "lines": [
-                "It was the only possible result from those facts. Good facts, correctly presented."
-            ],
-            "_voice_refs": [
-                "crab_global_012: 'Cula. If we go in now, we will be making an argument with decorative gaps.' — the inverse of this. Pre-court Crab identifies gaps; post-court Crab identifies no gaps but doesn't celebrate finding none.",
-                "crab_global_013: 'The facts are not beautiful, but they are standing in the right order.' — voice sibling; both lines share Crab's Audit-of-Things register."
-            ],
-            "_taste_standard": [
-                "1 (Funny): The reluctant compliment is the joke. 'The only possible result' is both accurate and deflating.",
-                "2 (Clever): 'Correctly presented' is the admission that the presentation mattered — which is Crab acknowledging the advocacy without saying so.",
-                "3 (Alive): Terse. Every word is load-bearing.",
-                "4 (Clear): No ambiguity.",
-                "5 (Future-proof): No ch1-specific content; this line works in any post-court context where facts were properly used."
-            ]
-        }
-    },
-
-    "whimsy_beat13": {
-        "npc_id": "whimsy",
-        "display_name": "Whimsy",
-        "_comment": "Companion draft. story.txt Beat 13: 'Whimsy proposes turning the judgment into a musical. (Cynic register; theatrical distancing dressed as flourish.)' Post-recruit; bare 'Cula' per AGENTS.md.",
-        "proposed_state": {
-            "id": "whimsy_court_win",
-            "trigger": "chapter1.won_court == true",
-            "_comment": "Beat 13. One-line state per story.txt Beat 13 spec. Whimsy's theatrical-distancing register: engaged with the judgment as a literary specimen, not as a personal victory.",
-            "lines": [
-                "Cula. The judgment has a throughline, a reversal, and a satisfying last line. I want the dramatic rights."
-            ],
-            "_voice_refs": [
-                "whimsy_ch01_019: 'Cula. We are not asking the court for miracles. Merely a doorway through which the client may be heard.' — same register (theatrical framing of legal events; bare 'Cula' address; crisp two-clause structure).",
-                "story.txt Beat 13 spec: 'Whimsy proposes turning the judgment into a musical.' — the proposed line honors this exactly while landing in the cynic-register rather than the cheerful one."
-            ],
-            "_taste_standard": [
-                "1 (Funny): 'I want the dramatic rights' is the laugh. It's absurd but internally consistent with Whimsy's character.",
-                "2 (Clever): 'A throughline, a reversal, and a satisfying last line' is correct literary analysis applied to a procedural court order.",
-                "3 (Alive): The line sounds like Whimsy even with the speaker tag stripped.",
-                "4 (Clear): No ambiguity.",
-                "5 (Future-proof): No ch1-specific lore; the judgment-as-artistic-specimen framing can recur in later chapters as a Whimsy running motif."
-            ]
-        }
+      ],
+      "_voice_refs": [
+        "pig_ch01_celebration (story.txt Beat 13 Phase-7 spec shape, verbatim)",
+        "pig_swine_retainer_aside (story.txt Beat 13 Phase-6: 'Mr. Swine's retainer is still — somewhere. Sea of Japan. Presumably alive.')",
+        "pig_global maritime register: ~1 in 4 lines; Beat 13 is emotional escalation, warranting one maritime-adjacent line. 'The rent will breathe' is the maritime-infused image (the firm was underwater in Beat 3; now it can breathe)."
+      ],
+      "_taste_standard": [
+        "1 (Funny): 'The client — yes, the client — also survived' lands because Pig's firm-first framing is visible and self-aware. The pause ('yes, the client') is the joke.",
+        "2 (Clever): 'The rent will breathe' echoes the Beat 3 'six weeks underwater' maritime register without repeating it. The firm was drowning; now it breathes.",
+        "3 (Alive): 'Presumably alive' about Mr. Swine is a genuine laugh and plants the postcard stinger.",
+        "4 (Clear): All firm-financial claims (rent, fee, printer) are named concretely, matching story.txt's requirement to anchor firm-survival framing with specific numbers.",
+        "5 (Future-proof): No content that would break at ch2–5 rereads. The Swine retainer undercut is a running motif that pays off when Swine returns in ch5."
+      ]
     }
+  },
+  "murrow_beat13": {
+    "npc_id": "murrow",
+    "display_name": "Murrow",
+    "_comment": "Companion draft (not the primary target — promote murrow.json separately). story.txt Beat 13: 'Murrow quietly updates the ledger' (visual scripting, no dialogue) + 'Murrow's brief post-update line to Cula. Dry-collegial register. One sentence acknowledging the win without celebrating it. Recommended shape: a checklist-style remark about the next case, sets up chapter close.'",
+    "proposed_state": {
+      "id": "murrow_post_court_ledger",
+      "trigger": "chapter1.won_court == true && !chapter1.complete",
+      "_comment": "Beat 13. Single-line state. The ledger update is a visual-scripting beat handled by Code (Murrow opens drawer, writes, replaces ledger — no dialogue). This state fires when Cula speaks to Murrow directly after the win. Gated !chapter1.complete so repeat interactions post-Beat-14 fall through to a new post-complete idle line if authored later.",
+      "lines": [
+        "Cula. The motion is on the record. The ledger is current. The next file is already on the shelf."
+      ],
+      "_voice_refs": [
+        "murrow_dry_collegial: one-sentence, checklist register, no adjectives.",
+        "murrow_ch01_idle: 'The paperwork is current. Whether it is correct is a separate question.' — the new line echoes this idiom but as an affirmative post-win."
+      ],
+      "_taste_standard": [
+        "1 (Funny): The anti-celebration is the joke — everyone else is celebrating, Murrow is already on the next file.",
+        "2 (Clever): 'The ledger is current' echoes the visual-scripting ledger beat described in story.txt without explaining it; the player who saw Murrow close the ledger will feel the connection.",
+        "3 (Alive): Three short beats (motion / ledger / next file) make Murrow's rhythm audible.",
+        "4 (Clear): No ambiguity.",
+        "5 (Future-proof): The 'next file' plant is intentionally vague; ch2 can reveal what it is without this line requiring revision."
+      ]
+    }
+  },
+  "crab_beat13": {
+    "npc_id": "crab",
+    "display_name": "Crab",
+    "_comment": "Companion draft. story.txt Beat 13: 'Crab pretends not to be impressed. (Opportunist register; professional indifference made visible.)' Post-recruit; bare 'Cula' per AGENTS.md.",
+    "proposed_state": {
+      "id": "crab_court_win",
+      "trigger": "chapter1.won_court == true",
+      "_comment": "Beat 13. One-line state. 'Correctly presented' is the concession Crab makes while pretending there is nothing to concede.",
+      "lines": [
+        "It was the only possible result from those facts. Good facts, correctly presented."
+      ],
+      "_voice_refs": [
+        "crab_global_012: 'Cula. If we go in now, we will be making an argument with decorative gaps.' — the inverse of this. Pre-court Crab identifies gaps; post-court Crab identifies no gaps but doesn't celebrate finding none.",
+        "crab_global_013: 'The facts are not beautiful, but they are standing in the right order.' — voice sibling; both lines share Crab's Audit-of-Things register."
+      ],
+      "_taste_standard": [
+        "1 (Funny): The reluctant compliment is the joke. 'The only possible result' is both accurate and deflating.",
+        "2 (Clever): 'Correctly presented' is the admission that the presentation mattered — which is Crab acknowledging the advocacy without saying so.",
+        "3 (Alive): Terse. Every word is load-bearing.",
+        "4 (Clear): No ambiguity.",
+        "5 (Future-proof): No ch1-specific content; this line works in any post-court context where facts were properly used."
+      ]
+    }
+  },
+  "whimsy_beat13": {
+    "npc_id": "whimsy",
+    "display_name": "Whimsy",
+    "_comment": "Companion draft. story.txt Beat 13: 'Whimsy proposes turning the judgment into a musical. (Cynic register; theatrical distancing dressed as flourish.)' Post-recruit; bare 'Cula' per AGENTS.md.",
+    "proposed_state": {
+      "id": "whimsy_court_win",
+      "trigger": "chapter1.won_court == true",
+      "_comment": "Beat 13. One-line state per story.txt Beat 13 spec. Whimsy's theatrical-distancing register: engaged with the judgment as a literary specimen, not as a personal victory.",
+      "lines": [
+        "Cula. The judgment has a throughline, a reversal, and a satisfying last line. I want the dramatic rights."
+      ],
+      "_voice_refs": [
+        "whimsy_ch01_019: 'Cula. We are not asking the court for miracles. Merely a doorway through which the client may be heard.' — same register (theatrical framing of legal events; bare 'Cula' address; crisp two-clause structure).",
+        "story.txt Beat 13 spec: 'Whimsy proposes turning the judgment into a musical.' — the proposed line honors this exactly while landing in the cynic-register rather than the cheerful one."
+      ],
+      "_taste_standard": [
+        "1 (Funny): 'I want the dramatic rights' is the laugh. It's absurd but internally consistent with Whimsy's character.",
+        "2 (Clever): 'A throughline, a reversal, and a satisfying last line' is correct literary analysis applied to a procedural court order.",
+        "3 (Alive): The line sounds like Whimsy even with the speaker tag stripped.",
+        "4 (Clear): No ambiguity.",
+        "5 (Future-proof): No ch1-specific lore; the judgment-as-artistic-specimen framing can recur in later chapters as a Whimsy running motif."
+      ]
+    }
+  }
 }

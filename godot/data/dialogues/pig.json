@@ -9,12 +9,12 @@
                 "It would appear that we are...",
                 {"speaker": "cula", "text": "Mr. Pig. Good morning."},
                 "Dr. A. Cula! Welcome. You arrive during, well... a moment.",
-                "Let me assure you first: the firm is not bankrupt. Bankruptcy requires paperwork, and our paperwork is currently underwater along with the rest of us.",
+                "Let me assure you first: the firm is not bankrupt. Bankruptcy is for firms whose paperwork has caught up with them. We are luckier than that, in a manner of speaking.",
                 "The rent is six weeks overdue.",
-                "Six weeks under the surface. The landlord knocks on the hull. Politely. The polite knock is somehow worse than a loud one.",
-                "Can a firm sail while six weeks underwater? I have asked myself this. The honest answer appears to be yes, on momentum.",
+                "Six weeks under the surface. The landlord knocks. Politely. The polite knock is somehow worse than a loud one.",
+                "It would appear that this can continue indefinitely, on momentum, which I am told is a recognised force in physics and almost recognised in accounting.",
                 {"speaker": "pig", "text": "There is also the printer lease, which has lapsed, and which I have been renewing by telephone every Thursday, and which the leasing company has stopped answering the telephone about, which is new."},
-                "So. We float. In the way that boats with leaks float, which is to say, less every morning.",
+                "So. We carry on. Less every morning, but recognisably ourselves.",
                 {"speaker": "cula", "text": "Six weeks. Understood."},
                 "Anyway. I'm digressing. This is your first day, and we need you to start immediately. We have a case to take care of.",
                 "Mr. Murrow has the folder. Mr. Murrow knows the— ask Mr. Murrow.",
@@ -25,7 +25,6 @@
                 {"set": "chapter1.met_pig", "value": true},
                 {"set": "chapter1.pig_revealed_crisis", "value": true}
             ],
-            "chain": true,
             "once": true
         },
         {
@@ -54,6 +53,13 @@
             "trigger": "chapter1.coffee_buff == 'over_caffeinated' && chapter1.met_pig == true && !chapter1.entered_court",
             "_comment": "V1.4 coffee reaction — D/F-grade. Voice draft from minigames.txt §Character reactions §Mr. Pig Bad ('That coffee smells like our accounts.'). Reads alongside the firm's existing six-weeks-underwater crisis joke.",
             "lines": ["Dr. A. Cula. That coffee smells like our accounts."]
+        },
+        {
+            "id": "pig_b13_celebration",
+            "trigger": "chapter1.court_won_procedural_reset == true",
+            "_comment": "2026-05-19 critique F9: previously-missing Beat 13 celebration speech that cula_b13_pig_celebration_response in cula.json was authored to react to. Firm-first / client-second ordering is load-bearing — the player should register that this firm celebrates its own survival before the client's. Maritime tic recedes (sincere undercut beat per style_canon §Mr. Pig arc rule; not the Ch5 fully-sincere moment, but the first hairline crack in the panic frame). once:true uses SAVE_VERSION 12 declarative fire-once (dialogue_states_seen) — no manual flag needed. Ordered before has_binder_and_memo so this state wins on Beat 13.",
+            "lines": ["Dr. A. Cula! We have survived another impossible thing.", "The firm carries on. The client — yes, the client — also carries on. Both, mercifully, in that order.", "I would offer a toast, but the only glasses in this office are the ones Mr. Murrow reads with."],
+            "once": true
         },
         {
             "id": "has_binder_and_memo",

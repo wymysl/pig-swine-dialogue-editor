@@ -1,0 +1,559 @@
+{
+  "_draft_note": "INERT DRAFT — not loaded by dialogue_runner. Located under godot/data/_drafts/ with a date suffix so it stays out of the runtime corpus. This is the stance-monolithic V1.4 shape (one carrier per stance), authored fresh from the Halina bible + chapter_1.md §Beat 8 + voice samples. The committed halina.json uses a different (trust-meter / round-based) shape; this draft does NOT supersede it. State ids prefixed halina_b8_* / halina_ch4_* per Rule E to avoid collisions with the canonical file (which uses unprefixed client_meeting_* ids).",
+  "_chapter_ref": "Ch1 Beat 8 (client meeting). Ch4 corridor cameo lines drafted for continuity only; the Ch4 voice pack will finalise placement and any trigger work.",
+  "_flags_used": [
+    "chapter1.halina_met",
+    "chapter1.halina_arrived",
+    "chapter1.halina_close_done",
+    "chapter1.client_fee_agreed",
+    "chapter1.client_meeting_stance",
+    "chapter1.bonus_evidence_collected",
+    "chapter1.cardiologist_plant_landed",
+    "chapter1.surfaced_notice_timeline",
+    "chapter1.surfaced_payment_receipts",
+    "chapter1.surfaced_property_transfer",
+    "chapter1.surfaced_resident_no_authority",
+    "chapter1.surfaced_tenancy_act_window",
+    "chapter1.element_landlord_knowledge",
+    "chapter1.element_non_current_address",
+    "chapter1.met_pig",
+    "chapter1.met_murrow"
+  ],
+  "_address_forms": "Halina -> Cula: 'Dr. A. Cula' (canonical per godot/AGENTS.md §Address forms; the English-version convention in ai_voice_constraints.md §1.5 keeps greetings and address forms in English, so 'Pan mecenasie' / 'Pani Halino' are deliberately NOT used in dialogue lines). Cula -> Halina: 'Mrs. Sikorska' (formal; she remains Mrs. Sikorska through Ch1 per bible decision 2026-05-08).",
+  "version": 2,
+  "npc_id": "halina",
+  "display_name": "Mrs. Sikorska",
+  "states": [
+    {
+      "id": "halina_b8_intro_shared",
+      "trigger": "!chapter1.halina_met && !chapter1.halina_arrived",
+      "_comment": "Shared entry beat. Asia ushers Halina in; first-meeting greeting per godot/AGENTS.md §First-meeting introductions (Cula names her plus self-identification). Murrow hands off. Three carrier options chain into the stance trees. Address forms: Halina -> 'Dr. A. Cula', 'Mr. Murrow', 'Mr. Crab', 'Mr. Whimsy'. Cula -> 'Mrs. Sikorska'.",
+      "lines": [
+        {
+          "speaker": "asia",
+          "text": "Mrs. Sikorska. The meeting room is through here. May I take your coat."
+        },
+        "Thank you, no. I will keep it for now.",
+        "Good morning. I am Halina Sikorska. I have been told you can help.",
+        {
+          "speaker": "cula",
+          "text": "Good morning, Mrs. Sikorska. Dr. A. Cula. Please, sit. Thank you for coming in."
+        },
+        "Thank you.",
+        {
+          "speaker": "cula",
+          "text": "This is Mr. Crab and Mr. Whimsy. They have read the file. You know Mr. Murrow."
+        },
+        "Mr. Murrow. Mr. Crab. Mr. Whimsy.",
+        {
+          "speaker": "murrow",
+          "text": "The notice and the docket are in the file. Dr. A. Cula will lead."
+        }
+      ],
+      "options": {
+        "write_path": "chapter1.client_meeting_stance",
+        "chain": true,
+        "choices": [
+          {
+            "text": "Lead with how she is holding up.",
+            "value": "sympathetic"
+          },
+          {
+            "text": "Lead with the notice and the timeline.",
+            "value": "blunt_procedural"
+          },
+          {
+            "text": "Lead with the lease and the documents.",
+            "value": "technical"
+          }
+        ]
+      },
+      "on_dismiss": [
+        {
+          "set": "chapter1.halina_arrived",
+          "value": true
+        },
+        {
+          "set": "chapter1.met_pig",
+          "value": true
+        },
+        {
+          "set": "chapter1.met_murrow",
+          "value": true
+        }
+      ],
+      "tags": [
+        "beat8",
+        "intro",
+        "first_meeting"
+      ]
+    },
+    {
+      "id": "halina_b8_sympathetic_main",
+      "trigger": "chapter1.halina_arrived && !chapter1.halina_close_done && chapter1.client_meeting_stance == 'sympathetic'",
+      "_comment": "Sympathetic carrier. Cula opens with care; Halina answers in quietly-warm register; Mrs. Wójcik mention surfaces the bonus evidence (witness statement, document only — Mrs. Wójcik does not appear). Required evidence (tenancy paperwork, defective notice, ex parte docket) surfaces inline. Address forms: 'Dr. A. Cula' and 'Mrs. Sikorska'. Visible change per Rule B: Crab logs the witness; surfaced_resident_no_authority and bonus_evidence_collected set on commit.",
+      "lines": [
+        {
+          "speaker": "cula",
+          "text": "Mrs. Sikorska, how are you holding up. The last three weeks."
+        },
+        "Thank you for asking. The matter has occupied more of my attention than I would have chosen. I have done what was needed.",
+        {
+          "speaker": "cula",
+          "text": "Tell me about the apartment."
+        },
+        "My father had the lease before me. He worked on the railways. He was given the apartment when he was assigned to Warsaw, in nineteen sixty-two. I inherited in nineteen eighty-seven, after his death. My husband moved in with me in seventy-four. He died in two thousand and nine. My son is in Wrocław.",
+        {
+          "speaker": "cula",
+          "text": "Is there anyone in the building who has known you there for a long time."
+        },
+        "Mrs. Wójcik. Second floor. She has lived there since nineteen ninety-one. She buys her bread at the same shop as I do. She would sign a statement, if a statement were needed. I asked her two weeks ago. She offered.",
+        {
+          "speaker": "crab",
+          "text": "Continuous resident, second floor, since ninety-one. A clean witness on occupancy. We can take that statement before Friday."
+        },
+        {
+          "speaker": "cula",
+          "text": "The current paperwork, the notice, and the docket. May I see them."
+        },
+        "The current renewal is here. The notice is here. The young man at number seven brought it down. The envelope had been opened. He apologised. He left it on the kitchen table and went back upstairs. The docket I copied at the court office on Tuesday.",
+        {
+          "speaker": "murrow",
+          "text": "Notice to the old number, after a 2015 renumbering. Ex parte hearing on the docket, no appearance entered. The defects are on the documents."
+        }
+      ],
+      "options": {
+        "write_path": "chapter1.bonus_evidence_collected",
+        "chain": true,
+        "choices": [
+          {
+            "text": "Thank you. We will draft Mrs. Wójcik's statement for Friday.",
+            "value": "wojcik_witness_statement"
+          }
+        ]
+      },
+      "on_dismiss": [
+        {
+          "set": "chapter1.surfaced_notice_timeline",
+          "value": true
+        },
+        {
+          "set": "chapter1.surfaced_resident_no_authority",
+          "value": true
+        },
+        {
+          "set": "chapter1.surfaced_tenancy_act_window",
+          "value": true
+        },
+        {
+          "set": "chapter1.element_non_current_address",
+          "value": true
+        }
+      ],
+      "tags": [
+        "beat8",
+        "sympathetic"
+      ]
+    },
+    {
+      "id": "halina_b8_blunt_main",
+      "trigger": "chapter1.halina_arrived && !chapter1.halina_close_done && chapter1.client_meeting_stance == 'blunt_procedural'",
+      "_comment": "Blunt-procedural carrier. Cula leads with sequence; Halina answers in formal-precise register. The October return-to-sender slip surfaces as the bonus evidence (document only). Required evidence (paperwork, notice, docket) reconciled. Address forms: 'Dr. A. Cula' and 'Mrs. Sikorska'. Visible change per Rule B: Crab and Murrow each register the prior-knowledge implication; surfaced_notice_timeline and element_landlord_knowledge set on commit.",
+      "lines": [
+        {
+          "speaker": "cula",
+          "text": "Mrs. Sikorska. The notice first. Date, receipt, and who brought it to you."
+        },
+        "The notice is dated the eighth of April. I received it on the twenty-eighth. Twenty days. The current resident of number seven brought it down. The envelope had been opened. He had read the first line before realising it was not for him.",
+        {
+          "speaker": "cula",
+          "text": "Number seven is your old number."
+        },
+        "Yes. Since the two thousand and fifteen renumbering, my apartment has been number twelve.",
+        {
+          "speaker": "cula",
+          "text": "Prior correspondence from the landlord. Has anything else come back to the wrong address."
+        },
+        "Six months ago, a rent statement. It was returned. A woman at his office telephoned me a week later. She said the letter had been returned and that they would resend to the correct address. I do not have the slip. He does, if he kept it.",
+        {
+          "speaker": "crab",
+          "text": "Returned once. Corrected once. Then repeated in April. The slip is producible by request. Knowledge of the correct address on paper, on the very point of service."
+        },
+        {
+          "speaker": "murrow",
+          "text": "Paper is less forgetful than people. We will request the slip."
+        },
+        {
+          "speaker": "cula",
+          "text": "And the docket. The hearing on the eviction."
+        },
+        "The court office gave me a copy on Tuesday. The hearing was held without me. I was not informed.",
+        {
+          "speaker": "murrow",
+          "text": "Ex parte. No appearance entered. The motion writes itself."
+        }
+      ],
+      "options": {
+        "write_path": "chapter1.bonus_evidence_collected",
+        "chain": true,
+        "choices": [
+          {
+            "text": "Good. We will subpoena the return-to-sender slip on Monday.",
+            "value": "return_to_sender_slip"
+          }
+        ]
+      },
+      "on_dismiss": [
+        {
+          "set": "chapter1.surfaced_notice_timeline",
+          "value": true
+        },
+        {
+          "set": "chapter1.surfaced_tenancy_act_window",
+          "value": true
+        },
+        {
+          "set": "chapter1.element_landlord_knowledge",
+          "value": true
+        },
+        {
+          "set": "chapter1.element_non_current_address",
+          "value": true
+        }
+      ],
+      "tags": [
+        "beat8",
+        "blunt_procedural"
+      ]
+    },
+    {
+      "id": "halina_b8_technical_main",
+      "trigger": "chapter1.halina_arrived && !chapter1.halina_close_done && chapter1.client_meeting_stance == 'technical'",
+      "_comment": "Technical carrier. Cula leads with documents; Halina walks the chain in formal-precise register; the 1962 lease + 1987 inheritance pair surfaces as the bonus evidence. Cardiologist plant lands here, embedded in a logistics aside per voice sample halina_ch01_v1_4_technical_007 — single sentence, formal-precise, no follow-up. NO italics, NO reaction line. Sets chapter1.cardiologist_plant_landed in on_dismiss. Address forms: 'Dr. A. Cula' and 'Mrs. Sikorska'.",
+      "lines": [
+        {
+          "speaker": "cula",
+          "text": "Mrs. Sikorska. The lease chain. From the beginning, please."
+        },
+        "Nineteen sixty-two. My father held the original lease. I inherited in nineteen eighty-seven.",
+        {
+          "speaker": "cula",
+          "text": "May I see them."
+        },
+        "This is the original lease. My father's name. Nineteen sixty-two. The signature is the building's administrator at the time. The seal is the housing cooperative's. The inheritance paperwork is from eighty-seven. After my father's death.",
+        {
+          "speaker": "murrow",
+          "text": "Chain clean from sixty-two through eighty-seven. The cooperative seal makes the underlying tenancy unimpeachable."
+        },
+        {
+          "speaker": "cula",
+          "text": "The current renewal."
+        },
+        "Two thousand and nineteen. The address as it has stood since the renumbering. Number twelve. The renumbering was in two thousand and fifteen.",
+        {
+          "speaker": "cula",
+          "text": "And the notice."
+        },
+        "Number seven. The address as it stood before the renumbering. The landlord sent it to an address that has not been mine for eleven years. The docket is here. The hearing was held without me.",
+        "The cooperative office is open weekday mornings. I can be there tomorrow if needed. I will need to reschedule with my cardiologist again. He is patient with me. The cooperative is two stops on the tram.",
+        {
+          "speaker": "murrow",
+          "text": "We will not need the cooperative unless the landlord answers on the underlying tenancy. He will not. The procedural defect ends the matter at the motion."
+        }
+      ],
+      "options": {
+        "write_path": "chapter1.bonus_evidence_collected",
+        "chain": true,
+        "choices": [
+          {
+            "text": "Thank you. The chain is clean.",
+            "value": "lease_1962_inheritance_1987"
+          }
+        ]
+      },
+      "on_dismiss": [
+        {
+          "set": "chapter1.surfaced_notice_timeline",
+          "value": true
+        },
+        {
+          "set": "chapter1.surfaced_property_transfer",
+          "value": true
+        },
+        {
+          "set": "chapter1.element_landlord_knowledge",
+          "value": true
+        },
+        {
+          "set": "chapter1.element_non_current_address",
+          "value": true
+        },
+        {
+          "set": "chapter1.cardiologist_plant_landed",
+          "value": true
+        }
+      ],
+      "tags": [
+        "beat8",
+        "technical",
+        "cardiologist_plant"
+      ]
+    },
+    {
+      "id": "halina_b8_dwell_apartment",
+      "trigger": "chapter1.halina_arrived && !chapter1.halina_close_done && chapter1.bonus_evidence_collected != ''",
+      "_comment": "Optional biographical dwell, available regardless of stance after the main carrier resolves. Address forms: 'Mrs. Sikorska' / 'Dr. A. Cula'. Halina in quietly-warm register; teacher's economy; father / husband / son surface in three short sentences. No reactive line from Cula beyond a brief acknowledgement so the dwell does not overstay (Rule A: under 8 NPC lines; Rule B: visible change is Halina's actual disclosure, not a flag flip).",
+      "lines": [
+        {
+          "speaker": "cula",
+          "text": "Before we go on. Tell me about the apartment."
+        },
+        "My father had it from sixty-two. My husband moved in in seventy-four. He died in two thousand and nine. My son is in Wrocław. He has his own life.",
+        "The floor in the front room is the floor I learned to walk on. The windows face east. I have a chair by them. I prefer not to leave."
+      ],
+      "tags": [
+        "beat8",
+        "dwell",
+        "biographical"
+      ]
+    },
+    {
+      "id": "halina_b8_dwell_recommendation",
+      "trigger": "chapter1.halina_arrived && !chapter1.halina_close_done && chapter1.bonus_evidence_collected != ''",
+      "_comment": "Optional dwell — surfaces that Halina came to Pig & Swine on Murrow's recommendation through a former colleague. Plants Murrow's professional reputation outside the firm without explication. Address forms: 'Mr. Murrow' (Halina speaking of him to Cula); 'Mrs. Sikorska' (Cula).",
+      "lines": [
+        {
+          "speaker": "cula",
+          "text": "May I ask how you came to the firm."
+        },
+        "A former colleague. She taught history at the same lyceum. Her husband had a matter some years ago. She said Mr. Murrow handled it. She said he was thorough and that he did not waste her husband's time. That was the recommendation."
+      ],
+      "tags": [
+        "beat8",
+        "dwell",
+        "recommendation",
+        "murrow_reputation"
+      ]
+    },
+    {
+      "id": "halina_b8_dwell_teaching",
+      "trigger": "chapter1.halina_arrived && !chapter1.halina_close_done && chapter1.bonus_evidence_collected != ''",
+      "_comment": "Optional dwell — career. Per Halina bible §Interior register range, lightly-archival register surfaces one Iwaszkiewicz reference (primary anchor per bible). Single literary aside, brief; Cula's response is minimal (no internal narration per Cula will-not-say).",
+      "lines": [
+        {
+          "speaker": "cula",
+          "text": "What did you teach."
+        },
+        "Polish. Language and literature. Thirty-eight years. Mostly the same lyceum. I retired in two thousand and eighteen. The students change. The texts do not.",
+        "Iwaszkiewicz wrote that buildings hold us longer than we hold them. He may have been generous to the buildings."
+      ],
+      "tags": [
+        "beat8",
+        "dwell",
+        "teaching",
+        "iwaszkiewicz"
+      ]
+    },
+    {
+      "id": "halina_b8_epigram",
+      "trigger": "chapter1.halina_arrived && !chapter1.halina_close_done && chapter1.bonus_evidence_collected != ''",
+      "once": true,
+      "_comment": "Single-fire literary epigram, available in any stance per bible. Dryly-observant register. Lands as wisdom on first read; recolors in Ch4 corridor (the player carries it; Halina does not repeat it). Bible recommends placement late in the meeting; the trigger gates on bonus_evidence_collected so it cannot fire before the carrier completes. No Cula reaction line — preserves the recoloring weight per Cula will-not-say (no internal narration).",
+      "lines": [
+        "You go to a lawyer like you go to a doctor: too late.",
+        {
+          "speaker": "cula",
+          "text": "I will remember that."
+        }
+      ],
+      "tags": [
+        "beat8",
+        "epigram",
+        "ch4_recoloring_setup"
+      ]
+    },
+    {
+      "id": "halina_b8_close_shared",
+      "trigger": "chapter1.halina_arrived && !chapter1.halina_close_done && chapter1.bonus_evidence_collected != ''",
+      "_comment": "Shared close. Cula summarises the required evidence; Murrow raises the 5,000 PLN fee (NOT a player choice per spec); Halina accepts cleanly; Pig intrusion (panic-register, maritime metaphor, shepherded out by Murrow); retention signed; departure room-thanks. Sets halina_met, halina_close_done, client_fee_agreed. If the technical carrier did not fire (i.e. cardiologist plant has not landed yet via halina_b8_technical_main), the plant lands here as a single neutral logistical line, register-unchanged. Address forms: 'Dr. A. Cula', 'Mrs. Sikorska', 'Mr. Murrow', 'Mr. Pig'. 2026-05-17 lint-fix: inserted Cula 'Mr. Pig.' beat between Murrow's retention close and Pig's intrusion to keep NPC run ≤8 (was 9).",
+      "lines": [
+        {
+          "speaker": "cula",
+          "text": "Then we have what we need. The current paperwork. The defective notice. The court docket. Mr. Murrow has the file."
+        },
+        {
+          "speaker": "murrow",
+          "text": "I do."
+        },
+        {
+          "speaker": "cula",
+          "text": "We will file the motion to set aside on the ground of invalid service. The hearing will be rescheduled. You will not need to be present at the motion itself."
+        },
+        "Thank you. I will be available either way.",
+        {
+          "speaker": "murrow",
+          "text": "The fee for the motion and the rescheduled hearing is five thousand. Fixed. Filing, appearance, and any drafting if the landlord answers."
+        },
+        "Five thousand. I have the money. I will transfer it before Friday.",
+        "I will need to reschedule with my cardiologist again. He is patient with me.",
+        {
+          "speaker": "murrow",
+          "text": "The retention is ready. I will witness."
+        },
+        {
+          "speaker": "cula",
+          "text": "Mr. Pig."
+        },
+        {
+          "speaker": "pig",
+          "text": "Mr. Murrow. The Hennessy retainer phone has gone overboard. Third time this morning."
+        },
+        {
+          "speaker": "pig",
+          "text": "And the printer is throwing red lights. Small craft warning, Mr. Murrow."
+        },
+        {
+          "speaker": "murrow",
+          "text": "Mr. Pig. A moment. The meeting room."
+        },
+        "I gather Mr. Pig is the senior partner.",
+        {
+          "speaker": "cula",
+          "text": "He is."
+        },
+        "I gather the firm is busy.",
+        {
+          "speaker": "cula",
+          "text": "It is."
+        },
+        {
+          "speaker": "murrow",
+          "text": "My apologies, Mrs. Sikorska. Two signatures. Here and here."
+        },
+        "Thank you. Until Friday.",
+        {
+          "speaker": "cula",
+          "text": "Until Friday, Mrs. Sikorska."
+        },
+        "Thank you, Dr. A. Cula. Mr. Crab. Mr. Whimsy. Mr. Murrow."
+      ],
+      "on_dismiss": [
+        {
+          "set": "chapter1.halina_met",
+          "value": true
+        },
+        {
+          "set": "chapter1.halina_close_done",
+          "value": true
+        },
+        {
+          "set": "chapter1.client_fee_agreed",
+          "value": true
+        },
+        {
+          "set": "chapter1.cardiologist_plant_landed",
+          "value": true
+        }
+      ],
+      "tags": [
+        "beat8",
+        "close",
+        "fee_agreement",
+        "pig_intrusion",
+        "cardiologist_plant_fallback"
+      ]
+    },
+    {
+      "id": "halina_b8_post_meeting_idle",
+      "trigger": "chapter1.halina_met",
+      "_comment": "Post-meeting idle line for the rest of Ch1 if the player re-engages Halina before she departs the office (recommended: route_blocker prevents this; the line is a safety net). Address forms: 'Dr. A. Cula'.",
+      "lines": [
+        "Thank you again, Dr. A. Cula. I will be available if anything is needed before Friday."
+      ],
+      "tags": [
+        "beat8",
+        "post_meeting"
+      ]
+    },
+    {
+      "_ch4_corridor_continuity": "Lines 1-5 below are drafted here for continuity per chapter_1.md §β reappearance commitment. They do NOT belong to the Ch1 voice pack; the Ch4 voice pack will finalise placement, the cane-foregrounding decision, and any chapter4.* trigger work. Triggers below reference chapter4.* paths that this file does not declare; the runner would push errors if this file were loaded, which is why the file lives under _drafts/ and stays inert. Address forms in Ch4: per bible decision 2026-05-08, Halina remains 'Mrs. Sikorska' to the firm; she addresses Cula as 'Dr. Cula' in the corridor sighting (shorter — the brevity is the diminishment, per bible §Visible state). Cula has NO line that processes the encounter (Cula will-not-say: no internal narration); the player processes, Cula does not. The literary epigram is NOT repeated in Ch4 — the player carries it."
+    },
+    {
+      "id": "halina_ch4_corridor_recognition",
+      "trigger": "chapter4.courthouse_corridor_active && !chapter4.halina_corridor_seen",
+      "_comment": "Ch4 corridor sighting line 1 of ~5. Non-verbal recognition beat; Halina sees Cula first, stops, smiles slightly; brief mutual recognition. Silent state per _schema.md §Silent states — the visual beat is staged in the scene file, not in the dialogue runner. Listed here so the Ch4 voice-pack author has the structural anchor. Triggers a follow-up state in JSON order.",
+      "silent": true,
+      "tags": [
+        "ch4_corridor",
+        "non_verbal",
+        "recognition"
+      ]
+    },
+    {
+      "id": "halina_ch4_corridor_greeting",
+      "trigger": "chapter4.courthouse_corridor_active && !chapter4.halina_corridor_seen",
+      "_comment": "Ch4 corridor sighting line 2 of ~5. Formal-precise greeting; brief. The shortening of 'Dr. A. Cula' to 'Dr. Cula' is the bible-canonical Ch4 brevity (time pressure has compressed her control; the diminishment surfaces as shorter sentences, not as drama). Cula returns the recognition; he uses her formal name. No processing line.",
+      "lines": [
+        "Dr. Cula. I had hoped to thank you again.",
+        {
+          "speaker": "cula",
+          "text": "Mrs. Sikorska."
+        }
+      ],
+      "tags": [
+        "ch4_corridor",
+        "formal_precise",
+        "greeting"
+      ]
+    },
+    {
+      "id": "halina_ch4_corridor_ongoing",
+      "trigger": "chapter4.courthouse_corridor_active && !chapter4.halina_corridor_seen",
+      "_comment": "Ch4 corridor sighting line 3 of ~5. Dryly-observant; implies the rehearing happened and life since has been uneven, without stating the outcome. The player infers from her phrasing and her appearance (cane, slower walk — staged in scene, not in dialogue). Bible: 'no complaint, no minimisation.' Brief Murrow inquiry follows the same beat per bible §Relation to Murrow in Ch4 — lands as ordinary courtesy on first read, recolors on second pass.",
+      "lines": [
+        "I have been at this courthouse more often than I expected.",
+        "And Mr. Murrow. Is he well."
+      ],
+      "tags": [
+        "ch4_corridor",
+        "dryly_observant",
+        "murrow_inquiry"
+      ]
+    },
+    {
+      "id": "halina_ch4_corridor_gratitude",
+      "trigger": "chapter4.courthouse_corridor_active && !chapter4.halina_corridor_seen",
+      "_comment": "Ch4 corridor sighting line 4 of ~5. The recoloring line. Formal-precise. The word 'correct' is doing the work — she does not say 'what you did saved me' because it didn't, exactly, and she is not inviting Cula to think otherwise. Cula has no processing line per Cula will-not-say (no internal narration). The player processes; Cula does not.",
+      "lines": [
+        "What you did for me in April was correct.",
+        "Thank you for it."
+      ],
+      "tags": [
+        "ch4_corridor",
+        "formal_precise",
+        "recoloring_payoff"
+      ]
+    },
+    {
+      "id": "halina_ch4_corridor_close",
+      "trigger": "chapter4.courthouse_corridor_active && !chapter4.halina_corridor_seen",
+      "_comment": "Ch4 corridor sighting line 5 of ~5. Closing — she has somewhere to be. Brief. She leaves; Cula watches her go; no line processes the encounter. The cardiologist plant pays off through visible diminishment (cane, slower walk — staged in scene), not through explicit cardiac mention. The literary epigram is NOT repeated. Sets chapter4.halina_corridor_seen on commit (path declared by Ch4 voice pack).",
+      "lines": [
+        "Excuse me. They are calling my room.",
+        "Good day, Dr. Cula."
+      ],
+      "on_dismiss": [
+        {
+          "set": "chapter4.halina_corridor_seen",
+          "value": true
+        }
+      ],
+      "tags": [
+        "ch4_corridor",
+        "formal_precise",
+        "closing"
+      ]
+    }
+  ],
+  "idle_flavor": []
+}

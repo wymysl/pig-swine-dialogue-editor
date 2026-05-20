@@ -6,6 +6,36 @@ extends Node
 ## Signal declaration format:
 ##   signal signal_name(param: Type)  ## Brief payload description.
 
+## Emitted when an argument fragment is added to the Blue Folder.
+## fragment_id: key from data/argument_fragments.json.
+## TODO(consumer): Badge/toast feedback is deferred; see 2026-05-19 tech critique F5.
+@warning_ignore("unused_signal")
+signal case_folder_fragment_added(fragment_id: String)
+
+## Emitted when the player picks up the Blue Folder for the first time.
+## TODO(consumer): Pickup acknowledgment UI is deferred; see 2026-05-19 tech critique F5.
+@warning_ignore("unused_signal")
+signal case_folder_acquired()
+
+## Emitted when the Blue Folder UI opens or closes.
+## is_open: true after open(), false after close().
+## TODO(consumer): Pause/HUD affordance is deferred; see 2026-05-19 tech critique F5.
+@warning_ignore("unused_signal")
+signal case_folder_toggled(is_open: bool)
+
+## Emitted by UI surfaces that request an immediate manual save.
+@warning_ignore("unused_signal")
+signal manual_save_requested()
+
+## Emitted after save_game writes user://save.json successfully.
+@warning_ignore("unused_signal")
+signal save_completed()
+
+## Emitted when save/load cannot complete safely.
+## reason: short player-facing explanation of the failure.
+@warning_ignore("unused_signal")
+signal save_failed(reason: String)
+
 ## Emitted when a room transition begins (before the fade-out starts).
 ## target_scene_path: res:// path of the scene being loaded.
 @warning_ignore("unused_signal")
@@ -118,5 +148,6 @@ signal dialogue_chain_start()
 signal coffee_brewing_completed(result: Dictionary)
 
 ## round_index/proposed_frame: wrong-shape court frame lowered initial judicial patience.
+## TODO(consumer): Judge-skepticism camera/HUD response is deferred; see 2026-05-19 tech critique F5.
 @warning_ignore("unused_signal")
 signal judge_skepticism_raised(round_index: int, proposed_frame: String)

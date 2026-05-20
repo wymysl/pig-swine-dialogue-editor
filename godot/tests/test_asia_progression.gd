@@ -42,17 +42,27 @@ func _init() -> void:
 	## Hint progression starts after Asia's first-meeting state has fired.
 	state_node.data["chapter1"]["met_asia"] = true
 
-	## Test 1: Initial hint state (met_pig == false, pig_revealed_crisis == false)
+	## Test 1: The Blue Folder hint now has priority until the pickup is acquired.
 	state_node.data["chapter1"]["met_pig"] = false
 	state_node.data["chapter1"]["pig_revealed_crisis"] = false
 	state_node.data["chapter1"]["met_murrow"] = false
+	state_node.data["chapter1"]["has_case_folder"] = false
 	
 	runner._on_dialogue_requested("asia", "Asia")
 	await process_frame
-	if _signal_capture[1].size() > 0 and "You should talk to Mr. Pig first" in _signal_capture[1][0]:
-		_pass("T1: Asia hint correct before meeting pig")
+	if _signal_capture[1].size() > 0 and "blue folder" in str(_signal_capture[1][0]).to_lower():
+		_pass("T1: Asia points to the Blue Folder before normal hints")
 	else:
-		_fail("T1: expected initial hint, got " + str(_signal_capture[1]))
+		_fail("T1: expected Blue Folder hint, got " + str(_signal_capture[1]))
+
+	state_node.data["chapter1"]["has_case_folder"] = true
+	_signal_capture[1] = []
+	runner._on_dialogue_requested("asia", "Asia")
+	await process_frame
+	if _signal_capture[1].size() > 0 and "You should talk to Mr. Pig first" in _signal_capture[1][0]:
+		_pass("T1b: Asia hint correct before meeting pig after folder pickup")
+	else:
+		_fail("T1b: expected initial hint, got " + str(_signal_capture[1]))
 
 	## Test 2: After meeting pig (pig_revealed_crisis == true, met_murrow == false)
 	state_node.data["chapter1"]["pig_revealed_crisis"] = true

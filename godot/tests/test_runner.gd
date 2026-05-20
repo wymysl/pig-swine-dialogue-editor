@@ -64,9 +64,11 @@ func _init() -> void:
 
 	for test_name in tests:
 		var script_arg: String = "tests/" + test_name
+		var child_log_path: String = "/tmp/pig_swine_runner_child_%s.log" % test_name.get_basename()
 		var args: PackedStringArray = PackedStringArray([
 			"--headless",
 			"--path", project_path,
+			"--log-file", child_log_path,
 			"--script", script_arg,
 		])
 		var output: Array = []

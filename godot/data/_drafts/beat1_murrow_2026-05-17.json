@@ -1,0 +1,79 @@
+{
+  "_draft_note": "MISFIRE-EXEMPLAR 2026-05-17 — DO NOT PROMOTE. Off-target on two counts: (a) wrong beat — 'Beat 1 Murrow' was a typo for Beat 4 per Piotr 2026-05-17; (b) violates the no-new-flag rule (introduces chapter1.murrow_pre_pig_dwell). Retained as a structural exemplar for the Ch1 sweep prompt template only; the actual Murrow Beat 4 draft will live in beat4_murrow_2026-05-17.json. Original note follows. INERT: lives under data/_drafts/, date-suffixed, never loaded by dialogue_runner.gd. Canon mismatch flagged: story.txt §Beat 1 ('Office Street arrival, pure mechanical, no NPC interaction') and narrative_revision/beats/chapter_1.md §Beat 1 ('(K) all. Pure mechanical. No NPC interaction.') both place Murrow's first speaking beat at Beat 4 (eviction briefing + first-name calibration), already authored in godot/data/dialogues/murrow.json::murrow_first_meeting. Beat 1 has no Murrow content by canon. Interpreting the request as 'Beat 1/early-Beat-2 window before Cula meets Mr. Pig' — i.e. the window where Murrow is canonically 'not immediately available or partly hidden near the file area' (story.txt L174). States authored here are pre-met-Pig, pre-met-Murrow ambient/proximity behavior, richer than the existing single before_pig state in murrow.json. All state ids prefixed murrow_b1_ to avoid collision with the canonical file. If promoted, the dwell flag below must be added to State.reset_state() and the existing before_pig state should be retired or this draft's pivot state inlined in its place.",
+  "_beat_ref": "story.txt §Beat 1 (lines 117-145); narrative_revision/beats/chapter_1.md §Beat 1 (line 73-75); secondary: story.txt §Beat 2 lines 172-176 (Murrow 'not immediately available or is partly hidden near the file area, forcing the player to look around').",
+  "_flags_used": [
+    "chapter1.met_pig",
+    "chapter1.met_murrow",
+    "chapter1.murrow_pre_pig_dwell"
+  ],
+  "_flag_declaration_notes": "chapter1.met_pig and chapter1.met_murrow are existing canonical flags. chapter1.murrow_pre_pig_dwell is a NEW string flag this draft introduces (values: 'work' | 'office' | 'pig' | null). If this file is promoted, declare default null in State.reset_state() under chapter1, bump SAVE_VERSION, add migration step, add migration test — per godot/AGENTS.md §Save migration policy. Boot validator would reject the write_path until the declaration lands.",
+  "version": 2,
+  "npc_id": "murrow",
+  "display_name": "Mr. Murrow",
+  "states": [
+    {
+      "id": "murrow_b1_first_sighting",
+      "trigger": "!chapter1.met_pig && !chapter1.met_murrow",
+      "_comment": "Source: story.txt §Beat 2 L174 ('Murrow is not immediately available or is partly hidden near the file area, forcing the player to look around'); narrative_revision/beats/chapter_1.md §Beat 1 ('pure mechanical, no NPC interaction'). Voice anchor: voice_references/dialogue_samples_mr_murrow.jsonl murrow_ch01_chapter1_001 (file-fact register, dry redirect), murrow_global_global_011 (Mr. Pig framed without cruelty), and rich anchors murrow_global_voice_anchors_002 ('The file is not difficult. It is incomplete.'), 037 ('Mr. Pig has begun in his usual key'). Address-form rule: AGENTS.md §Address forms (Cula → 'Mr. Murrow' before friend-invitation; Murrow → 'Doctor Cula' to Cula until later beats — matches existing before_pig and murrow_first_meeting in canonical murrow.json). No friend-invitation here; that lands in Beat 4 (murrow_first_meeting). Lines cap: 4 Murrow + 1 Cula interject, well under the 8-NPC-line ceiling. Jokes: 'a noisy day to begin' (voice-pack anchor, dry compression) + 'panic is not a pleading' (rich anchor 004) reframed as referral to Pig. Single archival adjective load-bearing: 'noisy' (the only adjective in this state's Murrow lines).",
+      "lines": [
+        {"speaker": "cula", "text": "Mr. Murrow."},
+        "Doctor Cula. You have picked a noisy day to begin.",
+        "Mr. Pig is expecting you. Whatever he has, it has been waiting since Tuesday.",
+        {"speaker": "cula", "text": "Should I read anything first?"},
+        "Read Mr. Pig first. He will not stay in sequence if you reverse the order. The file will keep."
+      ],
+      "options": {
+        "write_path": "chapter1.murrow_pre_pig_dwell",
+        "choices": [
+          {"text": "Anything I should know about him before I go over?", "value": "pig"},
+          {"text": "What are you working on?", "value": "work"},
+          {"text": "I should go find Mr. Pig.", "value": ""}
+        ],
+        "chain": true
+      },
+      "once": true
+    },
+    {
+      "id": "murrow_b1_dwell_pig",
+      "trigger": "!chapter1.met_pig && !chapter1.met_murrow && chapter1.murrow_pre_pig_dwell == 'pig'",
+      "_comment": "Source: voice_agents/murrow.md §With Mr. Pig ('long-married rhythm; finds Pig genuinely amusing in a way he would never admit to Pig'); voice_agents/murrow.md §Patterns ('The framed reassurance' and 'The protective course-correction'). The line is the protective gesture — Murrow telling Cula how to navigate the room, dressed as institutional observation. ai_voice_constraints.md §Murrow Will-not-say: no reassurance, no cruelty about Pig. Compliance: 'in good faith' frames panic without softening it; no 'don't worry'. Sincere-line ration: zero sincere lines (this is dry framing). Address-form rule: 'Doctor Cula' preserved; Cula does not need to address Murrow again mid-chain. Joke: 'in good faith, which is a separate inquiry from accurately' (Mrożek-flavored fiction-naming move per murrow.md §Naming the fiction). Single adjective load-bearing: 'composed' (used to set up the deflation in line 2). Chain: false — returns Cula to the room to commit to Pig, the player-visible change is the player walking to Pig with framed expectations. Once: false (dwell may re-fire on second pass if player walks away without meeting Pig).",
+      "lines": [
+        "Mr. Pig has been with the firm longer than most of its furniture.",
+        "He begins composed and finishes underwater. He is panicking in good faith, which is a separate inquiry from accurately.",
+        "Hear him out. The case in his mouth will be a weather report. The case in the file is narrower. We will arrive at the file together."
+      ],
+      "on_dismiss": [
+        {"set": "chapter1.murrow_pre_pig_dwell", "value": ""}
+      ],
+      "once": false
+    },
+    {
+      "id": "murrow_b1_dwell_work",
+      "trigger": "!chapter1.met_pig && !chapter1.met_murrow && chapter1.murrow_pre_pig_dwell == 'work'",
+      "_comment": "Source: voice_agents/murrow.md §How Murrow talks (cite + ironic gloss + directive; archive holds, Murrow remembers); voice references murrow_global_voice_anchors_025 ('On file. Not, unfortunately, in order.'). The state surfaces the eviction case obliquely without naming Halina or the address mechanism — both belong to the canonical Beat 4 briefing in murrow_first_meeting and must not pre-fire here. Murrow names the procedural shape of his current work ('eviction notice that arrived after the hearing') as a teaser; Cula does not yet have the binder, the case content, or the client. ai_voice_constraints.md §Murrow Will-not-say compliance: no reassurance, no editorial; the line is observational. Address-form: 'Doctor Cula' preserved. Future-proofing (Taste Standard 5): the 'envelope arrived after the hearing' line is consistent with the canonical wrong-address mechanism (2015 renumbering, ex parte hearing) but does not commit to specifics — the briefing in Beat 4 remains the load-bearing reveal. Jokes: 'envelope arrived after the hearing it was meant to warn about' (procedural irony per murrow.md §Naming the fiction) + 'in alphabetical order, which is the kindest thing the file does for them' (dry compression, Mrożek-adjacent). Single adjective load-bearing: 'kindest' (Murrow's adjective economy holds; it's doing the irony). on_dismiss clears the dwell flag so further E-presses re-fire the first-sighting state's option block.",
+      "lines": [
+        "A motion. The envelope arrived after the hearing it was meant to warn about.",
+        "The dates in the file are in alphabetical order, which is the kindest thing the file does for them.",
+        "I will brief you on it after you have spoken with Mr. Pig. He will give you the panic. I will give you the chronology."
+      ],
+      "on_dismiss": [
+        {"set": "chapter1.murrow_pre_pig_dwell", "value": ""}
+      ],
+      "once": false
+    },
+    {
+      "id": "murrow_b1_repeat_pre_pig",
+      "trigger": "!chapter1.met_pig && !chapter1.met_murrow",
+      "_comment": "Fallback for second-or-later E-press in the same window after murrow_b1_first_sighting has fired (once:true on that state means it does not re-fire). This state catches the bare re-approach without the option block. Source: voice_agents/murrow.md §Default move when uncertain ('have him produce a short framing of what is actually happening, attach a procedural fact, end with a directive'); voice references murrow_global_global_005 ('A second conversation rarely changes the law'). Address-form: 'Doctor Cula' preserved. Line cap: 2 Murrow lines, no Cula interject required — the line is a redirect, not a scene. Joke: 'the file is not new since the last time you read it' (dry compression, archive-rule expression). The directive points back to Pig — single Murrow scene, the player's visible next action is unchanged. No options. on_dismiss empty (no state mutation; the redirect is the entire effect). Trigger note: this state appears AFTER murrow_b1_first_sighting in JSON order so the once-state wins priority on first fire; the runner walks top-to-bottom, so murrow_b1_first_sighting must precede this state in the array — see godot/data/dialogues/_schema.md §States.",
+      "lines": [
+        "The file is not newer than it was a moment ago.",
+        "Mr. Pig, then the briefing. I will be at this shelf."
+      ]
+    }
+  ],
+  "idle_flavor": [
+    "I am locating an envelope. The envelope is locating itself, less helpfully.",
+    "The shelf is in order. The chronology, separately, is not.",
+    "On file. Not, unfortunately, in any sequence the court will recognise."
+  ]
+}

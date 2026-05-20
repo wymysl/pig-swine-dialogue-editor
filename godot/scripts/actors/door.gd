@@ -19,7 +19,8 @@ extends Area2D
 @export var target_scene: String = ""
 ## Spawn-point node name in the target scene.
 @export var target_spawn_id: String = "default"
-## Flag key in State that must be truthy for this door to open ("" = always open).
+## Dotted State.data path that must be truthy for this door to open
+## ("" = always open). Example: "chapter1.has_law_binder".
 @export var required_flag: String = ""
 
 ## Visual indicator: thin dark rect shown in the room floor.
@@ -85,10 +86,10 @@ func _try_open() -> void:
 	# Check required flag.
 	if not required_flag.is_empty():
 		var state_node = get_tree().get_root().get_node_or_null("State")
-		var st: Dictionary = state_node.reset_state() if state_node else {}
-		if state_node and state_node.get("data"):
+		var st: Dictionary = {}
+		if state_node and state_node.get("data") is Dictionary:
 			st = state_node.data
-		if not st.get(required_flag, false):
+		if not _is_required_flag_met(st):
 			return  # locked — Design will add locked_text feedback later
 	# Delegate to RoomTransition via MainController.
 	var mc: Node = get_tree().get_root().get_node_or_null("Main")
@@ -116,3 +117,40 @@ func _on_body_exited(body: Node) -> void:
 		_player_inside = false
 		if _prompt:
 			_prompt.hide_prompt()
+
+
+func _is_required_flag_met(state_data: Dictionary) -> bool:
+	if required_flag.is_empty():
+		return true
+	var value: Variant = _resolve_state_path(state_data, required_flag)
+	return _truthy(value)
+
+
+func _resolve_state_path(state_data: Dictionary, path: String) -> Variant:
+	var current: Variant = state_data
+	for segment in path.split("."):
+		if not current is Dictionary:
+			return null
+		var dict: Dictionary = current
+		if not dict.has(segment):
+			return null
+		current = dict[segment]
+	return current
+
+
+func _truthy(value: Variant) -> bool:
+	if value == null:
+		return false
+	if value is bool:
+		return bool(value)
+	if value is int:
+		return int(value) != 0
+	if value is float:
+		return not is_zero_approx(float(value))
+	if value is String:
+		return not str(value).is_empty()
+	if value is Array:
+		return not (value as Array).is_empty()
+	if value is Dictionary:
+		return not (value as Dictionary).is_empty()
+	return true

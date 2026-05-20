@@ -7,7 +7,7 @@
         {
             "id": "before_meeting",
             "trigger": "!chapter1.met_whimsy",
-            "_comment": "v4 motion-packet rewrite. Whimsy hands Cula two pieces of paper and stops short of naming the winning frame. The Rights Memo with espresso marginalia is the recruitment hand-off; the 2018 property-transfer record is the civic-records-hobby surfacing. The 'fair-hearing argument can sing' line is removed from this state — its declarative function (this is the right argument) was the answer-giving the v3 brief flags. on_dismiss sets met_whimsy, recruited_whimsy, surfaced_property_transfer (Whimsy mentioned the 2018 transfer aloud). Address form 'Dr. A. Cula' pre-recruit.",
+            "_comment": "v4 motion-packet rewrite. 2026-05-19 critique F8: D3 (standing/wrong-party) surfacing moved from Whimsy's voice to Crab's lane (see crab.json::crab_property_transfer_offer). Whimsy now points AT Crab for the ownership question and stays in his rhetorical lane. on_dismiss still sets surfaced_property_transfer (the mechanical flag — preserves the v4 surface-on-Whimsy-recruit gameplay path; the existing evidence card in evidence_ch1.json is the alternate setter). Crab's new state owns the actual fact-disclosure and the D3 decoy options. Address form 'Dr. A. Cula' pre-recruit.",
             "lines": [
                 {"speaker": "cula", "text": "Mr. Whimsy. Cula, Pig & Swine. We need a second voice in court tomorrow."},
                 "Dr. A. Cula. Sit. Have you anything beyond procedural vibes, or am I to be recruited on atmosphere?",
@@ -15,9 +15,7 @@
                 "Ah. A wrong-door file, with the right door also in the file. I have heard worse music.",
                 {"speaker": "cula", "text": "The Rights Memo."},
                 "Marginalia in espresso. Half the argument is already mine — whichever half you decide it is.",
-                "Before the music, a fact you may want. I keep a folder of who-owns-what. Marginal pastime. Occasionally useful.",
-                "Your landlord sold the building in two thousand and eighteen. The new owner is a property concern out of Mokotów. The eviction notice arrives under the prior owner's hand. The lease will have assigned forward at transfer — the new owner inherits the obligation — but some sharp counsel would raise the standing question anyway.",
-                "Not the music I would lead with. The folder is yours if you want it.",
+                "Before the music, a thread. Crab will want to ask who owns the building today. Owners change. Notices, alas, do not.",
                 "I will lend my voice tomorrow at fourteen hundred. The shape you bring, I will sing."
             ],
             "on_dismiss": [
@@ -27,21 +25,10 @@
             ]
         },
         {
-            "id": "whimsy_before_meeting_decoy_standing",
-            "trigger": "chapter1.recruited_whimsy == true && chapter1.surfaced_property_transfer == true && !chapter1.decoy_standing_wrong_party && !chapter1.halina_met && !chapter1.entered_court",
-            "_comment": "v4 NEW state — D3 (standing / wrong party) decision moment per PROPOSAL §1.2. Fires once after Whimsy has handed Cula the records folder. Whimsy offers the standing question as a colorable but procedurally uphill auxiliary theory; the options write chapter1.decoy_standing_wrong_party. once:true. Whimsy uses bare 'Cula' (post-recruit). No chain — the choice is committed and the player moves on.",
-            "lines": [
-                "Cula. The standing question I named earlier. The new owner is the proper plaintiff under the assignment; the prior landlord persists under it as well.",
-                "An aggressive theory. The bench will note it, then turn back to the door on the envelope. Include the standing point in the motion, or hold it for cross."
-            ],
-            "options": {
-                "write_path": "chapter1.decoy_standing_wrong_party",
-                "choices": [
-                    {"text": "Hold it. The procedural defect ends the matter before standing matters.", "value": false},
-                    {"text": "Include it. If we are asking the court to set aside, ask widely.", "value": true}
-                ]
-            },
-            "once": true
+            "id": "whimsy_before_meeting_decoy_standing_DEPRECATED",
+            "trigger": "false",
+            "_comment": "2026-05-19 critique F8: D3 (standing/wrong-party) ownership moved from Whimsy to Crab (see crab.json::crab_property_transfer_offer). State retained as a tombstone with trigger:'false' so the runtime never fires it; a future cleanup pass can remove it once the migration test fixtures are regenerated. Whimsy's rhetorical-anchor lane is preserved; Crab's notice-the-inconsistency lane now carries the standing question.",
+            "silent": true
         },
         {
             "id": "whimsy_before_meeting_decoy_overbroad_remedy",
@@ -65,10 +52,7 @@
             "id": "whimsy_post_decoy_incapacity",
             "trigger": "chapter1.decoy_incapacity == true && chapter1.met_whimsy == true && !chapter1.entered_court",
             "_comment": "v4 NEW state — cold-pushback complement to crab_post_halina_incapacity_refuses and murrow_post_decoy_incapacity, per the task brief ('Incapacity blunder gets cold in-fiction pushback from Halina/Crab/Murrow' — Whimsy is added for completeness as the third voice in the room). Whimsy's register is rhetorical, so his refusal lands as a refusal-of-rhetoric: he will not sing the line. Address form 'Dr. A. Cula' — the friend-form is suspended for this beat. once:true.",
-            "lines": [
-                "Dr. A. Cula. I sing for the case. I do not sing for that.",
-                "Find me another note. I will lend my voice to any procedural shape that does not require me to call Mrs. Sikorska feeble in open court."
-            ],
+            "lines": ["Dr. A. Cula. I sing for the case. I do not sing for that.", "Find me another note. I will lend my voice to any procedural shape that does not require me to call Mrs. Sikorska feeble in open court."],
             "once": true
         },
         {

@@ -1,0 +1,28 @@
+[gd_scene load_steps=2 format=3 uid="uid://save_status_toast_001"]
+
+[ext_resource type="Script" path="res://scripts/ui/save_status_toast.gd" id="1_toast"]
+
+[node name="SaveStatusToast" type="CanvasLayer"]
+process_mode = 3
+script = ExtResource("1_toast")
+layer = 90
+visible = false
+
+[node name="ToastPanel" type="PanelContainer" parent="."]
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -430.0
+offset_top = -96.0
+offset_right = -24.0
+offset_bottom = -32.0
+
+[node name="ToastLabel" type="Label" parent="ToastPanel"]
+custom_minimum_size = Vector2(380, 0)
+text = ""
+horizontal_alignment = 1
+vertical_alignment = 1
+autowrap_mode = 3
+theme_override_colors/font_color = Color(0.96, 0.94, 0.86, 1)
+theme_override_font_sizes/font_size = 16

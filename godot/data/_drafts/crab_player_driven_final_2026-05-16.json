@@ -1,7 +1,7 @@
 {
   "version": 4,
   "npc_id": "crab",
-  "_status": "DRAFT — voice-polished review artifact, not loaded by dialogue_runner. Per PROPOSAL_player_driven_argument.md §1, reshapes the Crab states so Crab provides observations and Cula synthesises. Built from the structural seed at data/_drafts/crab_player_driven_2026-05-15.json (ba6c094). Voice pass calibrated against: (a) the in-flight worktree voice-pack rewrite of data/dialogues/crab.json (same gear-shift discipline, same address forms, same once:true mechanics), (b) narrative_revision/voice_agents/crab.md (authoritative bible), (c) narrative_revision/ai_voice_constraints.md §1 scrub list + §2 Crab will-not-say. Structural change from the worktree crab.json: option text now represents Cula's synthesis proposal (one well-fitted, two not-well-fitted), write_path is chapter1.proposed_frame (string enum declared at SAVE_VERSION 17), and Crab's response is calibrated by frame-fit. Recruitment still happens for all branches.\n\nMerge strategy: take this draft, open the live crab.json (worktree-modified), replace ONLY the bodies of before_binder / before_binder_briefing / first_meeting_with_binder / after_binder_first_engagement / crab_post_pitch_response. Add crab_post_pitch_response_wrong_shape immediately BEFORE crab_post_pitch_response (JSON-order priority required — wrong_shape trigger is more specific). All other states remain unchanged from the in-flight voice-pack rewrite.",
+  "_status": "PENDING — merge into dialogues/crab.json per merge strategy in _proposal_anchor. before_binder_briefing body differs from canonical (draft is the intended replacement). crab_post_pitch_response_wrong_shape and crab_post_pitch_response are new states to be inserted. before_binder, first_meeting_with_binder, after_binder_first_engagement already match canonical. Supersedes crab_player_driven_2026-05-15.json (removed). Blocked on: SAVE_VERSION bump for chapter1.proposed_frame (Code task).",
   "_proposal_anchor": "PROPOSAL_player_driven_argument.md §1 (Crab subsection) + §2 (synthesis-via-dialogue-options) + §3 (proposed_frame enum + binder_read_* flags) + §4 (soft-fail).",
   "_voice_pass_2026_05_16": "Voice pass per narrative_revision/voice_agents/crab.md (gear-shift register) and narrative_revision/ai_voice_constraints.md §1 (scrub list). Changes from the structural seed: (1) before_binder: observation line rewritten with gear-shift closer ('counting doors and guessing') replacing explanatory 'I do not know yet what the file says about that'; greeting tightened to match worktree pattern. (2) before_binder_briefing: compressed with labor-division gear-shift ('I read the staircase. You read the dates.'). (3) first_meeting_with_binder: binder read-aloud restructured — triple em-dash eliminated (commas replace dashes); option text voiced for three-way distinguishability (A=precise with both address numbers, B=merits-pivot with lease dates, C=rush with 'Friday is close enough'). (4) after_binder_first_engagement: binder read compressed for post-acquaintance register; options tightened. (5) crab_post_pitch_response: Article citation → 'A confession with a postal date' gear-shift preserved; task list capped at one em-dash; fact-stack closer ('Three problems. One notice. One Friday.') echoes calibration anchor. (6) crab_post_pitch_response_wrong_shape: 'postal theatre' anchor verified in period-separated canonical form; three-beat structure polished.",
   "_branching_constraint": "write_path = chapter1.proposed_frame (string enum, SAVE_VERSION 17, values in data/argument_frames_ch1.json). The seed's old workaround (write_path = chapter1.recruited_crab, boolean, value=true for every choice) is obsolete. Under the new schema: option A writes 'defective_service_135bis' (well-fitted), option B writes 'merits_defence' (wrong-shape), option C writes 'defective_service_135bis' (procedurally correct but rushed). A and C write the same enum value — both are service-defect arguments; the voice distinction is preparation depth, not legal conclusion. The wrong-shape frame triggers crab_post_pitch_response_wrong_shape via JSON-order priority.",
@@ -13,15 +13,27 @@
       "_comment": "RESHAPED. First-meeting beat, pre-binder. Crab observes the discrepancy between the building number (12) and the envelope number (7) but does NOT name the conclusion. No 'postal theatre' here — that line migrates to crab_post_pitch_response_wrong_shape. Crab uses 'Dr. A. Cula' pre-recruit per AGENTS.md §Address forms. Gear-shift: fact-stack (brass plate, envelope, renumbering) → colloquial closer ('counting doors and guessing'). Linear — pre-binder Cula has nothing to commit to.",
       "_voice_pass_2026_05_16": "Observation line rewritten from seed's explanatory form to gear-shift shape. Em-dash count: 1 (line 4). Scrub-list: clean.",
       "lines": [
-        {"speaker": "cula", "text": "Crab. I'm Cula."},
+        {
+          "speaker": "cula",
+          "text": "Crab. I'm Cula."
+        },
         "Dr. A. Cula. Heard. Murrow's procedural binder?",
-        {"speaker": "cula", "text": "Not yet. He has it."},
+        {
+          "speaker": "cula",
+          "text": "Not yet. He has it."
+        },
         "Brass plate above us reads twelve. The envelope copy on the shelf — number seven. Block was renumbered in two thousand and fifteen. Until I have the binder I am counting doors and guessing.",
-        {"speaker": "cula", "text": "I'll get it."},
+        {
+          "speaker": "cula",
+          "text": "I'll get it."
+        },
         "Do."
       ],
       "on_dismiss": [
-        {"set": "chapter1.met_crab", "value": true}
+        {
+          "set": "chapter1.met_crab",
+          "value": true
+        }
       ]
     },
     {
@@ -31,7 +43,10 @@
       "_voice_pass_2026_05_16": "Compressed from seed. Gear-shift: 'I read the staircase. You read the dates.' Em-dash count: 0. Scrub-list: clean.",
       "lines": [
         "Dr. A. Cula. Still no binder.",
-        {"speaker": "cula", "text": "Working on it."},
+        {
+          "speaker": "cula",
+          "text": "Working on it."
+        },
         "Second shelf, blue spine. The envelope address and the renewal address are both in there. I read the staircase. You read the dates. Bring it down."
       ]
     },
@@ -41,7 +56,10 @@
       "_comment": "RESHAPED — LOAD-BEARING. Fused intro + binder hand-off + synthesis. Crab takes the binder, reads each page aloud (envelope, renewal, renumbering). Does NOT name the Article or the doctrine. Hands synthesis to Cula: 'What is the shape of the argument, Dr. A. Cula.' Options: write_path = chapter1.proposed_frame. A (defective_service_135bis) = well-fitted, names both addresses. B (merits_defence) = wrong-shape, argues tenancy. C (defective_service_135bis) = rush, files without legwork. All three recruit via on_dismiss. binder_read_* flags fire alongside. once: true. Gear-shift: fact-stack binder read → 'Three pages. One landlord. Two addresses.' closer.",
       "_voice_pass_2026_05_16": "Binder read restructured: em-dashes replaced with commas (seed had triple em-dash). Options voiced for three-way distinguishability. Em-dash count: 1 (Cula greeting). Scrub-list: clean.",
       "lines": [
-        {"speaker": "cula", "text": "Crab. I'm Cula. The procedural binder — Murrow said you'd want it before fourteen hundred."},
+        {
+          "speaker": "cula",
+          "text": "Crab. I'm Cula. The procedural binder — Murrow said you'd want it before fourteen hundred."
+        },
         "Dr. A. Cula. Heard. Hand it here.",
         "Page one. Envelope of the notice, number seven, eighth of April. Page two. The two thousand and nineteen renewal, number twelve, landlord's countersignature on the facing page. Page three. Renumbering, two thousand and fifteen.",
         "Three pages. One landlord. Two addresses. What is the shape of the argument, Dr. A. Cula."
@@ -50,17 +68,41 @@
         "write_path": "chapter1.proposed_frame",
         "chain": true,
         "choices": [
-          {"text": "The notice went to the wrong door. He signed the renewal at twelve, served the notice at seven. That is the shape.", "value": "defective_service_135bis"},
-          {"text": "Argue the tenancy. The lease dates to sixty-two, inheritance in eighty-seven. He has no ground to evict.", "value": "merits_defence"},
-          {"text": "File on the service defect. Friday is close enough.", "value": "defective_service_135bis"}
+          {
+            "text": "The notice went to the wrong door. He signed the renewal at twelve, served the notice at seven. That is the shape.",
+            "value": "defective_service_135bis"
+          },
+          {
+            "text": "Argue the tenancy. The lease dates to sixty-two, inheritance in eighty-seven. He has no ground to evict.",
+            "value": "merits_defence"
+          },
+          {
+            "text": "File on the service defect. Friday is close enough.",
+            "value": "defective_service_135bis"
+          }
         ]
       },
       "on_dismiss": [
-        {"set": "chapter1.met_crab", "value": true},
-        {"set": "chapter1.recruited_crab", "value": true},
-        {"set": "chapter1.binder_read_envelope", "value": true},
-        {"set": "chapter1.binder_read_renewal", "value": true},
-        {"set": "chapter1.binder_read_renumbering", "value": true}
+        {
+          "set": "chapter1.met_crab",
+          "value": true
+        },
+        {
+          "set": "chapter1.recruited_crab",
+          "value": true
+        },
+        {
+          "set": "chapter1.binder_read_envelope",
+          "value": true
+        },
+        {
+          "set": "chapter1.binder_read_renewal",
+          "value": true
+        },
+        {
+          "set": "chapter1.binder_read_renumbering",
+          "value": true
+        }
       ],
       "once": true
     },
@@ -70,7 +112,10 @@
       "_comment": "RESHAPED — late-binder path. Cula already met Crab (before_binder fired), then got the binder. Same synthesis structure as first_meeting_with_binder, minus the greeting. Binder read compressed for post-acquaintance register. Same write_path, same enum values. on_dismiss: recruited_crab + binder_read_*. once: true.",
       "_voice_pass_2026_05_16": "Binder read compressed. Options tightened. Em-dash count: 0. Scrub-list: clean.",
       "lines": [
-        {"speaker": "cula", "text": "Crab. I have the binder."},
+        {
+          "speaker": "cula",
+          "text": "Crab. I have the binder."
+        },
         "Heard.",
         "Envelope, number seven, eighth of April. Renewal, number twelve, two thousand and nineteen, countersignature. Renumbering, two thousand and fifteen.",
         "What is the shape, Dr. A. Cula."
@@ -79,16 +124,37 @@
         "write_path": "chapter1.proposed_frame",
         "chain": true,
         "choices": [
-          {"text": "He served the wrong door. The countersignature proves he knew the address changed. That is the shape.", "value": "defective_service_135bis"},
-          {"text": "Argue the tenancy. Sixty-two lease, eighty-seven inheritance. He cannot evict.", "value": "merits_defence"},
-          {"text": "File the motion. The defect is on the face of the envelope.", "value": "defective_service_135bis"}
+          {
+            "text": "He served the wrong door. The countersignature proves he knew the address changed. That is the shape.",
+            "value": "defective_service_135bis"
+          },
+          {
+            "text": "Argue the tenancy. Sixty-two lease, eighty-seven inheritance. He cannot evict.",
+            "value": "merits_defence"
+          },
+          {
+            "text": "File the motion. The defect is on the face of the envelope.",
+            "value": "defective_service_135bis"
+          }
         ]
       },
       "on_dismiss": [
-        {"set": "chapter1.recruited_crab", "value": true},
-        {"set": "chapter1.binder_read_envelope", "value": true},
-        {"set": "chapter1.binder_read_renewal", "value": true},
-        {"set": "chapter1.binder_read_renumbering", "value": true}
+        {
+          "set": "chapter1.recruited_crab",
+          "value": true
+        },
+        {
+          "set": "chapter1.binder_read_envelope",
+          "value": true
+        },
+        {
+          "set": "chapter1.binder_read_renewal",
+          "value": true
+        },
+        {
+          "set": "chapter1.binder_read_renumbering",
+          "value": true
+        }
       ],
       "once": true
     },

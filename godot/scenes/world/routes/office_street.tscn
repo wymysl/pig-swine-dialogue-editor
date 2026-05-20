@@ -1,43 +1,107 @@
-[gd_scene format=3]
+[gd_scene format=4 uid="uid://dhi07iernn4aj"]
 
-[ext_resource type="Script" path="res://scripts/actors/player.gd" id="1_player"]
-[ext_resource type="Script" path="res://scripts/actors/door.gd" id="2_door"]
+[ext_resource type="Script" uid="uid://vwn6hsy0ypn7" path="res://scripts/actors/player.gd" id="1_player"]
+[ext_resource type="Script" uid="uid://ckwlgat482exj" path="res://scripts/actors/door.gd" id="2_door"]
 [ext_resource type="SpriteFrames" path="res://art/sprites/cula/cula_sprite_frames.tres" id="3_cula_frames"]
+[ext_resource type="Texture2D" uid="uid://csqy36clv0mt4" path="res://art/props/17tram.png" id="5_tram17"]
+[ext_resource type="Texture2D" uid="uid://qglseku6k3ao" path="res://art/props/bollard.png" id="6_bollard"]
+[ext_resource type="Texture2D" uid="uid://bfi8gc6jnv463" path="res://art/props/street_bench.png" id="8_street_bench"]
+[ext_resource type="Texture2D" uid="uid://bv1b6r81477d4" path="res://art/props/abandoned_coffee_cup.png" id="9_abandoned_coffee_cup"]
+[ext_resource type="Texture2D" uid="uid://c52ch72p8ke30" path="res://art/props/trash_bin_public.png" id="10_trash_bin_public"]
+[ext_resource type="Texture2D" uid="uid://baomrysmask0t" path="res://art/props/graffiti_decal_01.png" id="11_graffiti_decal_01"]
+[ext_resource type="Texture2D" uid="uid://b5cp6hsatotrr" path="res://art/props/parked_sedan.png" id="12_parked_sedan"]
+[ext_resource type="Texture2D" uid="uid://qjwr745hdsju" path="res://art/props/pigeon_idle.png" id="13_pigeon_idle"]
+[ext_resource type="Texture2D" uid="uid://d1vvdxk8t8uuq" path="res://art/props/_street_split/catenary_pole_06.png" id="14_catenary_pole"]
+[ext_resource type="Texture2D" uid="uid://ba1gx056is140" path="res://art/props/tram_stop_platform_segment.png" id="15_tram_stop_platform"]
+[ext_resource type="Texture2D" uid="uid://8tnm07ndh06p" path="res://art/props/tram_stop_sign_17.png" id="16_tram_stop_sign"]
+[ext_resource type="Texture2D" uid="uid://bo6n8k0vuinn0" path="res://art/props/street_name_office_street.png" id="17_street_name_office"]
+[ext_resource type="Texture2D" uid="uid://bln3xvtm0lq0u" path="res://art/props/court_signpost.png" id="18_court_signpost"]
+[ext_resource type="Texture2D" uid="uid://cuu2n23lrc2ig" path="res://art/props/street_notice_board.png" id="19_notice_board"]
+[ext_resource type="Texture2D" uid="uid://x8ynnpej673d" path="res://art/props/street_name_counsel_row.png" id="20_street_name_counsel"]
+[ext_resource type="Texture2D" uid="uid://h16o2flmxibs" path="res://art/props/fenced_planter.png" id="21_fenced_planter"]
+[ext_resource type="Texture2D" uid="uid://5eluaaf8geke" path="res://art/props/parked_hatchback.png" id="22_parked_hatchback"]
+[ext_resource type="Texture2D" uid="uid://se2bup61rpuo" path="res://art/props/graffiti_decal_02.png" id="23_graffiti_decal_02"]
+[ext_resource type="Texture2D" uid="uid://ip8yf4ih51pr" path="res://art/props/kiosk_press.png" id="24_kiosk_press"]
+[ext_resource type="Script" uid="uid://bbi3trkp5jpng" path="res://scripts/actors/npc.gd" id="25_npc_script"]
+[ext_resource type="SpriteFrames" path="res://art/sprites/smokers_lawyer_ch1/smokers_lawyer_ch1_sprite_frames.tres" id="26_smokers_frames"]
+[ext_resource type="SpriteFrames" path="res://art/sprites/tram_waiter_ch1/tram_waiter_ch1_sprite_frames.tres" id="27_tram_waiter_frames"]
+[ext_resource type="SpriteFrames" path="res://art/sprites/mail_carrier_ch1/mail_carrier_ch1_sprite_frames.tres" id="28_mail_carrier_frames"]
+[ext_resource type="SpriteFrames" path="res://art/sprites/route_blocker_residential_ch1/route_blocker_residential_ch1_sprite_frames.tres" id="29_res_blocker_frames"]
+[ext_resource type="SpriteFrames" path="res://art/sprites/route_blocker_business_ch1/route_blocker_business_ch1_sprite_frames.tres" id="30_biz_blocker_frames"]
+[ext_resource type="TileSet" uid="uid://cqsnntche2v8r" path="res://art/tilesets/warsaw_streets_tileset.tres" id="31_warsaw_tileset"]
+[ext_resource type="Texture2D" uid="uid://bs50nv8qqnkaq" path="res://art/buildings/ps_paragraf_facade.png" id="32_ps_facade"]
+[ext_resource type="Texture2D" uid="uid://dgpp3nch8t4x2" path="res://art/buildings/books_legal_things.png" id="33_b_books_legal_things"]
+[ext_resource type="Texture2D" uid="uid://b5njkol4wge6s" path="res://art/buildings/kamienica_plain.png" id="34_b_kamienica_plain"]
+[ext_resource type="Texture2D" uid="uid://h7x62gbp3vej" path="res://art/buildings/kamienica_yellow.png" id="35_b_kamienica_yellow"]
+[ext_resource type="Texture2D" uid="uid://ownx6lbew3ff" path="res://art/buildings/kamienica_blue.png" id="36_b_kamienica_blue"]
+[ext_resource type="PackedScene" path="res://scenes/components/UnifyPost.tscn" id="36_fc5lm"]
+[ext_resource type="Texture2D" uid="uid://c52saurk7p7le" path="res://art/buildings/warehouse_red_brick.png" id="37_b_warehouse_red_brick"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_2"]
-size = Vector2(48, 16)
+size = Vector2(38.5, 16)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_1"]
 size = Vector2(24, 24)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_t7h76"]
-size = Vector2(960, 16)
+size = Vector2(2560, 16)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_bso4j"]
-size = Vector2(960, 16)
+size = Vector2(2560, 16)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_uipt3"]
-size = Vector2(16, 640)
+size = Vector2(16, 768)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_t344o"]
-size = Vector2(16, 640)
+size = Vector2(16, 768)
 
 [node name="OfficeStreet" type="Node2D" unique_id=1803482466]
 
 [node name="Floor" type="ColorRect" parent="." unique_id=1656640189]
-offset_right = 960.0
-offset_bottom = 640.0
+offset_right = 2560.0
+offset_bottom = 768.0
 color = Color(0.18, 0.22, 0.28, 1)
 
+[node name="StreetTiles" type="TileMapLayer" parent="." unique_id=400000]
+tile_map_data = PackedByteArray("AAAAAAYAAAAAAAEAAAABAAYAAAAAAAEAAAACAAYAAAAAAAEAAAADAAYAAAAAAAEAAAAEAAYAAAAAAAEAAAAFAAYAAAAAAAEAAAAGAAYAAAAAAAEAAAAHAAYAAAAAAAEAAAAIAAYAAAAAAAEAAAAJAAYAAAAAAAEAAAAKAAYAAAAAAAEAAAALAAYAAAAAAAEAAAAMAAYAAAAAAAEAAAANAAYAAAAAAAEAAAAOAAYAAAAAAAEAAAAPAAYAAAAAAAEAAAAQAAYAAAAAAAEAAAARAAYAAAAAAAEAAAASAAYAAAAAAAEAAAATAAYAAAAAAAEAAAAUAAYAAAAAAAEAAAAVAAYAAAAAAAEAAAAWAAYAAAAAAAEAAAAXAAYAAAAAAAEAAAAYAAYAAAAAAAEAAAAZAAYAAAAAAAEAAAAaAAYAAAAAAAEAAAAbAAYAAAAAAAEAAAAcAAYAAAAAAAEAAAAdAAYAAAAAAAEAAAAeAAYAAAAAAAEAAAAfAAYAAAAAAAEAAAAgAAYAAAAAAAEAAAAhAAYAAAAAAAEAAAAiAAYAAAAAAAEAAAAjAAYAAAAAAAEAAAAkAAYAAAAAAAEAAAAlAAYAAAAAAAEAAAAmAAYAAAAAAAEAAAAnAAYAAAAAAAEAAAAAAAcAAAAAAAEAAAABAAcAAAAAAAEAAAACAAcAAAAAAAEAAAADAAcAAAAAAAEAAAAEAAcAAAAAAAEAAAAFAAcAAAAAAAEAAAAGAAcAAAAAAAEAAAAHAAcAAAAAAAEAAAAIAAcAAAAAAAEAAAAJAAcAAAAAAAEAAAAKAAcAAAAAAAEAAAALAAcAAAAAAAEAAAAMAAcAAAAAAAEAAAANAAcAAAAAAAEAAAAOAAcAAAAAAAEAAAAPAAcAAAAAAAEAAAAQAAcAAAAAAAEAAAARAAcAAAAAAAEAAAASAAcAAAAAAAEAAAATAAcAAAAAAAEAAAAUAAcAAAAAAAEAAAAVAAcAAAAAAAEAAAAWAAcAAAAAAAEAAAAXAAcAAAAAAAEAAAAYAAcAAAAAAAEAAAAZAAcAAAAAAAEAAAAaAAcAAAAAAAEAAAAbAAcAAAAAAAEAAAAcAAcAAAAAAAEAAAAdAAcAAAAAAAEAAAAeAAcAAAAAAAEAAAAfAAcAAAAAAAEAAAAgAAcAAAAAAAEAAAAhAAcAAAAAAAEAAAAiAAcAAAAAAAEAAAAjAAcAAAAAAAEAAAAkAAcAAAAAAAEAAAAlAAcAAAAAAAEAAAAmAAcAAAAAAAEAAAAnAAcAAAAAAAEAAAAAAAgAAAAAAAEAAAABAAgAAAAAAAEAAAACAAgAAAAAAAEAAAADAAgAAAAAAAEAAAAEAAgAAAAAAAEAAAAFAAgAAAAAAAEAAAAGAAgAAAAAAAEAAAAHAAgAAAAAAAEAAAAIAAgAAAAAAAEAAAAJAAgAAAAAAAEAAAAKAAgAAAAAAAEAAAALAAgAAAAAAAEAAAAMAAgAAAAAAAEAAAANAAgAAAAAAAEAAAAOAAgAAAAAAAEAAAAPAAgAAAAAAAEAAAAQAAgAAAAAAAEAAAARAAgAAAAAAAEAAAASAAgAAAAAAAEAAAATAAgAAAAAAAEAAAAUAAgAAAAAAAEAAAAVAAgAAAAAAAEAAAAWAAgAAAAAAAEAAAAXAAgAAAAAAAEAAAAYAAgAAAAAAAEAAAAZAAgAAAAAAAEAAAAaAAgAAAAAAAEAAAAbAAgAAAAAAAEAAAAcAAgAAAAAAAEAAAAdAAgAAAAAAAEAAAAeAAgAAAAAAAEAAAAfAAgAAAAAAAEAAAAgAAgAAAAAAAEAAAAhAAgAAAAAAAEAAAAiAAgAAAAAAAEAAAAjAAgAAAAAAAEAAAAkAAgAAAAAAAEAAAAlAAgAAAAAAAEAAAAmAAgAAAAAAAEAAAAnAAgAAAAAAAEAAAAAAAkAAAAAAAAAAAABAAkAAAAAAAAAAAACAAkAAAAAAAAAAAADAAkAAAAAAAAAAAAEAAkAAAAAAAAAAAAFAAkAAAAAAAAAAAAGAAkAAAAAAAAAAAAHAAkAAAAAAAAAAAAIAAkAAAAAAAAAAAAJAAkAAAAAAAAAAAAKAAkAAAAAAAAAAAALAAkAAAAAAAAAAAAMAAkAAAAAAAAAAAANAAkAAAAAAAAAAAAOAAkAAAAAAAAAAAAPAAkAAAAAAAAAAAAQAAkAAAAAAAAAAAARAAkAAAAAAAAAAAASAAkAAAAAAAAAAAATAAkAAAAAAAAAAAAUAAkAAAAAAAAAAAAVAAkAAAAAAAAAAAAWAAkAAAAAAAAAAAAXAAkAAAAAAAAAAAAYAAkAAAAAAAAAAAAZAAkAAAAAAAAAAAAaAAkAAAAAAAAAAAAbAAkAAAAAAAAAAAAcAAkAAAAAAAAAAAAdAAkAAAAAAAAAAAAeAAkAAAAAAAAAAAAfAAkAAAAAAAAAAAAgAAkAAAAAAAAAAAAhAAkAAAAAAAAAAAAiAAkAAAAAAAAAAAAjAAkAAAAAAAAAAAAkAAkAAAAAAAAAAAAlAAkAAAAAAAAAAAAmAAkAAAAAAAAAAAAnAAkAAAAAAAAAAAAAAAoAAAAAAAAAAAABAAoAAAAAAAAAAAACAAoAAAAAAAAAAAADAAoAAAAAAAAAAAAEAAoAAAAAAAAAAAAFAAoAAAAAAAAAAAAGAAoAAAAAAAAAAAAHAAoAAAAAAAAAAAAIAAoAAAAAAAAAAAAJAAoAAAAAAAAAAAAKAAoAAAAAAAAAAAALAAoAAAAAAAAAAAAMAAoAAAAAAAAAAAANAAoAAAAAAAAAAAAOAAoAAAAAAAAAAAAPAAoAAAAAAAAAAAAQAAoAAAAAAAAAAAARAAoAAAAAAAAAAAASAAoAAAAAAAAAAAATAAoAAAAAAAAAAAAUAAoAAAAAAAAAAAAVAAoAAAAAAAAAAAAWAAoAAAAAAAAAAAAXAAoAAAAAAAAAAAAYAAoAAAAAAAAAAAAZAAoAAAAAAAAAAAAaAAoAAAAAAAAAAAAbAAoAAAAAAAAAAAAcAAoAAAAAAAAAAAAdAAoAAAAAAAAAAAAeAAoAAAAAAAAAAAAfAAoAAAAAAAAAAAAgAAoAAAAAAAAAAAAhAAoAAAAAAAAAAAAiAAoAAAAAAAAAAAAjAAoAAAAAAAAAAAAkAAoAAAAAAAAAAAAlAAoAAAAAAAAAAAAmAAoAAAAAAAAAAAAnAAoAAAAAAAAAAAA=")
+tile_set = ExtResource("31_warsaw_tileset")
+
+[node name="Building" type="Sprite2D" parent="." unique_id=400100]
+position = Vector2(418, 192)
+scale = Vector2(0.7515, 0.7515)
+texture = ExtResource("32_ps_facade")
+
+[node name="BuildingBooksLegal" type="Sprite2D" parent="." unique_id=400110]
+position = Vector2(990, 192)
+scale = Vector2(0.8188, 0.8188)
+texture = ExtResource("33_b_books_legal_things")
+
+[node name="BuildingKamienicaPlain" type="Sprite2D" parent="." unique_id=400111]
+position = Vector2(1303, 192)
+scale = Vector2(0.8552, 0.8552)
+texture = ExtResource("34_b_kamienica_plain")
+
+[node name="BuildingYellow" type="Sprite2D" parent="." unique_id=400120]
+position = Vector2(1611, 240)
+texture = ExtResource("35_b_kamienica_yellow")
+
+[node name="BuildingBlue" type="Sprite2D" parent="." unique_id=400121]
+position = Vector2(1914, 240)
+texture = ExtResource("36_b_kamienica_blue")
+
+[node name="BuildingWarehouse" type="Sprite2D" parent="." unique_id=400122]
+position = Vector2(2277, 248)
+texture = ExtResource("37_b_warehouse_red_brick")
+
 [node name="DoorIndicator" type="ColorRect" parent="." unique_id=143868402]
-offset_left = 456.0
-offset_top = 256.0
-offset_right = 504.0
-offset_bottom = 272.0
+offset_left = 35.0
+offset_top = 368.0
+offset_right = 76.0
+offset_bottom = 384.0
 color = Color(0.08, 0.08, 0.12, 1)
 
 [node name="FrontDoor" type="Area2D" parent="." unique_id=2002665854]
-position = Vector2(480, 264)
+position = Vector2(79, 400)
 collision_layer = 0
 collision_mask = 2
 script = ExtResource("2_door")
@@ -46,13 +110,15 @@ target_scene = "res://scenes/interiors/pig_swine_office.tscn"
 target_spawn_id = "StreetSpawn"
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="FrontDoor" unique_id=2120902228]
+position = Vector2(-23.5, -24)
 shape = SubResource("RectangleShape2D_2")
 
 [node name="OfficeSpawn" type="Node2D" parent="." unique_id=282351275]
-position = Vector2(480, 304)
+position = Vector2(79, 430)
 
 [node name="Player" type="CharacterBody2D" parent="." unique_id=624004415]
-position = Vector2(480, 400)
+z_index = 1
+position = Vector2(79, 480)
 collision_layer = 2
 script = ExtResource("1_player")
 
@@ -66,18 +132,22 @@ sprite_frames = ExtResource("3_cula_frames")
 animation = &"idle_front"
 
 [node name="Camera2D" type="Camera2D" parent="Player" unique_id=2145807978]
+limit_left = 0
+limit_top = 0
+limit_right = 2560
+limit_bottom = 768
 position_smoothing_enabled = true
 position_smoothing_speed = 8.0
 
 [node name="CafeDoorIndicator" type="ColorRect" parent="." unique_id=758619548]
-offset_left = 176.0
-offset_top = 256.0
-offset_right = 224.0
-offset_bottom = 272.0
+offset_left = 371.0
+offset_top = 364.0
+offset_right = 410.0
+offset_bottom = 380.0
 color = Color(0.08, 0.08, 0.12, 1)
 
 [node name="CafeDoor" type="Area2D" parent="." unique_id=168081816]
-position = Vector2(200, 264)
+position = Vector2(410, 400)
 collision_layer = 0
 collision_mask = 2
 script = ExtResource("2_door")
@@ -86,26 +156,205 @@ target_scene = "res://scenes/interiors/cafe_paragraf.tscn"
 target_spawn_id = "CafeSpawn"
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="CafeDoor" unique_id=772068219]
+position = Vector2(-19.25, -28)
 shape = SubResource("RectangleShape2D_2")
 
 [node name="CafeSpawn" type="Node2D" parent="." unique_id=709907963]
-position = Vector2(200, 304)
+position = Vector2(410, 430)
 
 [node name="Walls" type="StaticBody2D" parent="." unique_id=884197458]
 collision_mask = 0
 
 [node name="Top" type="CollisionShape2D" parent="Walls" unique_id=1504605018]
-position = Vector2(480, -8)
+position = Vector2(1280, -8)
 shape = SubResource("RectangleShape2D_t7h76")
 
 [node name="Bottom" type="CollisionShape2D" parent="Walls" unique_id=1572954701]
-position = Vector2(480, 648)
+position = Vector2(1280, 776)
 shape = SubResource("RectangleShape2D_bso4j")
 
 [node name="Left" type="CollisionShape2D" parent="Walls" unique_id=2111926347]
-position = Vector2(-8, 320)
+position = Vector2(-8, 384)
 shape = SubResource("RectangleShape2D_uipt3")
 
 [node name="Right" type="CollisionShape2D" parent="Walls" unique_id=189555934]
-position = Vector2(968, 320)
+position = Vector2(2568, 384)
 shape = SubResource("RectangleShape2D_t344o")
+
+[node name="Tram17" type="Sprite2D" parent="." unique_id=300001]
+position = Vector2(1300, 620)
+scale = Vector2(0.18, 0.18)
+texture = ExtResource("5_tram17")
+
+[node name="BollardFrontLeft" type="Sprite2D" parent="." unique_id=300003]
+position = Vector2(45, 425)
+texture = ExtResource("6_bollard")
+
+[node name="BollardFrontRight" type="Sprite2D" parent="." unique_id=300004]
+position = Vector2(115, 425)
+texture = ExtResource("6_bollard")
+
+[node name="BollardCafeLeft" type="Sprite2D" parent="." unique_id=300005]
+position = Vector2(375, 425)
+texture = ExtResource("6_bollard")
+
+[node name="BollardCafeRight" type="Sprite2D" parent="." unique_id=300006]
+position = Vector2(445, 425)
+texture = ExtResource("6_bollard")
+
+[node name="StreetBench" type="Sprite2D" parent="." unique_id=300011]
+position = Vector2(200, 470)
+scale = Vector2(0.5, 0.5)
+texture = ExtResource("8_street_bench")
+
+[node name="AbandonedCoffeeCup" type="Sprite2D" parent="." unique_id=300012]
+position = Vector2(215, 455)
+texture = ExtResource("9_abandoned_coffee_cup")
+
+[node name="TrashBin" type="Sprite2D" parent="." unique_id=300013]
+position = Vector2(380, 470)
+scale = Vector2(0.4, 0.4)
+texture = ExtResource("10_trash_bin_public")
+
+[node name="GraffitiDecal01" type="Sprite2D" parent="." unique_id=300014]
+position = Vector2(825, 371)
+scale = Vector2(0.34615386, 0.34615386)
+texture = ExtResource("11_graffiti_decal_01")
+
+[node name="ParkedSedan" type="Sprite2D" parent="." unique_id=300015]
+position = Vector2(700, 620)
+scale = Vector2(0.7, 0.7)
+texture = ExtResource("12_parked_sedan")
+
+[node name="Pigeon1" type="Sprite2D" parent="." unique_id=300016]
+position = Vector2(610, 470)
+scale = Vector2(0.6, 0.6)
+texture = ExtResource("13_pigeon_idle")
+
+[node name="CatenaryPole" type="Sprite2D" parent="." unique_id=300020]
+position = Vector2(1100, 520)
+scale = Vector2(1.5, 2.5)
+texture = ExtResource("14_catenary_pole")
+
+[node name="TramStopPlatform" type="Sprite2D" parent="." unique_id=300021]
+position = Vector2(1280, 580)
+texture = ExtResource("15_tram_stop_platform")
+
+[node name="TramStopSign17" type="Sprite2D" parent="." unique_id=300022]
+position = Vector2(1180, 540)
+texture = ExtResource("16_tram_stop_sign")
+
+[node name="StreetNameOfficeStreet" type="Sprite2D" parent="." unique_id=300023]
+position = Vector2(794, 267)
+scale = Vector2(0.31024095, 0.31024095)
+texture = ExtResource("17_street_name_office")
+
+[node name="Pigeon2" type="Sprite2D" parent="." unique_id=300024]
+position = Vector2(1420, 470)
+scale = Vector2(0.6, 0.6)
+texture = ExtResource("13_pigeon_idle")
+
+[node name="CourtSignpost" type="Sprite2D" parent="." unique_id=300030]
+position = Vector2(1700, 500)
+scale = Vector2(0.7, 0.7)
+texture = ExtResource("18_court_signpost")
+
+[node name="NoticeBoard" type="Sprite2D" parent="." unique_id=300031]
+position = Vector2(1820, 280)
+texture = ExtResource("19_notice_board")
+
+[node name="StreetNameCounselRow" type="Sprite2D" parent="." unique_id=300032]
+position = Vector2(1900, 350)
+scale = Vector2(0.5, 0.5)
+texture = ExtResource("20_street_name_counsel")
+
+[node name="FencedPlanter" type="Sprite2D" parent="." unique_id=300033]
+position = Vector2(1850, 470)
+scale = Vector2(0.7, 0.7)
+texture = ExtResource("21_fenced_planter")
+
+[node name="ParkedHatchback" type="Sprite2D" parent="." unique_id=300040]
+position = Vector2(2200, 620)
+scale = Vector2(0.7, 0.7)
+texture = ExtResource("22_parked_hatchback")
+
+[node name="GraffitiDecal02" type="Sprite2D" parent="." unique_id=300041]
+position = Vector2(2300, 280)
+texture = ExtResource("23_graffiti_decal_02")
+
+[node name="KioskPress" type="Sprite2D" parent="." unique_id=300042]
+position = Vector2(2387, 470)
+scale = Vector2(1.3914664, 1.3914664)
+texture = ExtResource("24_kiosk_press")
+
+[node name="SmokersLawyer" type="Area2D" parent="." unique_id=300050]
+position = Vector2(180, 460)
+collision_layer = 4
+collision_mask = 2
+script = ExtResource("25_npc_script")
+npc_id = "smokers_lawyer_ch1"
+display_name = "Junior Lawyer"
+npc_color = Color(0.11, 0.16, 0.25, 1)
+
+[node name="Visual" type="AnimatedSprite2D" parent="SmokersLawyer" unique_id=300051]
+scale = Vector2(0.5, 0.5)
+sprite_frames = ExtResource("26_smokers_frames")
+animation = &"idle_front"
+
+[node name="TramWaiter" type="Area2D" parent="." unique_id=300060]
+position = Vector2(1230, 580)
+collision_layer = 4
+collision_mask = 2
+script = ExtResource("25_npc_script")
+npc_id = "tram_waiter_ch1"
+display_name = "Elderly Woman"
+npc_color = Color(0.35, 0.16, 0.29, 1)
+
+[node name="Visual" type="AnimatedSprite2D" parent="TramWaiter" unique_id=300061]
+scale = Vector2(0.5, 0.5)
+sprite_frames = ExtResource("27_tram_waiter_frames")
+animation = &"idle_front"
+
+[node name="MailCarrier" type="Area2D" parent="." unique_id=300070]
+position = Vector2(1600, 500)
+collision_layer = 4
+collision_mask = 2
+script = ExtResource("25_npc_script")
+npc_id = "mail_carrier_ch1"
+display_name = "Mail Carrier"
+npc_color = Color(0.91, 0.78, 0.25, 1)
+
+[node name="Visual" type="AnimatedSprite2D" parent="MailCarrier" unique_id=300071]
+scale = Vector2(0.5, 0.5)
+sprite_frames = ExtResource("28_mail_carrier_frames")
+animation = &"idle_front"
+
+[node name="ResidentialBlocker" type="Area2D" parent="." unique_id=300080]
+position = Vector2(2000, 580)
+collision_layer = 4
+collision_mask = 2
+script = ExtResource("25_npc_script")
+npc_id = "route_blocker_residential_ch1"
+display_name = "City Worker"
+npc_color = Color(0.78, 0.66, 0.41, 1)
+
+[node name="Visual" type="AnimatedSprite2D" parent="ResidentialBlocker" unique_id=300081]
+scale = Vector2(0.5, 0.5)
+sprite_frames = ExtResource("29_res_blocker_frames")
+animation = &"idle_front"
+
+[node name="BusinessBlocker" type="Area2D" parent="." unique_id=300090]
+position = Vector2(2480, 500)
+collision_layer = 4
+collision_mask = 2
+script = ExtResource("25_npc_script")
+npc_id = "route_blocker_business_ch1"
+display_name = "Security Guard"
+npc_color = Color(0.1, 0.08, 0.06, 1)
+
+[node name="Visual" type="AnimatedSprite2D" parent="BusinessBlocker" unique_id=300091]
+scale = Vector2(0.5, 0.5)
+sprite_frames = ExtResource("30_biz_blocker_frames")
+animation = &"idle_front"
+
+[node name="UnifyPost" parent="." unique_id=1154489390 instance=ExtResource("36_fc5lm")]

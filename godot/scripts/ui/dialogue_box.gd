@@ -14,7 +14,7 @@ extends CanvasLayer
 ##   Individual entries in the `lines` array may be dicts of the form
 ##   { "speaker": "character_id", "text": "Line text." }.
 ##   When such an entry is the active line, _show_page() updates the speaker
-##   label to the display name resolved from DialogueRunner._character_registry
+##   label to the display name resolved through DialogueRunner.resolve_speaker()
 ##   (or falls back to the NPC's display_name if the id is unknown).
 ##   Plain string entries always display the owning NPC's name (_default_speaker).
 
@@ -231,8 +231,8 @@ func _show_options_page() -> void:
 ## runner is missing or the registry doesn't carry the "cula" id.
 func _player_display_name() -> String:
 	var runner = get_node_or_null("/root/DialogueRunner")
-	if runner and runner.has_method("_resolve_speaker"):
-		return runner._resolve_speaker("cula", "Dr. A. Cula")
+	if runner and runner.has_method("resolve_speaker"):
+		return runner.resolve_speaker("cula", "Dr. A. Cula")
 	return "Dr. A. Cula"
 
 
@@ -256,7 +256,7 @@ func _highlight_selected_option() -> void:
 
 ## _show_page — renders the current line entry.
 ## If the entry is a dict with "speaker"/"text" fields, resolves the speaker
-## display name via DialogueRunner._character_registry and updates the label.
+## display name through DialogueRunner.resolve_speaker() and updates the label.
 ## If the entry is a plain string, uses _default_speaker.
 ##
 ## When reaching the last line of a state that carries an `options` block,
@@ -270,8 +270,8 @@ func _show_page() -> void:
 		var display_name: String = _default_speaker
 		if character_id != "":
 			var runner = get_node_or_null("/root/DialogueRunner")
-			if runner and runner.has_method("_resolve_speaker"):
-				display_name = runner._resolve_speaker(character_id, _default_speaker)
+			if runner and runner.has_method("resolve_speaker"):
+				display_name = runner.resolve_speaker(character_id, _default_speaker)
 		_speaker_label.text = display_name
 		_text_label.text = str(entry["text"])
 		_set_portrait(character_id)

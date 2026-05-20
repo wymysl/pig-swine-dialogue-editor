@@ -1,0 +1,33 @@
+{
+    "_draft_note": "INERT STAGING. Lives under godot/data/_drafts/, never loaded by dialogue_runner. Promote to godot/data/dialogues/route_blocker_residential_ch1.json once Piotr authors the lines. Route blocker gates the branch from Office Street into Tenants' Row. Per the 2026-05-18 SPRINT_LOG entry the NPC is currently VISUAL ONLY — no Area2D blocking logic is wired up; that is a Code follow-up. The dialogue here exists as the in-fiction reason the player can't pass, and so the gate explanation precedes the wire-up.",
+    "_chapter_ref": "Chapter 1 ambient gate. Tenants' Row is out-of-scope for Ch1 (Chapter 2+ district per ART_PRODUCTION_PLAN.md §Cheapest Viable Strategy). The blocker delivers a soft-no — institutional, not hostile.",
+    "_gating_note": "Code follow-up: wire route_blocker.gd or equivalent Area2D on the NPC body to consume player movement east-of-blocker and re-route the player south. Until then, the NPC is non-blocking and only fires on interaction. State trigger 'chapter1_complete' suggests a future trigger like chapter1.case_won && chapter2_unlocked when Tenants' Row opens; for now leave the post-Ch1 state behind a flag the runner will not match.",
+    "_address_form_note": "Toward Cula: 'Dr. A. Cula' if the blocker recognises the firm. More likely register: bureaucratic third-person ('counsel', 'sir', or simply no address). Per godot/AGENTS.md §Stack invariants English-first; if Polish institutional anchoring is wanted, 'tenants' meeting' / 'building meeting' read more naturally than 'Pani' / 'Pan' here.",
+    "_authoring_todo": [
+        "Replace each '_doc:' placeholder with the finished line.",
+        "Decide the diegetic reason for the block (tenants' meeting in session / private street / closed for repairs). The reason should fit Tenants' Row's Chapter-2+ flavor.",
+        "Decide whether the post-Ch1 unblock state ever fires in Ch1 (probably not — leave the trigger as a future-chapter placeholder)."
+    ],
+    "version": 1,
+    "npc_id": "route_blocker_residential_ch1",
+    "display_name": "Resident",
+    "states": [
+        {
+            "id": "route_blocker_residential_explain",
+            "trigger": "",
+            "lines": [
+                "_doc: DRAFT — one line. Polite institutional refusal. Names the reason (tenants' meeting / closed building / private). Does not hint at later chapters."
+            ],
+            "tags": ["chapter1", "route_block", "tenants_row_gate"]
+        },
+        {
+            "id": "route_blocker_residential_repeat",
+            "trigger": "",
+            "lines": [
+                "_doc: DRAFT — one line, repeatable. A second short refusal if the player tries again. Same register; slightly drier the second time."
+            ],
+            "tags": ["chapter1", "route_block", "tenants_row_gate"]
+        }
+    ],
+    "idle_flavor": []
+}

@@ -1,0 +1,8 @@
+#!/bin/sh
+set -eu
+
+changed="$(git diff --cached --name-only --diff-filter=ACMR)"
+
+if printf '%s\n' "$changed" | grep -Eq '^(godot/data/dialogues/|godot/data/voice_references/|godot/scripts/|godot/tests/|tools/voice_audit.py|tools/verify_dialogue_roundtrip.js)'; then
+	make verify
+fi

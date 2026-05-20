@@ -443,7 +443,7 @@ func _init() -> void:
 		"pig_revealed_crisis", "met_murrow", "has_law_binder", "recruited_crab",
 		"has_rights_memo", "recruited_whimsy", "halina_arrived", "halina_met",
 		"archive_research_complete", "court_ready", "won_court",
-		"received_swine_postcard",
+		"court_won_procedural_reset", "received_swine_postcard",
 	]
 	var reset_flags := func() -> void:
 		for flag in v1a_flags:
@@ -549,7 +549,7 @@ func _init() -> void:
 	, CONNECT_ONE_SHOT)
 	runner._on_dialogue_requested("judge_ch1_isolated", "Judge")
 	var lines20: Array = _signal_capture[1]
-	var expected20: String = "Counsel for the petitioner."
+	var expected20: String = "Second question. Why does the defect matter to the client's right to be heard?"
 	if _signal_capture[0] == "Judge" and lines20.size() > 0 and lines20[0] == expected20:
 		_pass("T20: production judge open-round OR trigger dispatches bench prompt")
 	else:

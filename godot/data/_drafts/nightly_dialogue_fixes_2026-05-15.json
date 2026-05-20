@@ -1,18 +1,21 @@
-[
-  {
-    "file": "dialogues/murrow.json",
-    "state_id": "court_readiness_check",
-    "field": "lines[10].text",
-    "current": "She rang an hour ago, Mr. Cula. She'll be there at quarter to.",
-    "proposed": "She rang an hour ago, Dr. A. Cula. She'll be there at quarter to.",
-    "reason": "address form: Asia is outer-circle and must use the full honorific 'Dr. A. Cula' (AGENTS.md §Address forms; voice_audit.py Rule B). The line is spoken by Asia (speaker='asia') and uses 'Mr. Cula', which is neither the canonical form nor a valid short-title address. The corresponding line in murrow_v2.json (L108) already uses 'Dr. A. Cula'."
-  },
-  {
-    "file": "dialogues/asia.json",
-    "state_id": "cula_approach",
-    "field": "options.choices[2].text",
-    "current": "Dr. A Cula, here to see Mr. Pig.",
-    "proposed": "Dr. A. Cula, here to see Mr. Pig.",
-    "reason": "canonical name: missing period after the middle initial. Canonical reference is 'Dr. A. Cula' (AGENTS.md §Cast — canonical names). This is the player's self-introduction option text under the 'dry' choice; Cula self-reference is exempt from bare-Cula rules but the canonical spelling still applies."
-  }
-]
+{
+  "_status": "PENDING (partial) — Fix 1 (murrow.json court_readiness_check: asia speaker 'Mr. Cula' -> 'Dr. A. Cula') APPLIED in canonical as of 2026-05-15. Fix 2 (asia.json cula_approach options[2].text: 'Dr. A Cula' -> 'Dr. A. Cula', missing period) NOT YET APPLIED. Wrapped from array to object 2026-05-17 to allow _status annotation. Schema change is cosmetic; tooling that consumed the array should read fixes[].",
+  "fixes": [
+    {
+      "file": "dialogues/murrow.json",
+      "state_id": "court_readiness_check",
+      "field": "lines[10].text",
+      "current": "She rang an hour ago, Mr. Cula. She'll be there at quarter to.",
+      "proposed": "She rang an hour ago, Dr. A. Cula. She'll be there at quarter to.",
+      "reason": "address form: Asia is outer-circle and must use the full honorific 'Dr. A. Cula' (AGENTS.md §Address forms; voice_audit.py Rule B). The line is spoken by Asia (speaker='asia') and uses 'Mr. Cula', which is neither the canonical form nor a valid short-title address. The corresponding line in murrow_v2.json (L108) already uses 'Dr. A. Cula'."
+    },
+    {
+      "file": "dialogues/asia.json",
+      "state_id": "cula_approach",
+      "field": "options.choices[2].text",
+      "current": "Dr. A Cula, here to see Mr. Pig.",
+      "proposed": "Dr. A. Cula, here to see Mr. Pig.",
+      "reason": "canonical name: missing period after the middle initial. Canonical reference is 'Dr. A. Cula' (AGENTS.md §Cast — canonical names). This is the player's self-introduction option text under the 'dry' choice; Cula self-reference is exempt from bare-Cula rules but the canonical spelling still applies."
+    }
+  ]
+}

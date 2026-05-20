@@ -1550,3 +1550,252 @@ Notes:
 - The runner is sequential. With ~44 tests at a few seconds of Godot boot each, expect a multi-minute wall-clock. This is the cost of preserving the existing test shape and is acceptable for nightly / pre-merge use; not for tight inner loops, which should keep invoking the focused tests directly by name.
 - `test_visual_capture.gd` and `test_visual_smoke.gd` are kept in the discovery set; both self-skip with exit 0 under headless DisplayServer and only do real work under a render-capable run.
 - AGENTS.md `Hard build invariants` already lists `godot --headless --script tests/test_runner.gd` — that line is no longer a lie. No invariant text change required; the contract finally matches the words.
+
+**Session 47 - 2026-05-16 - Art - cost-efficient production plan and asset audit.**
+
+Added a small Art-role production package to prevent wasteful asset generation before runtime support and sprite dimensions are settled.
+
+Changes:
+- `art/ART_PRODUCTION_PLAN.md` (new)
+  - Defines the cheapest viable art strategy: chapter-first assets, hybrid portrait/pixel pipeline, player-only expensive locomotion by default, reusable decoration overlays, and procedural/simple audio first.
+  - Records current audit findings: `art/` is about 21 MB and `audio/` about 11 MB; current sprite dimensions are mixed; portrait runtime only loads one flat portrait per character; `art/minigame_coffee/` appears to be unused raw generator output.
+  - Lists prune candidates for human approval rather than deleting them.
+- `art/ASSET_STATUS_CH1.md` (new)
+  - Tracks Chapter 1 assets already usable, deliberate cost-saving cuts, and the next useful art tasks.
+- `art/portraits/PORTRAIT_BRIEF.md`
+  - Adds the current runtime cut: one flat portrait per character until Code supports expression-specific portrait paths.
+- `art/sprites/README.md`
+  - Adds a runtime warning about the unresolved sprite-size conflict (`State.CHAR_HEIGHT = 64`, 112x112 committed sprites, 124x124 new Cula output, and conflicting docs).
+
+Verification:
+- Docs-only Art change; no Godot test run required.
+- `git diff --check` -> **EXIT 0**.
+
+Notes:
+- No binary assets were generated, deleted, or moved. The obvious size recovery candidates are documented for human approval instead of being pruned silently.
+
+---
+
+## 2026-05-17 — Staging area cleanup (task 0.2)
+
+Audited `godot/data/_drafts/` (15 files) and `godot/data/dialogues/_drafts/` (3 files) against canonical dialogue files. Classified all drafts; prepared 8 files for deletion and annotated 7 pending files.
+
+**Annotated in place (7 files, _status field added or wrapped):**
+`asia_hints_player_driven_2026-05-16_v2.json`, `crab_player_driven_final_2026-05-16.json`, `murrow_player_driven_final_2026-05-16.json`, `whimsy_player_driven_final_2026-05-16.json`, `nightly_design_pig_2026-05-14.json`, `nightly_design_murrow_beat9_2026-05-15.json`, `nightly_design_beat13_close_2026-05-17.json`. `nightly_dialogue_fixes_2026-05-15.json` wrapped from array to object (Fix 1 already applied; Fix 2 — missing period in `asia.json` `cula_approach` option text — still pending in canonical). Three decoy drafts in `dialogues/_drafts/` already had `_status`; left untouched.
+
+**Staged for deletion (8 files — requires `git rm` from host):** 3 inert stubs (`asia_rewrite`, `murrow_v2`, `pig_rewrite`, all 2026-05-14, zero states, self-declared for removal); 4 superseded v1 player-driven drafts (`crab`, `murrow`, `whimsy` 2026-05-15, `asia_hints` v1 2026-05-16, each replaced by a voice-polished `_final` or `_v2` cut); `halina_with_trust_meter.json` (all 13 states absorbed into `dialogues/halina.json`; only diff was `"line":` → `"lines":` schema migration; canonical has since grown one additional state). Inventory at `narrative_revision/draft_inventory_2026-05-17.md`.
+
+**Verification:** Bash sandbox lacks file-delete permission on the mounted volume; `git rm` also blocked by a stale `.git/index.lock` the sandbox cannot clear. `_status` writes verified by round-trip `json.load`. Git deletions deferred to host — commands below.
+
+---
+
+## 2026-05-18 - Code - Blue Folder foundation
+
+Implemented the Blue Folder as the new global case UI gate distinct from the existing Chapter 1 Motion Packet binder.
+
+Changes:
+- Added `case_folder.tscn`, `case_folder.gd`, and `case_folder_model.gd` with gated B-key open, pause handling, four tabs (Notes, Evidence, Casebook, Motion Packet), JSON-loaded labels, note read-state badges, and Motion Packet handoff to the existing `blue_binder.tscn`.
+- Added Blue Folder pickup wiring in the Pig & Swine office, `chapter1.has_case_folder`, `case_folder_acquired`, `case_folder_toggled`, and `case_folder_fragment_added` signals.
+- Added save v20 state shape and migration for `chapter1.has_case_folder`, `case_folder`, `inventory`, and `active_case_id`, including inventory inference from old Chapter 1 flags.
+- Added `argument_fragments.json` and `case_folder_strings.json` draft data, plus DialogueRunner support for idempotent `add_argument_fragment` mutations.
+- Replaced the Casebook autoload stub with a minimal `judgments.json` loader for non-draft collected judgments.
+- Updated Asia progression to point at the Blue Folder before normal hint states, keeping the authored line as a Design-owned draft placeholder.
+- Updated Chapter 1 flag registry and focused tests for the new gate, v20 migration, and case-folder behavior.
+
+Verification:
+- `godot --headless --path godot --script tests/test_smoke.gd --log-file /tmp/pig_swine_smoke_blue_folder_after_split.log` -> EXIT 0.
+- `godot --headless --path godot --script tests/test_runner.gd --log-file /tmp/pig_swine_runner_blue_folder_after_split.log` -> EXIT 0, 45/45 passed.
+- `godot --headless --path godot --export-release Web exports/web/index.html --log-file /tmp/pig_swine_export_blue_folder_after_split.log` -> EXIT 0; export files present. Godot still logged the pre-existing macOS editor-settings save warning.
+- `python3 tools/voice_audit.py godot/data/voice_references/` -> EXIT 0, 0 violations.
+- `git diff --check` -> EXIT 0.
+- `node tools/verify_dialogue_roundtrip.js` -> EXIT 1 from pre-existing byte-format drift in `crab.json`, `halina.json`, `murrow.json`, and `whimsy.json`; `asia.json` reports OK and byte-identical.
+
+Notes:
+- The old `binder` input action was cleared so B belongs to the Blue Folder. The existing BlueBinder scene remains intact and is launched from the Motion Packet tab.
+- `tests/test_runner.gd` now passes a per-child `--log-file` path so aggregate child invocations avoid the macOS first-run log crash documented in AGENTS.md.
+
+**Session — 2026-05-18 — Art/Code — Office Street v0 asset placement.**
+Files copied/renamed into canonical locations: `art/props/pig_swine_sign.png` (from `art/P&S_logo_wooden_board.png`, 1024×1024, English subtitle "ATTORNEYS, COUNSELORS, POSSIBLY OPEN"), `art/props/bollard.png` (from `art/tiles/pixellab-PROMPT--16-48-pixel-art-prop-o-1779096304605.png`, 64×64). `art/props/17tram.png` was already in place (2048×768, two-car articulated Konstal 105N with pantograph). Godot auto-imported all three on the next project open (.import sidecars present).
+Files modified: `scenes/world/routes/office_street.tscn` — added 3 `ext_resource Texture2D` declarations (`4_pig_swine_sign`, `5_tram17`, `6_bollard`) and 6 new Sprite2D nodes inside the existing 960×640 canvas:
+- `Tram17` at `(780, 90)`, scale `(0.18, 0.18)` — east-side tram dwell visual; tram appears parked at a future stop position.
+- `PigSwineSign` at `(480, 130)`, scale `(0.20, 0.20)` — hangs directly above the existing `FrontDoor` at `(480, 264)`. Chains-at-top alignment leaves the sign clear of the door interaction zone.
+- Four bollards (`BollardFrontLeft/Right` at x=440/520, `BollardCafeLeft/Right` at x=160/240), all at `y=320`, no collision (visual decor only). Player walks through.
+Existing structure preserved exactly: `Player`, `Camera2D`, `FrontDoor`+`OfficeSpawn`, `CafeDoor`+`CafeSpawn`, `Walls`, both `DoorIndicator` ColorRects, `Floor`.
+Structural validation (host-side `godot --headless ...` not runnable from the Cowork sandbox; checked syntactically via Python parser): 6/6 ext_ids declared and referenced, 6/6 sub_ids declared and referenced, 25 nodes total (6 new), all three new texture paths resolve to existing files. **Smoke/runner/export pending — human to run from macOS host:**
+- `godot --headless --path godot --script tests/test_smoke.gd --log-file /tmp/pig_swine_smoke_street_v0.log`
+- `godot --headless --path godot --script tests/test_runner.gd --log-file /tmp/pig_swine_runner_street_v0.log`
+- `godot --headless --path godot --export-release "Web" exports/web/index.html --log-file /tmp/pig_swine_export_street_v0.log`
+Out-of-scope this session (deferred to next Pixellab pass): Cafe Paragraf sign, street notice board, court signpost, English street-name plates (Office Street / Counsel Row), fenced planter, bench, trash bin, kiosk RUCH, all NPC sprites (smoking lawyer, tram-waiter, mail carrier, two route blockers), tram-stop sign with "17", platform segment, pigeons. Also deferred: splitting the catenary, tram-rail, and curb-edge contact sheets into individual cell PNGs and laying them as a TileMap strip; widening the scene from 960×640 to the spec'd 3200×768 layout.
+Memory: `feedback_pig_swine_english_first_signage.md` saved this session — all v1 player-facing signage must be English; Polish reserved for institutional legal terminology in dialogue text only.
+
+**Session — 2026-05-18 — Art/Code — Pixellab street-pack 02 sorted, cut, and trimmed.**
+NPC sprites extracted from 5 zips into canonical `art/sprites/<npc_id>/idle/` folders, with sub-cardinal naming (`south`, `north-east`, …) converted to camera-relative per CONVENTIONS §"Walk-folder naming convention" (`front`, `back_right`, …). Eight idle frames per NPC, all 180×180 px. Typo fix: `mail_charrier_ch1.zip` → `mail_carrier_ch1/`. NPCs: `smokers_lawyer_ch1`, `route_blocker_business_ch1`, `tram_waiter_ch1`, `route_blocker_residential_ch1`, `mail_carrier_ch1`. `metadata.json` from each zip preserved at `art/sprites/<npc_id>/metadata.json`.
+17 prop PNGs sorted out of the top-level `godot/art/` drop zone. 14 were Pixellab contact sheets (cells touching, no transparent gutter — Pillow auto-gutter detection missed most; layout was inferred per asset and hardcoded). Each sheet split into per-cell PNGs in `art/props/_street_split_02/<asset>_NN.png` with blank-cell skipping. Top-left cell of each sheet was promoted to the canonical `art/props/<asset>.png` and auto-trimmed of transparent padding so Sprite2D `position` aligns with the bbox top-left. 3 single assets (`court_signpost`, `street_name_office_street`, `street_name_counsel_row`) were auto-trimmed and moved to `art/props/`.
+Canonical prop names now in `art/props/`: `cafe_paragraf_sign.png` (121×34), `pigeon_idle.png` (26×29), `street_notice_board.png` (61×65), `kiosk_press.png` (100×93), `parked_sedan.png` (118×58), `parked_hatchback.png` (108×57), `abandoned_coffee_cup.png` (20×29), `graffiti_decal_01.png` (62×52), `graffiti_decal_02.png` (54×38), `street_bench.png` (96×83), `tram_stop_platform_segment.png` (98×98), `tram_stop_sign_17.png` (31×98), `trash_bin_public.png` (77×104), `fenced_planter.png` (64×63), `court_signpost.png` (80×238), `street_name_office_street.png` (214×83), `street_name_counsel_row.png` (232×98). Spec target sizes from `_pixellab_street_pack_02.md` were 16×16–96×96 for props; native cell sizes are 2–4× larger than spec but readable, so Sprite2D.scale will normalize at placement time.
+Originals NOT deleted from `godot/art/` top level — user can sweep them after confirming the canonical copies look right.
+Out of scope this session: sprite_frames `.tres` generation for the five new NPCs, scene placement (next turn), splitting `Warsaw_city_*.png` tilesheets into a Godot TileSet resource, fixing the `17tram.png` Polish destination text (re-roll deferred).
+
+**Session — 2026-05-18 — Code/Art — office_street.tscn widened to 2560×768; 17 props + 5 NPCs placed.**
+Generated 5 SpriteFrames `.tres` resources (one per new NPC) at `art/sprites/<npc_id>/<npc_id>_sprite_frames.tres`, mirroring the existing crab/whimsy/asia template — 8 idle directions populated, 8 walk + 8 run + default left empty (forward-compat with `npc.gd` patrol logic if added later).
+Widened `office_street.tscn`: Floor → 2560×768, wall sub_resources resized (top/bottom 2560×16, left/right 16×768), wall collider positions updated (Top→1280,-8; Bottom→1280,776; Left→-8,384; Right→2568,384). Player Camera2D got `limit_left=0`, `limit_top=0`, `limit_right=2560`, `limit_bottom=768`.
+Added 24 new `ext_resource` blocks (18 prop Texture2D, 5 SpriteFrames, 1 npc.gd Script). Moved existing Tram17 east from (780,90) to (1300,100) to sit at the new tram stop.
+Placed 19 new Sprite2D prop nodes and 5 new Area2D NPC nodes with AnimatedSprite2D children (named `Visual` so `npc.gd`'s auto-build path skips its ColorRect default). NPC sprite scale `(0.5, 0.5)` brings 180×180 source down to ~90×90 — between the canonical 64×64 target and the legacy 112×112 existing characters, until the regeneration pass.
+Layout (origin top-left of 2560×768 canvas):
+- Cafe section (x=0–960): existing CafeDoor/FrontDoor preserved; ADDED CafeParagrafSign (200,200), StreetBench (90,360), AbandonedCoffeeCup (110,330), TrashBin (340,370), GraffitiDecal01 (380,220), ParkedSedan (700,230), Pigeon1 (610,400), SmokersLawyer NPC (380,400).
+- Tram stop (x=1024–1536): CatenaryPole (1100,140), TramStopPlatform (1280,270), TramStopSign17 (1180,160), StreetNameOfficeStreet (1080,360), Pigeon2 (1420,340), Tram17 (1300,100), TramWaiter NPC (1280,300).
+- Branch point (x=1600–2048): CourtSignpost (1700,200), NoticeBoard (1820,260), StreetNameCounselRow (1900,360), FencedPlanter (1850,410), MailCarrier NPC (1600,450), ResidentialBlocker NPC (2000,580).
+- Business approach (x=2112–2560): ParkedHatchback (2200,230), GraffitiDecal02 (2300,210), KioskPress (2400,270), BusinessBlocker NPC (2480,400).
+Structural validation: 30/30 ext_resources declared and referenced; 6/6 sub_resources declared and referenced; all 30 texture/sprite_frames/script paths resolve to existing files on disk; 54 total nodes (25 Sprite2D + 7 Area2D + 6 AnimatedSprite2D + 1 CharacterBody2D + 1 Camera2D + 3 ColorRect + 3 Node2D + 7 CollisionShape2D + 1 StaticBody2D). Smoke/runner/export tests pending (Godot not on Cowork sandbox PATH — human to run from macOS host).
+NPC dialogue stubs NOT authored — `npc_id` fields (`smokers_lawyer_ch1`, `tram_waiter_ch1`, `mail_carrier_ch1`, `route_blocker_residential_ch1`, `route_blocker_business_ch1`) reference `data/dialogues/<npc_id>.json` files that do not yet exist; `npc.gd` will route to DialogueRunner which logs a warning when interacted with. Authoring those dialogue files is a Design role follow-up.
+Out of scope this session: street tileset assembly (Warsaw_city_*.png → TileSet resource), tram-rail strip across the road row, route_blocker route-gating logic (currently NPCs are just visual; they don't actually block player movement — that needs `route_blocker.gd` Area2D wiring), mail-carrier patrol behaviour, tram-arrival timer that animates the carriage sliding past, Cafe Paragraf v2 sign English-only re-roll if "Café Paragraf" needs to drop the diacritic (currently has é which is French/English-friendly but not strictly ASCII).
+Verification commands for the human to run on macOS host:
+- `godot --headless --path godot --script tests/test_smoke.gd --log-file /tmp/pig_swine_smoke_street_v1.log`
+- `godot --headless --path godot --script tests/test_runner.gd --log-file /tmp/pig_swine_runner_street_v1.log`
+- `godot --headless --path godot --export-release "Web" exports/web/index.html --log-file /tmp/pig_swine_export_street_v1.log`
+
+**Session — 2026-05-18 — Art — Warsaw streets TileSet built.**
+Three Warsaw_city_*.png source sheets identified as a uniform 4×4 grid of 32×32 cells at 131×131 px (1px gutters). All 16 cells per sheet carry distinct art (no blanks) — 48 unique tiles across the three.
+Upscaled each sheet 2× nearest-neighbor → `art/tiles/warsaw_street.png`, `warsaw_sidewalk.png`, `warsaw_sidewalk_decor.png` at 262×262 with 2px gutter, matching canonical 64×64 cell size per CONVENTIONS. Originals (`Warsaw_city_*.png`) preserved.
+Generated `art/tilesets/warsaw_streets_tileset.tres` with three TileSetAtlasSource entries, all 48 cells registered (`x:y/0 = 0` for x∈[0,3], y∈[0,3] per source). `tile_size = Vector2i(64, 64)`, `texture_region_size = Vector2i(64, 64)`, `separation = Vector2i(2, 2)`. No physics_layer, no terrain_set, no autotile in v0 — pure decorative atlas to paint surfaces with.
+Wired into `office_street.tscn`: added `ext_resource` id `31_warsaw_tileset` and a `StreetTiles` TileMapLayer node (child of root, sibling to Floor, no painted data yet). User opens scene in Godot editor, picks tiles from the three sources, paints the road/sidewalk strip. The dark Floor ColorRect stays underneath as backdrop until painted-over.
+Structural validation: 31/31 ext_resources resolved; TileSet self-validates (3/3 sources referenced, 48 tile registrations); scene has 55 nodes (was 54).
+Out of scope this session: actually painting the floor (deferred to editor session OR a follow-up generator script if Piotr wants a programmatic floor fill — modeled after `_build_office.py`'s `tile_map_data` PackedByteArray emission). Also deferred: identifying which cell in each sheet is "asphalt" vs "sidewalk" vs "crosswalk" vs "manhole" — needs a human eye on the editor to classify, then the user can paint accordingly.
+
+**Session — 2026-05-18 — Art — Programmatic asphalt+sidewalk fill on StreetTiles.**
+Backup of pre-fill scene at `godot/scenes/world/routes/office_street.tscn.pre_floor_fill` (13286 bytes). To revert: `mv office_street.tscn.pre_floor_fill office_street.tscn`.
+Visual classification of all 48 Warsaw tile cells via extracted 64×64 cell previews (saved to `art/tilesets/_cell_previews/` for re-reference). Picked: asphalt = street source atlas (0,0) — blue-grey with subtle cracks; sidewalk = street source atlas (0,1) — plain grey paving slabs. Decor source and sidewalk source kept available for editor painting (16 cells each, 48 total in the TileSet).
+TileMapLayer binary format verified by round-tripping `pig_swine_office.tscn`'s Floor layer: 2-byte uint16 zero prefix + 12-byte cells (six int16 LE: x, y, source_id, atlas_x, atlas_y, alt_tile). Negative coords confirmed via the Walls layer (y=-1 perimeter).
+Generated 440-cell tile_map_data PackedByteArray (5282 bytes binary, 7044 b64 chars) and embedded into `StreetTiles.tile_map_data`: rows 0-3 painted with asphalt across cols 0-39, rows 4-10 painted with sidewalk across cols 0-39, row 11 left empty (south building band stays as dark Floor backdrop). Layout matches the door y-line: FrontDoor and CafeDoor at y=264 sit on the asphalt/sidewalk boundary, so the player walks on sidewalk and approaches doors at the curb edge.
+Structural validation: 31/31 ext_resources resolved, 6/6 sub_resources matched, 440 painted cells confirmed via round-trip decode (first cell x=0,y=0,asphalt; last cell x=39,y=10,sidewalk).
+Reversibility: single-command revert via the pre_floor_fill backup. No other files modified this session.
+
+**Session — 2026-05-18 — Code — Debug console triage. Resolved pre-existing herringbone ghost-cell errors.**
+Ran the project via Godot MCP, captured ~36 errors from boot. Diagnosis: not caused by the Warsaw tileset work — failing cells exactly matched the herringbone source (`TileSetAtlasSource_ss8h4`) in `office_tileset.tres`. That source registered 16 tiles (0:0 through 3:3) but `office_herringbone.png` is 131×131 with `texture_region_size=64, separation=1` — grid math (131/(64+1) = floor 2) only fits 2×2 = 4 cells. The other 12 registrations were ghost cells producing `Cannot create tile / no tile at (x,y)` errors at every load. Failing cell list (in error order) exactly mirrored the herringbone source's registration order after the first 4.
+Why these surface now: game boots into the scene saved in `State.data.current_scene_path`, which appears to default to `pig_swine_office.tscn` (the room that uses `office_tileset.tres`). The Warsaw tileset on `office_street.tscn` is innocent.
+Fix: trimmed `TileSetAtlasSource_ss8h4` to its 4 valid cells (0:0, 1:0, 0:1, 1:1) — backup at `art/tilesets/office_tileset.tres.pre_herringbone_trim`. Verified safe: round-tripped `pig_swine_office.tscn`'s tile_map_data and confirmed no painted cell references source 2 (the herringbone source) — only sources 0 and 1 (floor + wall) are painted, with herringbone declared but never actually used in the map.
+Post-fix run: zero errors, zero warnings, clean boot. Reversibility: `mv office_tileset.tres.pre_herringbone_trim office_tileset.tres`.
+Side observation: the Warsaw tileset texture/region/separation chain works correctly with the no-gutter 256×256 atlases — 4×4 grid all 16 cells registered cleanly, no errors. The earlier 262×262 + 2px-separation version produced the same kind of off-by-one grid math problem (Godot does `floor(texture_size / (region + separation))`); switching to 256×256 with separation=0 resolved that surface for our textures. Office_herringbone has the same fundamental flaw but lower priority — could fix by re-exporting `office_herringbone.png` at 256×256 packed-tight or by re-registering the source with separation=0 after a repack. For now the trim is the surgical fix.
+
+**Session — 2026-05-18 — Art — Removed visible grid lines from Warsaw tiles.**
+Diagnosis: Pixellab cells have a 1-pixel dark frame baked into every side. Top row of cell (0,0) sampled at (24, 22, 29) — same for left/right/bottom edges. Centre at (96, 120, 129). When cells tile edge-to-edge, those baked borders form a continuous dark grid.
+Fix: bleed-fill the 1-pixel border on every cell before upscale. For each 32×32 source cell, replace edge pixels with the value of the adjacent inner row/column (top row ← row 1, bottom ← row h-2, left ← col 1, right ← col w-2). Then repack tight (4×4 grid, no gutter) and upscale 2× to 256×256. Atlases regenerated: `warsaw_street.png`, `warsaw_sidewalk.png`, `warsaw_sidewalk_decor.png`.
+Verification: asphalt cell (0,0) edges now all (96, 120, 129) matching the centre. Adjacent cell-to-cell joins on the floor-fill tiles (asphalt 0:0 + sidewalk 0:1) are seamless. Note: cells with internal art (planter at 1:1, windows at 2:1, bricks at 3:1, etc.) retain visible boundaries because their content includes dark structural elements at the edges — this is inherent to the source art and a separate problem only worth solving if those cells get painted into a map.
+Re-ran project: zero errors. Warnings expected (no dialogue data yet for the 5 new NPC ids — `tram_waiter_ch1`, `mail_carrier_ch1`, `route_blocker_residential_ch1`, `route_blocker_business_ch1`, `smokers_lawyer_ch1`). Authoring those files is Design role per AGENTS.md ownership.
+
+**Session — 2026-05-18 — Art/Code — Deeper de-bleed (2px) + player-on-top z_index pass.**
+De-bleed depth bumped from 1px to 2px on Warsaw tile atlases. Pixel inspection of brick cell (2,0) showed Soot frame at depth 0 (24,22,29) followed by mortar-grey at depth 1 (83,84,81) — the brick texture has its own structural line one pixel inside the dark frame. 1px bleed exposed the mortar; 2px bleed copies from depth 2 (the actual brick face), producing seamless joins between brick cells too. Asphalt and sidewalk cells unaffected since their interior pixels are uniform. Re-saved `warsaw_street.png`, `warsaw_sidewalk.png`, `warsaw_sidewalk_decor.png` at 256×256, 4×4 grid, no separation.
+Cells with intentional internal structure (planter at 1:1, windows at 2:1, shopfront at 2:2) keep that structure — those are art content, not borders to scrub.
+Z-index pass on `office_street.tscn`: inserted `z_index = -1` on every direct-child Sprite2D node (25 nodes — Tram17, PigSwineSign, four bollards, CafeParagrafSign, StreetBench, AbandonedCoffeeCup, TrashBin, GraffitiDecal01, ParkedSedan, Pigeon1, CatenaryPole, TramStopPlatform, TramStopSign17, StreetNameOfficeStreet, Pigeon2, CourtSignpost, NoticeBoard, StreetNameCounselRow, FencedPlanter, ParkedHatchback, GraffitiDecal02, KioskPress). Player + NPCs stay at default z_index = 0 so they always render in front of props. NPCs render in front of each other and the player by default tree order — fine for v0; can refine to feet-anchored y-sort later per CONVENTIONS §"Y-sort and Sprite2D origin convention".
+Verification: scene parses cleanly, zero errors, 31/31 ext_resources resolved, 25/25 Sprite2D nodes carry `z_index = -1`.
+
+**Session — 2026-05-18 — Code — Z-index correction.**
+Previous pass set `z_index = -1` on the 25 decorative Sprite2D props to push them behind the Player — but this also pushed them behind the `Floor` (ColorRect, z=0) and the `StreetTiles` (TileMapLayer, z=0), which fill the canvas, so every prop disappeared. Fix: stripped all 25 `z_index = -1` lines (props back to default 0) and added `z_index = 1` to the `Player` CharacterBody2D so the player renders above props without disturbing the floor stack. Floor + StreetTiles + props all stay at z=0 (rendering in tree order: Floor → StreetTiles → DoorIndicators → Player → Walls → props → NPCs); Player jumps the line to z=1 and renders on top of everything in the room.
+Verified: project boots clean, zero errors, props visible again.
+
+**Session — 2026-05-18 — Art/Code — Three-band layout: building, sidewalk, road.**
+User generated `art/buildings/P&S+paragraph.png` (1536×1024) — three storefronts side by side: P&S (red brick, left), Café Paragraf (grey stone, middle), blank (beige plaster, right) over four upper storeys of kamienica facade. Copied to safer filename `ps_paragraf_facade.png` (Godot resource paths dislike `&` and `+`).
+Scene backup: `office_street.tscn.pre_three_band` (21082 bytes) for one-command revert.
+Re-layout applied to `office_street.tscn`:
+- Building band y=0–384 (6 tiles). New `Building` Sprite2D node, source 1536×1024 at scale 0.375 → 576×384 displayed, position (288, 192), spans canvas x=0–576. East half x=576–2560 stays as dark Floor backdrop (more buildings to be added later).
+- Sidewalk band y=384–576 (3 tiles).
+- Road band y=576–704 (2 tiles).
+- South strip y=704–768 (1 tile, empty).
+- Tile_map_data repainted: 120 sidewalk cells (rows 6–8, atlas 0,1) + 80 asphalt cells (rows 9–10, atlas 0,0) = 200 cells total. 2-byte zero prefix + 12-byte per cell, base64-encoded as before.
+- Doors moved to align with building storefronts: FrontDoor (P&S) (480, 264) → (84, 380); CafeDoor (200, 264) → (289, 380). Note: P&S and Cafe SWAPPED ORDER in the new layout (P&S now on the LEFT, Cafe in MIDDLE) to match the building image. Spawns updated: OfficeSpawn (84, 430), CafeSpawn (289, 430).
+- Player initial position moved from (480, 400) to (84, 480) — on sidewalk south of P&S door.
+- Door indicators repositioned to the new door y-line (y=372–388) directly under each visible storefront door.
+- `PigSwineSign` and `CafeParagrafSign` Sprite2D nodes removed (signs baked into building art). Two now-orphan ExtResources (`4_pig_swine_sign`, `7_cafe_paragraf_sign`) also stripped for cleanliness.
+- 23 remaining props repositioned to fit new bands: tram + parked cars to road (y≈620), catenary/platform/tram-stop sign to road north edge (y=520–580), bench/coffee cup/trash bin/planter/pigeons/kiosk to sidewalk (y=460–480), graffiti decals to building wall band (y=280), street-name plates anchored to wall (y=350), court signpost on sidewalk (y=500), notice board on east wall (y=280).
+- 5 NPCs repositioned: SmokersLawyer (180, 460) on sidewalk near P&S; TramWaiter (1230, 580) on tram platform; MailCarrier (1600, 500) on sidewalk middle; ResidentialBlocker (2000, 580) on south strip gating Tenants' Row; BusinessBlocker (2480, 500) on sidewalk east gating Business District.
+Texture import: `ps_paragraf_facade.png` had no .import sidecar after rename. Project run-only mode doesn't trigger imports; had to launch the editor briefly via `mcp__godot__launch_editor` to scan the filesystem and emit the .ctex + .md5 + .import sidecar. After that, project boots cleanly.
+Structural verification: 30/30 ext_resources referenced, 6/6 sub_resources matched, Building node present at (288, 192) with texture `32_ps_facade`, PigSwineSign + CafeParagrafSign removed. Scene loads with no errors. One expected warning fires when the player walks into `smokers_lawyer_ch1` (Design hasn't authored that NPC's dialogue JSON yet — flagged in earlier sprint log).
+Reversibility: `mv office_street.tscn.pre_three_band office_street.tscn` reverts. The 200-cell tile_map_data + the building Sprite2D + door repositions are all encoded in that .tscn alone; reverting one file fully undoes the layout change. The renamed building PNG and its .import sidecar stay on disk regardless (innocuous if unused).
+Out of scope this session: feet-anchored Y-sort (props that bracket the player still don't depth-sort dynamically — Player z=1 wins regardless), east-end building art (canvas x=576–2560 has open backdrop above the sidewalk band), tram-rails strip on the road, road centre-line markings, NPC dialogue authoring.
+
+**Session — 2026-05-18 — Art — Building re-anchored + props rescaled.**
+Diagnosis of "building floats": ps_paragraf_facade.png had massive transparent padding around the actual content (1112×511 of content inside the 1536×1024 source — 219px top, 294px bottom, 212px left, 213px right). The Sprite2D position assumed content filled the source, so the building art appeared floating in the middle of a transparent box, leaving visible dark Floor backdrop between the real bottom of the building art and the sidewalk band starting at y=384.
+Fix: trimmed the PNG to actual content (1112×511), overwriting the source file. Forced Godot reimport via `launch_editor` (md5 hash detection); new .ctex header now reports 1112×511.
+Scene updates in `office_street.tscn`:
+- Building Sprite2D scale: 0.375 → 0.7515 (= 384/511, fits trimmed height into the 384px building band)
+- Building position: (288, 192) → (418, 192) (spans canvas x=0–836, y=0–384, no gap to sidewalk top at y=384)
+- FrontDoor (P&S): (84, 380) → (79, 400) — aligned with the actual visible P&S storefront door at trimmed source (105, 510)
+- CafeDoor: (289, 380) → (410, 400) — aligned with trimmed source Cafe door at (545, 510)
+- OfficeSpawn: (84, 430) → (79, 430). CafeSpawn: (289, 430) → (410, 430). Player: (84, 480) → (79, 480).
+- DoorIndicators repositioned to (55–103, 392–408) for P&S and (386–434, 392–408) for Cafe.
+- Bollards re-flanked: FrontLeft/Right at (45/115, 425), CafeLeft/Right at (375/445, 425).
+- StreetNameOfficeStreet moved from (40, 350) — which was half off-canvas at the LEFT edge — to (700, 420), now visible on the empty east wall.
+- Scaled down oversized props: Pigeon1 + Pigeon2 to 0.6× (were native scale, looked huge), TrashBin to 0.4×, StreetBench to 0.5×, FencedPlanter to 0.7×.
+Verification: project boots clean, zero errors, zero warnings.
+
+**Session — 2026-05-18 — Art — East-side buildings filled.**
+Two contact sheets received from user: `buildings_1.png` (3×2 grid, 6 buildings) and `buildings2.png` (4×3 grid, 12 buildings). Split buildings_1 into 5 individual PNGs (skipped the "CAFF PARAGRAF" cell — typo in generation, plus we already have a Cafe sign baked into the main building art). Trimmed each to its content bbox and saved at `art/buildings/<name>.png`:
+- books_legal_things.png (377×469) — beige plaster, "BOOKS & LEGAL THINGS" shop, fits the legal flavor of Office Street
+- district_court.png (436×453) — formal grey civic with columns, "DISTRICT COURT" — anchors the Grand Court Avenue branch point at canvas centre
+- kamienica_plain.png (371×449) — grey residential, no signage, infill
+- tailor_repairs.png (502×420) — red plaster, "TAILOR & REPAIRS" shop
+- kino_monumental.png (439×449) — grey, "KINO MONUMENTAL" vertical signage, Warsaw flavor
+Forced Godot reimport via `launch_editor`; all five .import sidecars + .ctex files generated correctly.
+Scene additions to `office_street.tscn`:
+- 5 new `ext_resource` declarations (ids `33_b_books_legal_things` through `37_b_kino_monumental`)
+- 5 new Sprite2D nodes (`BuildingBooksLegal`, `BuildingKamienicaPlain`, `BuildingDistrictCourt`, `BuildingTailor`, `BuildingKino`), inserted right after the main `Building` node so they render in the same tree depth.
+- Each scaled individually to fit the 384px building band height (scales 0.819 to 0.914 depending on source aspect). Positioned adjacent west-to-east starting at x=836 (east edge of existing P&S building):
+  - BooksLegal:        x=990,  scale 0.819, spans 836–1145
+  - KamienicaPlain:    x=1303, scale 0.855, spans 1145–1462
+  - DistrictCourt:     x=1647, scale 0.848, spans 1462–1832
+  - Tailor:            x=2061, scale 0.914, spans 1832–2291
+  - Kino:              x=2478, scale 0.855, spans 2291–2666 (last 106 px clip off-canvas at right wall, acceptable)
+Six buildings now cover canvas x=0 to x=2666 with no gaps. Office Street has a continuous facade.
+Verification: project boots clean, zero errors, 35/35 ext_resources resolved.
+Out of scope: feet-anchored Y-sort, repositioning props now that the east wall band is no longer empty (some props at y=280 — graffiti decals, notice board — are currently mid-air against the new buildings; will likely want to nudge them onto specific wall locations).
+
+**Session — 2026-05-18 — Art — Building substitutions: court / tailor / cinema → yellow / blue / red-brick warehouse.**
+User requested replacement of three east-side buildings. Removed BuildingDistrictCourt, BuildingTailor, BuildingKino + their ext_resources from `office_street.tscn`. Source PNGs left on disk (`district_court.png`, `tailor_repairs.png`, `kino_monumental.png`) for potential use in other scenes (Court Plaza, Tenants' Row, etc.).
+New replacements from `buildings2.png` row 1 (341px tall source — gentle 1.13× upscale to 384, better pixel-art quality than upscaling 287px sources from row 0):
+- `kamienica_yellow.png` (276×341) — yellow plaster with red tile roof; cell (0,1)
+- `kamienica_blue.png` (384×341) — blue plaster with balcony greenery; cell (2,1)
+- `warehouse_red_brick.png` (331×341) — industrial red brick; cell (3,1)
+Forced import via `launch_editor`. New ext_resources `35_b_kamienica_yellow`, `36_b_kamienica_blue`, `37_b_warehouse_red_brick`. Nodes `BuildingYellow`, `BuildingBlue`, `BuildingWarehouse` inserted after `BuildingKamienicaPlain`.
+Updated east layout (x=836–2578, only 10px overflow vs canvas right wall at 2568, vs prior 106px overflow):
+- BooksLegal:        836–1145 (kept)
+- KamienicaPlain:    1145–1462 (kept)
+- Yellow:            1462–1773 (new)
+- Blue:              1773–2205 (new)
+- Warehouse:         2205–2578 (new)
+Final building roster: 6 total — main P&S/Cafe facade + Books & Legal Things + plain kamienica + yellow kamienica + blue kamienica + red brick warehouse. Mixed palette: beige / grey / yellow / blue / red brick / red-brick-warehouse. No baked signage on the new three (other than "BOOKS & LEGAL THINGS" carrying the Office Street legal flavor).
+Verification: project boots clean, zero errors, 35/35 ext_resources resolved.
+
+**Session — 2026-05-18 — Art — Buildings2 row extraction corrected.**
+User flagged the three new east-side buildings as miscut. Root cause: the `buildings2.png` contact sheet doesn't have its rows at uniform y intervals. I assumed strict 4×3 grid (rows at y=341 each) but the actual layout has row 0 at y=64–400, row 1 at y=432–720, and row 2 at y=816–960, with horizontal gradient gaps between rows.
+The old crops used the wrong y range (341–682) which (a) missed the tops of row 1 buildings (which start at y=432) and (b) included bleed from row 0 building bases. Then within each cell, I used grid-aligned x bounds (0–384, 384–768, etc.) — but the row 1 buildings sit at varied x positions and the warehouse extends across two cells. The warehouse PNG was actually cut through the middle of the building.
+Fix:
+1. Detected the real row gaps via full-width row variance: rows separated by deep variance valleys (var<2000) at y=0–48, y=416, y=752–784, y=976+.
+2. Row 1 strict bounds: y=432 to y=720.
+3. Detected actual building x bounds within row 1 via column variance with gap-detection: 4 buildings at x=66–364 (yellow), 388–698 (red awning, skipped), 723–1030 (mansard "blue"), 1061–1480 (warehouse).
+4. Re-extracted each picked building with these correct bounds, then vertically trimmed via per-row variance for clean tops/bottoms.
+Final building PNGs:
+- `kamienica_yellow.png`: 298×288 (was 276×341 — incorrectly cropped)
+- `kamienica_blue.png`: 307×288 (was 384×341 — full cell with empty background bleed)
+- `warehouse_red_brick.png`: 419×273 (was 331×341 — left side of warehouse cut off, right side included background)
+Scene update: BuildingYellow / BuildingBlue / BuildingWarehouse Sprite2D positions updated to use native scale 1.0 (no upscale, preserves pixel-art crispness) with bottoms aligned at y=384:
+- BuildingYellow at (1611, 240) — spans x=1462–1760
+- BuildingBlue at (1914, 240) — spans x=1760–2067
+- BuildingWarehouse at (2277, 248) — spans x=2067–2486 (warehouse is slightly shorter at 273px, top at y=111)
+Total east extent x=1462–2486 (82px gap before canvas right wall at 2568). New buildings sit at native height 273–288 vs the existing west-side buildings at 384 — realistic Warsaw kamienica skyline variation.
+Verification: project boots clean, zero errors.
+
+**Session — 2026-05-19 — Code — Tech-critique fix pass.**
+Read `critiques/2026-05-19-tech.md` and applied the code-owned fixes that could land safely in the current dirty worktree.
+Smoke now fails loud on DialogueRunner catalogue validation errors: `dialogue_runner.gd` captures validation errors during boot, and `tests/test_smoke.gd` asserts the five active autoloads (`State`, `Signals`, `Casebook`, `DialogueRunner`, `BinderUI`) plus a clean dialogue catalogue. The pre-existing deprecated Whimsy tombstone state was marked `silent:true` so the stricter gate has a valid corpus to enforce.
+Added `scripts/systems/battle/packet_scorer.gd` as the single Chapter 1 motion-packet scoring engine. `battle_controller.gd` and `blue_binder.gd` now both call it, and `test_packet_scorer.gd` asserts their outcomes, dominant/proposed frame, selected blunders, and starting judicial patience match. BattleController also preloads judgment/opponent scripts once instead of loading them inside each data loop.
+Door gates now resolve dotted `State.data` paths such as `chapter1.has_law_binder` and no longer allocate `reset_state()` during each open attempt. `data/doors.json` documents the dotted-path contract. Added `test_door_required_flag.gd`.
+DialogueRunner now caches `argument_fragments.json` once at boot, exposes public `resolve_speaker()` for UI callers, and wraps the mutation-queue reassertion in `ActiveStateContext.install_mutations()`. `dialogue_box.gd` no longer calls the private `_resolve_speaker()` method.
+Added the missing dedicated v15 -> v16 save migration test for `chapter1.murrow_choice`. Added signal-consumer TODOs for the four emitted-but-unconsumed production signals named in the critique. Added root `Makefile` `verify` / `install-hooks`, `tools/hooks/pre-commit`, and `*.bak.*` ignore coverage. Normalized canonical dialogue JSON through `tools/verify_dialogue_roundtrip.js`'s serializer so the new verify target passes.
+Verification: `godot --headless --path godot --script tests/test_save_migration_v15_v16.gd --log-file /tmp/pig_swine_v15_v16.log` PASS (23/23); `test_door_required_flag.gd` PASS (7/7); `test_packet_scorer.gd` PASS (18/18); `make verify` PASS (voice audit 0 violations, dialogue roundtrip 0 violations, smoke PASS, runner 48/48); web export PASS and produced non-empty `exports/web/index.html`, `.pck`, and `.wasm`. Godot still prints the macOS certificate warning `Condition "ret != noErr"` during CLI startup, and export also printed an editor-settings save warning, but both commands exited 0 and artifacts were produced.
+
+**Session — 2026-05-19 — Code/QA — UI-critique fix pass.**
+Read `critiques/2026-05-19-ui.md` and fixed the safe code-owned items in the current dirty worktree.
+Case Folder strings no longer ship `_doc: DRAFT` placeholders; `test_case_folder.gd` now recursively rejects `_doc:` / `DRAFT` values in `case_folder_strings.json`. Case Folder gained a footer `Save Now` button, wired through `Signals.manual_save_requested` to the `Save` node in `Main.tscn`; `save.gd` now emits `save_completed` / `save_failed(reason)`, and `save_status_toast.tscn` surfaces save results plus the first Blue Folder acquisition hint using the current `case_folder_toggle` binding.
+Removed the obsolete `BinderUI` autoload and dead `binder` input action; the Case Folder remains the single `B`-key entry point. BlueBinder and CaseFolder dynamic controls no longer suppress keyboard focus. BlueBinder packet controls accept focus, Up/Down step focused `OptionButton` choices, Enter applies the packet assessment, and the footer hint now matches the live keyboard path.
+Interaction prompts now resolve their action label from `InputMap` instead of hardcoding `[E]`; prompt chrome is 36x24 with 16px text and a higher vertical offset. Dialogue speaker text was raised to 24px. `battle_screen.gd` is no longer a dead stub; the scene has a minimal controller plus numeric `value/max` labels for Cooperation and Patience.
+Added focused regression coverage: `test_save_failure_signal.gd`, `test_ui_critique_regressions.gd`, plus keyboard-focus and prompt-binding assertions in existing tests.
+Verification: `test_case_folder.gd` PASS (59/59), `test_motion_packet_assembly.gd` PASS (43/43), `test_interaction_prompt.gd` PASS, `test_save_failure_signal.gd` PASS (5/5), `test_ui_critique_regressions.gd` PASS (14/14), smoke PASS, full runner PASS (50/50), and Web export PASS with non-empty `exports/web/index.html`, `.pck`, and `.wasm`. The first export attempt hit sandbox-only editor-settings write errors; rerunning the same export with approved escalation completed cleanly. Headless Godot still prints the macOS CA-certificate warning on startup.

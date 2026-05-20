@@ -1,0 +1,50 @@
+{
+    "_draft_note": "INERT STAGING. Not loaded by dialogue_runner.gd (lives under data/_drafts/). State ids prefixed postcard_swine_b14_ to avoid namespace collision with canonical postcard_swine_ch1.json. Scope: postcard body delivery only (stage direction + Pig reads aloud). Asia address-label line lives in asia.json; Pig/Whimsy reaction states live in pig.json/whimsy.json. Promote by merging states into postcard_swine_ch1.json after editorial pass and id-uniqueness check. Author: Claude agent, 2026-05-17.",
+    "_chapter_ref": "Chapter 1, Beat 14 — Swine postcard stinger. beat_sheet: narrative_revision/beats/chapter_1.md L336-342. Fires after Beat 13 celebration. Canonical postcard origin: Sapporo (phase-4 decision). Sets up Ch4 ski-resort joke and Ch5 Hokkaido arbitration.",
+    "_flags_used": [
+        "chapter1.postcard_asia_announced",
+        "chapter1.postcard_readaloud_cue_shown",
+        "chapter1.postcard_body_read"
+    ],
+    "version": 1,
+    "npc_id": "postcard_swine_ch1",
+    "display_name": "Postcard",
+    "states": [
+        {
+            "id": "postcard_swine_b14_readaloud_cue",
+            "trigger": "chapter1.postcard_asia_announced == true && !chapter1.postcard_readaloud_cue_shown",
+            "_comment": "Stage direction: Pig takes the postcard from the desk and turns it over. He reads sincerely, without editorial pause. The front shows a snow-covered building; the sign is too small to read from this distance. The image is Hokkaido-winter without announcing itself as such.",
+            "speaker": "stage_direction",
+            "lines": [
+                "Pig turns the postcard over. The front shows a snowy building and a sign too small to read at this distance. Pig reads the body aloud."
+            ],
+            "on_dismiss": [
+                { "set": "chapter1.postcard_readaloud_cue_shown", "value": true }
+            ],
+            "tags": ["beat14", "postcard", "stage_direction", "read_aloud_cue"]
+        },
+        {
+            "id": "postcard_swine_b14_body",
+            "trigger": "chapter1.postcard_readaloud_cue_shown == true && !chapter1.postcard_body_read",
+            "_comment": "Mr. Pig reads Swine's postcard body aloud verbatim. Three sentences per the canonical postcard register (mr_swine.md section: postcard register and calibration anchors): greeting from Sapporo (canonical phase-4 origin, load-bearing), single business-opportunity sentence, single solvency request. Signoff: dash-S per the Bratislava canonical anchor. Voice discipline applied: 'informally' deployed once in sentence-2 per the Bratislava anchor structure; opportunity sentence uses conditional-adjacent construction ('would benefit from' rather than 'will') and does not explain the deal; the specific detail is 'conference registration' plus 'a man who seemed interested in the concept of Warsaw' — cryptic, Sapporo-specific, not resort-named, plants the Ch4 hook without legibility; solvency ask is direct, no maritime bleed (maritime belongs to Pig's register). No em-dashes in player-facing lines. No contrastive antithesis. The speaker is pig because Pig reads the card aloud; Swine is the absent author.",
+            "_postcard_metadata": {
+                "address_line": "To Mr. Pig, Pig & Swine, Warsaw",
+                "signature": "Yours, Swine.",
+                "origin": "Sapporo",
+                "postcard_family": "H6 Postcard 1",
+                "chapter_hooks": [
+                    "Ch4 ski-resort joke: Sapporo is in Hokkaido; conference infrastructure sits near ski infrastructure",
+                    "Ch5 Hokkaido arbitration: the registration contact becomes a counterparty"
+                ]
+            },
+            "speaker": "pig",
+            "lines": [
+                "Greetings from Sapporo. There is, informally, a very specific opportunity in conference registration here that would benefit from a Warsaw address, and I have mentioned the firm to a man who seemed interested in the concept of Warsaw. Keep Pig & Swine solvent until I return. Yours, Swine."
+            ],
+            "on_dismiss": [
+                { "set": "chapter1.postcard_body_read", "value": true }
+            ],
+            "tags": ["beat14", "postcard", "read_aloud", "swine_postcard_1", "H6", "pig", "sapporo"]
+        }
+    ]
+}

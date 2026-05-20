@@ -2,7 +2,7 @@ extends Node
 ## State autoload — single writer. Owns all persistent game state and save/load.
 ## Migration required for every shape change (see AGENTS.md §Save migration policy).
 
-const SAVE_VERSION: int = 19
+const SAVE_VERSION: int = 20
 
 const TILE_SIZE := 64
 const CHAR_HEIGHT := 64
@@ -92,12 +92,17 @@ func _ready() -> void:
 ##          strings + one requested-remedy string for the in-game motion packet
 ##          UI. This keeps the player's assembled packet visible and stable
 ##          across save/load before court.
+## Blue Folder foundation (SAVE_VERSION 20): chapter1.has_case_folder,
+##          top-level case_folder{}, inventory{}, and active_case_id.
 func reset_state() -> Dictionary:
 	return {
 		## room_transition.gd: which scene is currently loaded.
 		"current_scene_path": "res://scenes/world/routes/office_street.tscn",
 		## room_transition.gd: which spawn point the player last entered through.
 		"current_spawn_id": "default",
+		## Current case key used by cross-case UI surfaces. Empty string means
+		## no motion packet is active.
+		"active_case_id": "",
 		## Chapter 1 NPC encounter, beat-progression, and item flags.
 		"chapter1": {
 			## Phase 7 / sprint 3 baseline flags.
@@ -106,6 +111,8 @@ func reset_state() -> Dictionary:
 			"met_murrow": false,
 			"met_crab": false,
 			"met_whimsy": false,
+			## Blue Folder pickup gate. Owner: blue_folder_pickup.gd.
+			"has_case_folder": false,
 			"has_law_binder": false,
 			"has_rights_memo": false,
 			"recruited_crab": false,
@@ -241,6 +248,15 @@ func reset_state() -> Dictionary:
 			"residential": false,
 			"business_district": false,
 			"court_plaza": false,
+		},
+		## Inventory item ids currently held by the player. Values are true for
+		## quick membership checks; item display data still lives in items.json.
+		"inventory": {},
+		## Persistent Blue Folder data. Argument fragments are dialogue-driven;
+		## notes_seen maps fragment_id -> true after the player opens a note.
+		"case_folder": {
+			"argument_fragments": [],
+			"notes_seen": {},
 		},
 		## Cross-chapter coffee state. Persists across replays; updated by
 		## coffee_brewing.gd on exit. Keys mirror minigames.txt §Game state.

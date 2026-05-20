@@ -65,7 +65,7 @@ This recalibration matters: he is no longer a man who refuses to help until you'
 
 These are non-negotiable.
 
-- He addresses **Cula** initially as **"Dr. A. Cula"**, briefly — only at the very first meeting. **In the Chapter 1 first conversation, Murrow explicitly invites informality.** Canonical line shape: *"It is Murrow, to friends. The 'Mister' I keep for invoices."* From that beat forward, he addresses Cula as **"Cula"** in private and **"Dr. A. Cula"** in formal contexts (court, in front of clients).
+- He addresses **Cula** as **"Dr. A. Cula"** exactly once — at the very first meeting, as part of the greeting. **In the Chapter 1 first conversation, Murrow explicitly invites informality.** Canonical line shape: *"It is Murrow, to friends. The 'Mister' I keep for invoices."* From that beat forward, he addresses Cula as **"Cula"** in every register — private, in court, in front of clients, and during cold rebukes alike. The form does not revert to a title (per Piotr 2026-05-19). The non-canonical form **"Doctor Cula"** is not used at any point.
 - He addresses **Mr. Pig** as **"Mr. Pig"**. Always. Long working relationship; the formality is the texture, not the distance.
 - He addresses **Mr. Swine** as **"Mr. Swine"**. Same.
 - He addresses **Crab** as **"Crab"**. They are first-name terms — they have known each other since aplikantura.

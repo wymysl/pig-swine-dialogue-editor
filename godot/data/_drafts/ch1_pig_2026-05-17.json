@@ -1,0 +1,169 @@
+{
+  "_draft_note": "INERT draft. Lives under data/_drafts/, never loaded by dialogue_runner. Consolidated Ch1 Mr. Pig dialogue covering Beats 3, 8, 10, 13. Hand-promote to godot/data/dialogues/pig.json (merging or replacing existing Beat-3 state) after Piotr review. State ids use pig_b{N}_ prefix and are namespaced to avoid collision with the live pig_first_meeting. No new flags introduced; triggers reference only the canonical Ch1 flag set named in the brief. Em-dashes from spec/voice samples have been converted to commas/periods per Piotr-locked rule G. Maritime metaphor density held to roughly 1-in-4 per Pig bible (denser in panic beats).",
+  "_chapter_ref": "narrative_revision/beats/chapter_1.md — Beat 3 (panic + eviction-Friday + Sikorska plant + rent claim), Beat 8 (brief meeting-room intrusion + Murrow shepherding), Beat 10 (printer-lease aside + first back-in-my-day lecture), Beat 13 (firm-survival celebration + 5,000 PLN fee reference + missing-Swine-retainer claim + character-dwell options).",
+  "_flags_used": [
+    "chapter1.met_pig",
+    "chapter1.pig_revealed_crisis",
+    "chapter1.met_murrow",
+    "chapter1.has_law_binder",
+    "chapter1.recruited_crab",
+    "chapter1.recruited_whimsy",
+    "chapter1.halina_arrived",
+    "chapter1.halina_close_done",
+    "chapter1.client_fee_agreed",
+    "chapter1.court_won_procedural_reset",
+    "chapter1.received_swine_postcard",
+    "chapter1.pig_postcard_reaction_shown"
+  ],
+  "version": 2,
+  "npc_id": "pig",
+  "display_name": "Mr. Pig",
+  "states": [
+    {
+      "id": "pig_b3_panic_open",
+      "trigger": "!chapter1.met_pig",
+      "once": true,
+      "_comment": "Beat 3 — opening panic. Pig addresses Cula as 'Dr. A. Cula' (per bible: always, even worried). Cula uses 'Mr. Pig' (first meeting). Rent claim ONLY here per phase-6 distribution (printer lease lands Beat 10; missing Swine retainer Beat 13). Eviction-Friday plant: Pig drops 'Mrs. Sikorska' and a Friday deadline without elaboration, then redirects to Murrow per v1 'Pig should not explain the case properly'. Maritime density elevated for panic beat: hull/Friday-tide images. First-meeting greeting rule satisfied (Cula opens with name + self-id; Pig acknowledges by honorific).",
+      "lines": [
+        "It would appear that we are, well. We are currently in a moment.",
+        { "speaker": "cula", "text": "Mr. Pig. Dr. A. Cula. I was told to start today." },
+        "Dr. A. Cula. Yes. Welcome. Welcome to Pig and Swine.",
+        "The rent is six weeks overdue. The landlord knocks on the hull. Politely. The polite knock is somehow worse than a loud one.",
+        "Six weeks under the surface and the firm sails on momentum, which is a kind of asset if you do not look at it.",
+        "Also. The court. There is a court date on Friday. A Mrs. Sikorska. A flat. An address. The tide is on Friday and the boat is, as you can see, here.",
+        "Mr. Murrow has the folder. Mr. Murrow knows the, ask Mr. Murrow.",
+        { "speaker": "cula", "text": "Friday. The Sikorska matter. Understood." },
+        "Right. Right. Yes. Anything else, ask Asia. Asia knows where things are. Asia knows where I am, frequently before I do."
+      ],
+      "options": {
+        "write_path": "chapter1.pig_revealed_crisis",
+        "choices": [
+          { "text": "What is the case about?", "value": "true" },
+          { "text": "Are you alright, Mr. Pig?", "value": "true" },
+          { "text": "And Mr. Swine? Where is he?", "value": "true" }
+        ]
+      },
+      "on_dismiss": [
+        { "set": "chapter1.met_pig", "value": true },
+        { "set": "chapter1.pig_revealed_crisis", "value": true }
+      ],
+      "tags": ["beat3", "panic", "rent_claim", "sikorska_plant", "first_meeting"]
+    },
+    {
+      "id": "pig_b3_dwell_case",
+      "trigger": "chapter1.met_pig && chapter1.pig_revealed_crisis && !chapter1.met_murrow",
+      "_comment": "Beat 3 character-dwell — 'What is the case about?'. Panic precludes explanation; redirects to Murrow per v1 commitment. Addresses Cula as 'Dr. A. Cula'. Maritime stays light here. Two lines, ends on redirect.",
+      "lines": [
+        "The case is. The case has a date. The date is Friday. The Friday is not negotiable, I have asked.",
+        "Mr. Murrow has the file. Mr. Murrow has the sentences for the file. I have the panic, which is administrative and unhelpful in court."
+      ],
+      "tags": ["beat3", "dwell", "deflection"]
+    },
+    {
+      "id": "pig_b3_dwell_okay",
+      "trigger": "chapter1.met_pig && chapter1.pig_revealed_crisis && !chapter1.met_murrow",
+      "_comment": "Beat 3 character-dwell — 'Are you alright, Mr. Pig?'. Bible interior-range plant: brief admission of sleeplessness via fog/navigation image, then back to performed crisis without dwelling. Addresses Cula as 'Dr. A. Cula'. Two lines. NOTE: ordered after pig_b3_dwell_case; runner picks first match, so as authored only the case-dwell will fire on this trigger. Promote-time fix: split triggers via an option-write path. Flagged in _open_questions.",
+      "lines": [
+        "Sleep, yes. I have a working relationship with sleep. We exchange brief letters.",
+        "Most mornings I navigate in fog and arrive somewhere. Not always where the calendar suggested, but somewhere. Anyway. Dr. A. Cula, the Friday tide will not wait."
+      ],
+      "tags": ["beat3", "dwell", "interior_range", "briefly_sincere"]
+    },
+    {
+      "id": "pig_b3_dwell_swine",
+      "trigger": "chapter1.met_pig && chapter1.pig_revealed_crisis && !chapter1.met_murrow",
+      "_comment": "Beat 3 character-dwell — 'Where is Mr. Swine?'. Deflection register, vagueness about a 'strategic engagement'. Plants Swine's chronic absence without surfacing Ch4 inflection content. Addresses Cula as 'Dr. A. Cula'; addresses absent partner as 'Mr. Swine' (client-adjacent register). NOTE: trigger overlap with the other dwells — see _open_questions.",
+      "lines": [
+        "Mr. Swine is on a strategic engagement. The strategy is, I am told, ongoing.",
+        "He sends word. The word, when it arrives, is usually a postcard. The postcards are reassuring in tone and unhelpful in particulars."
+      ],
+      "tags": ["beat3", "dwell", "swine_deflection"]
+    },
+    {
+      "id": "pig_b8_meeting_intrusion",
+      "trigger": "chapter1.halina_arrived && !chapter1.halina_close_done",
+      "once": true,
+      "_comment": "Beat 8 brief intrusion in the meeting room. Pig enters in panic register, says TWO maritime-flavored lines inappropriate to the room, addresses Murrow (NOT Halina — per bible, with clients he goes to full court formality; here he is in panic and never quite registers Halina). Murrow shepherds him out. Addresses: Pig→Murrow 'Mr. Murrow'; Murrow→Pig 'Mr. Pig'. Halina present silently (folder on table). Plants Pig's chronic mode for Ch5 retraversal per phase-8 open question 'Pig's presence during Beat 8'. Two-line ceiling honored.",
+      "lines": [
+        { "speaker": "pig", "text": "Mr. Murrow. The Hennessy retainer phone has gone overboard. Third time this morning. Where is Asia." },
+        { "speaker": "pig", "text": "And the printer is throwing red lights. Small craft warning, Mr. Murrow." },
+        { "speaker": "murrow", "text": "Mr. Pig. The meeting." },
+        { "speaker": "murrow", "text": "Asia has the phone. The printer can wait. Step out a moment." },
+        { "speaker": "pig", "text": "Yes. Yes. Of course. Apologies. The room. Carry on." }
+      ],
+      "tags": ["beat8", "meeting_room", "intrusion", "shepherded_out", "ch5_plant"]
+    },
+    {
+      "id": "pig_b10_printer_and_lecture",
+      "trigger": "chapter1.recruited_crab && chapter1.recruited_whimsy && chapter1.client_fee_agreed && !chapter1.court_won_procedural_reset",
+      "once": true,
+      "_comment": "Beat 10 readiness-check aside. Two financial moves: (a) printer-lease aside — SECOND of three financial claims, kraken image; (b) first 'back in my day' lecture — three sentences max, sincere as memory, lands as Pig being Pig (per phase-6 Hit #1 relocation). Addresses Cula as 'Dr. A. Cula'. Maritime density: kraken for the printer (escalation work), then lecture drops maritime since it's memory not crisis. The two financial-claim joke loads: printer-as-kraken (claim 2) and lecture-as-misfire (apprentice + sandwich).",
+      "lines": [
+        "Dr. A. Cula. A moment. Two moments.",
+        "The printer lease has come back as a kraken. We renew next month, presumably with bait.",
+        "When I was an apprentice, we had no readiness check. Only fear. We navigated by panic alone, and they paid us in the chance to be in the room, which was, on balance, slightly more than a sandwich.",
+        "Anyway. Carry on. The Friday tide remains a Friday tide."
+      ],
+      "tags": ["beat10", "printer_lease", "lecture", "second_financial_claim"]
+    },
+    {
+      "id": "pig_b13_celebration_open",
+      "trigger": "chapter1.court_won_procedural_reset && !chapter1.pig_postcard_reaction_shown",
+      "once": true,
+      "_comment": "Beat 13 celebration. Firm-first / client-second ordering (load-bearing). Names the 5,000 PLN Sikorska fee alongside rent and printer — the fee anchor. Then the missing-Swine-retainer aside — THIRD financial claim. Em-dashes from voice sample converted to commas/periods per rule G. Addresses Cula as 'Dr. A. Cula'; absent partner as 'Mr. Swine' (team-present register). Options surface character-dwell facets per beat sheet: gratitude (clipped), Swine anxiety, distractable next-case mention. One brief paternal-warmth flicker is in the first line ('You are back. Good. Good.').",
+      "lines": [
+        "You are back. Good. Good.",
+        "We have come through another impossible thing. The client, yes, the client, also survived. The rent will breathe, the printer can wait, and the five thousand from Mrs. Sikorska came through.",
+        "Mr. Swine's retainer is still, somewhere. Sea of Japan. Presumably alive.",
+        "The firm will see another month. A month is not a year, but a month is a month."
+      ],
+      "options": {
+        "write_path": "chapter1.pig_postcard_reaction_shown",
+        "choices": [
+          { "text": "Thank you, Mr. Pig.", "value": "false" },
+          { "text": "Any word from Mr. Swine?", "value": "false" },
+          { "text": "What is next on the docket?", "value": "false" }
+        ]
+      },
+      "tags": ["beat13", "celebration", "firm_first", "fee_reference", "third_financial_claim", "paternal_flicker"]
+    },
+    {
+      "id": "pig_b13_dwell_thanks",
+      "trigger": "chapter1.court_won_procedural_reset && !chapter1.received_swine_postcard",
+      "_comment": "Beat 13 dwell — gratitude (clipped). Bible: 'no genuine reassurance' rule; he cannot land a clean thank-you without undermining. Brief, two lines, dignity-in-incompetence. Addresses Cula as 'Dr. A. Cula'. NOTE: trigger overlap with sibling dwells — promote-time the runner picks first match. See _open_questions.",
+      "lines": [
+        "Right. Yes. Right. Well done, Dr. A. Cula. I will say it once.",
+        "I will not say it twice, the budget is not there. But once, yes."
+      ],
+      "tags": ["beat13", "dwell", "gratitude_clipped"]
+    },
+    {
+      "id": "pig_b13_dwell_swine",
+      "trigger": "chapter1.court_won_procedural_reset && !chapter1.received_swine_postcard",
+      "_comment": "Beat 13 dwell — anxiety about Swine's continued absence. Maritime light. Stays inside the will-not-say: no diagnosis of structure, no admission. Addresses absent partner as 'Mr. Swine' (team-present register).",
+      "lines": [
+        "Mr. Swine is, as I said, presumably alive. The retainer also, presumably.",
+        "He will return. He always returns. The arithmetic does not always survive the trip, but he does, on average."
+      ],
+      "tags": ["beat13", "dwell", "swine_anxiety"]
+    },
+    {
+      "id": "pig_b13_dwell_next",
+      "trigger": "chapter1.court_won_procedural_reset && !chapter1.received_swine_postcard",
+      "_comment": "Beat 13 dwell — distractable mention of the next case. Foreshadows Ch2 mechanical demand without specifying content. Pig's eye lands on cost first (per bible). Addresses Cula as 'Dr. A. Cula'.",
+      "lines": [
+        "The docket. Yes. There is a docket. There is always a docket.",
+        "Something with a Mr. Borowski, I think, or a letter that arrived sideways. Asia has it filed. Asia has everything filed, including, on occasion, me."
+      ],
+      "tags": ["beat13", "dwell", "next_case_plant", "distractable"]
+    }
+  ],
+  "_open_questions": [
+    "Beat 3 dwell branching: three dwell states share the same trigger (met_pig && pig_revealed_crisis && !met_murrow). Runner picks the first match in JSON order, so only pig_b3_dwell_case currently fires on that gate. Standard fix at promote-time: introduce an options.write_path to a flag tracking which dwell the player picked, then gate each dwell on a distinct enum value. The brief forbids new flags, so this is left for Piotr to resolve — either by repurposing an existing flag, by approving a new dwell-tracker flag, or by collapsing the three dwells into one options.choices block where each choice writes nothing but emits a chained next state.",
+    "Beat 13 dwell branching: same shape as Beat 3 — three dwells share a trigger. Same fix path applies. The Beat 13 celebration block already uses a single-option write_path (pig_postcard_reaction_shown) for an unrelated purpose; that flag should not be co-opted as the dwell discriminator.",
+    "Beat 8 intrusion gate: trigger uses chapter1.halina_arrived && !chapter1.halina_close_done. If chapter1.met_murrow / shepherding choreography needs an additional gate (e.g., to ensure Murrow is at the table before he can shepherd), Piotr should confirm whether to add chapter1.met_murrow as an extra trigger clause. Currently met_murrow is implicit in the Beat 8 setup but not asserted by the trigger.",
+    "Beat 13 trigger uses !chapter1.pig_postcard_reaction_shown to gate the celebration opener; this assumes the postcard reaction is the natural one-shot gate. If Piotr prefers a beat13_complete-style gate, the open state can be rewritten and the dwell-trigger updates fall out cleanly.",
+    "Pig's address form to Halina was not exercised — he never registers her in Beat 8 (per the brief's 'inappropriate to the room' direction; he addresses Murrow throughout). If a courteous turn toward Halina is wanted at promote-time, the bible says 'Mrs. Sikorska' (never 'Halina', never 'Pani Sikorska' in English-version dialogue per ai_voice_constraints §1.5 translation table — though 'Pani Sikorska' is a borderline flavor word that Piotr may want as the deliberate texture exception).",
+    "The first 'back in my day' lecture is three sentences as required; phase-6 commitment is that the four lectures (Ch1-Ch4) should be authored together for register continuity. This draft delivers only the Ch1 instance."
+  ]
+}

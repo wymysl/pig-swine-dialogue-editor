@@ -1,0 +1,87 @@
+{
+  "_status": "PENDING — promote asia_post_court_congratulation to dialogues/asia.json and coffee_machine_beat13_close as an env-beat state (TBD target file). Blocked on: Code declaring chapter1.pig_court_win_acknowledged (bool) in state.gd and chapter1.json new_state_flags, bumping SAVE_VERSION. Companion to nightly_design_pig_2026-05-14.json (covers remaining Beat-13 close pieces).",
+  "_draft_note": "Nightly design agent draft 2026-05-17. Covers the two Beat-13 close pieces NOT already drafted in data/_drafts/nightly_design_pig_2026-05-14.json: (1) Asia's congratulation state (story.txt Beat 13: 'Asia congratulates the player while still sorting impossible paperwork') and (2) the environmental coffee-machine close (story.txt Beat 13: 'The coffee machine makes an ominous sound'). The four NPC lines (Pig, Murrow, Crab, Whimsy) remain in the 2026-05-14 draft and are not redrafted here. Not yet promoted to runtime. Review against voice_references/ before promotion.",
+  "_beat_ref": "story.txt §Beat 13 — Return to Pig & Swine: celebration, ledger, fee reference, ominous coffee-machine close.",
+  "_address_form_check": "Asia uses 'Dr. A. Cula' always per AGENTS.md §Address forms. Coffee machine env-beat speaker is 'stage_direction' (matches postcard_swine_ch1.json::pig_readaloud_cue convention).",
+  "_flags_used": [
+    "chapter1.won_court — declared in chapter1.json::new_state_flags (line 55) and state.gd::reset_state(); confirmed via grep. Set by judge_district_ch1.json victory states and battle_controller.gd line 437.",
+    "chapter1.beat13_complete — declared in chapter1.json::new_state_flags (line 91); set_by clause: 'Beat 13 office payoff close' — currently NEVER SET. This draft sets it via the coffee-machine env-beat on_dismiss, closing the gate that postcard_swine_ch1.json::asia_address_label requires.",
+    "chapter1.pig_court_win_acknowledged — NEW FLAG. Required by proposal 1 step 3. Default false. Set by pig.json::pig_court_win_celebration on_dismiss (per the 2026-05-14 draft, plus this new write). Code task: declare in state.gd::reset_state(), add to chapter1.json::new_state_flags, bump SAVE_VERSION, add migration step."
+  ],
+  "asia_beat13": {
+    "npc_id": "asia",
+    "display_name": "Asia",
+    "_promotion_target": "data/dialogues/asia.json (insert before idle_flavor block). If the dialogue runner dispatches asia_hint_states_ch1.json for office-Asia interactions after won_court, promote there instead — Design's call at promotion based on which file resolves first under the runner's priority order.",
+    "_comment": "story.txt Beat 13 specifies Asia 'congratulates the player while still sorting impossible paperwork' and notes the 'cheerful-while-drowning structural pattern that recolors at the chapter-3 inflection.' The congratulation must (a) read as congratulation at face value at chapter 1, and (b) avoid firm-financial content that would lock the line into one register before the ch3 ledger reveal recolors it. The 'three improvements before lunch' closer is Asia's standard list-of-three structural fingerprint (cf. her existing 'I have filed three motions, answered five calls, and labelled a sandwich urgent' idle line); the items chosen here are the win, the firm's rent calendar, and Asia's own bandwidth, in that order. The bandwidth-restored item is the personal one and is the load-bearing element for the ch3 recoloring: by ch3 the player understands that personal-bandwidth-restored is the only metric Asia is permitted to celebrate. The address form 'Dr. A. Cula' is verbatim canon for Asia per AGENTS.md.",
+    "proposed_state": {
+      "id": "asia_post_court_congratulation",
+      "trigger": "chapter1.won_court == true && !chapter1.beat13_complete",
+      "_comment": "Beat 13 — Asia state. Fires once after Cula returns from court but before the Beat-13 env-beat close. Trigger is gated !beat13_complete so the state stops firing once the chapter-close sequence runs; existing post-postcard repeat lines or chapter-2 carry-over states (when authored) take over. Asia's register here is 'cheerful_tired' per voice_references/dialogue_samples_asia.jsonl. The sorting-while-talking framing is the spec literal; the line itself does not name the sort but its rhythm carries it.",
+      "lines": [
+        "Dr. A. Cula. Well done.",
+        "The motion is on the record, the rent is on the calendar, and the calendar has stopped shouting at me.",
+        "Three improvements before lunch."
+      ],
+      "_voice_refs": [
+        "asia_ch01_intro_004 (paperwork_panic register, 'Please do not move that pile. It is arranged by urgency, invoice risk, and how loudly Mr. Pig screamed when I opened it.') — list-of-three closer is Asia's structural fingerprint.",
+        "asia.json::idle_flavor 'I have filed three motions, answered five calls, and labelled a sandwich urgent. We are having a very productive collapse.' — same list-of-three architecture; this Beat-13 line is the affirmative counterpart at the chapter close.",
+        "story.txt Beat 13 spec literal: 'Asia congratulates the player while still sorting impossible paperwork. (Phase-6: this beat plants the cheerful-while-drowning structural pattern that recolors at the chapter-3 inflection. Already does double work; phase 7 holds the warm-practical register.)'"
+      ],
+      "_taste_standard": [
+        "1 (Funny): 'the calendar has stopped shouting at me' personifies the office's load — the calendar is the antagonist Asia has been managing all chapter; its silence is the joke.",
+        "2 (Clever): real referent is the front-desk role itself; the calendar is the diary system every Polish kancelaria runs by, and 'on the calendar' is the institutional verb for 'a hearing is scheduled'. The phrase carries both senses.",
+        "3 (Alive): three short declaratives, list-of-three closer, no adjectives, no advice. Asia's rhythm intact.",
+        "4 (Clear): congratulates Cula directly ('Dr. A. Cula. Well done.'); names which win ('the motion is on the record'); closes with a personal-bandwidth note that says, in Asia's idiom, 'we are slightly less drowning.'",
+        "5 (Future-proof): no firm-financial claim (rent/fee/printer are deliberately Pig's items, not Asia's, so the ch3 ledger reveal recolors Pig's celebration and leaves Asia's intact — except the 'rent is on the calendar' line, which is congruent with both the ch1 face reading and the ch3 retroactive reading that Asia knew the rent items were not what they appeared). The 'three improvements before lunch' framing is plausibly Asia for the rest of the game; no chapter-specific lore."
+      ]
+    }
+  },
+  "coffee_machine_beat13_close": {
+    "npc_id": "coffee_machine_ch1",
+    "display_name": "(coffee machine)",
+    "_promotion_target": "Recommended: new file data/dialogues/coffee_machine_ch1.json modelled on postcard_swine_ch1.json. Alternative: append as an additional 'stage_direction' state inside pig.json or asia.json. The standalone-file pattern is preferred because (a) it keeps the env beat decoupled from any NPC's state machine, (b) it matches the existing project convention for environmental beats with their own trigger chain, and (c) it gives the coffee machine running joke a single home as it recurs in chapters 2-4.",
+    "_comment": "story.txt Beat 13 closer: 'The coffee machine makes an ominous sound.' The line both closes the Beat-13 celebration and writes the chapter1.beat13_complete flag that gates the Beat-14 postcard. The 'ominous sound' is the office's coda — every other character has reacted to the win; the machine has the last beat. The line connects to the running coffee-machine-as-witness joke (cf. barista.json::coffee_outcome_alert_plus 'suspicious appellate energy' and the meta-canonical 'admissible only under seal' framing from story.txt Beat 2). The light-blinks-once-slowly detail is the environmental specificity that earns the laugh without overplaying it.",
+    "proposed_state": {
+      "id": "coffee_machine_beat13_close",
+      "trigger": "chapter1.won_court == true && chapter1.pig_court_win_acknowledged == true && !chapter1.beat13_complete",
+      "_comment": "Beat 13 close. Fires after Pig's celebration acknowledges the win (via the new pig_court_win_acknowledged flag set on pig.json::pig_court_win_celebration on_dismiss per proposal 1 step 1). Sets chapter1.beat13_complete = true on_dismiss; that flip is what makes postcard_swine_ch1.json::asia_address_label fire on the next interaction. Speaker 'stage_direction' matches postcard_swine_ch1.json::pig_readaloud_cue convention. Single environmental beat, two short observations.",
+      "speaker": "stage_direction",
+      "lines": [
+        "The coffee machine makes a sound that is not quite a complaint and not quite a confession. The light on the side blinks once, slowly, and stays off."
+      ],
+      "on_dismiss": [
+        {
+          "set": "chapter1.beat13_complete",
+          "value": true
+        }
+      ],
+      "tags": [
+        "beat13",
+        "chapter_close",
+        "coffee_machine",
+        "stage_direction",
+        "env_beat"
+      ],
+      "_voice_refs": [
+        "story.txt Beat 13 closer literal: 'The coffee machine makes an ominous sound.'",
+        "story.txt Beat 2 environmental reference: 'The coffee machine makes a noise that sounds admissible only under seal.' — the same machine, six beats later, after winning the case it has been witness to. The 'not quite a complaint, not quite a confession' phrasing extends the 'admissible only under seal' framing into the chapter-close register.",
+        "barista.json::coffee_outcome_alert_plus 'That cup has structure, balance, and suspicious appellate energy.' — the cross-cutting coffee-as-legal-document running joke that this env beat closes for chapter 1.",
+        "postcard_swine_ch1.json::chapter_close — the stage_direction-as-coda convention for chapter-close environmental beats. This Beat-13 env beat is the same surface earlier in the close sequence (Beat-13 close vs Beat-14 close); the structural parallel is intentional."
+      ],
+      "_taste_standard": [
+        "1 (Funny): 'not quite a complaint and not quite a confession' gives the machine the legal-personhood ambiguity that has been running since Beat 2's 'admissible only under seal'. The slow single blink-and-off is the visual punchline.",
+        "2 (Clever): real referent is the legal taxonomy of evidence (a complaint is one document; a confession is another; the machine produces neither and both). The light-stays-off is the canonical industrial-equipment failure mode — the player who has watched the machine misbehave all chapter reads this as the machine taking a vow of silence rather than the machine breaking.",
+        "3 (Alive): two short sentences, no adjectives that aren't structural ('slowly'), no character voice intrusion. The env beat reads as observation.",
+        "4 (Clear): closes the celebration; sets the chapter-close mood; the writer of postcard_swine_ch1.json::asia_address_label can rely on this flag being set before that state's trigger evaluates.",
+        "5 (Future-proof): the coffee machine continues to make noises through chapters 2-4 (and is reframed as a Casebook battle adversary by Chapter 5 per PROPOSALS.md §3 Final Printer reframe). This line carries no chapter-1-specific content that would collide with later coffee-machine beats. The 'admissible / complaint / confession' family of legal-document jokes remains live across the chapter arc."
+      ]
+    }
+  },
+  "_validation_notes": [
+    "Both proposed states pass the Taste Standard 5/5 per their _taste_standard self-attestations above. Re-verify at promotion against the latest voice baselines.",
+    "Trigger flags verified: chapter1.won_court (chapter1.json:55 ✓), chapter1.beat13_complete (chapter1.json:91 ✓). New flag pig_court_win_acknowledged is Code-owned and is part of proposal 1 step 3.",
+    "Address forms verified per AGENTS.md §Address forms: Asia → 'Dr. A. Cula' (always). Stage-direction speaker does not address Cula.",
+    "Order of fire: pig_court_win_celebration → asia_post_court_congratulation (independent, gated !beat13_complete) → coffee_machine_beat13_close (gated on pig_court_win_acknowledged). Walking order in the office is player-controlled, so Asia and the coffee machine may fire in either order relative to each other after Pig fires; both gates are mutex-safe because beat13_complete is only set by the coffee-machine close.",
+    "No content in this draft duplicates content in data/_drafts/nightly_design_pig_2026-05-14.json (which covers Pig/Murrow/Crab/Whimsy Beat-13 lines)."
+  ]
+}

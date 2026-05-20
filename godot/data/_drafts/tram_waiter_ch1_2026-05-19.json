@@ -1,0 +1,35 @@
+{
+    "_draft_note": "INERT STAGING. Lives under godot/data/_drafts/, never loaded by dialogue_runner (the runner uses DirAccess on godot/data/dialogues only). Promote to godot/data/dialogues/tram_waiter_ch1.json once Piotr authors the lines. State ids are globally namespaced (tram_waiter_*) per _schema.md. Tram waiter is a purely transactional street NPC — the transactional carve-out in godot/AGENTS.md §First-meeting introductions applies, so no name-exchange first-meeting beat is required. He stands at the tram stop on office_street.tscn (Tram17 platform) and reacts to the player approaching the rails. Address form toward Cula: 'Dr. A. Cula' if he speaks to him by name, but the more idiomatic register here is muttering to the platform, not direct address.",
+    "_chapter_ref": "Chapter 1 ambient. Beat 1 (arrival walk to the office) and reusable thereafter. No quest-critical content; this NPC exists to make Office Street feel inhabited.",
+    "_address_form_note": "Toward Cula: 'Dr. A. Cula' if direct address is used. Polish service register is in scope (tram-platform mutter) but per godot/AGENTS.md §Stack invariants the English-first rule applies; keep institutional terms in English where possible (e.g. 'the 17 is delayed' not 'siedemnastka spóźniona') unless Piotr decides a tram-stop ambient line earns a Polish phrase per English-first carve-outs.",
+    "_authoring_todo": [
+        "Replace every line beginning with '_doc:' with the finished Taste-Standard line.",
+        "Decide whether tram_waiter_first_approach should chain into a dwell option (tram-arrival timer joke) or stay one-shot.",
+        "Decide whether the waiter gets a delayed-tram reaction state gated on a future tram_arrived flag (currently unwired; out of scope for the skeleton)."
+    ],
+    "version": 1,
+    "npc_id": "tram_waiter_ch1",
+    "display_name": "Tram waiter",
+    "states": [
+        {
+            "id": "tram_waiter_first_approach",
+            "trigger": "",
+            "once": true,
+            "lines": [
+                "_doc: DRAFT — one line. Waiter mutters about the 17 being late, addressed to the platform, not the player. Keep institutional/transit terms English-first."
+            ],
+            "tags": ["chapter1", "ambient", "tram_stop"]
+        },
+        {
+            "id": "tram_waiter_repeat",
+            "trigger": "",
+            "lines": [
+                "_doc: DRAFT — one line, repeatable. Sibling shape to first_approach. A second observation about the delay or the weather; nothing that advances quest state."
+            ],
+            "tags": ["chapter1", "ambient", "tram_stop"]
+        }
+    ],
+    "idle_flavor": [
+        "_doc: DRAFT — one short idle line played at random if no state trigger matches. Optional; can be dropped."
+    ]
+}

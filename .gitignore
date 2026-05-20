@@ -35,6 +35,7 @@ godot/_recover_office.gd*
 
 # Backup files (spec stage backups, dialogue voice-reference backups)
 *.bak
+*.bak.*
 
 # Stray screenshots dumped into the scenes folder
 godot/scenes/Screenshot*.png

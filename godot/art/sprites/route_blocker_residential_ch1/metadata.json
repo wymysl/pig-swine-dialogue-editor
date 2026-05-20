@@ -1,0 +1,36 @@
+{
+  "group_id": null,
+  "states": [
+    {
+      "character": {
+        "id": "075113f9-c3bc-428a-a05f-15fabc8c960e",
+        "name": "Mid-50s male, slight gut, posture: arms crossed across the chest. Faded mustard city-worker overalls #c8a868 over a grey under-shirt #9a9088. Plaster grey cap #9a9088. Warm skin #e6b08a, weathered features (no facial detail, just silhouette). A clipboard #b89868 tucked under the left arm as a body prop \u2014 NOT held in hand. Stance is stationary, slightly weary.\nSTYLE: minimal synthetic line drawing, sparse flat shapes, institutional\nmood, neutral observational rendering, pixel-art, adult 1:5 proportions,\nfull body, hands at sides, 124\u00d7124 character sprite, 8-direction idle.\n\nNEGATIVE: detailed, shaded, gradient, anime, chibi, cute, big head,\ndecorative, fantasy, realistic, 3D, held objects, facial expressions,\nsatirical caricature",
+        "prompt": "Mid-50s male, slight gut, posture: arms crossed across the chest. Faded mustard city-worker overalls #c8a868 over a grey under-shirt #9a9088. Plaster grey cap #9a9088. Warm skin #e6b08a, weathered features (no facial detail, just silhouette). A clipboard #b89868 tucked under the left arm as a body prop \u2014 NOT held in hand. Stance is stationary, slightly weary.\nSTYLE: minimal synthetic line drawing, sparse flat shapes, institutional\nmood, neutral observational rendering, pixel-art, adult 1:5 proportions,\nfull body, hands at sides, 124\u00d7124 character sprite, 8-direction idle.\n\nNEGATIVE: detailed, shaded, gradient, anime, chibi, cute, big head,\ndecorative, fantasy, realistic, 3D, held objects, facial expressions,\nsatirical caricature",
+        "size": {
+          "width": 180,
+          "height": 180
+        },
+        "template_id": "mannequin",
+        "directions": 8,
+        "view": "low top-down",
+        "created_at": "2026-05-18T13:40:12.519195+00:00"
+      },
+      "folder": "Mid-50s_male_slight_gut_posture_arms_crossed_acros",
+      "frames": {
+        "rotations": {
+          "south": "Mid-50s_male_slight_gut_posture_arms_crossed_acros/rotations/south.png",
+          "south-east": "Mid-50s_male_slight_gut_posture_arms_crossed_acros/rotations/south-east.png",
+          "east": "Mid-50s_male_slight_gut_posture_arms_crossed_acros/rotations/east.png",
+          "north-east": "Mid-50s_male_slight_gut_posture_arms_crossed_acros/rotations/north-east.png",
+          "north": "Mid-50s_male_slight_gut_posture_arms_crossed_acros/rotations/north.png",
+          "north-west": "Mid-50s_male_slight_gut_posture_arms_crossed_acros/rotations/north-west.png",
+          "west": "Mid-50s_male_slight_gut_posture_arms_crossed_acros/rotations/west.png",
+          "south-west": "Mid-50s_male_slight_gut_posture_arms_crossed_acros/rotations/south-west.png"
+        },
+        "animations": {}
+      }
+    }
+  ],
+  "export_version": "3.0",
+  "export_date": "2026-05-18T14:00:11.457679"
+}

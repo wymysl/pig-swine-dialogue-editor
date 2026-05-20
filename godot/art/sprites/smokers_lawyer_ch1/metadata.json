@@ -1,0 +1,36 @@
+{
+  "group_id": null,
+  "states": [
+    {
+      "character": {
+        "id": "5d5ee394-841d-420f-96cb-05079675fa59",
+        "name": "Late-20s male, slim build, slightly slouched posture as if leaning\nagainst an invisible wall. Off-the-rack navy suit #1c2a40, parchment\nshirt #e8e4d8 with the collar slightly open, no tie. Dark short hair\n#1a1410. Light skin #e6b08a. One thin grey vape pen attached to the\nlower lip as a body prop \u2014 NOT held in hand. Hands tucked into\ntrouser pockets.\nSTYLE: minimal synthetic line drawing, sparse flat shapes, institutional mood, neutral observational rendering, pixel-art, adult 1:5 proportions, full body, hands at sides, 124\u00d7124 character sprite, 8-direction idle.  NEGATIVE: detailed, shaded, gradient, anime, chibi, cute, big head, decorative, fantasy, realistic, 3D, held objects, facial expressions, satirical caricature",
+        "prompt": "Late-20s male, slim build, slightly slouched posture as if leaning\nagainst an invisible wall. Off-the-rack navy suit #1c2a40, parchment\nshirt #e8e4d8 with the collar slightly open, no tie. Dark short hair\n#1a1410. Light skin #e6b08a. One thin grey vape pen attached to the\nlower lip as a body prop \u2014 NOT held in hand. Hands tucked into\ntrouser pockets.\nSTYLE: minimal synthetic line drawing, sparse flat shapes, institutional mood, neutral observational rendering, pixel-art, adult 1:5 proportions, full body, hands at sides, 124\u00d7124 character sprite, 8-direction idle.  NEGATIVE: detailed, shaded, gradient, anime, chibi, cute, big head, decorative, fantasy, realistic, 3D, held objects, facial expressions, satirical caricature",
+        "size": {
+          "width": 180,
+          "height": 180
+        },
+        "template_id": "mannequin",
+        "directions": 8,
+        "view": "low top-down",
+        "created_at": "2026-05-18T13:38:15.088651+00:00"
+      },
+      "folder": "Late-20s_male_slim_build_slightly_slouched_posture",
+      "frames": {
+        "rotations": {
+          "south": "Late-20s_male_slim_build_slightly_slouched_posture/rotations/south.png",
+          "south-east": "Late-20s_male_slim_build_slightly_slouched_posture/rotations/south-east.png",
+          "east": "Late-20s_male_slim_build_slightly_slouched_posture/rotations/east.png",
+          "north-east": "Late-20s_male_slim_build_slightly_slouched_posture/rotations/north-east.png",
+          "north": "Late-20s_male_slim_build_slightly_slouched_posture/rotations/north.png",
+          "north-west": "Late-20s_male_slim_build_slightly_slouched_posture/rotations/north-west.png",
+          "west": "Late-20s_male_slim_build_slightly_slouched_posture/rotations/west.png",
+          "south-west": "Late-20s_male_slim_build_slightly_slouched_posture/rotations/south-west.png"
+        },
+        "animations": {}
+      }
+    }
+  ],
+  "export_version": "3.0",
+  "export_date": "2026-05-18T13:58:59.763605"
+}

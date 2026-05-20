@@ -1,0 +1,655 @@
+{
+  "_draft_note": "DRAFT — NOT loaded by the runner. Consolidated Cula voice-pack for Chapter 1. Pairs with NPC-side dialogue files (pig.json, murrow.json, crab.json, whimsy.json, asia.json, halina.json, judge_district_ch1.json) which carry the surrounding scene structure. Cula is the PC; his lines here are: (a) reactions to NPC scenes, (b) dwell prompts (the text the player picks as Cula's voice), (c) internal reactions tagged 'internal'. The runtime contract: most of these states currently live or will live as Cula-speaker lines INSIDE the corresponding NPC dialogue trees (per godot/data/dialogues/cula.md scope note). This consolidated draft is the writer's view — one file, one voice — to support the V1.4 voice-pack pass (chapter_1.md §451). Engineering merge is a downstream task and not in scope here.",
+  "_chapter_ref": "narrative_revision/beats/chapter_1.md (phase 8). All Beat numbers below refer to that file. Address forms strict per godot/AGENTS.md §Address forms. Voice register per narrative_revision/voice_agents/cula.md and narrative_revision/ai_voice_constraints.md §2 Dr. A. Cula.",
+  "_flags_used": [
+    "chapter1.met_pig",
+    "chapter1.pig_revealed_crisis",
+    "chapter1.met_murrow",
+    "chapter1.met_crab",
+    "chapter1.met_whimsy",
+    "chapter1.has_law_binder",
+    "chapter1.has_rights_memo",
+    "chapter1.recruited_crab",
+    "chapter1.recruited_whimsy",
+    "chapter1.halina_arrived",
+    "chapter1.halina_met",
+    "chapter1.client_meeting_stance",
+    "chapter1.cardiologist_plant_landed",
+    "chapter1.client_fee_agreed",
+    "chapter1.archive_research_complete",
+    "chapter1.court_won_procedural_reset",
+    "chapter1.beat13_complete",
+    "chapter1.received_swine_postcard"
+  ],
+  "_stance_carrier_strategy": "Beat 8 stance is committed once at cula_b8_approach_choice via a single options block with write_path = chapter1.client_meeting_stance and chain: true. The three downstream Cula reaction tracks (cula_b8_sympathetic_*, cula_b8_blunt_procedural_*, cula_b8_technical_*) are gated by reading that flag back. Rationale: one commit, three register-aligned reactions, no duplicated content scaffolding. Dwell prompts within Beat 8 are separate Cula-side option states that fire with chain: true and no write_path; their TEXT is what the player picks as Cula's voice, and the chained re-fire reaches Halina's stance-keyed reply states. Internal-reaction lines that vary by stance (per chapter_1.md §198-203) are authored as separate one-line silent-adjacent states with speaker:'cula' and tags:['internal']; the per-line speaker override surfaces them as Cula's thought-bubble in any future runner extension. The schema has no 'internal' channel yet, so these states are tagged for future wiring and currently render as ordinary Cula lines.",
+  "version": 1,
+  "npc_id": "cula",
+  "display_name": "Dr. A. Cula",
+  "states": [
+    {
+      "id": "cula_b1_arrival_observation",
+      "trigger": "!chapter1.met_pig",
+      "tags": ["beat1", "internal", "office_street"],
+      "_comment": "Beat 1 — Office Street arrival. Cula speaks to himself before entering the firm. Address form n/a (no NPC). Dry-observer register; the doctorate joke is in the precision of his own self-irony (he does not boast — he flinches at the contrast between university and the doorway in front of him). One line. No options. The state is a barker for the door interactable; the existing cula.json idle_flavor already carries the office-street line — this state echoes it as a triggered observation so the player gets one Cula moment before the firm.",
+      "lines": [
+        "Pig & Swine. Attorneys, counselors, possibly open. That is not how they described it at university."
+      ]
+    },
+    {
+      "id": "cula_b2_office_first_impression",
+      "trigger": "!chapter1.met_asia && !chapter1.met_pig",
+      "tags": ["beat2", "internal", "pig_swine_office"],
+      "_comment": "Beat 2 — entry into Pig & Swine. Cula sees Asia at the desk, three file piles, the case board, Mr. Pig pacing somewhere in the back. He has not yet spoken. The internal reaction is observational and short. Address form n/a (internal). Comedy is in the precise inventory landing on 'a noise that sounds admissible' — a sideways reference to the canonical coffee-machine line; the joke is that he registers it as evidence before registering it as a coffee machine. Two lines, the second tighter.",
+      "lines": [
+        "Three file piles, one phone, one secretary, one panic from the back room.",
+        "Somewhere in here there is a coffee machine making a noise I cannot yet classify."
+      ]
+    },
+    {
+      "id": "cula_b2_asia_greeting",
+      "trigger": "!chapter1.met_asia",
+      "tags": ["beat2", "asia", "first_meeting"],
+      "_comment": "Beat 2 — first meeting with Asia at reception. Address form: 'Asia' (canon — Cula uses bare first name with Asia from the start per voice_agents/cula.md §Address forms). Canonical first-meeting discipline: name, self-identification, period. The 'forgiveness' line is the voice-reference draft beat (cula_ch01_office_001) tightened to ration the joke. He does NOT introduce himself as 'Doctor' casually — uses the title because Asia is reception and a formal first encounter (matches the canonical pattern *'Good morning, Mrs. Sikorska. Dr. A. Cula.'*). Two lines plus one acknowledgment of her panic-management work — the social-register beat that §1.6 of ai_voice_constraints.md insists on. Lives inside asia.json as Cula speaker lines; reproduced here for voice-pack continuity.",
+      "lines": [
+        "Good morning. Dr. A. Cula. First day. I was told to ask for reception, coffee, or forgiveness.",
+        "I see you have all three in motion. I will start with reception."
+      ]
+    },
+    {
+      "id": "cula_b2_asia_dwell_tenure",
+      "trigger": "chapter1.met_asia == true && !chapter1.met_pig",
+      "tags": ["beat2", "asia", "dwell"],
+      "_comment": "Beat 2 dwell prompt — *How long have you worked here?* No write_path (no quest impact). chain:true is the runtime contract; in this draft the chained re-fire reaches an asia.json state keyed on the dwell-id pattern. Cula's question is clipped and direct; the comedy is in trusting Asia to read the room for him on his first day. One line of prompt; one option (the question itself, which the player picks). The internal echo after Asia's reply lives in cula_b2_asia_dwell_tenure_followup.",
+      "lines": [
+        "Before I start anything I should probably break: how long have you been holding all of this together?"
+      ]
+    },
+    {
+      "id": "cula_b2_asia_dwell_today",
+      "trigger": "chapter1.met_asia == true && !chapter1.met_pig",
+      "tags": ["beat2", "asia", "dwell"],
+      "_comment": "Beat 2 dwell prompt — *Is it always like this?* The question itself is the player's voice. Cula's tone: curious, not editorial — he does not narrate the firm. The line lands the clarifying-question pattern (voice_agents/cula.md §Patterns).",
+      "lines": [
+        "Is it always like this, or have I picked a particularly loud morning?"
+      ]
+    },
+    {
+      "id": "cula_b2_asia_dwell_logistics",
+      "trigger": "chapter1.met_asia == true && !chapter1.met_pig",
+      "tags": ["beat2", "asia", "dwell"],
+      "_comment": "Beat 2 dwell prompt — *Where do you keep [the coffee / the case files / the binder labels]?* In the draft the option text reads as the player picking the binder-labels variant (lands the procedural register he is about to need; sets up Beat 4 binder pickup); other variants would be authored in the asia.json reply tree if Piotr wants the three-way dwell preserved.",
+      "lines": [
+        "Practical question. Where do you keep the binder labels? The blue spines I keep seeing have to be indexed somewhere."
+      ]
+    },
+    {
+      "id": "cula_b3_pig_first_encounter",
+      "trigger": "chapter1.met_asia == true && !chapter1.met_pig",
+      "tags": ["beat3", "pig", "first_meeting"],
+      "_comment": "Beat 3 — first meeting with Mr. Pig. Address form: 'Mr. Pig' (always, per AGENTS.md). Canonical first-meeting: name, self-identification, period. He does not bring the doctorate into this — Pig is a partner, the register is junior-to-senior, and the doctorate-in-casual-mouth rule (voice_agents/cula.md §Anti-patterns) forbids it. Three lines max. The first lands a greeting; the second registers the panic without naming it; the third asks the clarifying-question that primes the eviction-Friday plant Pig is about to deliver.",
+      "lines": [
+        "Mr. Pig. Cula. The reception sent me back.",
+        "I gather there is a great deal happening this morning.",
+        "Would you like to start with the firm, the client, or the deadline?"
+      ]
+    },
+    {
+      "id": "cula_b3_pig_rent_reaction",
+      "trigger": "chapter1.met_pig == true && !chapter1.pig_revealed_crisis",
+      "tags": ["beat3", "pig", "internal_short"],
+      "_comment": "Beat 3 — Cula's reaction after Pig's rent-claim panic ('The rent is taking on water. We are six weeks under the surface.') Stress register: short, fragmented. He registers the figure (six weeks) and refuses to react to the metaphor. The dry-observer note is in 'I will take that as a fact.' He does not joke back at Pig; voice_agents/cula.md §Anti-patterns forbids counter-quipping at NPCs. Two short lines. Sets up his pivot to Murrow.",
+      "lines": [
+        "Six weeks. Understood.",
+        "I will take that as a fact and find Mr. Murrow."
+      ]
+    },
+    {
+      "id": "cula_b3_pig_dwell_case",
+      "trigger": "chapter1.pig_revealed_crisis == true && !chapter1.met_murrow",
+      "tags": ["beat3", "pig", "dwell"],
+      "_comment": "Beat 3 dwell prompt — *What's the case about?* The expected NPC reply is Pig deflecting to Murrow (canon — Mr. Pig should not explain the case properly). Cula's question is short, sincere, and gives Pig the opportunity to deflect with dignity. One line.",
+      "lines": [
+        "Mr. Pig. The case itself. Could you give me the shape of it?"
+      ]
+    },
+    {
+      "id": "cula_b3_pig_dwell_okay",
+      "trigger": "chapter1.pig_revealed_crisis == true && !chapter1.met_murrow",
+      "tags": ["beat3", "pig", "dwell"],
+      "_comment": "Beat 3 dwell prompt — *Are you okay?* The question pierces the panic for one beat. Cula does not announce concern; he asks a direct question and lets Pig's reply (brief admission of sleeplessness per the beat sheet) do the work. The dwell exposes Pig's interior range; Cula's role here is to leave the door open. One line.",
+      "lines": [
+        "Before I go, Mr. Pig. Are you all right? Today aside."
+      ]
+    },
+    {
+      "id": "cula_b3_pig_dwell_swine",
+      "trigger": "chapter1.pig_revealed_crisis == true && !chapter1.met_murrow",
+      "tags": ["beat3", "pig", "dwell"],
+      "_comment": "Beat 3 dwell prompt — *Where is Mr. Swine?* Address form: 'Mr. Swine' (always). Cula has been told there are two partners and has not met one. The clarifying question is straightforward. The plant pays in Beat 14 and Chapter 4. One line.",
+      "lines": [
+        "And Mr. Swine. Is he expected back this week, or is he travelling?"
+      ]
+    },
+    {
+      "id": "cula_b4_murrow_first_meeting_greeting",
+      "trigger": "chapter1.has_law_binder == true && chapter1.pig_revealed_crisis == true && !chapter1.met_murrow",
+      "tags": ["beat4", "murrow", "first_meeting"],
+      "_comment": "Beat 4 — first meeting with Murrow. Address form: 'Mr. Murrow' (pre-invitation, mandatory per AGENTS.md). Canonical first-meeting opener per voice_agents/cula.md §Calibration anchors. The Sikorska file is the hand-off — the line is the canon. Murrow's reply tree (in murrow.json) carries the eviction briefing; this Cula state delivers the opener and one acknowledgment that primes the briefing.",
+      "lines": [
+        "Mr. Murrow. I was told you'd have the Sikorska file.",
+        "Mr. Pig is currently in maritime conditions. I gathered it would be easier to ask you about the case itself."
+      ]
+    },
+    {
+      "id": "cula_b4_murrow_briefing_acknowledgment",
+      "trigger": "chapter1.met_murrow == true && !chapter1.recruited_crab && chapter1.has_law_binder == true",
+      "tags": ["beat4", "murrow", "internal_short"],
+      "_comment": "Beat 4 — after Murrow's clause-by-clause briefing (renumbering, 14-day window, motion-to-set-aside). Stress drops; legal-argument register lifts. Sentences lengthen slightly on procedural ground. He does not yet name Article 135-bis (that surfaces in Beat 9 with Murrow); here he names the SHAPE of the procedural problem. Two lines.",
+      "lines": [
+        "So the problem is not that the client missed the deadline. It is whether the client was ever properly brought into the case.",
+        "Wrong-door service, fourteen days from actual notice, motion to set aside. I can carry that to Crab."
+      ]
+    },
+    {
+      "id": "cula_b4_murrow_first_name_acceptance",
+      "trigger": "chapter1.met_murrow == true && !chapter1.recruited_crab",
+      "tags": ["beat4", "murrow", "address_form_pivot"],
+      "_comment": "Beat 4 — THE address-form beat. Lives canonically inside murrow.json (the line is already in the worktree draft). Reproduced here so the voice pack is complete. Murrow has just delivered the invitation ('It is Murrow, to friends. The Mister I keep for invoices.'). Cula's acceptance is one line, short, no flourish. The reciprocity ('Then it's Cula.') is the warmth — keyed exactly to the V1.2 pass-4 canon. He does NOT say 'Then it's Murrow' — that's a regression. After this state fires, every future Cula state must use 'Murrow' (no 'Mr.').",
+      "lines": [
+        "Then it's Cula."
+      ]
+    },
+    {
+      "id": "cula_b4_murrow_dwell_tenure",
+      "trigger": "chapter1.met_murrow == true && !chapter1.recruited_crab",
+      "tags": ["beat4", "murrow", "dwell"],
+      "_comment": "Beat 4 dwell prompt — *How long have you worked here?* Post-first-name beat: address form is 'Murrow' now. Cula's question is collegial-curious. The expected NPC reply (per beat sheet) surfaces archival depth without revealing Ch4 ledger content. One line.",
+      "lines": [
+        "Murrow. Out of curiosity. How long have you been at Pig & Swine?"
+      ]
+    },
+    {
+      "id": "cula_b4_murrow_dwell_pattern",
+      "trigger": "chapter1.met_murrow == true && !chapter1.recruited_crab",
+      "tags": ["beat4", "murrow", "dwell"],
+      "_comment": "Beat 4 dwell prompt — *Have you seen this kind of case before?* The wording stays clarifying-question, not commitment. Murrow's expected reply: 'More than I would like. The renumbering is unusual; the wrong-address tactic is not.' Cula's line is the door he holds open. One line.",
+      "lines": [
+        "Murrow. The wrong-address mechanism. Have you seen this shape of defect before?"
+      ]
+    },
+    {
+      "id": "cula_b4_murrow_dwell_client",
+      "trigger": "chapter1.met_murrow == true && !chapter1.recruited_crab",
+      "tags": ["beat4", "murrow", "dwell"],
+      "_comment": "Beat 4 dwell prompt — *What should I expect from the client?* Primes Beat 8 stance choice. Cula asks because he has not yet met Mrs. Sikorska and Murrow's read will calibrate his approach. The clarifying-question pattern. One line.",
+      "lines": [
+        "And before I meet her. What should I expect from Mrs. Sikorska?"
+      ]
+    },
+    {
+      "id": "cula_b5_crab_recruitment_pitch",
+      "trigger": "chapter1.has_law_binder == true && chapter1.met_murrow == true && !chapter1.met_crab",
+      "tags": ["beat5", "crab", "first_meeting", "recruitment"],
+      "_comment": "Beat 5 — recruit Crab. Address form: 'Crab' (canon — Cula opens with bare surname plus self-introduction per voice_agents/cula.md §Calibration anchors; the canonical opener is *'Crab. I'm Cula.'*). The post-binder pitch names the eviction case concretely: client, mechanism, window. Crab's expected reply is professional engagement once the work is structured. Two beat-shaped Cula turns: the opener, and then the pitch when Crab asks what he has.",
+      "lines": [
+        "Crab. I'm Cula.",
+        "Sikorska eviction defense. The notice was served to old number seven; the building was renumbered in two thousand and fifteen; she received it three weeks late. Friday hearing. I have the binder. I need someone to read service against the address record."
+      ]
+    },
+    {
+      "id": "cula_b5_crab_dwell_background",
+      "trigger": "chapter1.met_crab == true && !chapter1.recruited_crab",
+      "tags": ["beat5", "crab", "dwell"],
+      "_comment": "Beat 5 dwell prompt — *What's your background?* Short, peer-to-peer (same generation per cast canon). No flourish. One line.",
+      "lines": [
+        "Crab. Before we start: what's the shape of your background?"
+      ]
+    },
+    {
+      "id": "cula_b5_crab_dwell_why_here",
+      "trigger": "chapter1.met_crab == true && !chapter1.recruited_crab",
+      "tags": ["beat5", "crab", "dwell"],
+      "_comment": "Beat 5 dwell prompt — *Why are you at Pig & Swine?* The question is direct without being inquisitorial. Crab's reply (per beat sheet) is brief and unsentimental. Cula does not editorialize. One line.",
+      "lines": [
+        "Why Pig & Swine? You could have gone somewhere with a working printer."
+      ]
+    },
+    {
+      "id": "cula_b5_crab_dwell_case_opinion",
+      "trigger": "chapter1.met_crab == true && !chapter1.recruited_crab",
+      "tags": ["beat5", "crab", "dwell"],
+      "_comment": "Beat 5 dwell prompt — *Do you have any opinion on the case?* Cula invites Crab's procedural observation without prompting an opinion on the client. Crab's reply (per beat sheet) is leverage-aware, structural. One line.",
+      "lines": [
+        "You've seen the binder pages. Any opinion on the case before I waste your afternoon?"
+      ]
+    },
+    {
+      "id": "cula_b7_whimsy_first_meeting",
+      "trigger": "chapter1.recruited_crab == true && !chapter1.met_whimsy",
+      "tags": ["beat7", "whimsy", "first_meeting", "cafe_paragraf"],
+      "_comment": "Beat 7 — first meeting with Whimsy at Café Paragraf. Address form: 'Mr. Whimsy' (pre-recruitment, canon per voice_agents/cula.md §Calibration anchors — canonical opener *'Mr. Whimsy. Cula, Pig & Swine.'*). The clipped self-identification is the move: name, firm, period. He does not ask for cooperation; he names the deliverable he needs (rights argument) and lets the cynic-stance reply surface. Two lines max.",
+      "lines": [
+        "Mr. Whimsy. Cula, Pig & Swine.",
+        "There is a rights memo with coffee damage on it, and a hearing on Friday. I am told you are who I ask about a fair-hearing frame."
+      ]
+    },
+    {
+      "id": "cula_b7_whimsy_procedural_vibes_response",
+      "trigger": "chapter1.met_whimsy == true && !chapter1.recruited_whimsy",
+      "tags": ["beat7", "whimsy", "recruitment"],
+      "_comment": "Beat 7 — response to Whimsy's 'procedural vibes' line. Cula gives Whimsy one beat of acknowledgment, then corrects the doctrine without undercutting. The correction itself is the response per voice_agents/cula.md §Co-stars. He does not punch back; he does land the article. One line — short, dry, lands the procedural anchor.",
+      "lines": [
+        "Vibes won't carry it. The defect is service; the doorway is fair hearing; the article is in the binder."
+      ]
+    },
+    {
+      "id": "cula_b7_whimsy_dwell_office",
+      "trigger": "chapter1.met_whimsy == true && !chapter1.recruited_whimsy",
+      "tags": ["beat7", "whimsy", "dwell"],
+      "_comment": "Beat 7 dwell prompt — *Why do you work from here?* Cula notes Whimsy's physical distancing without naming it. The clarifying-question pattern. One line.",
+      "lines": [
+        "Mr. Whimsy. Why the café, and not the office?"
+      ]
+    },
+    {
+      "id": "cula_b7_whimsy_dwell_case_read",
+      "trigger": "chapter1.met_whimsy == true && !chapter1.recruited_whimsy",
+      "tags": ["beat7", "whimsy", "dwell"],
+      "_comment": "Beat 7 dwell prompt — *What's your read on the case?* Cula gives Whimsy the rhetorical opening. Whimsy's reply (per beat sheet) treats the case as a rhetorical specimen; Cula's line is the prompt that lets it land. One line.",
+      "lines": [
+        "Setting the law aside for a second: what is your read on this one?"
+      ]
+    },
+    {
+      "id": "cula_b7_whimsy_dwell_office_visits",
+      "trigger": "chapter1.met_whimsy == true && !chapter1.recruited_whimsy",
+      "tags": ["beat7", "whimsy", "dwell"],
+      "_comment": "Beat 7 dwell prompt — *Do you ever go to the office?* Light. Cula has noticed and asks rather than declaring. One line.",
+      "lines": [
+        "Honest question: do you ever turn up at the office, or is this the rest of the lease?"
+      ]
+    },
+    {
+      "id": "cula_b8_office_return_internal",
+      "trigger": "chapter1.recruited_whimsy == true && !chapter1.halina_arrived",
+      "tags": ["beat8", "internal", "office_return"],
+      "_comment": "Beat 8 setup — Cula returns to the office with Crab and Whimsy. Asia announces Halina. Internal-register: he registers the meeting room (formal, big table, contrast with the chaotic open office) without commenting. Stress register: short. One line. No options.",
+      "lines": [
+        "The meeting room has a table the rest of the office cannot afford. That tells me something about how often it is used."
+      ]
+    },
+    {
+      "id": "cula_b8_halina_arrival_greeting",
+      "trigger": "chapter1.halina_arrived == true && !chapter1.halina_met",
+      "tags": ["beat8", "halina", "first_meeting"],
+      "_comment": "Beat 8 — first meeting with Mrs. Sikorska in the meeting room. Address form: 'Mrs. Sikorska' (full honorific per voice_agents/cula.md §Address forms — clients always get the honorific; the canonical opener is *'Good morning, Mrs. Sikorska. Dr. A. Cula.'*). In court filings and formal first-meetings he uses the title. The meeting is formal; the title fits. Two lines: greeting and the team introduction. The opener is canon.",
+      "lines": [
+        "Good morning, Mrs. Sikorska. Dr. A. Cula.",
+        "This is Murrow, who has handled the case from the file. And my colleagues, Crab and Whimsy. Please, when you are ready."
+      ]
+    },
+    {
+      "id": "cula_b8_approach_choice",
+      "trigger": "chapter1.halina_met == true && chapter1.client_meeting_stance == ''",
+      "tags": ["beat8", "halina", "stance_choice", "LOAD_BEARING"],
+      "_comment": "Beat 8 LOAD-BEARING — the stance carrier. ONE state, ONE options block, writes chapter1.client_meeting_stance once. chain:true; the chained re-fire lands in Halina's stance-keyed reply tree (halina.json) which surfaces required + bonus evidence per stance. The three option TEXTS are Cula's voice choosing the register; the WRITE value commits the stance string. Tone discipline: each option text already carries the register it commits to (sympathetic = care + how-she's-holding-up; blunt-procedural = sequence + the notice itself; technical = documents + the lease). No empty 'Understood.' lines per Rule B. No em-dashes in any of the three option texts.",
+      "lines": [
+        "Mrs. Sikorska. Before we open the folder, let me ask one question to set the shape of the meeting."
+      ],
+      "options": {
+        "write_path": "chapter1.client_meeting_stance",
+        "chain": true,
+        "choices": [
+          { "text": "Lead with how she is holding up. The eviction is on her, not just on the case.", "value": "sympathetic" },
+          { "text": "Lead with the notice. The sequence is what will land in court on Friday.", "value": "blunt_procedural" },
+          { "text": "Lead with the lease and the inheritance. The tenancy validity is the substantive ground.", "value": "technical" }
+        ]
+      }
+    },
+    {
+      "id": "cula_b8_sympathetic_open",
+      "trigger": "chapter1.client_meeting_stance == 'sympathetic' && !chapter1.halina_close_done",
+      "tags": ["beat8", "halina", "stance_sympathetic"],
+      "_comment": "Beat 8 sympathetic carrier — opening. Tone: care first, sequence second. He asks about the apartment and about her, not about documents. The bonus evidence this stance surfaces (Mrs. Wójcik witness statement) emerges from Halina mentioning her second-floor neighbour during a biographical question — Cula's prompt below opens that door. Two lines max. No flourish. The 'how long' question is procedural but framed for the person, not the file.",
+      "lines": [
+        "Mrs. Sikorska, before the documents. How are you managing this? You have had three weeks of it on your kitchen table.",
+        "And the building. How long have you been there?"
+      ]
+    },
+    {
+      "id": "cula_b8_sympathetic_internal_fee",
+      "trigger": "chapter1.client_meeting_stance == 'sympathetic' && chapter1.client_fee_agreed == true",
+      "tags": ["beat8", "halina", "stance_sympathetic", "internal"],
+      "_comment": "Beat 8 sympathetic carrier — Cula's internal reaction at the fee moment. Per chapter_1.md §200: sympathetic stance registers the figure as heavy for a pensioner. One line, observational, no editorial. The 'pensioner' word is not in his mouth (would punch the line); he uses 'her month' which is concrete and human. Tagged 'internal'; speaker:'cula' to render the line as Cula's thought when a runner channel exists. No NPC reply expected.",
+      "speaker": "cula",
+      "lines": [
+        "Five thousand. That is most of her month."
+      ]
+    },
+    {
+      "id": "cula_b8_blunt_procedural_open",
+      "trigger": "chapter1.client_meeting_stance == 'blunt_procedural' && !chapter1.halina_close_done",
+      "tags": ["beat8", "halina", "stance_blunt_procedural"],
+      "_comment": "Beat 8 blunt-procedural carrier — opening. Tone: sequence first. Cula leads with the timeline of notice receipt. The bonus evidence this stance surfaces (return-to-sender slip) emerges from asking about prior correspondence. Two lines. He addresses Halina respectfully — bluntness is about TOPIC ORDER, not about tone toward her. The opener still uses her honorific.",
+      "lines": [
+        "Mrs. Sikorska. If it is all right with you, I will go in order. The notice. When did it actually reach your hand?",
+        "And before that one. Had there been other letters from the landlord, in the months before this one?"
+      ]
+    },
+    {
+      "id": "cula_b8_blunt_procedural_internal_fee",
+      "trigger": "chapter1.client_meeting_stance == 'blunt_procedural' && chapter1.client_fee_agreed == true",
+      "tags": ["beat8", "halina", "stance_blunt_procedural", "internal"],
+      "_comment": "Beat 8 blunt-procedural carrier — internal reaction at fee moment. Per chapter_1.md §201: registers the fee as a clean transaction. One line, procedural. The dryness IS the carrier. Tagged 'internal'.",
+      "speaker": "cula",
+      "lines": [
+        "Fixed fee, no retainer, paid before court. Clean."
+      ]
+    },
+    {
+      "id": "cula_b8_technical_open",
+      "trigger": "chapter1.client_meeting_stance == 'technical' && !chapter1.halina_close_done",
+      "tags": ["beat8", "halina", "stance_technical"],
+      "_comment": "Beat 8 technical carrier — opening. Tone: documents first. Cula leads with the original lease and the renumbering paperwork. The bonus evidence this stance surfaces (1962 lease + 1987 inheritance) emerges from asking about the tenancy line. Two lines. The longer sentence steadies because he is on procedural ground (voice_agents/cula.md §How Cula talks). Honorific preserved.",
+      "lines": [
+        "Mrs. Sikorska. Could we begin with the paperwork itself. The original lease, the inheritance documents. I would like to see the tenancy line before I see the notice.",
+        "And the renumbering. Do you have anything from the building administration about the change in two thousand and fifteen?"
+      ]
+    },
+    {
+      "id": "cula_b8_technical_internal_fee",
+      "trigger": "chapter1.client_meeting_stance == 'technical' && chapter1.client_fee_agreed == true",
+      "tags": ["beat8", "halina", "stance_technical", "internal"],
+      "_comment": "Beat 8 technical carrier — internal reaction at fee moment. Per chapter_1.md §202: registers fee structure (single fixed, no retainer). One line, structural. Tagged 'internal'.",
+      "speaker": "cula",
+      "lines": [
+        "Single payment, no instalments, no retainer. That is the cleanest fee shape this firm has billed in a while."
+      ]
+    },
+    {
+      "id": "cula_b8_dwell_apartment",
+      "trigger": "chapter1.halina_met == true && chapter1.client_meeting_stance != '' && !chapter1.halina_close_done",
+      "tags": ["beat8", "halina", "dwell", "biographical"],
+      "_comment": "Beat 8 dwell prompt — *Tell me about the apartment.* Available in any stance; the register colours but the text is the same biographical prompt per beat sheet. Halina's reply (father, 1962 lease, late husband, son in Wrocław) is the dwell content. Cula's line is direct, no flourish, allowing her to land the biographical depth.",
+      "lines": [
+        "Mrs. Sikorska. Tell me about the apartment. Not the case. The apartment itself."
+      ]
+    },
+    {
+      "id": "cula_b8_dwell_referral",
+      "trigger": "chapter1.halina_met == true && chapter1.client_meeting_stance != '' && !chapter1.halina_close_done",
+      "tags": ["beat8", "halina", "dwell"],
+      "_comment": "Beat 8 dwell prompt — *Are you working with anyone else?* Cula confirms how she came to the firm. Plants Murrow's reputation outside the firm. One line.",
+      "lines": [
+        "And how did you come to find us? Was there anyone else you were speaking with?"
+      ]
+    },
+    {
+      "id": "cula_b8_dwell_taught",
+      "trigger": "chapter1.halina_met == true && chapter1.client_meeting_stance != '' && !chapter1.halina_close_done",
+      "tags": ["beat8", "halina", "dwell"],
+      "_comment": "Beat 8 dwell prompt — *What did you teach?* Halina's reply names Polish language and literature for 38 years and may produce a literary reference. Cula's line is open, not steered. He may or may not catch the writer she names — voice work flags which writer in halina.json.",
+      "lines": [
+        "I take it from how you have laid out the folder that you have done a lot of careful work in your life. What did you teach, before retirement?"
+      ]
+    },
+    {
+      "id": "cula_b8_cardiologist_silent_reaction",
+      "trigger": "chapter1.cardiologist_plant_landed == true",
+      "tags": ["beat8", "halina", "internal", "cardiologist_plant"],
+      "_comment": "Beat 8 cardiologist plant — Cula's reaction to Halina's mention of the rescheduled cardiology appointment. Per chapter_1.md §197: NO Cula reaction line. No italics, no clutched chest. The player either notices it or doesn't. This state is a deliberate silent:true entry so the runtime registers the flag fired but emits NOTHING. The _comment carries the discipline; the line slot is intentionally empty. Pairs with halina.json's plant-delivery state.",
+      "silent": true
+    },
+    {
+      "id": "cula_b8_literary_epigram_reaction",
+      "trigger": "chapter1.halina_close_done == true",
+      "tags": ["beat8", "halina", "internal_short"],
+      "_comment": "Beat 8 — Cula's response to Halina's literary epigram ('You go to a lawyer like you go to a doctor: too late.') The line lands on first read as wisdom; recolors at Ch4. Cula does NOT extend the metaphor (no quip; voice_agents/cula.md §Bluntness). He gives one beat of acknowledgment, then pivots to the procedural item. The discipline IS the reaction: the player feels its weight because Cula does not undercut it. One short line.",
+      "lines": [
+        "I will try to make the visit worth the timing, Mrs. Sikorska."
+      ]
+    },
+    {
+      "id": "cula_b8_halina_closeout",
+      "trigger": "chapter1.halina_close_done == true && chapter1.client_fee_agreed == true && !chapter1.archive_research_complete",
+      "tags": ["beat8", "halina", "closeout"],
+      "_comment": "Beat 8 — closeout. Halina has gathered her folder; the retention is signed; Cula bridges to Beat 9 (Archive Room with Murrow). Two lines. The second is the bridge into Beat 9.",
+      "lines": [
+        "Thank you. We will have the motion drafted by tomorrow afternoon; the firm will be in touch before Friday with the courtroom and the time.",
+        "Murrow. Archive Room?"
+      ]
+    },
+    {
+      "id": "cula_b9_archive_setup",
+      "trigger": "chapter1.halina_close_done == true && !chapter1.archive_research_complete",
+      "tags": ["beat9", "archive_room", "internal_short"],
+      "_comment": "Beat 9 setup — Cula and Murrow at the Archive Room. Murrow opens the procedural binder to Article 135-bis. Cula's internal reaction is brief. The legal-argument register lifts (sentences lengthen, nervousness drops). One line; the article number lands.",
+      "lines": [
+        "Article 135-bis, paragraph two. The binder has been waiting for this clause all morning."
+      ]
+    },
+    {
+      "id": "cula_b9_murrow_first_clause_response",
+      "trigger": "chapter1.archive_research_complete == false && chapter1.has_law_binder == true",
+      "tags": ["beat9", "archive_room", "murrow", "internal_short"],
+      "_comment": "Beat 9 — after Murrow's first-clause narration (invalid-service definition, naming the 2015 renumbering and the landlord's knowledge). Cula's response is short, procedural; he names the structural fit. Address form: 'Murrow'. Sentences slightly longer on legal ground. Two lines.",
+      "lines": [
+        "So the knowledge requirement is met. The landlord authorised the renumbering; the landlord cannot now claim ignorance of the address that resulted.",
+        "Murrow. That is half the work done before we wrote anything."
+      ]
+    },
+    {
+      "id": "cula_b9_murrow_second_clause_response",
+      "trigger": "chapter1.archive_research_complete == false && chapter1.has_law_binder == true",
+      "tags": ["beat9", "archive_room", "murrow", "internal_short"],
+      "_comment": "Beat 9 — after Murrow's second-clause narration (motion + 14-day window, the actual-notice clock). Cula does the arithmetic out loud — the listing pattern from voice_agents/cula.md §Patterns. He does NOT panic at the tightness; he files it. One line plus a clarifying request.",
+      "lines": [
+        "Notice on the twenty-eighth of April; today's date; that puts us inside the window with days to spare, but not many.",
+        "Murrow. Do we file the motion before or after the hearing time on Friday?"
+      ]
+    },
+    {
+      "id": "cula_b9_murrow_third_clause_response",
+      "trigger": "chapter1.archive_research_complete == false && chapter1.has_law_binder == true",
+      "tags": ["beat9", "archive_room", "murrow", "internal_short"],
+      "_comment": "Beat 9 — after Murrow's third-clause narration (third-party non-cure: the current renter is not Halina's agent). Cula registers the preempted defense and stops. The legal-argument register is doing the work; he does not over-comment. One line.",
+      "lines": [
+        "Good. Then 'they accepted the notice' fails on its face. The current renter at number seven is a stranger to her, not an agent."
+      ]
+    },
+    {
+      "id": "cula_b9_dwell_how_found",
+      "trigger": "chapter1.has_law_binder == true && !chapter1.archive_research_complete",
+      "tags": ["beat9", "archive_room", "murrow", "dwell"],
+      "_comment": "Beat 9 dwell prompt — *How did you find this article?* Asked of Murrow; expected reply surfaces archival depth without Ch4 ledger content. One line.",
+      "lines": [
+        "Murrow. The binder has hundreds of pages. How did you find the article that fits?"
+      ]
+    },
+    {
+      "id": "cula_b9_dwell_used_before",
+      "trigger": "chapter1.has_law_binder == true && !chapter1.archive_research_complete",
+      "tags": ["beat9", "archive_room", "murrow", "dwell"],
+      "_comment": "Beat 9 dwell prompt — *Have you used this clause before?* Expected NPC reply: once, several years ago; brief reference. Cula's line is collegial. One line.",
+      "lines": [
+        "Have you actually run a one-thirty-five-bis motion before, or is this our first?"
+      ]
+    },
+    {
+      "id": "cula_b9_dwell_next",
+      "trigger": "chapter1.has_law_binder == true && !chapter1.archive_research_complete",
+      "tags": ["beat9", "archive_room", "murrow", "dwell"],
+      "_comment": "Beat 9 dwell prompt — *What do we need next?* Bridges to Beat 10 readiness check. One line.",
+      "lines": [
+        "Murrow. What is on the checklist between now and Friday?"
+      ]
+    },
+    {
+      "id": "cula_b9_archive_close",
+      "trigger": "chapter1.archive_research_complete == true && !chapter1.court_ready",
+      "tags": ["beat9", "archive_room", "internal_short"],
+      "_comment": "Beat 9 close — case theory crystallized. Cula names the SHAPE of the argument out loud for the player; the legal-argument register lands cleanly. Per voice_agents/cula.md §Arc-aware notes for Chapter 1, this is one of the first places his legal-argument register lands. One line.",
+      "lines": [
+        "Defective service under Article 135-bis. Motion to set aside, within fourteen days of actual notice, current resident not an authorised agent. That is a case."
+      ]
+    },
+    {
+      "id": "cula_b9_kundera_beat",
+      "trigger": "chapter1.archive_research_complete == true && !chapter1.court_ready",
+      "tags": ["beat9", "internal", "kundera_register", "once_per_chapter"],
+      "_comment": "Beat 9 — THE Kundera interior step-back beat for Chapter 1. Used ONCE per chapter per voice_agents/cula.md §Patterns. Placement: after the case theory crystallises and before the readiness check. The 'I notice that I do not yet know whether I'm staying' canonical line is one option; this draft uses a Beat-9-specific variant on the same construction. The double-step ('I notice that I do not yet know') gives the essayist remove. Tagged 'internal' and once_per_chapter so a future runner can gate the second use.",
+      "speaker": "cula",
+      "lines": [
+        "I notice that I do not yet know whether the firm is teaching me, or whether the case is teaching me, and that on a Friday this will not matter."
+      ]
+    },
+    {
+      "id": "cula_b10_readiness_check",
+      "trigger": "chapter1.archive_research_complete == true && !chapter1.court_ready",
+      "tags": ["beat10", "murrow", "readiness"],
+      "_comment": "Beat 10 — readiness check with Murrow. Per beat sheet (slimmed): case content already established; readiness items are mechanical (evidence checklist, court time, walk route). The voice-reference draft cula_ch01_readiness_001 ('We have service, fairness, and a modest remedy...') is the calibration anchor. Two lines. The 'hopeful table of contents' joke is the dry list with a small swerve (voice_agents/cula.md §Patterns).",
+      "lines": [
+        "Murrow. We have service, fairness, and a modest remedy. Please tell me that is a case and not just a hopeful table of contents.",
+        "Walk route, court time, who carries what. Run me through the checklist."
+      ]
+    },
+    {
+      "id": "cula_b10_pig_lecture_reception",
+      "trigger": "chapter1.pig_revealed_crisis == true && !chapter1.court_ready",
+      "tags": ["beat10", "pig", "internal_short"],
+      "_comment": "Beat 10 — reception of Pig's printer-lease aside ('the printer lease has come back as a kraken') and the first 'back in my day' lecture. Per chapter_1.md §266: Cula receives the lecture without comment. The discipline is the response — he files it and pivots to the readiness item. One line, polite, registers Pig without engaging the maritime metaphor. Address form: 'Mr. Pig'.",
+      "lines": [
+        "Understood, Mr. Pig. We will keep the printer informed."
+      ]
+    },
+    {
+      "id": "cula_b12_round1_response",
+      "trigger": "chapter1.entered_court == true && chapter1.casebook_judge_state != ''",
+      "tags": ["beat12", "court", "round1"],
+      "_comment": "Beat 12 Round 1 — defective service argument. Cula's court register: longer sentences, article number lands, no nervousness. Per voice_agents/cula.md §Co-stars (with judges): 'He delivers the article number and stops.' The canonical voice-reference court_001 line is the calibration. He addresses the judge with full court formality ('Wysoki Sądzie' / 'Your Honor' per address-form rules; the English draft uses 'Your Honor'). Two lines.",
+      "lines": [
+        "Your Honor. The notice was served to a non-current address. The building was renumbered in two thousand and fifteen with the landlord's countersignature; the address used was not the address of the tenant. That is not service under Article 135-bis, paragraph two.",
+        "The client should not be treated as silent where the process failed to give her a real chance to speak."
+      ]
+    },
+    {
+      "id": "cula_b12_round2_response",
+      "trigger": "chapter1.casebook_judge_state == 'round2_open' || chapter1.casebook_judge_state == 'round2_active'",
+      "tags": ["beat12", "court", "round2"],
+      "_comment": "Beat 12 Round 2 — fair hearing argument. Whimsy carries the round; Cula's role is to land the procedural anchor that supports Whimsy's flourish. The voice-reference court_003 line ('Procedure is not decoration; it is the doorway to being heard') is calibration. One line — Cula gives Whimsy the floor.",
+      "lines": [
+        "Your Honor. A party cannot meaningfully defend a case it was never properly brought into. Procedure is not decoration; it is the doorway to being heard."
+      ]
+    },
+    {
+      "id": "cula_b12_round3_remedy_sympathetic",
+      "trigger": "chapter1.casebook_judge_state == 'round3_open' && chapter1.client_meeting_stance == 'sympathetic'",
+      "tags": ["beat12", "court", "round3", "stance_sympathetic", "LOAD_BEARING_REMEDY"],
+      "_comment": "Beat 12 Round 3 — REMEDY line. Per chapter_1.md §306: flavor varies slightly by stance carrier. Sympathetic carries slight care. The remedy itself is unchanged — modest procedural reset, not total victory. Per voice_agents/cula.md §Arc-aware Chapter 1: legal-argument register first lands in District Court rounds. Two lines. The second line is the canonical remedy ask; the first carries the care.",
+      "lines": [
+        "Your Honor. The defect was a year in the making, but its effect on Mrs. Sikorska's life was a single misdirected envelope.",
+        "We do not ask the court to decide the whole dispute today. We ask that the hearing be set aside and rescheduled, so that the client may enter the dispute at all."
+      ]
+    },
+    {
+      "id": "cula_b12_round3_remedy_blunt_procedural",
+      "trigger": "chapter1.casebook_judge_state == 'round3_open' && chapter1.client_meeting_stance == 'blunt_procedural'",
+      "tags": ["beat12", "court", "round3", "stance_blunt_procedural", "LOAD_BEARING_REMEDY"],
+      "_comment": "Beat 12 Round 3 — REMEDY line. Blunt-procedural carries pure procedure: no flourish, no biographical reach. The remedy itself is unchanged. Two lines, structural. Sentences in canonical Cula legal-argument register: longer, steadier, article number at the seam.",
+      "lines": [
+        "Your Honor. The defects are sequential. Service was invalid under Article 135-bis. Actual notice triggered a fourteen-day window. The motion is timely; the third-party acceptance is not a cure.",
+        "On those grounds the hearing should be set aside and rescheduled."
+      ]
+    },
+    {
+      "id": "cula_b12_round3_remedy_technical",
+      "trigger": "chapter1.casebook_judge_state == 'round3_open' && chapter1.client_meeting_stance == 'technical'",
+      "tags": ["beat12", "court", "round3", "stance_technical", "LOAD_BEARING_REMEDY"],
+      "_comment": "Beat 12 Round 3 — REMEDY line. Technical carries archival weight: the 1962 lease and 1987 inheritance ground the tenancy validity that supports the rehearing-remedy ask. Per chapter_1.md §306. Two lines. The remedy ask is the canon; the carrier is the historical anchor.",
+      "lines": [
+        "Your Honor. The tenancy is documented from nineteen sixty-two, original lease in the father's name, and continuous since nineteen eighty-seven by inheritance. The address that the landlord did not use is the address that has held that tenancy for thirty-nine years.",
+        "On those grounds the hearing should be set aside and rescheduled so that the substance of the tenancy can be heard properly."
+      ]
+    },
+    {
+      "id": "cula_b13_victory_internal",
+      "trigger": "chapter1.court_won_procedural_reset == true && !chapter1.beat13_complete",
+      "tags": ["beat13", "internal_short"],
+      "_comment": "Beat 13 — Cula's reaction on return to the office after the court win. The voice-reference victory_001 line ('We won the part of the case that allows the case to exist') is the calibration anchor. He does not celebrate; he registers the remedy precisely. One line. The dry-observer note ('appropriately legal for a first day') is the small swerve at the end.",
+      "lines": [
+        "We won the part of the case that allows the case to exist. That feels appropriately legal for a first day."
+      ]
+    },
+    {
+      "id": "cula_b13_pig_celebration_response",
+      "trigger": "chapter1.court_won_procedural_reset == true && !chapter1.beat13_complete",
+      "tags": ["beat13", "pig"],
+      "_comment": "Beat 13 — reception of Pig's firm-first / client-second celebration speech ('We have survived another impossible thing. The client — yes, the client — also survived.'). Cula does not correct the ordering (voice_agents/cula.md §Will not say — no explicit diagnosis of the firm's structure). He gives Pig one beat of acknowledgment, then a small calibration aside. The voice-reference victory_002 line is the anchor. Address form: 'Mr. Pig'. One line.",
+      "lines": [
+        "Temporarily saved is still saved, Mr. Pig. I am learning that this office measures success in survivable intervals."
+      ]
+    },
+    {
+      "id": "cula_b13_murrow_ledger_silent",
+      "trigger": "chapter1.court_won_procedural_reset == true && !chapter1.beat13_complete",
+      "tags": ["beat13", "murrow", "internal", "ledger_plant", "out_of_scope_visual"],
+      "_comment": "Beat 13 — Murrow's silent ledger update (drawer open, ledger out, brief notation, ledger back; no dialogue per beat sheet). Cula's reaction MUST also be silent. Per voice_agents/cula.md §Will not say: 'Any reference to the chapter-4 ledger glimpse, ever, in dialogue.' Chapter 1 is too early — the ledger has not yet acquired the spine weight. The silent:true state is a deliberate-empty marker so the writer's pack records the visual beat. No on_dismiss. No lines.",
+      "silent": true
+    },
+    {
+      "id": "cula_b13_brief_murrow_response",
+      "trigger": "chapter1.court_won_procedural_reset == true && !chapter1.beat13_complete",
+      "tags": ["beat13", "murrow"],
+      "_comment": "Beat 13 — response to Murrow's brief post-update line (dry-collegial; checklist-style remark about the next case per chapter_1.md §322). Cula answers in kind: short, professional, future-facing. Address form: 'Murrow'. One line.",
+      "lines": [
+        "Murrow. Send me what you have on the next file. Tomorrow morning is fine."
+      ]
+    },
+    {
+      "id": "cula_b13_crab_response",
+      "trigger": "chapter1.court_won_procedural_reset == true && !chapter1.beat13_complete",
+      "tags": ["beat13", "crab"],
+      "_comment": "Beat 13 — response to Crab's 'pretends not to be impressed' line (per Crab bible, professional-indifference register made visible). Cula does not flatter and does not tease. He acknowledges the work. Address form: 'Crab'. One line.",
+      "lines": [
+        "The address argument carried it, Crab. Most of the round was your reading."
+      ]
+    },
+    {
+      "id": "cula_b13_whimsy_response",
+      "trigger": "chapter1.court_won_procedural_reset == true && !chapter1.beat13_complete",
+      "tags": ["beat13", "whimsy"],
+      "_comment": "Beat 13 — response to Whimsy's 'proposes turning the judgment into a musical' flourish. Per voice_agents/cula.md §Co-stars: 'gives them a beat of acknowledgment, then offers the corrected doctrine. He does not undercut Whimsy out loud.' He does not propose a libretto; he names the next deliverable. Address form: 'Whimsy'. One line.",
+      "lines": [
+        "I will look forward to the score, Whimsy. The written closing first, if you can."
+      ]
+    },
+    {
+      "id": "cula_b13_asia_response",
+      "trigger": "chapter1.court_won_procedural_reset == true && !chapter1.beat13_complete",
+      "tags": ["beat13", "asia"],
+      "_comment": "Beat 13 — response to Asia's 'congratulates the player while still sorting impossible paperwork' line. Per beat sheet: image is the plant; Asia does not pause her sorting. Cula matches the warm-practical register without flirting (voice_agents/cula.md §Co-stars with Asia: 'cordial, slightly nervous in early chapters; he does not flirt'). Address form: 'Asia'. One line.",
+      "lines": [
+        "Thanks, Asia. Whatever you are sorting, please do not let me add to the pile until tomorrow."
+      ]
+    },
+    {
+      "id": "cula_b14_postcard_reaction",
+      "trigger": "chapter1.received_swine_postcard == true && !chapter1.complete",
+      "tags": ["beat14", "swine", "postcard", "stinger"],
+      "_comment": "Beat 14 — Cula reads (or hears Asia read) the Swine postcard. Per voice-reference stinger_001: 'Japan, ski resorts, arbitration, no immediate downside. I distrust every noun in that sentence.' This is the calibration anchor and the chapter-close beat. Address form n/a (he is reacting; Mr. Swine is absent). The line is one of his sharpest in Chapter 1 — the dry-observer register at full strength. One line.",
+      "lines": [
+        "Japan, ski resorts, arbitration, no immediate downside. I distrust every noun in that sentence."
+      ]
+    },
+    {
+      "id": "cula_b14_chapter_close",
+      "trigger": "chapter1.received_swine_postcard == true && !chapter1.complete",
+      "tags": ["beat14", "chapter_close", "internal_short"],
+      "_comment": "Beat 14 — chapter close. The Day-One Survivor badge has landed; new routes are visible on the map. Cula does not editorialize about the firm or the chapter; he names what is in front of him for the player. Two short lines — the second is the navigation cue (the dry list with a small swerve).",
+      "lines": [
+        "Three districts on the map I could not walk through this morning. That is a lot of doors for one week.",
+        "Tomorrow. Murrow's next file, then the doors."
+      ]
+    }
+  ]
+}

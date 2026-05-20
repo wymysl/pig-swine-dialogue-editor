@@ -1,0 +1,457 @@
+{
+  "_draft_note": "Inert staging draft. File name contains no _rewrite or _v2 suffix but lives in _drafts/; dialogue_runner.gd does not scan this directory. Promote to judge_district_ch1.json or merge selectively after editorial review. Drafted 2026-05-17 against Beat 12 spec (chapter_1.md §Beat 12) + canonical judge_district_ch1.json (V1.6 voice pack).",
+  "_chapter_ref": "Chapter 1 Beat 12 — first court battle, District Court motion to set aside. Three rounds: Round 1 notice_defect (Crab carries), Round 2 due_process (Whimsy carries), Round 3 rehearing_remedy (modest procedural reset; technical-bonus surfaces here). Outcome: hearing reset, Halina housed, firm receives 5,000 PLN.",
+  "_flags_used": [
+    "chapter1.entered_court",
+    "chapter1.court_outcome",
+    "chapter1.court_won_procedural_reset",
+    "chapter1.element_landlord_knowledge",
+    "chapter1.element_no_third_party_cure",
+    "chapter1.element_non_current_address",
+    "chapter1.element_timely_actual_notice_motion",
+    "chapter1.bonus_evidence_collected",
+    "chapter1.client_meeting_stance",
+    "chapter1.proposed_frame",
+    "chapter1.casebook_judge_state",
+    "chapter1.won_court"
+  ],
+  "_voice_agent_note": "No judge voice agent file found in narrative_revision/voice_agents/. Register derived from: (a) ai_voice_constraints.md §3 'Various judges'; (b) canonical voice-reference samples in dialogue_samples_judge_district_court_judge.jsonl; (c) committed V1.6 lines in judge_district_ch1.json. Core register: dry surprise, measured, professional. Will-not-say: warm praise, explicit emotion, 'well done', mentor tone outside court, dramatic gavel-banging. Address form: bench uses 'Counsel' throughout; Cula addressed as 'Dr. A. Cula' only when the record earns the acknowledgement (Round 3 strong outcome). Judge does not address Halina, opposing counsel, or Pig.",
+  "_stance_bonus_handling": "Round 1 branches on chapter1.client_meeting_stance (1:1 mapping to bonus evidence: sympathetic=Wójcik affidavit, blunt_procedural=return-to-sender slip, technical=countersignature only held for Round 3). Reaction strength: blunt_procedural produces strongest reaction (knowledge irrefutable); sympathetic produces secondary reaction (affidavit adds texture); technical produces lightest Round 1 reaction (reserve surfaced in Round 3). Round 2 is single-branch. Round 3 branches on court_outcome (strong/standard/narrow/blunder-recovered) and on client_meeting_stance==technical for one additional clause (tenancy-history weight acknowledged).",
+  "_round3_register_note": "Round 3 is a modest procedural reset in every branch. Remedy discipline is load-bearing: the bench grants what the record supports and no more. 'Counsel should regard this as survival, not vindication' (canonical weak-success register) and 'No view is expressed on the merits' (standard register) are the register anchors. Technical-stance bonus adds one clause in the strong and standard branches only: the bench notes that the underlying tenancy record is coherent but remains outside the court's order today.",
+  "version": 2,
+  "npc_id": "judge_district_ch1",
+  "display_name": "Judge",
+  "states": [
+    {
+      "id": "judge_b12_hearing_open",
+      "trigger": "chapter1.entered_court && !chapter1.won_court && chapter1.casebook_judge_state == ''",
+      "once": true,
+      "_comment": "Hearing-open framing state. Fires once when the player enters the court for the first time before any round begins. Sets the procedural scope of the hearing in three questions (defective service / fair hearing / remedy). The court announces it is not deciding the whole tenancy. Dry, not hostile. Two understated jokes: lowered-expectations line and 'enthusiasm is not a recognised ground of relief' from the voice-reference set. Address form: bench does not greet Cula by name at opening; that acknowledgement is reserved for Round 3 strong outcome.",
+      "lines": [
+        "This is the application to set aside the hearing of the eighth on the ground of defective service. I understand Pig and Swine appears for the client.",
+        "The court will proceed in three questions. Why should the failure to respond be overlooked? Why does the alleged defect matter? What exactly is the court being asked to do today?",
+        "The court trusts that the panic has been paginated. Counsel should also note that enthusiasm is not a recognised ground of relief.",
+        "Counsel for the petitioner."
+      ],
+      "on_dismiss": [
+        {
+          "set": "chapter1.casebook_judge_state",
+          "value": "round_1_open"
+        }
+      ],
+      "tags": [
+        "beat12",
+        "court",
+        "hearing_open",
+        "bench_prompt"
+      ]
+    },
+    {
+      "id": "judge_b12_round1_open",
+      "trigger": "chapter1.casebook_judge_state == 'round_1_open'",
+      "_comment": "Round 1 bench prompt. Single line; fires before the player's Round 1 argument. No stance variation here — the prompt is the same regardless of carrier. Register: procedural, dry. Judge announces the round's issue: service.",
+      "lines": [
+        "Counsel for the petitioner. The first question is service."
+      ],
+      "tags": [
+        "beat12",
+        "court",
+        "round_1",
+        "bench_prompt"
+      ]
+    },
+    {
+      "id": "judge_b12_react_r1_blunt_procedural",
+      "trigger": "chapter1.casebook_judge_state == 'round_1_react' && chapter1.client_meeting_stance == 'blunt_procedural'",
+      "_comment": "Round 1 reaction — blunt-procedural carrier. Bonus evidence: return-to-sender slip proves prior landlord knowledge of the bad address. Strongest reaction. 'Knowledge is not in serious dispute' is the canonical formulation (V1.6). Dry-humor line: 'The court has seen many excuses. It has also seen real procedural defects.' Bench notes this one is the latter category. No warmth; measured acknowledgement only. Adult-occupant (third-clause) point preserved for Round 2.",
+      "lines": [
+        "Counsel. The renumbering, the prior return, and the countersignature are before the court. The court has seen many excuses. It has also seen real procedural defects. This is the latter.",
+        "Knowledge is not in serious dispute. The adult-occupant point is preserved for the second question."
+      ],
+      "tags": [
+        "beat12",
+        "court",
+        "round_1",
+        "dry_surprise",
+        "blunt_procedural_carrier"
+      ]
+    },
+    {
+      "id": "judge_b12_react_r1_sympathetic",
+      "trigger": "chapter1.casebook_judge_state == 'round_1_react' && chapter1.client_meeting_stance == 'sympathetic'",
+      "_comment": "Round 1 reaction — sympathetic carrier. Bonus evidence: Wójcik affidavit (continuous-residency witness). Secondary reaction strength: affidavit adds texture but service defect stands on documents alone. Bench notes the affidavit, does not belabour it. Single dry-acknowledgement line. Adult-occupant point preserved for Round 2.",
+      "lines": [
+        "Counsel. The affidavit is noted. The renumbering is sufficient on the documents for the service question; the witness statement is supplementary and the court has placed it in the record.",
+        "The respondent may address the third clause."
+      ],
+      "tags": [
+        "beat12",
+        "court",
+        "round_1",
+        "dry_surprise",
+        "sympathetic_carrier"
+      ]
+    },
+    {
+      "id": "judge_b12_react_r1_technical",
+      "trigger": "chapter1.casebook_judge_state == 'round_1_react' && chapter1.client_meeting_stance == 'technical'",
+      "_comment": "Round 1 reaction — technical carrier. Bonus evidence (1962 lease + 1987 inheritance) held for Round 3. Round 1 proceeds on countersignature alone. Lightest Round 1 reaction; knowledge still not in serious dispute on the countersignature, but no additional acknowledgement. Dry-neutral register. Adult-occupant point preserved for Round 2.",
+      "lines": [
+        "Counsel. The renumbering and the countersignature are before the court. Knowledge is not in serious dispute. The respondent may address the third clause."
+      ],
+      "tags": [
+        "beat12",
+        "court",
+        "round_1",
+        "dry_surprise",
+        "technical_carrier"
+      ]
+    },
+    {
+      "id": "judge_b12_round2_open",
+      "trigger": "chapter1.casebook_judge_state == 'round_2_open'",
+      "_comment": "Round 2 bench prompt. Second question: fair hearing / due process. Single line. Register: procedural, neutral. No stance variation. The bench is directing attention to the third clause of Article 135-bis (third-party non-cure and the fair-hearing consequence).",
+      "lines": [
+        "Second question. Why does the defect matter to the client's right to be heard?"
+      ],
+      "tags": [
+        "beat12",
+        "court",
+        "round_2",
+        "bench_prompt"
+      ]
+    },
+    {
+      "id": "judge_b12_react_r2",
+      "trigger": "chapter1.casebook_judge_state == 'round_2_react'",
+      "_comment": "Round 2 reaction — single-branch (no stance variation; Whimsy's Rights Memo carries this round regardless of stance). The bench acknowledges Whimsy's metaphor briefly ('the court is not a spoon-allocation bureau' or similar) then converts the rhetoric to a legal point — the third clause of Article 135-bis bars the adult-occupant non-cure. Dry-humor line: bench registers the soup metaphor with one sentence of procedural translation. Closing: court proceeds to remedy. Address form: still 'Counsel' only.",
+      "lines": [
+        "Counsel. The metaphor is noted. The court is not, in fact, a spoon-allocation bureau, but the underlying proposition is correct.",
+        "The third clause is clear: the adult occupant of the old address was not the client's authorised agent. The respondent's third-party service argument fails on its face.",
+        "The court will proceed to remedy."
+      ],
+      "tags": [
+        "beat12",
+        "court",
+        "round_2",
+        "dry_surprise",
+        "fair_hearing",
+        "third_clause"
+      ]
+    },
+    {
+      "id": "judge_b12_round3_open",
+      "trigger": "chapter1.casebook_judge_state == 'round_3_open'",
+      "_comment": "Round 3 bench prompt. Third question: remedy. Single line. Register: procedural, slightly pointed. The bench front-loads the constraint: counsel should be modest. The one-liner is a callback to the canonical voice-reference 'If seeking remedy, ask for the narrow procedural remedy.'",
+      "lines": [
+        "Third question. What exactly does counsel ask the court to do today? The court reminds counsel that a modest remedy is often stronger than an ambitious speech."
+      ],
+      "tags": [
+        "beat12",
+        "court",
+        "round_3",
+        "bench_prompt"
+      ]
+    },
+    {
+      "id": "judge_b12_remedy_strong_technical",
+      "trigger": "chapter1.casebook_judge_state == 'round_3_remedy' && chapter1.court_outcome == 'strong' && chapter1.client_meeting_stance == 'technical'",
+      "_comment": "Round 3 strong outcome — technical carrier. All four packet elements covered, no decoys. Technical bonus: 1962 lease + 1987 inheritance surfaced. Bench adds one clause acknowledging the tenancy-history record as coherent but outside the court's order today. Strongest register adjustment. Rare direct address: 'Dr. A. Cula' used once, per canonical V1.6 pattern. Remedy discipline: underlying tenancy expressly not before the court, costs reserved, no total victory. Dry-humor closer: the tenancy record note lands as faint institutional surprise that anyone had it.",
+      "lines": [
+        "Counsel. Against several expectations, counsel has produced a coherent submission on all four elements of Article 135-bis, paragraph two, of the Code of Civil Procedure.",
+        "The court notes additionally that the underlying tenancy record; 1962 original, 1987 succession; is coherent and in order. The court makes no finding on the tenancy today; it is not before us. The court registers the record's existence.",
+        "The hearing of the eighth is set aside. Notice will be served in the ordinary course. Costs are reserved. Dr. A. Cula; do not let that become confidence without documents."
+      ],
+      "on_dismiss": [
+        {
+          "set": "chapter1.court_won_procedural_reset",
+          "value": true
+        },
+        {
+          "set": "chapter1.won_court",
+          "value": true
+        }
+      ],
+      "tags": [
+        "beat12",
+        "court",
+        "round_3",
+        "remedy_announcement",
+        "strong",
+        "technical_carrier",
+        "costs_reserved"
+      ]
+    },
+    {
+      "id": "judge_b12_remedy_strong",
+      "trigger": "chapter1.casebook_judge_state == 'round_3_remedy' && chapter1.court_outcome == 'strong'",
+      "_comment": "Round 3 strong outcome — non-technical carrier (sympathetic or blunt_procedural). All four packet elements, no decoys. Canonical strong-outcome opener ('Against several expectations'). Direct address to Dr. A. Cula permitted at this outcome level per V1.6. Remedy discipline: hearing reset, costs reserved, underlying tenancy not before the court. Closer hedges the acknowledgement immediately so dry surprise does not slip into praise.",
+      "lines": [
+        "Counsel. Against several expectations, counsel has produced a coherent submission on all four elements of Article 135-bis, paragraph two, of the Code of Civil Procedure.",
+        "The hearing of the eighth is set aside. Notice will be served in the ordinary course. Costs are reserved. The underlying tenancy is not before this court.",
+        "Dr. A. Cula; do not let that become confidence without documents."
+      ],
+      "on_dismiss": [
+        {
+          "set": "chapter1.court_won_procedural_reset",
+          "value": true
+        },
+        {
+          "set": "chapter1.won_court",
+          "value": true
+        }
+      ],
+      "tags": [
+        "beat12",
+        "court",
+        "round_3",
+        "remedy_announcement",
+        "strong",
+        "costs_reserved"
+      ]
+    },
+    {
+      "id": "judge_b12_remedy_standard_technical",
+      "trigger": "chapter1.casebook_judge_state == 'round_3_remedy' && chapter1.court_outcome == 'standard' && chapter1.client_meeting_stance == 'technical'",
+      "_comment": "Round 3 standard outcome — technical carrier. Packet covered address defect plus at least one supporting element, no decoys. Technical bonus: bench notes the tenancy history in passing as one additional supporting clause. Register: imperfect-but-sufficient. Dry-neutral. Closer: 'No view is expressed on the merits' is the canonical standard register. The tenancy-record observation is one sentence, not a finding.",
+      "lines": [
+        "Counsel. The submissions were imperfect but sufficient. The hearing of the eighth is set aside on the ground of invalid service under Article 135-bis, paragraph two, of the Code of Civil Procedure.",
+        "The court notes the underlying tenancy record was placed before it and is coherent. No view is expressed on the merits; that is for another day.",
+        "The matter is rescheduled within the statutory window. Notice will be served in the ordinary course."
+      ],
+      "on_dismiss": [
+        {
+          "set": "chapter1.court_won_procedural_reset",
+          "value": true
+        },
+        {
+          "set": "chapter1.won_court",
+          "value": true
+        }
+      ],
+      "tags": [
+        "beat12",
+        "court",
+        "round_3",
+        "remedy_announcement",
+        "standard",
+        "technical_carrier"
+      ]
+    },
+    {
+      "id": "judge_b12_remedy_standard",
+      "trigger": "chapter1.casebook_judge_state == 'round_3_remedy' && chapter1.court_outcome == 'standard'",
+      "_comment": "Round 3 standard outcome — non-technical carrier. Canonical standard register: imperfect-but-sufficient, reset granted, merits expressly reserved. 'No view is expressed on the merits' is the canonical close per V1.6.",
+      "lines": [
+        "Counsel. The submissions were imperfect but sufficient. The hearing of the eighth is set aside on the ground of invalid service under Article 135-bis, paragraph two, of the Code of Civil Procedure.",
+        "The matter is rescheduled within the statutory window. Notice will be served in the ordinary course. No view is expressed on the merits."
+      ],
+      "on_dismiss": [
+        {
+          "set": "chapter1.court_won_procedural_reset",
+          "value": true
+        },
+        {
+          "set": "chapter1.won_court",
+          "value": true
+        }
+      ],
+      "tags": [
+        "beat12",
+        "court",
+        "round_3",
+        "remedy_announcement",
+        "standard"
+      ]
+    },
+    {
+      "id": "judge_b12_remedy_narrow_standing",
+      "trigger": "chapter1.casebook_judge_state == 'round_3_remedy' && chapter1.court_outcome == 'narrow' && chapter1.proposed_frame == 'standing_wrong_party'",
+      "_comment": "Round 3 narrow outcome — standing/wrong-party decoy included. Bench corrects the doctrinal error (lease assigns forward with the freehold; prior owner's procedural conduct on these documents remains imputable to the current owner). Not humiliation; a plausible-if-wrong submission corrected once and set aside. Bench resets on the right ground. Dry one-liner: 'The assignee inherits the landlord's file along with the building.' Register: tolerant correction.",
+      "lines": [
+        "Counsel. Counsel suggested the 2018 ownership transfer ousts the respondent's standing. The assignee inherits the landlord's file along with the building; prior procedural conduct on these documents is imputable. The court declines that frame.",
+        "The hearing of the eighth is set aside on the service defect under Article 135-bis, paragraph two, of the Code of Civil Procedure. Notice will be served in the ordinary course."
+      ],
+      "on_dismiss": [
+        {
+          "set": "chapter1.court_won_procedural_reset",
+          "value": true
+        },
+        {
+          "set": "chapter1.won_court",
+          "value": true
+        }
+      ],
+      "tags": [
+        "beat12",
+        "court",
+        "round_3",
+        "remedy_announcement",
+        "narrow_standing"
+      ]
+    },
+    {
+      "id": "judge_b12_remedy_narrow_notice_period",
+      "trigger": "chapter1.casebook_judge_state == 'round_3_remedy' && chapter1.court_outcome == 'narrow' && chapter1.proposed_frame == 'notice_period_failure'",
+      "_comment": "Round 3 narrow outcome — notice-period decoy included. Tenancy Act 14-day window is colorable but procedurally subordinate to the locational defect already on the face of the documents. Bench resets on service; timing point simply not reached. Register: cool dismissal. No mockery. The subordination reasoning is genuine procedure.",
+      "lines": [
+        "Counsel. Counsel pressed the Tenancy Act notice window. The window is colorable. It is also procedurally subordinate to the locational defect on the face of the documents.",
+        "The court resets on the service ground under Article 135-bis, paragraph two, of the Code of Civil Procedure. The timing point is not reached. Notice will be served in the ordinary course."
+      ],
+      "on_dismiss": [
+        {
+          "set": "chapter1.court_won_procedural_reset",
+          "value": true
+        },
+        {
+          "set": "chapter1.won_court",
+          "value": true
+        }
+      ],
+      "tags": [
+        "beat12",
+        "court",
+        "round_3",
+        "remedy_announcement",
+        "narrow_notice_period"
+      ]
+    },
+    {
+      "id": "judge_b12_remedy_narrow_merits",
+      "trigger": "chapter1.casebook_judge_state == 'round_3_remedy' && chapter1.court_outcome == 'narrow' && chapter1.proposed_frame == 'substantive_defense'",
+      "_comment": "Round 3 narrow outcome — merits/substantive-defense decoy included. Bench reads the submission charitably as preserving the service objection and resets on that ground. Tolerant correction: merits are not before the court on a motion to set aside. 'The tenancy itself remains for another day' restates remedy discipline plainly without sermon.",
+      "lines": [
+        "Counsel. The court has heard counsel address the merits. The merits are not before the court on a motion to set aside; the procedural defect is.",
+        "The court reads counsel's submission as preserving the service objection. The hearing of the eighth is set aside under Article 135-bis, paragraph two, of the Code of Civil Procedure. Notice will be served in the ordinary course. The tenancy itself remains for another day."
+      ],
+      "on_dismiss": [
+        {
+          "set": "chapter1.court_won_procedural_reset",
+          "value": true
+        },
+        {
+          "set": "chapter1.won_court",
+          "value": true
+        }
+      ],
+      "tags": [
+        "beat12",
+        "court",
+        "round_3",
+        "remedy_announcement",
+        "narrow_merits"
+      ]
+    },
+    {
+      "id": "judge_b12_remedy_narrow_overbroad",
+      "trigger": "chapter1.casebook_judge_state == 'round_3_remedy' && chapter1.court_outcome == 'narrow' && chapter1.proposed_frame == 'overbroad_remedy'",
+      "_comment": "Round 3 narrow outcome — overbroad-remedy decoy. Counsel asked for dismissal with prejudice, permanent injunction, or similar. Bench narrows the ask explicitly. Dry closer is the canonical voice-reference line (judge_global_voice_anchors_009) repurposed as the register hit: 'A modest remedy is often stronger than an ambitious speech.' Load-bearing irony: the bench has just said exactly that in the Round 3 open prompt; hearing it again is the comedic deflation.",
+      "lines": [
+        "Counsel. Counsel has asked for the world; dismissal with prejudice, or a permanent injunction, or both. The court will not convert a service defect into a merits ruling.",
+        "The remedy is procedural reset under Article 135-bis, paragraph two, of the Code of Civil Procedure. Nothing wider. Notice will be served in the ordinary course. A modest remedy is often stronger than an ambitious speech."
+      ],
+      "on_dismiss": [
+        {
+          "set": "chapter1.court_won_procedural_reset",
+          "value": true
+        },
+        {
+          "set": "chapter1.won_court",
+          "value": true
+        }
+      ],
+      "tags": [
+        "beat12",
+        "court",
+        "round_3",
+        "remedy_announcement",
+        "narrow_overbroad_remedy"
+      ]
+    },
+    {
+      "id": "judge_b12_remedy_narrow_incapacity",
+      "trigger": "chapter1.casebook_judge_state == 'round_3_remedy' && chapter1.court_outcome == 'blunder-recovered' && chapter1.proposed_frame == 'incapacity_defense'",
+      "_comment": "Incapacity blunder — outcome=blunder-recovered, dominant frame=incapacity_defense. Bench is icy, not cruel. Capacity is dismissed in one sentence; the cognitive-not-chronological test named once. The bench reaches the procedural reset on its own motion. Mrs. Sikorska named with the client honorific: the court respects the person where counsel did not. 'Next case.' is the punctuation. court_won_procedural_reset preserved per PROPOSALS.md §4 invariant (no Halina-evicted fork).",
+      "lines": [
+        "Counsel. The court has read counsel's submission on capacity. Mrs. Sikorska's age is not before this court; the test the Code applies is cognitive, not chronological.",
+        "The hearing of the eighth is set aside on the service ground the bench has identified on the face of the documents, under Article 135-bis, paragraph two, of the Code of Civil Procedure. Notice will be served in the ordinary course. Next case."
+      ],
+      "on_dismiss": [
+        {
+          "set": "chapter1.court_won_procedural_reset",
+          "value": true
+        },
+        {
+          "set": "chapter1.won_court",
+          "value": true
+        }
+      ],
+      "tags": [
+        "beat12",
+        "court",
+        "round_3",
+        "remedy_announcement",
+        "icy_silence",
+        "blunder_incapacity"
+      ]
+    },
+    {
+      "id": "judge_b12_remedy_blunder_recovered",
+      "trigger": "chapter1.casebook_judge_state == 'round_3_remedy' && chapter1.court_outcome == 'blunder-recovered'",
+      "_comment": "Blunder-recovered fallback (no incapacity frame). Bench reaches the procedural ground itself because the defect is on the face of the documents; counsel did not earn the win. Tone: dry, not cruel. 'Counsel may return better organised' is the comedic-deflationary close per V1.6. The bench acknowledging something counsel missed is the dry-surprise engine running in reverse.",
+      "lines": [
+        "Counsel. The court has heard counsel address several questions but none of them completely. The procedural defect, however, is on the face of the documents.",
+        "The hearing of the eighth is set aside on the bench's own motion under Article 135-bis, paragraph two, of the Code of Civil Procedure. Notice will be served in the ordinary course. Counsel may return better organised."
+      ],
+      "on_dismiss": [
+        {
+          "set": "chapter1.court_won_procedural_reset",
+          "value": true
+        },
+        {
+          "set": "chapter1.won_court",
+          "value": true
+        }
+      ],
+      "tags": [
+        "beat12",
+        "court",
+        "round_3",
+        "remedy_announcement",
+        "bench_initiative",
+        "blunder_recovered"
+      ]
+    },
+    {
+      "id": "judge_b12_remedy_narrow_thin",
+      "trigger": "chapter1.casebook_judge_state == 'round_3_remedy' && chapter1.court_outcome == 'narrow'",
+      "_comment": "Narrow outcome — no decoy frame (proposed_frame defaults to defective_service_135bis or is unset). Packet covered two or three elements; bench acts narrowly and warns the record is thin. 'Counsel should regard this as survival, not vindication' is the canonical weak-success register closer (judge_ch01_weak_success from voice-reference corpus). No warmth; the line lands as accurate procedural description, which is its own mild comedy.",
+      "lines": [
+        "Counsel. The court has heard enough to act, narrowly. The hearing of the eighth is set aside under Article 135-bis, paragraph two, of the Code of Civil Procedure; the record will support no wider order.",
+        "Notice will be served in the ordinary course. Counsel should regard this as survival, not vindication."
+      ],
+      "on_dismiss": [
+        {
+          "set": "chapter1.court_won_procedural_reset",
+          "value": true
+        },
+        {
+          "set": "chapter1.won_court",
+          "value": true
+        }
+      ],
+      "tags": [
+        "beat12",
+        "court",
+        "round_3",
+        "remedy_announcement",
+        "narrow_thin_record"
+      ]
+    }
+  ],
+  "idle_flavor": [
+    "The court is in session when the parties are ready.",
+    "Counsel, a feeling is not an exhibit.",
+    "Bad service does not automatically win the case. It may reopen the door."
+  ]
+}

@@ -8,6 +8,7 @@ extends Area2D
 @export var pickup_line: String = ""
 
 const ITEMS_PATH: String = "res://data/items.json"
+const CHAPTER1_CASE_ID: String = "chapter1_sikorska"
 
 var _player_inside: bool = false
 var _prompt: Node
@@ -54,6 +55,8 @@ func _unhandled_input(event: InputEvent) -> void:
 	if event.is_action_pressed("interact"):
 		get_viewport().set_input_as_handled()
 		_write_state_flag()
+		_add_to_inventory()
+		_update_active_case()
 
 		var sigs = get_node_or_null("/root/Signals")
 		if sigs:
@@ -163,3 +166,24 @@ func _pickup_state_value(current_value):
 	if current_value is String:
 		return item_id
 	return true
+
+
+func _add_to_inventory() -> void:
+	if item_id.is_empty():
+		return
+	var state_node = get_node_or_null("/root/State")
+	if state_node == null:
+		return
+	if not state_node.data.has("inventory") or not state_node.data["inventory"] is Dictionary:
+		state_node.data["inventory"] = {}
+	state_node.data["inventory"][item_id] = true
+
+
+func _update_active_case() -> void:
+	if item_id != "procedural_binder":
+		return
+	var state_node = get_node_or_null("/root/State")
+	if state_node == null:
+		return
+	if state_node.data.has("active_case_id"):
+		state_node.data["active_case_id"] = CHAPTER1_CASE_ID

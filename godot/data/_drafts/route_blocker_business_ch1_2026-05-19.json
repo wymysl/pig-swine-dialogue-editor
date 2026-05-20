@@ -1,0 +1,33 @@
+{
+    "_draft_note": "INERT STAGING. Lives under godot/data/_drafts/, never loaded by dialogue_runner. Promote to godot/data/dialogues/route_blocker_business_ch1.json once Piotr authors the lines. Route blocker gates the branch from Office Street east into the Business District. Per the 2026-05-18 SPRINT_LOG entry the NPC is currently VISUAL ONLY — no Area2D blocking logic is wired; that is a Code follow-up. The dialogue here exists as the in-fiction reason the player can't pass.",
+    "_chapter_ref": "Chapter 1 ambient gate. Business District is out-of-scope for Ch1 per ART_PRODUCTION_PLAN.md §Cheapest Viable Strategy. The blocker delivers a soft-no — corporate-bureaucratic, not hostile. Register opposite to residential blocker (private security / lanyard / clipboard vs. neighbourly tenant).",
+    "_gating_note": "Code follow-up: wire route_blocker.gd or equivalent Area2D on the NPC body to consume player movement east-of-blocker and re-route the player. Until then the NPC is non-blocking and fires only on interaction.",
+    "_address_form_note": "Toward Cula: 'Dr. A. Cula' if recognised, but more idiomatic for this NPC is 'counsel' or 'sir' (private-security register), or a flat 'access list only' that bypasses address altogether. Avoid 'Pan mecenasie'; English-first per godot/AGENTS.md.",
+    "_authoring_todo": [
+        "Replace each '_doc:' placeholder with the finished line.",
+        "Pick the gate reason: tenants' AGM works for residential; for business choose between an access list / private function / building services pass.",
+        "Decide whether the blocker ever drops (probably not in Ch1 — leave the trigger as a future-chapter placeholder)."
+    ],
+    "version": 1,
+    "npc_id": "route_blocker_business_ch1",
+    "display_name": "Building security",
+    "states": [
+        {
+            "id": "route_blocker_business_explain",
+            "trigger": "",
+            "lines": [
+                "_doc: DRAFT — one line. Corporate-procedural refusal. Names the gate ('access list', 'private function', 'building services only'). Does not hint at later chapters."
+            ],
+            "tags": ["chapter1", "route_block", "business_district_gate"]
+        },
+        {
+            "id": "route_blocker_business_repeat",
+            "trigger": "",
+            "lines": [
+                "_doc: DRAFT — one line, repeatable. A second refusal if the player tries again. Same register; the second pass acknowledges the player has heard this already."
+            ],
+            "tags": ["chapter1", "route_block", "business_district_gate"]
+        }
+    ],
+    "idle_flavor": []
+}

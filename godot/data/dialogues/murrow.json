@@ -1,19 +1,19 @@
 {
     "version": 3,
     "npc_id": "murrow",
-    "_provenance": "v3 rewrite 2026-05-16: motion-packet pivot per PROPOSAL_player_driven_argument.md §1 (Murrow subsection) + §41 SPRINT_LOG checklist item 7. Briefing collapsed from eight-line case-summary (which named the motion to set aside and the winning frame in one breath) to four file-fact observations plus two doctrinal pointers (Tenancy Act notice-window citation, third-clause authority requirement). The motion-to-set-aside line moves to murrow_post_packet_motion_vehicle, gated on all four element_* bools. Two new decoy-decision states (murrow_first_meeting_decoy_notice_period, murrow_archive_walkthrough_decoy_merits) surface D1/D2 as named auxiliary theories the player may bolt on. A cold walk-back (murrow_post_decoy_incapacity) lands when decoy_incapacity is selected. Mrs. Borowski normalised to Mrs. Sikorska in court_readiness_check. Address forms per AGENTS.md §Address forms (Murrow says 'Dr. A. Cula' / 'Doctor Cula' to Cula; Cula opens with 'Mr. Murrow' and only earns bare 'Murrow' after the friend-invitation calibration line, which is preserved verbatim in murrow_first_meeting).",
+    "_provenance": "v3 rewrite 2026-05-16: motion-packet pivot per PROPOSAL_player_driven_argument.md §1 (Murrow subsection) + §41 SPRINT_LOG checklist item 7. Briefing collapsed from eight-line case-summary (which named the motion to set aside and the winning frame in one breath) to four file-fact observations plus two doctrinal pointers (Tenancy Act notice-window citation, third-clause authority requirement). The motion-to-set-aside line moves to murrow_post_packet_motion_vehicle, gated on all four element_* bools. Two new decoy-decision states (murrow_first_meeting_decoy_notice_period, murrow_archive_walkthrough_decoy_merits) surface D1/D2 as named auxiliary theories the player may bolt on. A cold walk-back (murrow_post_decoy_incapacity) lands when decoy_incapacity is selected. Mrs. Borowski normalised to Mrs. Sikorska in court_readiness_check. Address forms per AGENTS.md §Address forms and Piotr's 2026-05-19 clarification: Murrow says 'Dr. A. Cula' exactly ONCE at first meeting (either before_pig in path A, or state_2_response_* in path B), then 'Cula' in every subsequent line — including formal contexts like court and client-facing scenes. 'Doctor Cula' is non-canonical and not used. Cula opens with 'Mr. Murrow' and only earns bare 'Murrow' after the friend-invitation calibration line, which is preserved verbatim in murrow_first_meeting.",
     "_anti_ai_voice_pass": "No contrastive antithesis; em-dashes capped per Murrow's archival register; no scrub-list vocabulary. 'Unkind' in murrow_post_decoy_incapacity is the only adjective in Murrow's chapter-1 catalogue and is load-bearing for the cold-pushback beat.",
     "states": [
         {
             "id": "before_pig",
             "trigger": "!chapter1.met_pig && !chapter1.met_murrow",
-            "lines": ["Doctor Cula. Mr. Pig is expecting you. The case can wait the ten minutes Mr. Pig requires for opening remarks."]
+            "lines": ["Dr. A. Cula. Mr. Pig is expecting you. The case can wait the ten minutes Mr. Pig requires for opening remarks."]
         },
         {
             "id": "after_pig",
             "trigger": "chapter1.met_pig && !chapter1.met_murrow",
             "lines": [
-                {"speaker": "murrow", "text": "[This must be Mr. Murrow. Young and promising. I've read his profile on Ionkionked.]"}
+                {"speaker": "cula", "text": "[Mr. Murrow. Reading glasses, ink on the cuff, blue spines behind him in a column. Identify, hand off, do not bow.]"}
             ],
             "options": {
                 "write_path": "chapter1.murrow_choice",
@@ -86,18 +86,13 @@
             "id": "has_binder_pre_crab",
             "trigger": "chapter1.has_law_binder == true && !chapter1.recruited_crab",
             "_comment": "v3 rewrite. HEAD line was 'Now Crab. Nothing else moves until service is checked.' — the second sentence pre-names the winning frame. v3 drops the conclusion and points Cula at Crab as the second pair of eyes; the shape is for Cula to name.",
-            "lines": [
-                "Now Crab. Take the binder; let him read it with you. The shape is in the file. Mr. Crab is the second pair of eyes you want."
-            ]
+            "lines": ["Now Crab. Take the binder; let him read it with you. The shape is in the file. Crab is the second pair of eyes you want."]
         },
         {
             "id": "murrow_first_meeting_decoy_notice_period",
             "trigger": "chapter1.met_murrow == true && chapter1.has_law_binder == true && chapter1.surfaced_tenancy_act_window == true && !chapter1.decoy_notice_period && !chapter1.court_ready && !chapter1.entered_court",
             "_comment": "NEW state — D2 (notice-period failure) decision moment per PROPOSAL §1.2. Fires once after Cula has met Murrow and picked up the binder. Murrow names the Tenancy Act fourteen-day window again as a colorable auxiliary theory; the offer is procedurally credible, not endorsed. The options block writes chapter1.decoy_notice_period (true = include, false = leave out). once:true so the offer doesn't re-fire after the player commits. No chain — Murrow stays neutral on the choice and the player carries on.",
-            "lines": [
-                "While you have the file open. The Tenancy Act window. Counsel sometimes plead it in the alternative when the dates run close.",
-                "It is procedurally subordinate to the locational defect. The bench may hear it; the bench may not. Your call whether to include it in the motion."
-            ],
+            "lines": ["While you have the file open. The Tenancy Act window. Counsel sometimes plead it in the alternative when the dates run close.", "It is procedurally subordinate to the locational defect. The bench may hear it; the bench may not. Your call whether to include it in the motion."],
             "options": {
                 "write_path": "chapter1.decoy_notice_period",
                 "choices": [
@@ -111,10 +106,7 @@
             "id": "murrow_archive_walkthrough_decoy_merits",
             "trigger": "chapter1.met_murrow == true && chapter1.archive_research_complete == true && !chapter1.decoy_merits && !chapter1.court_ready && !chapter1.entered_court",
             "_comment": "NEW state — D1 (merits / substantive defense) decision moment per PROPOSAL §1.2. Fires once after archive research is complete. Murrow notes that Halina's payment receipts are real and asks whether to plead the merits as a backup. The offer is wrong-priority for the motion stage; Murrow's framing makes that visible without rejecting the option. once:true.",
-            "lines": [
-                "One more question before we go. Mrs. Sikorska's receipts are in the file Crab brought back. The substantive case is real.",
-                "It is not before the court at the motion. It can be pleaded in the alternative if you want it on the record."
-            ],
+            "lines": ["One more question before we go. Mrs. Sikorska's receipts are in the file Crab brought back. The substantive case is real.", "It is not before the court at the motion. It can be pleaded in the alternative if you want it on the record."],
             "options": {
                 "write_path": "chapter1.decoy_merits",
                 "choices": [
@@ -138,12 +130,12 @@
         {
             "id": "murrow_post_decoy_incapacity",
             "trigger": "chapter1.decoy_incapacity == true && !chapter1.entered_court",
-            "_comment": "NEW state — cold walk-back when decoy_incapacity is set. Murrow's voice here is colder than in any other state. 'Unkind' is the only adjective in his chapter-1 catalogue and is load-bearing for the in-fiction pushback per the task brief. The second clause ('procedurally wrong') keeps the rebuke doctrinal rather than personal — the firm's moral compass is rule-shaped, not sentimental. Murrow strips Cula's lead role and re-files the motion himself; the chapter still ships, the cost is loud. Address form 'Doctor Cula' (not 'Cula') — the friend-invitation is revoked for this beat. once:true.",
+            "_comment": "NEW state — cold walk-back when decoy_incapacity is set. Murrow's voice here is colder than in any other state. 'Unkind' is the only adjective in his chapter-1 catalogue and is load-bearing for the in-fiction pushback per the task brief. The second clause ('procedurally wrong') keeps the rebuke doctrinal rather than personal — the firm's moral compass is rule-shaped, not sentimental. Murrow strips Cula's lead role and re-files the motion himself; the chapter still ships, the cost is loud. Address form 'Cula' per Piotr 2026-05-19 — Murrow uses 'Cula' in every state after the first meeting, regardless of register; the cold tone is carried by content, not by reverting the form. once:true.",
             "lines": [
                 "Crab tells me you proposed incapacity.",
                 {"speaker": "cula", "text": "She is elderly. The service —"},
                 "She is elderly. She is not incompetent. The argument is unkind and procedurally wrong. I will file the motion on the service defect myself; you will not argue incapacity in my courtroom.",
-                "Mrs. Sikorska is at one. When she arrives, you will not raise her age. Is that clear, Doctor Cula.",
+                "Mrs. Sikorska is at one. When she arrives, you will not raise her age. Is that clear, Cula.",
                 {"speaker": "cula", "text": "Clear."}
             ],
             "once": true
@@ -157,8 +149,8 @@
         {
             "id": "murrow_coffee_reaction_bad",
             "trigger": "chapter1.coffee_buff == 'over_caffeinated' && chapter1.met_murrow == true && !chapter1.entered_court",
-            "_comment": "V1.4 coffee reaction — D/F-grade. Voice verbatim from minigames.txt §Character reactions §Murrow Bad ('You have created a beverage with procedural defects.'). Opens with 'Doctor Cula' per Murrow's established speech form in first_meeting and before_pig.",
-            "lines": ["Doctor Cula. You have created a beverage with procedural defects."]
+            "_comment": "V1.4 coffee reaction — D/F-grade. Voice verbatim from minigames.txt §Character reactions §Murrow Bad ('You have created a beverage with procedural defects.'). Opens with 'Cula' per Piotr 2026-05-19: Murrow uses 'Dr. A. Cula' only at first meeting, 'Cula' in every subsequent state.",
+            "lines": ["Cula. You have created a beverage with procedural defects."]
         },
         {
             "id": "court_readiness_check",

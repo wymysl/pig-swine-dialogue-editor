@@ -1,0 +1,34 @@
+{
+  "version": 1,
+  "_doc": "All player-facing strings for the Blue Folder UI. Code owns keys; Design owns values.",
+  "folder_title": "CASE FOLDER - DR. A. CULA",
+  "tab_labels": {
+    "notes": "Notes",
+    "evidence": "Evidence",
+    "casebook": "Casebook",
+    "motion_packet": "Motion Packet"
+  },
+  "empty_states": {
+    "notes": "No argument notes collected yet.",
+    "evidence": "No evidence in the folder yet.",
+    "casebook": "No authorities collected yet.",
+    "motion_packet": "No active case has a motion packet yet."
+  },
+  "new_badge_label": "NEW",
+  "detail_labels": {
+    "id": "ID:",
+    "tags": "Tags:",
+    "source": "Source:",
+    "principles": "Principles:",
+    "note_detail_empty": "Select a note.",
+    "evidence_detail_empty": "Select evidence.",
+    "casebook_detail_empty": "Select an authority."
+  },
+  "status": {
+    "save_button": "Save Now",
+    "saving": "Saving...",
+    "save_completed": "Saved.",
+    "save_failed_prefix": "Save failed:",
+    "case_folder_acquired": "Press [%s] to open your case folder."
+  }
+}

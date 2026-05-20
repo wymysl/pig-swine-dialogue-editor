@@ -1,93 +1,236 @@
 {
-    "version": 1,
+    "version": 4,
     "npc_id": "asia",
+    "display_name": "Asia",
+    "_provenance": "Promoted 2026-05-17 from godot/data/_drafts/ch1_asia_2026-05-17.json (Ch1 sweep). Beat states; hints split to asia_hint_states_ch1.json. won_court unified.",
     "states": [
         {
-            "id": "first_meeting_via_behind_counter",
+            "id": "asia_b2_via_behind",
             "trigger": "!chapter1.met_asia && chapter1.met_asia_via_behind == true",
+            "_comment": "Beat 2 — Cula entered through the back. Address form: 'Dr. A. Cula' per AGENTS.md §Address forms. Register: warm-direct. Sets met_asia on dismiss. Verbatim structure from asia.json v1 first_meeting_via_behind_counter; lines lightly tightened.",
+            "tags": ["beat2", "first_meeting", "warm_direct"],
             "lines": [
-                "Excuse me, only employees are allowed... oh.",
-                "Of course. The new hire. Dr. A. Cula, good morning! We've been expecting you.",
+                "Excuse me, only employees are allowed back there; oh.",
+                "Of course. The new hire. Dr. A. Cula, good morning. We've been expecting you.",
                 "Mr. Pig mentioned you'd be starting today. He mentioned it several times, actually.",
-                {"speaker": "cula", "text": "Oh..."},
-                {"speaker": "asia", "text": "He's at his desk. He'll want to speak with you first."},
-                "Then, you'll want to pick up your blue folder. It's on the second pile from the left. Mr. Murrow put a sticky note on it. The sticky note says 'Cula' and nothing else, which is how you know it's from Mr. Murrow.",
-                {"speaker": "asia", "text": "The archive is through that door, and Mr. Murrow is in there with the case file whenever you're ready for him."},
-                {"speaker": "cula", "text": "Thank you."}
+                {"speaker": "cula", "text": "Good morning."},
+                "He's at his desk. He'll want to speak with you first. He's the loudest crisis in the room.",
+                "Then find your blue folder. Second pile from the left. Mr. Murrow put a sticky note on it. The sticky note says 'Cula' and nothing else, which is how you know it's from Mr. Murrow.",
+                "The archive is through that door. Mr. Murrow's in there with the case file whenever you're ready."
             ],
             "on_dismiss": [
                 {"set": "chapter1.met_asia", "value": true}
             ]
         },
         {
-            "id": "cula_approach",
+            "id": "asia_b2_approach_choice",
             "trigger": "!chapter1.met_asia",
+            "_comment": "Beat 2 — First approach to the desk. Cula observation names the three piles + phone + calendar + Pig's panic per chapter_1.md §Beat 2 spec. Options gate the greeting variant. chain:true hands off to response states. once:true so choice fires only on first interaction.",
+            "tags": ["beat2", "first_meeting", "options"],
+            "once": true,
             "lines": [
-                {"speaker": "cula", "text": "[A young woman. Incredibly busy. Hopefully friendly.]"}
+                {"speaker": "cula", "text": "[Three file piles, a ringing phone, an overflowing calendar, Mr. Pig's panic visible across the room. She is managing all of it at once.]"}
             ],
             "options": {
                 "write_path": "chapter1.state_choice",
                 "choices": [
-                    {"text": "Good morning. Dr. A. Cula, reporting for duty.", "value": "professional"},
-                    {"text": "Good morning, you must be Asia? I saw you on the website. Cula, the new hire. Pleasure to meet you.", "value": "friendly"},
-                    {"text": "Dr. A Cula, here to see Mr. Pig.", "value": "dry"}
+                    {"text": "Good morning. Dr. A. Cula. First day.", "value": "professional"},
+                    {"text": "Good morning. Dr. A. Cula. I gather I am the new hire who was promised.", "value": "friendly"},
+                    {"text": "Good morning. Dr. A. Cula. Mr. Pig is expecting me.", "value": "dry"}
                 ],
                 "chain": true
-            },
-            "once": true
+            }
         },
         {
-            "id": "cula_approach_response_dry",
+            "id": "asia_b2_response_dry",
             "trigger": "!chapter1.met_asia && chapter1.state_choice == 'dry'",
+            "_comment": "Beat 2 — Dry greeting response. chain:true passes to asia_b2_welcome. Asia's beat: 'Oh.' then the form. Courier gag is domestic-admin undercut per voice bible.",
+            "tags": ["beat2", "first_meeting", "warm_direct"],
+            "once": true,
             "lines": [
                 "Oh.",
-                {"speaker": "asia", "text": "Dr. A. Cula. Good morning. We've been expecting you — well, Mr. Pig has been expecting you. I've been expecting the courier, but you're here first."}
+                {"speaker": "asia", "text": "Dr. A. Cula. Good morning. We've been expecting you; well, Mr. Pig has. I've been expecting the courier, but you're here first."}
             ],
-            "once": true,
             "chain": true
         },
         {
-            "id": "state_1_response_friendly",
-            "trigger": "chapter1.state_choice == 'friendly'",
+            "id": "asia_b2_response_friendly",
+            "trigger": "!chapter1.met_asia && chapter1.state_choice == 'friendly'",
+            "_comment": "Beat 2 — Friendly greeting response. chain:true passes to asia_b2_welcome. Asia registers the promise-back-at-Pig gag: domestic-admin observation about a senior partner who has been promising things.",
+            "tags": ["beat2", "first_meeting", "warm_direct"],
+            "once": true,
             "lines": [
-                "Oooh no, I told them not to upload that picture, I was hungover that day! I'm sorry, I meant to say...",
-                {"speaker": "asia", "text": "Dr. A. Cula, good morning! We've been expecting you."}
+                "Oh, Mr. Pig has been promising things. He does that. Today he was right.",
+                {"speaker": "asia", "text": "Dr. A. Cula. Good morning. We've been expecting you."}
             ],
-            "chain": true,
-            "once": true
-        },
-        {
-            "id": "state_1_response_professional",
-            "trigger": "chapter1.state_choice == 'professional'",
-            "lines": ["Dr. A. Cula, good morning! We've been expecting you."],
-            "once": true,
             "chain": true
         },
         {
-            "id": "first_welcome",
+            "id": "asia_b2_response_professional",
+            "trigger": "!chapter1.met_asia && chapter1.state_choice == 'professional'",
+            "_comment": "Beat 2 — Professional greeting response. chain:true passes to asia_b2_welcome. Simple direct registration.",
+            "tags": ["beat2", "first_meeting", "warm_direct"],
+            "once": true,
+            "lines": ["Dr. A. Cula. Good morning. We've been expecting you."],
+            "chain": true
+        },
+        {
+            "id": "asia_b2_welcome",
             "trigger": "!chapter1.met_asia",
+            "_comment": "Beat 2 — Core first-meeting block, fires after any greeting variant via chain. Load-bearing 'today is calmer than usual' plant embedded here (chapter_1.md §Beat 2 E-tag: 'her answer should imply that today is calmer than usual, planting the firm's chronic state for chapter-5 retraversal'). Blue-folder and archive orientation = domestic-admin translation of the quest hand-off. Taste Standard: Laugh (pending-miracle label), Clever (real office triage logic), Alive (specific Tuesday morning), Clear (go to Pig / get binder / find Murrow), Future-proof (calmer-than-usual recolors at Ch5). Two jokes: pending-miracle label + 'only drawer that has been closed today'. Dwell options follow via options block with chain:true. Sets met_asia on dismiss.",
+            "tags": ["beat2", "first_meeting", "calmer_than_usual_plant"],
             "lines": [
                 {"speaker": "asia", "text": "Mr. Pig mentioned you'd be starting today. He mentioned it several times, actually."},
-                {"speaker": "cula", "text": "Oh..."},
-                {"speaker": "asia", "text": "You should talk to him first, he'll want to say hello. He's the loudest crisis in the room."},
-                "Then, you'll want to pick up your blue folder. It's on the second pile from the left. Mr. Murrow put a sticky note on it. The sticky note says 'Cula' and nothing else, which is how you know it's from Mr. Murrow.",
-                {"speaker": "asia", "text": "The archive is through that door, and Mr. Murrow is in there with the case file whenever you're ready for him."},
-                {"speaker": "cula", "text": "Thank you."}
+                {"speaker": "cula", "text": "Is it always this busy?"},
+                {"speaker": "asia", "text": "Today is calmer than usual. I have only filed one thing under 'pending miracle' so far."},
+                "He's at his desk. He'll want to say hello. He's the loudest crisis in the room, which is useful for navigation.",
+                "Then pick up your blue folder. Second pile from the left. Mr. Murrow put a sticky note on it. The sticky note says 'Cula' and nothing else, which is how you know it's from Mr. Murrow.",
+                {"speaker": "cula", "text": "Thank you."},
+                {"speaker": "asia", "text": "The archive is through that door. Mr. Murrow's in there with the case file whenever you're ready for him."}
             ],
             "on_dismiss": [
                 {"set": "chapter1.met_asia", "value": true}
             ],
-            "chain": true
+            "options": {
+                "write_path": "chapter1.state_choice",
+                "chain": true,
+                "choices": [
+                    {"text": "How long have you worked here?", "value": "dwell_tenure"},
+                    {"text": "Is it always like this?", "value": "dwell_always"},
+                    {"text": "Where do you keep things around here?", "value": "dwell_where"}
+                ]
+            }
         },
         {
-            "id": "post_pig_pre_murrow",
-            "trigger": "chapter1.pig_revealed_crisis == true && !chapter1.met_murrow",
-            "lines": ["Mr. Murrow will know what the case is actually about. Mr. Pig knows what it feels like, which is different and louder."]
+            "id": "asia_b2_dwell_tenure",
+            "trigger": "chapter1.met_asia && chapter1.state_choice == 'dwell_tenure'",
+            "_comment": "Beat 2 dwell — 'How long have you worked here?' chapter_1.md §Beat 2 E-tag: surfaces Asia's tenure; she predates Cula by years; practical-glue role established. Register: warm-direct. Pet idiom: 'I am, at this point, structural' = domestic-admin translation of tenure. Two jokes (Rule C): potted-fern line + filing-cabinet-near-anxious-Pig. once:true. <=6 lines.",
+            "tags": ["beat2", "dwell", "warm_direct", "tenure_plant"],
+            "once": true,
+            "lines": [
+                "Longer than the potted fern. Longer than anyone can adequately explain, including me.",
+                {"speaker": "asia", "text": "I was here before Mr. Murrow reorganised the archive. I was here before the case board had arrows. I am, at this point, structural."},
+                {"speaker": "cula", "text": "You seem to know where everything is."},
+                {"speaker": "asia", "text": "I know where everything is supposed to be. Where it actually is depends on whether Mr. Pig has been anxious near the filing cabinet."}
+            ]
         },
         {
-            "id": "post_binder",
-            "trigger": "chapter1.has_law_binder == true && !chapter1.recruited_crab",
-            "lines": ["You found it? Excellent. Please do not put it on my desk; the reception counter has not been load-tested."]
+            "id": "asia_b2_dwell_always",
+            "trigger": "chapter1.met_asia && chapter1.state_choice == 'dwell_always'",
+            "_comment": "Beat 2 dwell — 'Is it always like this?' chapter_1.md §Beat 2 E-tag: 'cheerful-while-drowning interior range; her answer should imply that today is calmer than usual, planting the firm's chronic state for chapter-5 retraversal.' Load-bearing calmer-than-usual plant (task brief). Register: cheerful_while_drowning / briefly_conspiratorial. Two jokes (Rule C): four-things-that-are-better list + Friday-in-the-other-category. once:true. <=6 lines.",
+            "tags": ["beat2", "dwell", "cheerful_while_drowning", "calmer_than_usual_plant"],
+            "once": true,
+            "lines": [
+                "Today is calmer than usual, actually.",
+                {"speaker": "cula", "text": "This is calm?"},
+                {"speaker": "asia", "text": "The printer has only made one hostile noise. Mr. Pig has only counted the rent envelope twice. I've filed two things under 'pending miracle' instead of the usual four. Relatively speaking, today is restful."},
+                "I've labelled the rest of the week accordingly. 'Survivable' through Thursday. Friday is in the other category."
+            ]
+        },
+        {
+            "id": "asia_b2_dwell_where",
+            "trigger": "chapter1.met_asia && chapter1.state_choice == 'dwell_where'",
+            "_comment": "Beat 2 dwell — 'Where do you keep things?' chapter_1.md §Beat 2 E-tag: 'surfaces Asia's omniscience about office logistics; each variant produces a slightly different line.' Register: briskly_prioritising. Pet idiom: 'alphabetical except for the ones Mr. Pig alphabetised himself, which are by panic level' = domestic-admin omniscience. Two jokes (Rule C): panic-level filing system + photocopier-password negotiation. Photocopier-password line is the canonical STUB-decline sharpness from ai_voice_constraints.md §Asia ('front-desk staff have negotiating power that lawyers cannot match — I have the password to the photocopier'). once:true. <=6 lines.",
+            "tags": ["beat2", "dwell", "briskly_prioritising", "omniscience"],
+            "once": true,
+            "lines": [
+                "Case files: second cabinet, left side, alphabetical except for the ones Mr. Pig alphabetised himself, which are by panic level.",
+                {"speaker": "asia", "text": "Coffee: machine in the corner. Three settings. I recommend the middle one and a brief negotiation."},
+                {"speaker": "cula", "text": "And the photocopier password?"},
+                {"speaker": "asia", "text": "In writing. On request. From me specifically. The password is the one thing in this office that cannot be reorganised by a lawyer in a hurry."}
+            ]
+        },
+        {
+            "id": "hint_blue_folder",
+            "trigger": "chapter1.met_asia && !chapter1.has_case_folder",
+            "_doc": "DRAFT - human to author Taste Standard line pointing Dr. A. Cula at his blue folder on his desk. Asia must use 'Dr. A. Cula' and 'Mr. Murrow' if named.",
+            "tags": ["hint_state", "blue_folder", "draft"],
+            "lines": ["_doc: DRAFT - Asia points Dr. A. Cula to the blue folder on his desk; Mr. Murrow address form reserved for Design."]
+        },
+        {
+            "id": "asia_b8_halina_announcement",
+            "trigger": "chapter1.recruited_whimsy && !chapter1.halina_arrived",
+            "_comment": "Beat 8 bridging line. chapter_1.md §Beat 8 setup: 'Asia greets them and announces that Halina has arrived for the formal meeting.' Task brief load-bearing spec literal: 'Mrs. Sikorska is here.' Address form: 'Mrs. Sikorska' (full honorific; voice bible: Asia addresses clients with full honorifics). Register: briskly_prioritising. Second line adds domestic-admin texture: 'she brought her own folder — tabbed' signals Halina's precision without commentary. on_dismiss sets halina_arrived=true per hint-state convention. once:true. <=4 lines.",
+            "tags": ["beat8", "halina_announcement", "briskly_prioritising"],
+            "once": true,
+            "lines": [
+                "Mrs. Sikorska is here. I've shown her into the meeting room.",
+                {"speaker": "asia", "text": "She brought her own folder. Tabbed."}
+            ],
+            "on_dismiss": [
+                {"set": "chapter1.halina_arrived", "value": true}
+            ]
+        },
+        {
+            "id": "asia_b13_congratulation",
+            "trigger": "chapter1.court_won_procedural_reset && !chapter1.received_swine_postcard",
+            "_comment": "Beat 13 — congratulates while still sorting. chapter_1.md §Beat 13: 'Asia congratulates the player while still sorting impossible paperwork. Image is the plant.' Load-bearing: the plant is that she does not pause. Register: cheerful_while_drowning. Taste Standard: Laugh (closed-cases drawer / only drawer closed), Clever (real office logic; the sorting is the tell), Alive (specific desk, specific Tuesday), Clear (firm won; player go find Pig), Future-proof (sorting pattern recolors at Ch3 inflection). Two jokes (Rule C): pending-miracle coda in first line echoes Beat 2 plant + only-drawer-closed-today undercut. Dwell options chain. once:true. <=8 lines.",
+            "tags": ["beat13", "congratulation", "cheerful_while_drowning", "still_sorting_plant"],
+            "once": true,
+            "lines": [
+                {"speaker": "asia", "text": "Congratulations, Dr. A. Cula."},
+                "She does not look up. She is moving a pile of folders from one side of the desk to the other.",
+                {"speaker": "asia", "text": "We are solvent enough to continue scheduling tomorrow. I've put the Sikorska file in the closed-cases drawer, which I should point out is the only drawer that has been closed today."},
+                {"speaker": "cula", "text": "Thank you."},
+                {"speaker": "asia", "text": "Go find Mr. Pig. He's celebrating in a way that is producing paperwork."}
+            ],
+            "options": {
+                "write_path": "chapter1.state_choice",
+                "chain": true,
+                "choices": [
+                    {"text": "What are you still sorting?", "value": "dwell_b13_sorting"},
+                    {"text": "Has the firm had a win like this before?", "value": "dwell_b13_wins"}
+                ]
+            }
+        },
+        {
+            "id": "asia_b13_dwell_sorting",
+            "trigger": "chapter1.court_won_procedural_reset && chapter1.state_choice == 'dwell_b13_sorting'",
+            "_comment": "Beat 13 dwell — what Asia is still sorting. chapter_1.md §Beat 13 E-tag: 'one option surfacing what she's still sorting (foreshadows next chapter's mechanical demands).' The landlord envelope seeds Ch2 without naming anything specific. Register: briskly_prioritising. once:true. <=6 lines.",
+            "tags": ["beat13", "dwell", "briskly_prioritising"],
+            "once": true,
+            "lines": [
+                "The printer produced something this morning that no one has acknowledged responsibility for.",
+                {"speaker": "asia", "text": "Also, the landlord in the Sikorska matter has an envelope in the correspondence tray addressed to us specifically. Mr. Murrow will want to see it first. After he's finished quietly updating the ledger."},
+                {"speaker": "cula", "text": "Is that normal?"},
+                {"speaker": "asia", "text": "Envelopes from winning cases are the interesting kind. I've filed it next to the rent envelope, which remains in ongoing conversation with Mr. Pig."}
+            ]
+        },
+        {
+            "id": "asia_b13_dwell_wins",
+            "trigger": "chapter1.court_won_procedural_reset && chapter1.state_choice == 'dwell_b13_wins'",
+            "_comment": "Beat 13 dwell — firm win history. Register: warm-direct / briefly_conspiratorial. Does not editorialize on firm survival. Two jokes (Rule C): survived-every-case / not-always-won undercut + calendar-develops-opinions. once:true. <=6 lines.",
+            "tags": ["beat13", "dwell", "briefly_conspiratorial"],
+            "once": true,
+            "lines": [
+                "The firm has survived every case it has taken.",
+                {"speaker": "asia", "text": "We have not always won every case we have taken, which is different and more precise. But surviving, yes. The calendar has new dates on it every morning. I find that notable."},
+                {"speaker": "cula", "text": "That's one way to look at it."},
+                {"speaker": "asia", "text": "I look at the calendar a lot. You develop opinions."}
+            ]
+        },
+        {
+            "id": "asia_b14_postcard",
+            "trigger": "chapter1.received_swine_postcard && !chapter1.postcard_asia_announced",
+            "_comment": "Beat 14 — Asia reads the address label. chapter_1.md §Beat 14: 'Asia reads the address label.' Canonical origin: Sapporo (chapter_1.md §Beat 14: 'Greetings from Sapporo'). Address form: 'Mr. Swine' always. Register: briefly_conspiratorial. She reads the label twice — the stage direction is the joke. Two jokes (Rule C): 'expensive and irresponsible' stamp diagnosis + 'Mr. Swine, reasons forthcoming' filing. Four-year handwriting familiarity is the quietly-correct detail. once:true. on_dismiss sets postcard_asia_announced=true. <=6 lines.",
+            "tags": ["beat14", "postcard", "briefly_conspiratorial"],
+            "once": true,
+            "lines": [
+                {"speaker": "asia", "text": "Something arrived from Mr. Swine."},
+                "She holds it up briefly. She reads the label. She reads it again.",
+                {"speaker": "asia", "text": "The address is ours. The stamp is Japanese. The label is Mr. Swine's handwriting, which I recognise from four years of indecipherable expense notes."},
+                {"speaker": "asia", "text": "Sapporo. That's what it says. I'm sure there's a reason. I've filed it under 'Mr. Swine, reasons forthcoming.'"}
+            ],
+            "on_dismiss": [
+                {"set": "chapter1.postcard_asia_announced", "value": true}
+            ]
+        },
+        {
+            "id": "asia_b14_postcard_repeat",
+            "trigger": "chapter1.postcard_asia_announced && !chapter1.postcard_body_read",
+            "_comment": "Beat 14 — Repeat interaction before the postcard body has been read by the player. Asia has handed it off; one line re-pointing. No em-dash.",
+            "tags": ["beat14", "postcard"],
+            "lines": ["The postcard is on the case board. Mr. Swine's handwriting is worth studying if you have time, which today you technically do."]
         }
     ],
     "idle_flavor": [
@@ -96,6 +239,8 @@
         "If anyone asks, the office is running smoothly. If no one asks, please bring me the blue folder.",
         "The sandwich in the fridge labelled 'ASIA — TUESDAY' is mine. The label is clear. The label has always been clear.",
         "Ah — Dr. A. Cula. I'm just on the phone. One moment.",
-        "One moment — yes. The calendar. No, the other calendar."
+        "One moment — yes. The calendar. No, the other calendar.",
+        "The coffee machine has made a noise I would describe as procedurally hostile.",
+        "The case board has one arrow for facts, one for law, and one for panic migration."
     ]
 }

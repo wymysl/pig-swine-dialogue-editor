@@ -1,0 +1,151 @@
+[gd_scene load_steps=2 format=3 uid="uid://case_folder_v1"]
+
+[ext_resource type="Script" path="res://scripts/ui/case_folder.gd" id="1_cf"]
+
+[node name="CaseFolder" type="CanvasLayer"]
+process_mode = 3
+script = ExtResource("1_cf")
+layer = 60
+
+[node name="Dimmer" type="ColorRect" parent="."]
+anchor_right = 1.0
+anchor_bottom = 1.0
+color = Color(0, 0, 0, 0.6)
+
+[node name="FolderRoot" type="Control" parent="."]
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -560.0
+offset_top = -330.0
+offset_right = 560.0
+offset_bottom = 330.0
+
+[node name="FolderBody" type="ColorRect" parent="FolderRoot"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+color = Color(0.18, 0.28, 0.52, 1)
+
+[node name="TitleStrip" type="Label" parent="FolderRoot"]
+anchor_right = 1.0
+offset_left = 28.0
+offset_top = 20.0
+offset_right = -28.0
+offset_bottom = 56.0
+text = ""
+theme_override_colors/font_color = Color(0.96, 0.94, 0.86, 1)
+theme_override_font_sizes/font_size = 24
+
+[node name="TabBar" type="HBoxContainer" parent="FolderRoot"]
+anchor_right = 1.0
+offset_left = 28.0
+offset_top = 70.0
+offset_right = -28.0
+offset_bottom = 114.0
+theme_override_constants/separation = 8
+
+[node name="PageArea" type="ColorRect" parent="FolderRoot"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 28.0
+offset_top = 126.0
+offset_right = -28.0
+offset_bottom = -84.0
+color = Color(0.92, 0.86, 0.72, 1)
+
+[node name="Content" type="HBoxContainer" parent="FolderRoot/PageArea"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 22.0
+offset_top = 22.0
+offset_right = -22.0
+offset_bottom = -22.0
+theme_override_constants/separation = 18
+
+[node name="ListPanel" type="Panel" parent="FolderRoot/PageArea/Content"]
+custom_minimum_size = Vector2(360, 0)
+size_flags_vertical = 3
+
+[node name="ListScroll" type="ScrollContainer" parent="FolderRoot/PageArea/Content/ListPanel"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 12.0
+offset_top = 12.0
+offset_right = -12.0
+offset_bottom = -12.0
+horizontal_scroll_mode = 0
+
+[node name="ListVBox" type="VBoxContainer" parent="FolderRoot/PageArea/Content/ListPanel/ListScroll"]
+size_flags_horizontal = 3
+theme_override_constants/separation = 8
+
+[node name="DetailPanel" type="Panel" parent="FolderRoot/PageArea/Content"]
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="DetailVBox" type="VBoxContainer" parent="FolderRoot/PageArea/Content/DetailPanel"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 18.0
+offset_top = 16.0
+offset_right = -18.0
+offset_bottom = -16.0
+theme_override_constants/separation = 12
+
+[node name="DetailTitle" type="Label" parent="FolderRoot/PageArea/Content/DetailPanel/DetailVBox"]
+text = ""
+autowrap_mode = 3
+theme_override_colors/font_color = Color(0.16, 0.12, 0.08, 1)
+theme_override_font_sizes/font_size = 22
+
+[node name="DetailMeta" type="Label" parent="FolderRoot/PageArea/Content/DetailPanel/DetailVBox"]
+text = ""
+autowrap_mode = 3
+theme_override_colors/font_color = Color(0.24, 0.18, 0.12, 1)
+theme_override_font_sizes/font_size = 15
+
+[node name="DetailBody" type="Label" parent="FolderRoot/PageArea/Content/DetailPanel/DetailVBox"]
+size_flags_vertical = 3
+text = ""
+autowrap_mode = 3
+theme_override_colors/font_color = Color(0.16, 0.12, 0.08, 1)
+theme_override_font_sizes/font_size = 18
+
+[node name="EmptyState" type="Label" parent="FolderRoot/PageArea"]
+anchor_left = 0.0
+anchor_top = 0.5
+anchor_right = 1.0
+anchor_bottom = 0.5
+offset_left = 40.0
+offset_top = -40.0
+offset_right = -40.0
+offset_bottom = 40.0
+text = ""
+horizontal_alignment = 1
+vertical_alignment = 1
+autowrap_mode = 3
+theme_override_colors/font_color = Color(0.16, 0.12, 0.08, 1)
+theme_override_font_sizes/font_size = 20
+
+[node name="FooterBar" type="HBoxContainer" parent="FolderRoot"]
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 28.0
+offset_top = -66.0
+offset_right = -28.0
+offset_bottom = -24.0
+theme_override_constants/separation = 14
+
+[node name="SaveNowButton" type="Button" parent="FolderRoot/FooterBar"]
+custom_minimum_size = Vector2(144, 36)
+text = ""
+
+[node name="SaveStatusLabel" type="Label" parent="FolderRoot/FooterBar"]
+size_flags_horizontal = 3
+text = ""
+vertical_alignment = 1
+autowrap_mode = 3
+theme_override_colors/font_color = Color(0.96, 0.94, 0.86, 1)
+theme_override_font_sizes/font_size = 15

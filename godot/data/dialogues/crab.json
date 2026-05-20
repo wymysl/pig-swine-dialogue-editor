@@ -100,6 +100,24 @@
             "once": true
         },
         {
+            "id": "crab_property_transfer_offer",
+            "trigger": "chapter1.recruited_crab == true && chapter1.surfaced_property_transfer == true && !chapter1.decoy_standing_wrong_party && !chapter1.halina_met && !chapter1.entered_court",
+            "_comment": "2026-05-19 critique F8: D3 (standing/wrong-party) decision moment relocated from Whimsy to Crab. Whimsy pointed at the thread in his recruitment; Crab now produces the fact (2018 ownership transfer) and offers the decoy. Crab's two-sentence rhythm carries: observation, implication. Address form bare 'Cula' (post-recruit). once:true. The decoy is procedurally subordinate to the address defect; Crab's framing makes that plain without rejecting the option.",
+            "lines": [
+                "Cula. Whimsy mentioned the ownership thread. I checked the cooperative register.",
+                "Two thousand and eighteen. Building sold to a property concern out of Mokotów. The notice in the file is under the prior owner's hand. The lease assigned forward at transfer; the new owner inherits the obligation. Sharp counsel would raise standing anyway.",
+                "Subordinate to the address defect. The bench will note it and turn back to the envelope. Include it in the motion, or hold it for cross."
+            ],
+            "options": {
+                "write_path": "chapter1.decoy_standing_wrong_party",
+                "choices": [
+                    {"text": "Hold it. The procedural defect ends the matter before standing matters.", "value": false},
+                    {"text": "Include it. If we are asking the court to set aside, ask widely.", "value": true}
+                ]
+            },
+            "once": true
+        },
+        {
             "id": "crab_post_halina_incapacity_offer",
             "trigger": "chapter1.recruited_crab == true && chapter1.halina_met == true && !chapter1.decoy_incapacity && !chapter1.archive_research_complete && !chapter1.entered_court",
             "_comment": "v4 NEW state — D5 (incapacity) decision moment per PROPOSAL §1.2. Crab post-Halina is the single canonical surface for the incapacity offer; the proposal explicitly notes 'a single Cula-internal option in the Crab post-Halina-meeting state.' Cula floats the idea in his own voice (the player is the one offering the blunder, not Crab); options write chapter1.decoy_incapacity. Both branches chain via options.chain:true — the 'yes' value lands the cold refusal in crab_post_halina_incapacity_refuses; the 'no' value falls through to hint_needs_archive on the chain re-fire. once:true so the offer cannot be re-asked.",
@@ -157,30 +175,20 @@
             "id": "hint_needs_archive",
             "trigger": "chapter1.recruited_crab == true && chapter1.halina_met == true && !chapter1.archive_research_complete && !chapter1.entered_court",
             "_comment": "Post-Halina-meeting hint state. Crab's factual domain is the service certificate; he nudges Cula toward the archive. Bare 'Cula' (post-recruit). Unchanged from v3.",
-            "lines": [
-                "Cula. The service address is in the archive — somewhere. Someone filed a certificate at the cooperative office when the building was resurveyed. We need to know whether the certificate describes the door on the envelope.",
-                "The paper is the next step. Until we have it the case is half-told."
-            ]
+            "lines": ["Cula. The service address is in the archive — somewhere. Someone filed a certificate at the cooperative office when the building was resurveyed. We need to know whether the certificate describes the door on the envelope.", "The paper is the next step. Until we have it the case is half-told."]
         },
         {
             "id": "crab_hint_court_ready",
             "trigger": "chapter1.recruited_crab == true && chapter1.archive_research_complete == true && !chapter1.court_ready && !chapter1.entered_court",
             "_comment": "Quiet approval beat between archive research and the readiness check. 'Not beautiful but standing in the right order' is the anti-reassurance calibration anchor — it is a fact, not comfort. Bare 'Cula' per AGENTS.md.",
-            "lines": [
-                "Cula. The facts are not beautiful. They are standing in the right order. That is what we needed before fourteen hundred."
-            ]
+            "lines": ["Cula. The facts are not beautiful. They are standing in the right order. That is what we needed before fourteen hundred."]
         },
         {
             "id": "after_engagement",
             "trigger": "chapter1.recruited_crab == true",
             "_comment": "Catch-all repeat-beat for post-recruitment states not matched above. 'Decorative gaps' is the gear-shift closer; Crab names absence-of-evidence as a procedural problem. Bare 'Cula' per AGENTS.md.",
-            "lines": [
-                "Cula. If we go in now we will be making an argument with decorative gaps. The argument can be made. The gaps are what the landlord will fill, and he will fill them in his favour."
-            ]
+            "lines": ["Cula. If we go in now we will be making an argument with decorative gaps. The argument can be made. The gaps are what the landlord will fill, and he will fill them in his favour."]
         }
     ],
-    "idle_flavor": [
-        "The office is quiet. Either nothing has happened or the evidence is hiding better than usual.",
-        "Half the legal questions in this office begin with someone reading the address on an envelope twice."
-    ]
+    "idle_flavor": ["The office is quiet. Either nothing has happened or the evidence is hiding better than usual.", "Half the legal questions in this office begin with someone reading the address on an envelope twice."]
 }

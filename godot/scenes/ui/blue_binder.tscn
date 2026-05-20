@@ -158,7 +158,6 @@ theme_override_colors/font_color = Color(0.2275, 0.1569, 0.0941, 1)
 theme_override_font_sizes/font_size = 14
 
 [node name="AddressSlotOption" type="OptionButton" parent="BinderRoot/PageBody/PacketPanel/PacketVBox"]
-focus_mode = 0
 
 [node name="LandlordSlotLabel" type="Label" parent="BinderRoot/PageBody/PacketPanel/PacketVBox"]
 text = "2) Landlord knowledge"
@@ -166,7 +165,6 @@ theme_override_colors/font_color = Color(0.2275, 0.1569, 0.0941, 1)
 theme_override_font_sizes/font_size = 14
 
 [node name="LandlordSlotOption" type="OptionButton" parent="BinderRoot/PageBody/PacketPanel/PacketVBox"]
-focus_mode = 0
 
 [node name="NoticeSlotLabel" type="Label" parent="BinderRoot/PageBody/PacketPanel/PacketVBox"]
 text = "3) Actual-notice window"
@@ -174,7 +172,6 @@ theme_override_colors/font_color = Color(0.2275, 0.1569, 0.0941, 1)
 theme_override_font_sizes/font_size = 14
 
 [node name="NoticeSlotOption" type="OptionButton" parent="BinderRoot/PageBody/PacketPanel/PacketVBox"]
-focus_mode = 0
 
 [node name="AuthoritySlotLabel" type="Label" parent="BinderRoot/PageBody/PacketPanel/PacketVBox"]
 text = "4) No third-party authority"
@@ -182,7 +179,6 @@ theme_override_colors/font_color = Color(0.2275, 0.1569, 0.0941, 1)
 theme_override_font_sizes/font_size = 14
 
 [node name="AuthoritySlotOption" type="OptionButton" parent="BinderRoot/PageBody/PacketPanel/PacketVBox"]
-focus_mode = 0
 
 [node name="PacketSeparatorA" type="HSeparator" parent="BinderRoot/PageBody/PacketPanel/PacketVBox"]
 
@@ -192,7 +188,6 @@ theme_override_colors/font_color = Color(0.2275, 0.1569, 0.0941, 1)
 theme_override_font_sizes/font_size = 14
 
 [node name="RemedyOption" type="OptionButton" parent="BinderRoot/PageBody/PacketPanel/PacketVBox"]
-focus_mode = 0
 
 [node name="PacketSeparatorB" type="HSeparator" parent="BinderRoot/PageBody/PacketPanel/PacketVBox"]
 
@@ -208,7 +203,6 @@ theme_override_constants/separation = 6
 
 [node name="ApplyPacketButton" type="Button" parent="BinderRoot/PageBody/PacketPanel/PacketVBox"]
 text = "Apply Packet Assessment"
-focus_mode = 0
 
 [node name="PacketStatusLabel" type="Label" parent="BinderRoot/PageBody/PacketPanel/PacketVBox"]
 text = ""
@@ -225,6 +219,6 @@ offset_left = -520.0
 offset_top = -44.0
 offset_right = -24.0
 offset_bottom = -16.0
-text = "[Tab/← →] evidence    [Esc] close"
+text = "[← →] evidence    [Tab] packet controls    [Enter] apply    [Esc] close"
 theme_override_colors/font_color = Color(0.2275, 0.1569, 0.0941, 1)
 theme_override_font_sizes/font_size = 14
