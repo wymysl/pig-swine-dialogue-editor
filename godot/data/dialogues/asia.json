@@ -10,8 +10,8 @@
             "_comment": "Beat 2 — Cula entered through the back. Address form: 'Dr. A. Cula' per AGENTS.md §Address forms. Register: warm-direct. Sets met_asia on dismiss. Verbatim structure from asia.json v1 first_meeting_via_behind_counter; lines lightly tightened.",
             "tags": ["beat2", "first_meeting", "warm_direct"],
             "lines": [
-                "Excuse me, only employees are allowed back there; oh.",
-                "Of course. The new hire. Dr. A. Cula, good morning. We've been expecting you.",
+                "Excuse me, only employees are allowed... oh.",
+                "Of course. The new hire. Dr. A. Cula, good morning! We've been expecting you.",
                 "Mr. Pig mentioned you'd be starting today. He mentioned it several times, actually.",
                 {"speaker": "cula", "text": "Good morning."},
                 "He's at his desk. He'll want to speak with you first. He's the loudest crisis in the room.",
@@ -61,7 +61,7 @@
             "once": true,
             "lines": [
                 "Oh, Mr. Pig has been promising things. He does that. Today he was right.",
-                {"speaker": "asia", "text": "Dr. A. Cula. Good morning. We've been expecting you."}
+                {"speaker": "asia", "text": "Dr. A. Cula. Good morning! We've been expecting you."}
             ],
             "chain": true
         },

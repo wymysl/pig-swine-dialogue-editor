@@ -50,9 +50,21 @@
             "tags": ["beat14", "postcard", "reaction", "maritime", "distractable_anxious", "pig"]
         },
         {
+            "id": "cula_postcard_reaction",
+            "trigger": "chapter1.pig_postcard_reaction_shown == true && !chapter1.cula_postcard_reaction_shown",
+            "_comment": "2026-05-19 critique F4 partial: inlining Cula's orphan postcard reaction from cula.json::cula_b14_postcard_reaction. The dry-observer register at full strength — calibration anchor stinger_001. Fires between Pig's distracted-anxious one-liner and Whimsy's theatrical deflection so the room's three registers land in sequence. once:true via SAVE_VERSION 12 declarative gate (the on_dismiss flag remains for compatibility with the file's flag-driven pattern).",
+            "speaker": "cula",
+            "lines": ["Japan, ski resorts, arbitration, no immediate downside. I distrust every noun in that sentence."],
+            "on_dismiss": [
+                {"set": "chapter1.cula_postcard_reaction_shown", "value": true}
+            ],
+            "once": true,
+            "tags": ["beat14", "postcard", "reaction", "dry_observer", "cula"]
+        },
+        {
             "id": "whimsy_archaic_deflection",
-            "trigger": "chapter1.pig_postcard_reaction_shown == true && !chapter1.whimsy_postcard_deflection_shown",
-            "_comment": "Whimsy registers the postcard's existence as theatre. Single archaic-deflection beat. One short construction. Per pack §B.5 Beat 14 spec.",
+            "trigger": "chapter1.cula_postcard_reaction_shown == true && !chapter1.whimsy_postcard_deflection_shown",
+            "_comment": "Whimsy registers the postcard's existence as theatre. Single archaic-deflection beat. One short construction. Per pack §B.5 Beat 14 spec. **2026-05-19 critique F4 partial:** trigger updated to gate on cula_postcard_reaction_shown so Cula's stinger lands before Whimsy's flourish.",
             "speaker": "whimsy",
             "lines": ["Behold. The postcard."],
             "on_dismiss": [

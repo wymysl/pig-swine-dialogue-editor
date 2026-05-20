@@ -1799,3 +1799,70 @@ Removed the obsolete `BinderUI` autoload and dead `binder` input action; the Cas
 Interaction prompts now resolve their action label from `InputMap` instead of hardcoding `[E]`; prompt chrome is 36x24 with 16px text and a higher vertical offset. Dialogue speaker text was raised to 24px. `battle_screen.gd` is no longer a dead stub; the scene has a minimal controller plus numeric `value/max` labels for Cooperation and Patience.
 Added focused regression coverage: `test_save_failure_signal.gd`, `test_ui_critique_regressions.gd`, plus keyboard-focus and prompt-binding assertions in existing tests.
 Verification: `test_case_folder.gd` PASS (59/59), `test_motion_packet_assembly.gd` PASS (43/43), `test_interaction_prompt.gd` PASS, `test_save_failure_signal.gd` PASS (5/5), `test_ui_critique_regressions.gd` PASS (14/14), smoke PASS, full runner PASS (50/50), and Web export PASS with non-empty `exports/web/index.html`, `.pck`, and `.wasm`. The first export attempt hit sandbox-only editor-settings write errors; rerunning the same export with approved escalation completed cleanly. Headless Godot still prints the macOS CA-certificate warning on startup.
+
+---
+
+## 2026-05-19 — narrative critique remediation (Ch1 phase 8 polish)
+
+Hostile narrative critique authored at `godot/critiques/2026-05-19-narrative.md` (11 findings, F1–F11). Surgical remediations applied for nine of the eleven findings plus a narrow partial of F4. F4 full and F5 deferred.
+
+Files touched:
+
+- `godot/data/dialogues/murrow.json` — F1: line 16 speaker tag flipped from `murrow` to `cula` and the bracketed line rewritten to drop the "Ionkionked" LinkedIn parody (style_canon §Reject patterns ban on modern-internet voice). F2: `has_binder_pre_crab` adjusted to use bare "Crab" everywhere; the v3 line was mixing bare "Crab" and "Mr. Crab" on the same sentence.
+- `godot/data/dialogues/asia_hint_states_ch1.json` — F2: `Mr. Crab` → `Crab` on the binder-collected hint; `Mr. Whimsy` → `Whimsy` on the rights-memo and recruit hints. The asymmetry the v3 `_comment` admitted ("known asymmetry preserved verbatim") is now resolved per `asia_hint_states_ch1.md §address-forms`.
+- `godot/data/dialogues/pig.json` — F6: `pig_first_meeting` maritime density trimmed from ~5/9 lines to 1/9, replaced with Hrabalian-digressive register that lands without the nautical anchor (preserves the spec rule "roughly one in four lines"). F9: added `pig_b13_celebration` state, previously missing — `cula_b13_pig_celebration_response` in cula.json was reacting to a line that did not exist in shipped data. Uses declarative `once: true` (SAVE_VERSION 12 mechanic) rather than a manual flag.
+- `godot/data/dialogues/asia.json` — F7: all three options in `asia_b2_approach_choice` now use "Dr. A. Cula" self-introduction, reconciling the conflict with cula.json's `cula_b2_asia_greeting` ("uses the title because Asia is reception and a formal first encounter"). `asia_b2_response_friendly` reply tightened to remove the now-orphaned "you must be Asia?" website-photo gag.
+- `godot/data/dialogues/whimsy.json` — F8: `before_meeting` rewritten so Whimsy points at Crab for the ownership question rather than producing the 2018 property-transfer fact himself; the civic-records hobby was bleeding into Crab's notice-the-inconsistency lane. The standing-decoy state `whimsy_before_meeting_decoy_standing` is now a `trigger: "false"` tombstone (will be removed once migration fixtures are regenerated). `surfaced_property_transfer` flag is still set on Whimsy on_dismiss to preserve the v4 surface-on-recruit gameplay path.
+- `godot/data/dialogues/crab.json` — F8: added `crab_property_transfer_offer` state, ordered before `crab_post_halina_incapacity_offer`. Crab now produces the 2018 transfer fact in his two-sentence rhythm (observation, implication) and offers the D3 standing/wrong-party decoy.
+- `godot/data/dialogues/halina.json` — F10: `halina_post_meeting_decoy_incapacity_cold` and `client_meeting_reveal` swapped in JSON order. On the rare conjoint condition (high trust AND incapacity blunder), the rebuke now fires before the disclosure, preserving dramatic order.
+- `godot/data/dialogues/judge_district_ch1.json` — F11: `judge_b12_remedy_strong_technical` and `judge_b12_remedy_strong` openers now differentiate — the technical strong opens on a half-beat of bench surprise at the record's completeness; the non-technical strong gets a small register lift in the direct-address close. The duplicate `chapter1.court_won_procedural_reset` writes in every remedy `on_dismiss` are deduplicated (12 occurrences collapsed to single writes).
+- `godot/data/dialogues/postcard_swine_ch1.json` — F4 partial: Cula's orphaned Beat 14 stinger ("Japan, ski resorts, arbitration, no immediate downside. I distrust every noun in that sentence.") inlined as a new `cula_postcard_reaction` state between Pig's postcard reaction and Whimsy's deflection. `whimsy_archaic_deflection` trigger updated to gate on the new flag.
+- `narrative_revision/phase_7_packs/V1.6_court_rounds.md` — F3: rescinded the V1.4-carry-forward instruction to address Cula as "Doctor Cula" in court / when Halina is present. Per `bibles/murrow_voice_spec.md` §93 and `bibles/murrow.md` §162, "Doctor Cula" is non-canonical. Bench may use "Dr. A. Cula" on rare direct-address slots; Murrow uses bare "Cula" in court and client-facing contexts (the friend-form does not revert).
+- `godot/data/chapters/chapter1.json` — F4 partial: catalog entry for `chapter1.cula_postcard_reaction_shown` added (default false; set by postcard_swine_ch1 cula_postcard_reaction on_dismiss).
+- `godot/scripts/autoload/state.gd` — F4 partial: `cula_postcard_reaction_shown` default declared in `reset_state()`; SAVE_VERSION bumped 20 → 21.
+- `godot/scripts/systems/save.gd` — F4 partial: v20 → v21 migration step appended (single-key add, idempotent, missing-chapter1 safe).
+- `godot/tests/test_save_migration_v20_v21.gd` — new headless migration test, mirrors the v17→v18 test scaffold (T1 asserts `SAVE_VERSION >= 21` per the project's grep-`== N`-after-each-bump rule).
+
+Deferred:
+
+- **F4 full** — `cula.json` is dispatched only by the family-photo interactable; the entire Beat 1–14 interior chorus (Kundera step-back, stance-keyed remedy carriers, cardiologist silent reaction, dwell replies) remains unreachable until a build-time fan-out script reads cula.json and emits per-NPC inline lines. The Beat 9 Kundera placement additionally depends on `chapter1.archive_research_complete` being set from a live state — currently the flag has triggers gating on it but no live state writes it. Engineering artifact required.
+- **F5 trust meter rework** — moving the reveal gate from total trust to coverage-of-distinct-register-classes requires either a new derived flag (state migration + tests) or a runtime helper. Design call deferred for the human; the current `+2/+1/+0` schedule still ships and still penalises non-warmth stances with worse hidden disclosure.
+
+Verification:
+
+- `node tools/verify_dialogue_roundtrip.js` — 11 canonical files, 216 state ids checked, **0 violations, byte-identical=true** on every file.
+- `python3 tools/voice_audit.py godot/data/voice_references/` — 40 files, 24812 records, **0 violations**.
+- `python3 -c "import json; json.load(...)"` on every edited dialogue JSON plus `chapter1.json` — all parse cleanly.
+- Godot headless tests (`test_smoke.gd`, `test_runner.gd`, `test_save_migration_v20_v21.gd`) — NOT RUN. The sandbox this work was performed in does not have a Godot binary available. The migration test was authored against the existing v17→v18 scaffold and should be run on the user's workstation before commit. Web export NOT RUN for the same reason.
+
+**Addendum, 2026-05-20:** Ran the deferred verification on the workstation. `test_smoke.gd` PASS, `test_save_migration_v20_v21.gd` PASS (14/14). Full headless runner uncovered six unrelated failures triaged in the 2026-05-20 design-critique entry below (four collapse to the F10 taxonomy ✕ opponent mismatch; one was the postcard chain test not knowing about the new `cula_postcard_reaction` state — fixed today by adding the corresponding `_assert_step` and resetting `cula_postcard_reaction_shown` in `_reset_postcard_state`; one is unrelated office-wall scene drift).
+
+---
+
+## 2026-05-20 — design-critique remediation (Ch1 packet tiers + taxonomy v2)
+
+Hostile design critique authored at `godot/critiques/2026-05-19-design.md` (10 findings, F1–F10). Surgical remediations applied for F2, F4, F5, and F10. F1 (DESIGN_TODO inventory clear) is the gate before more mechanical surface lands; remains open. F3 (overlapping court_round files) closed by the F2 deletion.
+
+Files touched:
+
+- `godot/data/court_rounds/ch1_round1_halina_examination.json` — F2: deleted. Schema-canonical file is `chapter1_round_1.json` per `_schema.md §Naming Convention`. The orphan presented a competing four-press Halina-as-witness model; source-of-truth ambiguity is worse than missing content.
+- `godot/data/tag_taxonomy.json` — F10: trimmed v1 → v2 to the Chapter 1 working set only. Chapter 2+ tags get added when the first Ch2 encounter that consumes them lands. `positive_obligations`, `housing`, several ECHR/PL articles dropped. Verified zero player-side judgments reference dropped tags before removing.
+- `godot/data/argument_opponents.json` — F10 fallout: `landlord_counsel_ch1.court_rounds[2].opponent_moves[0].resists` (move `technicality_does_not_matter`) referenced `positive_obligations` carried over from v1 taxonomy; stripped to `[proportionality]`. Effectiveness validator now loads cleanly.
+- `godot/data/court_rounds/chapter1_round_1.json` — F4: `motion_to_set_aside.requires_fact_flags` tightened from `[]` to `[_fact.renumbering_2015_documented, _fact.notice_received_april_28]` (two-element tier). New citation `motion_to_set_aside_full` added with the four-element tier requiring all primary facts, `judicial_patience_delta_on_hit: 2`. `used_by` audit annotations on every fact flag updated. F5: `victory_resolution.evaluation_order` reordered blunder-first (`[blunder_recovered, narrow_victory, standard_victory, strong_victory]`) with `_evaluation_doc` explaining the first-match exclusivity rewrite. F10 fallout: three `pressure_strength_tags` slots rewritten to surviving taxonomy tags.
+- `godot/data/judgments.json` — F4: `procedural_reset_ch1.principle_moves[]` adds `motion_to_set_aside_full` stub. Per the judgments.json schema header (line 3), per-move entries declare only `{id, effectiveness_modifiers, cost, name, flavor_line}`; tag arrays live at judgment level and apply uniformly. Stub is structurally complete; `name` and `flavor_line` remain DESIGN_TODO and belong to F1 inventory.
+- `godot/scripts/systems/battle/effectiveness.gd` — doc-only: header comment updated to reflect that `resolve()` is now wired into `battle_controller.gd::player_present()` for Phase 2 closing rounds, with a note on the weighted-tag-sum-to-1.0 author trap (the most common cause of crashes when court_round JSON is hand-edited). No behavior change.
+- `godot/tests/test_battle_controller.gd` — T1 move-count assertion bumped from `== 4` to `== 5` to match the F4 reality (`"judgment hydrates five principle moves"`).
+
+Deferred:
+
+- **F1 DESIGN_TODO inventory** — `chapter1_round_1.json` carries `DESIGN_TODO` on every witness `display_name`, every statement `text`, every `press_options[].follow_up_text`, every `present_options[].judge_reaction`, every `judge_counter_questions[].text`, every `available_citations[].flavor_line`, every `defeat_lines` entry, every `partial_lines` entry, and every `victory_resolution.branches[].result_text`. The new `motion_to_set_aside_full` adds one more line to that inventory (`flavor_line` plus `name` on the judgments.json side). Per F1, no new mechanical surface lands until the count hits zero.
+- **F5 trust meter** — see the 2026-05-19 narrative-remediation entry above; design call deferred for the human.
+- **F4 full / Cula interior fan-out** — see the same entry above. Engineering tool required; gated by F1 anyway.
+
+Verification:
+
+- `tests/test_smoke.gd` — PASS.
+- `tests/test_runner.gd` — 50/51 PASS. Remaining failure: `test_office_wall_visibility.gd` (camera limits `(0,0,1280,704)` vs floor StaticBody `16×9` at 64px = `1024×576`). Unrelated scene/test drift on `pig_swine_office.tscn` from the building/art sprints; not part of this commit.
+- `tests/test_save_migration_v20_v21.gd` — PASS (14/14, builds on the 2026-05-19 entry).
+- Web export NOT RUN this session.
+

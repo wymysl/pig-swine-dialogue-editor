@@ -96,6 +96,7 @@
     { "key": "chapter1.postcard_readaloud_cue_shown", "default": false, "set_by": "postcard_swine_ch1.json pig_readaloud_cue on_dismiss" },
     { "key": "chapter1.postcard_body_read", "default": false, "set_by": "postcard_swine_ch1.json pig_readaloud_body on_dismiss" },
     { "key": "chapter1.pig_postcard_reaction_shown", "default": false, "set_by": "postcard_swine_ch1.json pig_postcard_reaction on_dismiss" },
+    { "key": "chapter1.cula_postcard_reaction_shown", "default": false, "set_by": "postcard_swine_ch1.json cula_postcard_reaction on_dismiss (added 2026-05-19 per critique F4 partial; inlines orphaned cula.json::cula_b14_postcard_reaction)" },
     { "key": "chapter1.whimsy_postcard_deflection_shown", "default": false, "set_by": "postcard_swine_ch1.json whimsy_archaic_deflection on_dismiss" },
     { "key": "chapter1.complete", "default": false, "set_by": "postcard_swine_ch1.json chapter_close on_dismiss" },
 

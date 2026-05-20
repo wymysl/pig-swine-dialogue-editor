@@ -2,7 +2,7 @@ extends Node
 ## State autoload — single writer. Owns all persistent game state and save/load.
 ## Migration required for every shape change (see AGENTS.md §Save migration policy).
 
-const SAVE_VERSION: int = 20
+const SAVE_VERSION: int = 21
 
 const TILE_SIZE := 64
 const CHAR_HEIGHT := 64
@@ -171,6 +171,11 @@ func reset_state() -> Dictionary:
 			"postcard_readaloud_cue_shown": false,
 			"postcard_body_read": false,
 			"pig_postcard_reaction_shown": false,
+			## Added 2026-05-19 per critique F4 partial: gates Cula's stinger
+			## reaction to the postcard body. See postcard_swine_ch1.json
+			## ::cula_postcard_reaction. Inlines orphaned cula.json
+			## ::cula_b14_postcard_reaction.
+			"cula_postcard_reaction_shown": false,
 			"whimsy_postcard_deflection_shown": false,
 			## Chapter-close gate.
 			"complete": false,

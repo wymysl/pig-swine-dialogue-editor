@@ -479,4 +479,17 @@ func migrate_save(saved_data: Dictionary, old_version: int) -> Dictionary:
 			saved_data["active_case_id"] = ""
 		if str(saved_data["active_case_id"]) == "" and bool(ch1_v20.get("has_law_binder", false)):
 			saved_data["active_case_id"] = "chapter1_sikorska"
+
+	## v20 -> v21: 2026-05-19 critique F4 partial. Inlines Cula's Beat 14
+	## postcard reaction (previously orphaned in cula.json) into
+	## postcard_swine_ch1.json; gates Whimsy's deflection on the new flag.
+	## Migration: add cula_postcard_reaction_shown defaulting to false.
+	## Saved games at v20 that have already completed Ch1 will not retro-
+	## fire Cula's reaction; the line is only seen by playthroughs that
+	## reach Beat 14 after the migration.
+	if old_version < 21:
+		if saved_data.has("chapter1") and saved_data["chapter1"] is Dictionary:
+			var ch1_v21: Dictionary = saved_data["chapter1"]
+			if not ch1_v21.has("cula_postcard_reaction_shown"):
+				ch1_v21["cula_postcard_reaction_shown"] = false
 	return saved_data

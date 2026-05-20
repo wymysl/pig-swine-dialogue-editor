@@ -51,6 +51,12 @@ func _init() -> void:
 		"pig_postcard_reaction_shown"
 	)
 	_assert_step(
+		"Dr. A. Cula",
+		"cula",
+		"Japan, ski resorts, arbitration, no immediate downside. I distrust every noun in that sentence.",
+		"cula_postcard_reaction_shown"
+	)
+	_assert_step(
 		"Whimsy",
 		"whimsy",
 		"Behold. The postcard.",
@@ -112,6 +118,7 @@ func _reset_postcard_state() -> void:
 	ch1["postcard_readaloud_cue_shown"] = false
 	ch1["postcard_body_read"] = false
 	ch1["pig_postcard_reaction_shown"] = false
+	ch1["cula_postcard_reaction_shown"] = false
 	ch1["whimsy_postcard_deflection_shown"] = false
 	ch1["complete"] = false
 	_state.data["badges"]["day_one_survivor"] = false
