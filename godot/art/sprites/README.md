@@ -45,7 +45,9 @@ Characters are chess pieces: round blob in tight suit = Mr. Pig. Slim figure in 
 Every character prompt follows a strict 3-part structure:
 1. **Silhouette + One Feature:** ONE short sentence describing the character's body shape, posture, and single distinguishing clothing item. Drop everything that won't survive 128→64 downscale.
 2. **Style Anchor (Verbatim):**
-   > Minimal synthetic line drawing, sparse flat shapes, Polish satirical illustration, institutional mood, pixel-art, adult proportions, full body, hands at sides.
+   > Minimal synthetic line drawing, sparse flat shapes, neutral-institutional figure, pixel-art, adult proportions, full body, hands at sides.
+
+   Note: "Polish satirical illustration" / "satirical" framings are pre-rejected — they push Pixellab toward caricature. Premise is satirical; rendering is neutral. Add `caricature, exaggerated features, mascot, comic` to the negative anchor if drift recurs.
 3. **Palette:** 5–6 hex codes from the shared palette-safe set.
 
 ### Negative Prompts

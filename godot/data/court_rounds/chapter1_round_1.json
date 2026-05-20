@@ -207,14 +207,12 @@
     "witnesses": [
       {
         "id": "court_clerk",
-        "display_name": "DESIGN_TODO",
-        "_status_note": "DESIGN_TODO - Polish civil-court registry clerk; archival-bureaucrat register; no name; dry confidence in the file jacket.",
+        "display_name": "Court Clerk",
         "cooperation_budget": 3,
         "statements": [
           {
             "id": "clerk_registry_service_entry",
-            "text": "DESIGN_TODO",
-            "_status_note": "DESIGN_TODO - One sentence establishing that the registry file shows service entered against the petition address.",
+            "text": "Your Honour. The court registry records service entered against the address shown on the petition. The bailiff's notation is on file.",
             "article_tags": [
               "echr_6",
               "pl_const_45"
@@ -233,7 +231,7 @@
                 "id": "press_registry_source",
                 "cost": 1,
                 "follow_up_statement_id": "clerk_address_on_petition",
-                "follow_up_text": "DESIGN_TODO",
+                "follow_up_text": "The address on the service entry is the address typed by petitioning counsel. The registry transcribes; it does not verify.",
                 "fact_flags_set": []
               }
             ],
@@ -247,7 +245,7 @@
                   "_fact.landlord_knew_address",
                   "_fact.bonus_return_to_sender_slip"
                 ],
-                "judge_reaction": "DESIGN_TODO"
+                "judge_reaction": "A return-to-sender slip, dated and signed by the petitioner's own clerk. The landlord cannot plead ignorance of a defect his correspondence already documented. Mark the exhibit."
               },
               {
                 "id": "present_landlord_contact",
@@ -257,15 +255,14 @@
                 "fact_flags_set": [
                   "_fact.bonus_landlord_pre_notice_contact"
                 ],
-                "judge_reaction": "DESIGN_TODO"
+                "judge_reaction": "Pre-notice correspondence from the landlord on the corrected address, six months before service. The chronology speaks for itself. The court will note it."
               }
             ],
             "fact_flags_set": []
           },
           {
             "id": "clerk_address_on_petition",
-            "text": "DESIGN_TODO",
-            "_status_note": "DESIGN_TODO - One sentence that the address in the service entry is simply the address copied from the petition papers.",
+            "text": "The address in the service entry is the address printed on the petition. The registry transcribes the filing party's submission verbatim. We do not generate addresses; we record them.",
             "article_tags": [
               "echr_6",
               "pl_const_45"
@@ -284,7 +281,7 @@
                 "id": "press_registry_crosscheck",
                 "cost": 1,
                 "follow_up_statement_id": "clerk_no_municipal_crosscheck",
-                "follow_up_text": "DESIGN_TODO",
+                "follow_up_text": "The registry does not independently audit a petitioner's address against municipal records. A correction enters the file only when the filing party files one. None is on this file.",
                 "fact_flags_set": []
               }
             ],
@@ -296,7 +293,7 @@
                 "fact_flags_set": [
                   "_fact.renumbering_2015_documented"
                 ],
-                "judge_reaction": "DESIGN_TODO"
+                "judge_reaction": "Counsel, surprisingly, that is a point. The petition is using an address the municipality discarded eleven years ago. The instrument is on the record."
               },
               {
                 "id": "present_lease_chain_documents",
@@ -306,15 +303,14 @@
                 "fact_flags_set": [
                   "_fact.bonus_lease_chain_documented"
                 ],
-                "judge_reaction": "DESIGN_TODO"
+                "judge_reaction": "The lease chain is in order — 1962 original, 1987 inheritance, current. The court is not deciding the tenancy today, but the chain is noted, in case any party were tempted to dispute it later."
               }
             ],
             "fact_flags_set": []
           },
           {
             "id": "clerk_no_municipal_crosscheck",
-            "text": "DESIGN_TODO",
-            "_status_note": "DESIGN_TODO - One sentence confirming the registry does not independently audit renumbering unless a corrected filing is placed in the record.",
+            "text": "The registry does not audit a petitioner's address against municipal renumbering records. A correction enters the file only when the filing party files one. No such correction was placed in this file by the petitioner.",
             "article_tags": [
               "echr_6"
             ],
@@ -331,8 +327,7 @@
           },
           {
             "id": "clerk_third_party_receipt_noted",
-            "text": "DESIGN_TODO",
-            "_status_note": "DESIGN_TODO - One sentence stating that the file notes delivery to an adult at number seven, with no inquiry into authority.",
+            "text": "The file notes delivery to an adult occupant at number seven. The bailiff did not record the recipient's relation to the named addressee. The form requires service; it does not require relation.",
             "article_tags": [
               "echr_6",
               "pl_const_45"
@@ -354,14 +349,12 @@
       },
       {
         "id": "resident_no_7",
-        "display_name": "DESIGN_TODO",
-        "_status_note": "DESIGN_TODO - the young man who brought the notice down to Halina; mild, apologetic, and plainly not a hostile witness.",
+        "display_name": "Resident of Number Seven",
         "cooperation_budget": 2,
         "statements": [
           {
             "id": "resident_found_envelope",
-            "text": "DESIGN_TODO",
-            "_status_note": "DESIGN_TODO - One sentence that he found an envelope for number seven and brought it downstairs once he realised it was not his.",
+            "text": "I found an envelope in my mailbox at number seven. The name on it was Sikorska. I do not know any Sikorska, but I asked the building manager and she said Mrs. Sikorska lives downstairs. So I brought it down to her. I should have done it sooner.",
             "article_tags": [
               "echr_6",
               "pl_const_45"
@@ -378,7 +371,7 @@
                 "id": "press_when_notice_brought_down",
                 "cost": 1,
                 "follow_up_statement_id": "resident_brought_notice_april_28",
-                "follow_up_text": "DESIGN_TODO",
+                "follow_up_text": "It was the twenty-eighth of April. I had been away for work, two weeks I think, maybe a bit more. The envelope was sitting in the box the whole time. I knocked on her door the same evening I got back.",
                 "fact_flags_set": [
                   "_fact.notice_received_april_28"
                 ]
@@ -387,7 +380,7 @@
                 "id": "press_whether_he_knew_halina",
                 "cost": 1,
                 "follow_up_statement_id": "resident_no_authority_to_accept",
-                "follow_up_text": "DESIGN_TODO",
+                "follow_up_text": "No. I had never met her before that evening. I am the new tenant — I moved into number seven last August. We are not related. Nobody asked me to receive her post, and I would not have known to.",
                 "fact_flags_set": [
                   "_fact.resident_no_authority"
                 ]
@@ -402,15 +395,14 @@
                 "fact_flags_set": [
                   "_fact.bonus_neighbor_continuity"
                 ],
-                "judge_reaction": "DESIGN_TODO"
+                "judge_reaction": "Mrs. Wójcik's statement speaks to continuity at the address since 1991. The court will accept it on that footing. Counsel may proceed."
               }
             ],
             "fact_flags_set": []
           },
           {
             "id": "resident_brought_notice_april_28",
-            "text": "DESIGN_TODO",
-            "_status_note": "DESIGN_TODO - One sentence pinning the actual handover to 28 April and making the delay sound inadvertent rather than malicious.",
+            "text": "I brought it down to her on the twenty-eighth of April. The envelope had been in my mailbox roughly two weeks before that. I had been travelling for work. It was not deliberate. I am sorry it took as long as it did.",
             "article_tags": [
               "echr_6",
               "pl_const_45"
@@ -430,8 +422,7 @@
           },
           {
             "id": "resident_no_authority_to_accept",
-            "text": "DESIGN_TODO",
-            "_status_note": "DESIGN_TODO - One sentence confirming he did not know Halina, was not her relative, and had no authority to receive legal mail for her.",
+            "text": "I do not know Mrs. Sikorska. I am not her relative. No one had ever asked me to take her mail and I would have had no standing to. The bailiff did not knock at my door. The envelope was simply in the box.",
             "article_tags": [
               "echr_6",
               "pl_const_45"
@@ -451,8 +442,7 @@
           },
           {
             "id": "resident_opened_first_page",
-            "text": "DESIGN_TODO",
-            "_status_note": "DESIGN_TODO - One sentence admitting he opened the first page by mistake before realising the notice was not his.",
+            "text": "I opened the first page. The flap was unsealed and I assumed it was mine. I read 'Notice to Quit' at the top and then I saw the surname and stopped. I should not have looked. I closed it and took it down that evening.",
             "article_tags": [
               "echr_6"
             ],
@@ -511,8 +501,7 @@
     "judge_counter_questions": [
       {
         "id": "jq_article_6_civil",
-        "text": "DESIGN_TODO",
-        "_status_note": "DESIGN_TODO - Judge asks why Article 6 matters in a civil hearing and forces counsel to distinguish civil fair-hearing doctrine from criminal shorthand.",
+        "text": "Counsel. The submission invokes Article 6. This is a civil court hearing a civil matter. Distinguish the criminal-procedure shorthand from the procedural-fairness right counsel is actually claiming. Why does Article 6 reach a civil eviction at all, and what does it require of this bench today?",
         "opponent_pressure_move": "technicality_does_not_matter",
         "article_tags": [
           "echr_6",
@@ -577,8 +566,7 @@
             "judicial_patience_delta_on_hit": 1,
             "judicial_patience_delta_on_miss": -1,
             "judicial_patience_delta_on_backfire": -2,
-            "flavor_line": "DESIGN_TODO",
-            "_status_note": "DESIGN_TODO - Cula reframes Article 6 as the practical right to be heard at all, not as criminal-procedure ornament. Two-element tier: requires the address-error fact and the actual-notice-date fact."
+            "flavor_line": "Article 6 is not a criminal ornament. It is the right to be in the room when one's matter is heard. Two facts on this record: a 2015 renumbering the municipality recorded, and notice that reached the client on the twenty-eighth of April. The client was not in the room. KPC Article 135-bis § 2 is the door back."
           },
           {
             "move_id": "motion_to_set_aside_full",
@@ -617,8 +605,7 @@
             "judicial_patience_delta_on_hit": 2,
             "judicial_patience_delta_on_miss": -1,
             "judicial_patience_delta_on_backfire": -2,
-            "flavor_line": "DESIGN_TODO",
-            "_status_note": "DESIGN_TODO - Four-element packet tier. All four primary facts established; Cula recites the full KPC Art. 135-bis § 2 packet — non-current address, landlord knowledge, timely actual-notice motion, no third-party cure. The bench hears the whole shape at once."
+            "flavor_line": "Four elements, in the order the statute contemplates. First, the petition's address was renumbered in 2015 and the municipality has the instrument on file. Second, the petitioner himself corresponded on the corrected address — he knew. Third, the client received the notice on the twenty-eighth of April and the motion is within the window. Fourth, the recipient at number seven is the new tenant, not an authorised agent. KPC Article 135-bis § 2. The hearing did not happen because the client was not at it."
           },
           {
             "move_id": "notice_window",
@@ -650,8 +637,7 @@
             "judicial_patience_delta_on_hit": 1,
             "judicial_patience_delta_on_miss": -1,
             "judicial_patience_delta_on_backfire": -2,
-            "flavor_line": "DESIGN_TODO",
-            "_status_note": "DESIGN_TODO - Cula ties the actual-notice date to why the civil-hearing right still has procedural work to do."
+            "flavor_line": "The actual-notice clock runs from the twenty-eighth of April, not from the date the petition went into a stranger's mailbox. The client filed within the window. The civil-hearing right has procedural work to do today because the clock has not yet closed."
           }
         ],
         "frame_gates": {
@@ -663,16 +649,15 @@
           }
         },
         "defeat_lines": [
-          "DESIGN_TODO"
+          "Counsel has cited the article. The court is not yet persuaded the article reaches the defect counsel proved. The bench is unmoved."
         ],
         "partial_lines": [
-          "DESIGN_TODO"
+          "Counsel has named the right principle. The court is willing to hear it further. The bench is not at the point of granting."
         ]
       },
       {
         "id": "jq_third_party_cure",
-        "text": "DESIGN_TODO",
-        "_status_note": "DESIGN_TODO - Judge asks why the current occupant's receipt does not cure service; the line must sound skeptical but teachably procedural.",
+        "text": "Counsel. The respondent says the envelope was received at the petition's address by an adult occupant who signed for it. The form, on its face, is satisfied. Why does that not cure the service the court would otherwise call defective?",
         "opponent_pressure_move": "third_party_cure",
         "article_tags": [
           "echr_6",
@@ -735,8 +720,7 @@
             "judicial_patience_delta_on_hit": 1,
             "judicial_patience_delta_on_miss": -1,
             "judicial_patience_delta_on_backfire": -2,
-            "flavor_line": "DESIGN_TODO",
-            "_status_note": "DESIGN_TODO - Cula explains that a stranger in the stairwell is not an authorised agent and cannot cure a known wrong address."
+            "flavor_line": "The recipient is the new tenant at number seven — the respondent's own counsel does not dispute it. A stranger in the stairwell is not an authorised agent. Section three of doręczenie zastępcze does not bootstrap service through a person with no relation to the named addressee. The cure does not run."
           }
         ],
         "frame_gates": {
@@ -747,16 +731,15 @@
           }
         },
         "defeat_lines": [
-          "DESIGN_TODO"
+          "The respondent's position holds for the moment. A signature at the address is, at minimum, a fact the court cannot wish away."
         ],
         "partial_lines": [
-          "DESIGN_TODO"
+          "Counsel narrows the question, but the cure point is not yet closed. The court will continue."
         ]
       },
       {
         "id": "jq_remedy_scope",
-        "text": "DESIGN_TODO",
-        "_status_note": "DESIGN_TODO - Judge asks what precise remedy counsel seeks if relief is granted; the line must invite a narrow procedural answer, not a merits speech.",
+        "text": "Counsel. Assume the court is persuaded on service. Identify, precisely, the remedy. What is the bench being asked to do today? Keep it within the defect counsel has proved.",
         "opponent_pressure_move": "ask_for_everything",
         "article_tags": [
           "echr_6",
@@ -821,8 +804,7 @@
             "judicial_patience_delta_on_hit": 2,
             "judicial_patience_delta_on_miss": -1,
             "judicial_patience_delta_on_backfire": -2,
-            "flavor_line": "DESIGN_TODO",
-            "_status_note": "DESIGN_TODO - Cula asks only for the rehearing the client should have had in the first place; if patience is healthy, the line should sound quietly exact."
+            "flavor_line": "We do not ask the court to decide the tenancy today. We ask for the hearing the client was entitled to before any of this began. A rehearing on the merits, scheduled in the ordinary course. No more, no less."
           }
         ],
         "frame_gates": {
@@ -848,16 +830,15 @@
           }
         },
         "defeat_lines": [
-          "DESIGN_TODO"
+          "The remedy counsel asks for is broader than the defect counsel proved. The court will not draft that order."
         ],
         "partial_lines": [
-          "DESIGN_TODO"
+          "Counsel has not yet matched the remedy to the defect. The court keeps the question open."
         ]
       },
       {
         "id": "jq_merits_premature",
-        "text": "DESIGN_TODO",
-        "_status_note": "DESIGN_TODO - Judge cuts off a merits-first argument and asks why counsel is arguing tenancy merits at a motion-to-set-aside hearing.",
+        "text": "Counsel. The application before this bench is a motion to set aside. The tenancy is not on the schedule today. Why is counsel arguing the underlying merits at a hearing that cannot decide them?",
         "opponent_pressure_move": "merits_override",
         "article_tags": [
           "echr_6",
@@ -919,8 +900,7 @@
             "judicial_patience_delta_on_hit": 1,
             "judicial_patience_delta_on_miss": -2,
             "judicial_patience_delta_on_backfire": -4,
-            "flavor_line": "DESIGN_TODO",
-            "_status_note": "DESIGN_TODO - Cula retreats from the merits and recentres the hearing on service as the procedural door."
+            "flavor_line": "Setting the underlying tenancy aside — that is for a later hearing, not this one. The procedural door is the only door open today. The motion to set aside is what counsel is qualified to bring through it."
           },
           {
             "move_id": "rehearing_as_remedy",
@@ -950,8 +930,7 @@
             "judicial_patience_delta_on_hit": 1,
             "judicial_patience_delta_on_miss": -2,
             "judicial_patience_delta_on_backfire": -4,
-            "flavor_line": "DESIGN_TODO",
-            "_status_note": "DESIGN_TODO - Cula concedes that the merits are premature and narrows the ask to a rehearing only."
+            "flavor_line": "I withdraw any reference to the underlying tenancy. The court is being asked for one thing today: the rehearing the client should already have had. Nothing further."
           }
         ],
         "frame_gates": {
@@ -963,10 +942,10 @@
           }
         },
         "defeat_lines": [
-          "DESIGN_TODO"
+          "Counsel is at the wrong hearing. The bench will consider the merits when a hearing on the merits is properly before it. Not today."
         ],
         "partial_lines": [
-          "DESIGN_TODO"
+          "Counsel has begun to narrow. The court appreciates the redirection. The point is not yet fully made."
         ]
       }
     ],
@@ -1005,8 +984,7 @@
               "value": "blunder-recovered"
             }
           ],
-          "result_text": "DESIGN_TODO",
-          "_status_note": "DESIGN_TODO - First-match floor. The reset survives, but only because the court, Murrow, or an ally recovers the motion from a bad packet — incapacity filed, or facts thin, or patience spent."
+          "result_text": "The bench is cool. The order is read out without comment, and counsel realises before it finishes that the motion has landed in spite of how it was carried in — somewhere in the bundle, a corrected address that counsel did not place there is doing the work. The court grants the motion to set aside under KPC Article 135-bis § 2. The hearing is restored. The client is entitled to be present when the merits are heard, and that day is not today. Counsel walks out aware of what the firm caught for him."
         },
         {
           "id": "narrow_victory",
@@ -1021,8 +999,7 @@
               "value": "narrow"
             }
           ],
-          "result_text": "DESIGN_TODO",
-          "_status_note": "DESIGN_TODO - The packet got there, but two or more decoys were carried in. The bench grants the reset and notes the clutter on the record."
+          "result_text": "The bench grants the motion on the procedural floor. The order will be read as written: KPC Article 135-bis § 2, defective service, hearing restored. The judge adds, for the record, that counsel made arguments the court did not need to reach today and would prefer not to have been asked to. The remedy is the rehearing on the merits in the ordinary course. The merits remain open."
         },
         {
           "id": "standard_victory",
@@ -1037,8 +1014,7 @@
               "value": "standard"
             }
           ],
-          "result_text": "DESIGN_TODO",
-          "_status_note": "DESIGN_TODO - Competent procedural reset; two-or-more facts in, no significant decoy clutter, patience held."
+          "result_text": "The bench grants the motion to set aside. KPC Article 135-bis § 2. The service is found defective; the hearing is restored; the merits are reserved for the rescheduled day. The order is short. The court neither congratulates nor begrudges. Counsel files out behind the bailiff with the corrected docket in hand and the client, in absentia, still tenanted."
         },
         {
           "id": "strong_victory",
@@ -1053,8 +1029,7 @@
               "value": "strong"
             }
           ],
-          "result_text": "DESIGN_TODO",
-          "_status_note": "DESIGN_TODO - All four core facts in, zero decoys, patience healthy. The packet is whole and the bench grants the reset with costs."
+          "result_text": "The bench grants the motion to set aside under KPC Article 135-bis § 2. Before issuing the order the judge pauses for half a beat — long enough that the bailiff looks up — and notes for the record that the four elements of the defect appear in the file in the form Article 135-bis § 2 contemplates, which the bench is not always able to say. The remedy is, of course, modest: a rehearing on the merits, scheduled in the ordinary course, costs against the petitioner. The client is restored to the proceeding. The order goes no further than that. It does not need to."
         }
       ]
     }

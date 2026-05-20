@@ -1,4 +1,4 @@
-Prompt: Round heavyset anthropomorphic pig in tight navy suit, glasses, flustered barrel body, tiny legs. Minimal synthetic line drawing, sparse flat shapes, Polish satirical illustration, institutional mood, pixel-art, adult proportions, full body, hands at sides.
+Prompt: Round heavyset anthropomorphic pig in tight navy suit, glasses, flustered barrel body, tiny legs. Minimal synthetic line drawing, sparse flat shapes, neutral-institutional figure, pixel-art, adult proportions, full body, hands at sides.
 Negative: detailed, shaded, gradient, anime, chibi, cute, big head, decorative, fantasy, realistic, 3D, held objects, facial expressions, four-legged pig, human in pig mask
 Pixellab Character ID: 758ed0ea-e764-4733-a9af-5690a68648a9
 Pixellab Template: mannequin

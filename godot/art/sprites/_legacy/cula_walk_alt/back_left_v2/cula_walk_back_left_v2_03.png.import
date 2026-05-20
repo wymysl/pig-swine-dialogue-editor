@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://bcmb4wyefati"
-path="res://.godot/imported/cula_walk_back_left_v2_01.png-eaecf3399047616fc6e4e70467751d78.ctex"
+uid="uid://cqmwlg5j4rhvs"
+path="res://.godot/imported/cula_walk_back_left_v2_03.png-ec37760c2a7c7194733e2a638147206e.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://art/sprites/cula/walk/_alt/back_left_v2/cula_walk_back_left_v2_01.png"
-dest_files=["res://.godot/imported/cula_walk_back_left_v2_01.png-eaecf3399047616fc6e4e70467751d78.ctex"]
+source_file="res://art/sprites/_legacy/cula_walk_alt/back_left_v2/cula_walk_back_left_v2_03.png"
+dest_files=["res://.godot/imported/cula_walk_back_left_v2_03.png-ec37760c2a7c7194733e2a638147206e.ctex"]
 
 [params]
 

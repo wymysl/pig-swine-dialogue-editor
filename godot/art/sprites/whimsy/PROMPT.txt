@@ -1,4 +1,4 @@
-Prompt: Slim tall young man in eggplant velvet blazer, mismatched mustard tie, swept-back dark hair, theatrical posture. Minimal synthetic line drawing, sparse flat shapes, Polish satirical illustration, institutional mood, pixel-art, adult proportions, full body, hands at sides.
+Prompt: Slim tall young man in eggplant velvet blazer, mismatched mustard tie, swept-back dark hair, theatrical posture. Minimal synthetic line drawing, sparse flat shapes, neutral-institutional figure, pixel-art, adult proportions, full body, hands at sides.
 Negative: detailed, shaded, gradient, anime, chibi, cute, big head, decorative, fantasy, realistic, 3D, held objects, facial expressions, raised hands
 Pixellab Character ID: c0f5ccd4-a6fc-49c4-8bc4-f6a7f320b5e9
 Pixellab Template: mannequin

@@ -1,4 +1,4 @@
-Prompt: Slim slightly stooped young man in threadbare brown cardigan, dark tie, sandy hair, hunched reading posture. Minimal synthetic line drawing, sparse flat shapes, Polish satirical illustration, institutional mood, pixel-art, adult proportions, full body, hands at sides.
+Prompt: Slim slightly stooped young man in threadbare brown cardigan, dark tie, sandy hair, hunched reading posture. Minimal synthetic line drawing, sparse flat shapes, neutral-institutional figure, pixel-art, adult proportions, full body, hands at sides.
 Negative: detailed, shaded, gradient, anime, chibi, cute, big head, decorative, fantasy, realistic, 3D, held objects, facial expressions
 Pixellab Character ID: eb8ec857-35f4-4639-9944-1e3c8e951bac
 Pixellab Template: mannequin

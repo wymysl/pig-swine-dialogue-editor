@@ -1,4 +1,4 @@
-Prompt: Elderly slim upright woman, short gray hair, beige cardigan, cream blouse, navy skirt, dignified stiff posture. Minimal synthetic line drawing, sparse flat shapes, Polish satirical illustration, institutional mood, pixel-art, adult proportions, full body, hands at sides.
+Prompt: Elderly slim upright woman, short gray hair, beige cardigan, cream blouse, navy skirt, dignified stiff posture. Minimal synthetic line drawing, sparse flat shapes, neutral-institutional figure, pixel-art, adult proportions, full body, hands at sides.
 Negative: detailed, shaded, gradient, anime, chibi, cute, big head, decorative, fantasy, realistic, 3D, held objects, facial expressions, cane
 Pixellab Character ID: e1c8d847-98de-42d9-93e4-50a928e88363
 Pixellab Template: mannequin
