@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://dxftq7lldln3s"
-path="res://.godot/imported/desk_wymysl.png-7ea01f760612c565bb260818ab41cbb9.ctex"
+uid="uid://bbjg23jo15ahp"
+path="res://.godot/imported/desk_crab.png-d224b0b361e2cc914bf1e440c64cf996.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://art/props/office/desk_wymysl.png"
-dest_files=["res://.godot/imported/desk_wymysl.png-7ea01f760612c565bb260818ab41cbb9.ctex"]
+source_file="res://art/props/office/desk_crab.png"
+dest_files=["res://.godot/imported/desk_crab.png-d224b0b361e2cc914bf1e440c64cf996.ctex"]
 
 [params]
 

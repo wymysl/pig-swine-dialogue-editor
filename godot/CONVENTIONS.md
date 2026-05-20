@@ -246,26 +246,15 @@ The project is actively migrating to Godot 4 `TileMap` and `TileSet` resources.
 - The canonical master TileSet for the Pig & Swine office is located at `art/tilesets/office_tileset.tres`. It contains the configured marble floor variants and wood panel walls (with 64x64 collision).
 - This TileSet is designated for use in `pig_swine_office.tscn`. Future rooms will either share this TileSet or define their own in `art/tilesets/`.
 
-**Room layout — `pig_swine_office.tscn` (rebuilt 2026-05-11, compact plan):**
+**Room layout — `pig_swine_office.tscn` (current scene state, doc-vs-scene reconciliation 2026-05-20):**
 
-- Dimensions: 20×11 floor tiles (1280×704 px) inside a wall ring. Fits entirely in the 1280×720 viewport — camera locked, no scrolling.
-- **Tile coordinate system:** rows 0–10 / cols 0–19 = floor (pixels x=0..1279, y=0..703). Wall ring sits at row -1 (north), row 11 (south), col -1 (west), col 20 (east). Camera limits set to `(0, 0, 1280, 704)` — effectively locked.
-- **Top half (rows 0–4):**
-  - **Meeting Room** — cols 0–6. Halina meets the player here. NPC spawns once `chapter1.halina_arrived` flips.
-  - **Pig's Office** — cols 7–12. Mr. Pig at his desk; bookshelf, lamp.
-  - **Desks / bullpen** — cols 13–17. Murrow + Swine desks.
-- **Divider** — row 5 (horizontal wall, doorway gaps).
-- **Bottom half (rows 6–10):**
-  - **Hall / Entrance** — cols 0–12. Entrance from street at bottom (cols 4–5), couch, printer.
-  - **Reception** — cols 13–17. Asia behind desk, fern, cabinets.
-  - **Files / Archive** — cols 18–19. Binder pickup, archive-door exit.
-  - **Coffee** — cols 18–19, bottom rows. Coffee machine + minigame trigger.
-- **Wall topology** (Walls TileMapLayer; collision baked into tiles via `office_tileset.tres` source 1):
-  - Exterior ring: north (row -1), south (row 11, gap cols 4-5), west (col -1), east (col 20).
-  - Interior horizontal divider at row 5, doorway gaps.
-  - Interior vertical divider at col 17–18 area, doorway gaps.
+- Dimensions: 16×9 floor tiles (1024×576 px) inside a wall ring. Sits inside the 1280×720 viewport with margin on the right and bottom; camera limits locked to `(0, 0, 1024, 576)`. Earlier revisions of this doc claimed a 2026-05-11 rebuild to 20×11 / 1280×704 — that rebuild never landed on the floor TileMapLayer (`get_used_rect()` reports 16×9) and the camera-side half of the change has been reverted. If 20×11 is desired in future, the floor and walls must be regenerated together; see F9 in `critiques/2026-05-20-art.md`.
+- **Tile coordinate system:** rows 0–8 / cols 0–15 = floor (pixels x=0..1023, y=0..575). Wall ring sits one tile outside the floor on each side. Camera limits `(0, 0, 1024, 576)` — effectively locked.
+- **Interior subdivisions** (Meeting Room / Pig's Office / bullpen / Reception / Archive / Coffee) follow the original 20×11 layout's intent at 16×9 density; exact column ranges are read from the live scene, not enumerated here, to avoid further doc-vs-scene drift.
+- **Wall topology** (Walls TileMapLayer; collision baked into tiles via `office_tileset.tres` source 1): exterior ring one tile outside the floor; interior horizontal divider and interior vertical divider per the live scene.
 - **Generator** (`_build_office.py`) emits the scene end-to-end. TileMapLayer `tile_map_data` is a base64-encoded `PackedByteArray` with a 2-byte zero prefix followed by 12-byte cells (`(x, y, source_id, atlas_x, atlas_y, alt_tile)` packed as six little-endian int16). The probe script `_probe_tilemap_format.py` decodes the binary back to verify the roundtrip.
 - **Legacy backup:** `pig_swine_office.tscn.legacy` preserves the prior scene state.
+- **Regression test:** `tests/test_office_wall_visibility.gd` asserts `Player/Camera2D` limits match `floor_layer.get_used_rect() × tile_size` — a single contract guards against the doc-vs-scene drift the F9 critique surfaced.
 
 **Legacy System:** Older scenes may still use `TextureRect` nodes with `stretch_mode = 1` (STRETCH_TILE) and a tiling texture (e.g. `art/tiles/office_tile.png`, 256×256) with manual `CollisionShape2D` walls. These will be phased out.
 
@@ -310,10 +299,12 @@ The Świdziński principle: **if a feature isn't visible at arm's length as a si
 2. Minimal cleanup: fix stray silhouette pixels, snap off-palette colors. 5–10 min per character max.
 
 **Style anchor** (use in every world sprite prompt):
-> "Minimal synthetic line drawing, sparse flat shapes, Polish satirical illustration, institutional mood, pixel-art, adult proportions, full body, hands at sides."
+> "Minimal synthetic line drawing, sparse flat shapes, neutral-institutional figure, pixel-art, adult proportions, full body, hands at sides."
 
 **Negative anchor** (use in every world sprite prompt):
-> "detailed, shaded, gradient, anime, chibi, cute, big head, decorative, fantasy, realistic, 3D, held objects, facial expressions"
+> "detailed, shaded, gradient, anime, chibi, cute, big head, decorative, fantasy, realistic, 3D, held objects, facial expressions, caricature, exaggerated features, mascot, comic"
+
+Style framings to avoid in prompts: "Polish satirical illustration", "satirical illustration", any named-Polish-illustrator anchor (e.g., Sieńczyk / Hydriola). Premise is satirical; rendering is neutral-institutional.
 
 **Rules:**
 - **No held objects, no raised-hand gestures.** Pixellab walking animations break with held objects. Attached body props (glasses on face) are fine.
@@ -453,7 +444,7 @@ The "Mrs. Sikorska is here..." cue is implemented as a new V1.A state (`hint_hal
 **TileMap vs Sprite2D placement violations (`pig_swine_office.tscn`).**
 - **Wall Collisions:** Resolved 2026-05-12. The four perimeter `StaticBody2D` nodes (`LeftWall`, `RightWall`, `BottomWallLeft`, `BottomWallRight`) are gone. All wall collision is baked into wall tiles via `office_tileset.tres` source 1 (`physics_layer_0/polygon_0/points`). Wall tiles are painted on the exterior ring (row -1, row 16, col -1, col 24) and on interior dividers (row 6 horizontal, col 19 vertical) by `_build_office.py`.
 - **Prop Construction:** `FileCabinet` and `ProceduralBinder` visuals remain `ColorRect` placeholders pending art. `Couch` placeholder (`Couch_TODO_placeholder`, `ColorRect` on the north edge of Hall, cols 1-2) added 2026-05-12 — pending `couch.png` asset.
-- **Architectural Conflicts:** `wall_occluder.gd` and the stale `test_office_wall_visibility.gd` test (expects `WallOccluder` and 960×640 camera limits) are incompatible with the two-row TileMapLayer wall topology. Leave both untouched until they're either deleted or rewritten against the new wall structure — `test_office_wall_visibility.gd` is not in the green-test list.
+- **Architectural Conflicts:** `wall_occluder.gd` is incompatible with the TileMapLayer wall topology and is not used. `test_office_wall_visibility.gd` was rewritten against the new wall structure and is in the green-test list — it asserts no `WallOccluder` / `RoomFog` exists, walls enclose the floor, and `Player/Camera2D` limits derive from `floor_layer.get_used_rect() × tile_size`. Doc-vs-scene drift on the camera/floor numbers now fails this test loudly (the 2026-05-20 F9 closure was driven by exactly that signal).
 
 ## Open architectural decisions
 

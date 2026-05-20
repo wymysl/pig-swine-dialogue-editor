@@ -1866,3 +1866,23 @@ Verification:
 - `tests/test_save_migration_v20_v21.gd` — PASS (14/14, builds on the 2026-05-19 entry).
 - Web export NOT RUN this session.
 
+---
+
+## 2026-05-20 — F9 closure (office camera/floor doc-vs-scene reconciliation)
+
+Hostile art critique authored at `godot/critiques/2026-05-20-art.md` flagged F9: `pig_swine_office.tscn` `Camera2D` limits were edited to `(1280, 704)` per `CONVENTIONS.md §Floor system`'s claim that the office had been rebuilt 2026-05-11 to 20×11 tiles. The floor TileMapLayer was never extended — `get_used_rect()` still reports `(16, 9)`. `tests/test_office_wall_visibility.gd` enforces the contract `camera limits == floor_rect × tile_size` and was failing loudly as a result.
+
+Resolved in favor of the live scene (the simpler branch of F9's remediation — Chunk C dirty worktree had no in-flight desk additions that would have justified the larger room).
+
+Files touched:
+
+- `godot/scenes/interiors/pig_swine_office.tscn` — `Camera2D.limit_right` reverted `1280 → 1024`; `limit_bottom` reverted `704 → 576`. Matches the live floor's `16×9 × 64px = 1024×576`.
+- `godot/CONVENTIONS.md` — `§Floor system` rewritten: the 2026-05-11 rebuild-to-20×11 claim is acknowledged as never having landed and removed. Dimensions, tile coordinate system, and camera limits revised to match the live scene. Interior-subdivision column ranges replaced with a "read from live scene, not enumerated here" note to prevent further doc-vs-scene drift. The `§TileMap vs Sprite2D placement violations` block updated: the stale "test_office_wall_visibility.gd is broken / not in the green list" caveat removed — the test has been in the green list for some time and now actively enforces the camera/floor contract that this F9 closure honors.
+
+Verification:
+
+- `tests/test_office_wall_visibility.gd` — expected PASS on next runner invocation; the contract `camera limits == floor_rect × tile_size` evaluates as `(0, 0, 1024, 576) == (0, 0, 16×64, 9×64)`.
+- Full runner expected at 51/51.
+
+Out of scope this entry: extending the office room to the 20×11 target if Design ever wants it; that requires regenerating the Floor and Walls TileMapLayer cells together and is a separate scene-authoring sprint.
+

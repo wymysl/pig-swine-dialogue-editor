@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://bbjg23jo15ahp"
-path="res://.godot/imported/desk_rak.png-6ff00c0a2bc992b781971168af85aa44.ctex"
+uid="uid://dxftq7lldln3s"
+path="res://.godot/imported/desk_whimsy.png-32f6446af48ab15458fb3dc9f7fdbe40.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://art/props/office/desk_rak.png"
-dest_files=["res://.godot/imported/desk_rak.png-6ff00c0a2bc992b781971168af85aa44.ctex"]
+source_file="res://art/props/office/desk_whimsy.png"
+dest_files=["res://.godot/imported/desk_whimsy.png-32f6446af48ab15458fb3dc9f7fdbe40.ctex"]
 
 [params]
 
