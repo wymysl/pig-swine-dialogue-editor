@@ -1,71 +1,36 @@
 {
-  "version": 1,
-  "_doc": "Closed taxonomy for the Casebook Battle System. Single source of truth for tags. Adding a tag requires a Code artifact and an update to scripts/systems/battle/effectiveness.gd's tag set assertions. Removing a tag is a save-migration concern.",
+  "version": 2,
+  "_doc": "Closed taxonomy for the Casebook Battle System. Single source of truth for tags. Adding a tag requires a Code artifact and an update to scripts/systems/battle/effectiveness.gd's tag set assertions. Removing a tag is a save-migration concern. Chapter 1 working set only — Ch2+ tags are added when the first Ch2 encounter that consumes them lands. See critique 2026-05-19-design.md §F10 for the discipline rationale.",
   "_owner": "Code",
 
   "article_tags": {
-    "_doc": "Convention articles (ECHR primary, Polish constitutional secondary). Each tag is namespaced: 'echr_<n>' or 'pl_const_<n>'. Use the smallest set that supports the chapter being authored.",
+    "_doc": "Convention articles consumed by Chapter 1. Namespace: 'echr_<n>' or 'pl_const_<n>'. Ch2+ articles are added with the encounter that first references them.",
 
-    "echr_2":  "Right to life",
-    "echr_3":  "Prohibition of torture / inhuman or degrading treatment",
-    "echr_5":  "Right to liberty and security",
-    "echr_6":  "Right to a fair trial",
-    "echr_7":  "No punishment without law",
-    "echr_8":  "Right to respect for private and family life, home, and correspondence",
-    "echr_9":  "Freedom of thought, conscience, and religion",
-    "echr_10": "Freedom of expression",
-    "echr_11": "Freedom of assembly and association",
-    "echr_13": "Right to an effective remedy",
-    "echr_14": "Prohibition of discrimination",
-    "echr_p1_1": "Protection of property (Protocol 1, Art. 1)",
-
-    "pl_const_31": "Protection of freedom; principle of proportionality",
-    "pl_const_32": "Equality before the law",
-    "pl_const_42": "Nullum crimen sine lege",
-    "pl_const_45": "Right to a fair and public hearing",
-    "pl_const_47": "Right to private and family life",
-    "pl_const_54": "Freedom of expression",
-    "pl_const_57": "Freedom of peaceful assembly",
-    "pl_const_75": "Right to satisfy housing needs",
-    "pl_const_77": "Right to compensation for unlawful state action",
-    "pl_const_78": "Right to appeal"
+    "echr_6":      "Right to a fair trial",
+    "pl_const_45": "Right to a fair and public hearing"
   },
 
   "principle_tags": {
-    "_doc": "Doctrinal principles invoked by judgments and moves. Same principle can attach to multiple Articles. Keep the list short; new principles require a real referent in the chapter being authored.",
+    "_doc": "Doctrinal principles consumed by Chapter 1. Same principle can attach to multiple Articles. Adding a principle requires a real referent in the chapter being authored.",
 
     "proportionality":          "Whether the interference is proportionate to the legitimate aim",
     "individual_assessment":    "Requirement to assess the individual case on its facts",
     "procedural_fairness":      "Adequate procedural safeguards in the decision-making process",
     "access_to_court":          "Practical and effective access to a tribunal (Golder line)",
-    "equality_of_arms":         "Both parties have equivalent procedural footing",
     "effective_remedy":         "A remedy must exist in fact, not only on paper",
     "legal_certainty":          "Law must be foreseeable and accessible",
-    "non_discrimination":       "Differential treatment without objective and reasonable justification is prohibited",
-    "positive_obligations":     "State must take positive steps, not only refrain from interfering",
     "margin_of_appreciation":   "Domestic authorities have latitude within limits",
     "prescribed_by_law":        "Interference must have a basis in domestic law",
     "legitimate_aim":           "Interference must serve one of the listed aims",
-    "necessity_in_democracy":   "Interference must be necessary in a democratic society",
-    "service_of_process":       "Notice and proper service (doręczenie zastępcze and analogues)",
-    "abuse_of_rights":          "Article 17 reasoning; restricts misuse of Convention rights"
+    "service_of_process":       "Notice and proper service (doręczenie zastępcze and analogues)"
   },
 
   "context_tags": {
-    "_doc": "Factual context. The same Principle in a different Context lands differently. Keep contexts concrete and case-shaped.",
+    "_doc": "Factual context consumed by Chapter 1. The same Principle in a different Context lands differently. Ch2+ contexts are added with the encounter that first references them.",
 
-    "home":              "Domestic premises; eviction, possession, intrusion",
-    "family_life":       "Relations between family members; contact, custody, immigration",
-    "expression":        "Speech, writing, posters, symbolic conduct",
-    "assembly":          "Demonstrations, gatherings, protests",
     "fair_trial":        "Court proceedings; hearing rights; presumption of innocence",
     "civil_proceedings": "Civil litigation; KPC procedure",
-    "criminal_proceedings": "Criminal litigation; KPK procedure",
-    "administrative":    "Administrative law; KPA procedure; permits, licences, sanctions",
     "property":          "Possessions, takings, compensation",
-    "data_protection":   "Personal data, surveillance, files",
-    "media":             "Press, journalists, sources",
-    "labour":            "Employment, dismissal, union rights",
     "housing":           "Tenancy, eviction, social housing",
     "service_failure":   "Defective notice, missed delivery, postal theatre",
     "documentary":       "Evidence is paper-bound; missing or mishandled documents",

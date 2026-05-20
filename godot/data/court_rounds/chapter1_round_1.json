@@ -37,7 +37,8 @@
         ],
         "used_by": [
           "phase_2_closing.victory_resolution",
-          "phase_2_closing.jq_remedy_scope"
+          "phase_2_closing.jq_remedy_scope.requires_fact_flags",
+          "phase_2_closing.jq_article_6_civil.citation.motion_to_set_aside_full.requires_fact_flags"
         ]
       },
       "_fact.notice_received_april_28": {
@@ -61,7 +62,10 @@
         ],
         "used_by": [
           "phase_2_closing.victory_resolution",
-          "phase_2_closing.jq_article_6_civil"
+          "phase_2_closing.jq_article_6_civil.requires_fact_flags",
+          "phase_2_closing.jq_article_6_civil.citation.motion_to_set_aside.requires_fact_flags",
+          "phase_2_closing.jq_article_6_civil.citation.motion_to_set_aside_full.requires_fact_flags",
+          "phase_2_closing.jq_article_6_civil.citation.notice_window.requires_fact_flags"
         ]
       },
       "_fact.resident_no_authority": {
@@ -85,7 +89,9 @@
         ],
         "used_by": [
           "phase_2_closing.victory_resolution",
-          "phase_2_closing.jq_third_party_cure"
+          "phase_2_closing.jq_third_party_cure.requires_fact_flags",
+          "phase_2_closing.jq_third_party_cure.citation.third_clause_non_cure.requires_fact_flags",
+          "phase_2_closing.jq_article_6_civil.citation.motion_to_set_aside_full.requires_fact_flags"
         ]
       },
       "_fact.renumbering_2015_documented": {
@@ -109,7 +115,8 @@
         ],
         "used_by": [
           "phase_2_closing.victory_resolution",
-          "phase_2_closing.jq_article_6_civil"
+          "phase_2_closing.jq_article_6_civil.citation.motion_to_set_aside.requires_fact_flags",
+          "phase_2_closing.jq_article_6_civil.citation.motion_to_set_aside_full.requires_fact_flags"
         ]
       },
       "_fact.bonus_neighbor_continuity": {
@@ -529,10 +536,12 @@
           "fair_trial": 0.10
         },
         "pressure_strength_tags": {
-          "proportionality": 0.50,
-          "positive_obligations": 0.50
+          "prescribed_by_law": 0.50,
+          "margin_of_appreciation": 0.50
         },
-        "requires_fact_flags": [],
+        "requires_fact_flags": [
+          "_fact.notice_received_april_28"
+        ],
         "judicial_patience_default": 5,
         "available_citations": [
           {
@@ -561,12 +570,55 @@
               "service_failure": 0.03,
               "fair_trial": 0.02
             },
-            "requires_fact_flags": [],
+            "requires_fact_flags": [
+              "_fact.renumbering_2015_documented",
+              "_fact.notice_received_april_28"
+            ],
             "judicial_patience_delta_on_hit": 1,
             "judicial_patience_delta_on_miss": -1,
             "judicial_patience_delta_on_backfire": -2,
             "flavor_line": "DESIGN_TODO",
-            "_status_note": "DESIGN_TODO - Cula reframes Article 6 as the practical right to be heard at all, not as criminal-procedure ornament."
+            "_status_note": "DESIGN_TODO - Cula reframes Article 6 as the practical right to be heard at all, not as criminal-procedure ornament. Two-element tier: requires the address-error fact and the actual-notice-date fact."
+          },
+          {
+            "move_id": "motion_to_set_aside_full",
+            "article_tags": [
+              "echr_6",
+              "pl_const_45"
+            ],
+            "principle_tags": [
+              "service_of_process",
+              "procedural_fairness",
+              "access_to_court",
+              "effective_remedy"
+            ],
+            "context_tags": [
+              "civil_proceedings",
+              "service_failure",
+              "fair_trial"
+            ],
+            "move_tags": {
+              "echr_6": 0.20,
+              "pl_const_45": 0.15,
+              "service_of_process": 0.20,
+              "procedural_fairness": 0.15,
+              "access_to_court": 0.10,
+              "effective_remedy": 0.10,
+              "civil_proceedings": 0.05,
+              "service_failure": 0.03,
+              "fair_trial": 0.02
+            },
+            "requires_fact_flags": [
+              "_fact.renumbering_2015_documented",
+              "_fact.landlord_knew_address",
+              "_fact.notice_received_april_28",
+              "_fact.resident_no_authority"
+            ],
+            "judicial_patience_delta_on_hit": 2,
+            "judicial_patience_delta_on_miss": -1,
+            "judicial_patience_delta_on_backfire": -2,
+            "flavor_line": "DESIGN_TODO",
+            "_status_note": "DESIGN_TODO - Four-element packet tier. All four primary facts established; Cula recites the full KPC Art. 135-bis § 2 packet — non-current address, landlord knowledge, timely actual-notice motion, no third-party cure. The bench hears the whole shape at once."
           },
           {
             "move_id": "notice_window",
@@ -731,10 +783,12 @@
           "deadline": 0.05
         },
         "pressure_strength_tags": {
-          "proportionality": 0.50,
-          "housing": 0.50
+          "legitimate_aim": 0.50,
+          "proportionality": 0.50
         },
-        "requires_fact_flags": [],
+        "requires_fact_flags": [
+          "_fact.landlord_knew_address"
+        ],
         "judicial_patience_default": 5,
         "available_citations": [
           {
@@ -829,7 +883,7 @@
           "fair_trial": 0.10
         },
         "pressure_strength_tags": {
-          "prescribed_by_law": 0.50,
+          "individual_assessment": 0.50,
           "housing": 0.50
         },
         "requires_fact_flags": [],
@@ -917,11 +971,12 @@
       }
     ],
     "victory_resolution": {
+      "_evaluation_doc": "First-match resolution. Order is blunder-first to make the wrong-shape and decoy paths legible — a player who filed incapacity or burned the round on decoys resolves to blunder_recovered or narrow_victory before standard/strong predicates can absorb their case. Predicates use computed aliases: primary_fact_count = number of primary_fact_flags set; decoy_count = number of decoy_flags set; judicial_patience is read from chapter1.judicial_patience.",
       "evaluation_order": [
-        "strong_victory",
-        "standard_victory",
+        "blunder_recovered",
         "narrow_victory",
-        "blunder_recovered"
+        "standard_victory",
+        "strong_victory"
       ],
       "primary_fact_flags": [
         "_fact.landlord_knew_address",
@@ -929,58 +984,17 @@
         "_fact.resident_no_authority",
         "_fact.renumbering_2015_documented"
       ],
+      "decoy_flags": [
+        "chapter1.decoy_merits",
+        "chapter1.decoy_notice_period",
+        "chapter1.decoy_standing_wrong_party",
+        "chapter1.decoy_overbroad_remedy",
+        "chapter1.decoy_incapacity"
+      ],
       "branches": [
         {
-          "id": "strong_victory",
-          "when": "primary_fact_count >= 4 && judicial_patience >= 4",
-          "sets": [
-            {
-              "path": "chapter1.court_won_procedural_reset",
-              "value": true
-            },
-            {
-              "path": "chapter1.court_outcome",
-              "value": "strong"
-            }
-          ],
-          "result_text": "DESIGN_TODO",
-          "_status_note": "DESIGN_TODO - Strong victory; all four core facts are in and the judge is still patient enough to award the reset with costs."
-        },
-        {
-          "id": "standard_victory",
-          "when": "primary_fact_count >= 2 && judicial_patience >= 2",
-          "sets": [
-            {
-              "path": "chapter1.court_won_procedural_reset",
-              "value": true
-            },
-            {
-              "path": "chapter1.court_outcome",
-              "value": "standard"
-            }
-          ],
-          "result_text": "DESIGN_TODO",
-          "_status_note": "DESIGN_TODO - Standard procedural reset; competent result, no collapse, but without the stronger costs variant."
-        },
-        {
-          "id": "narrow_victory",
-          "when": "primary_fact_count >= 2 || chapter1.proposed_frame != 'defective_service_135bis'",
-          "sets": [
-            {
-              "path": "chapter1.court_won_procedural_reset",
-              "value": true
-            },
-            {
-              "path": "chapter1.court_outcome",
-              "value": "narrow"
-            }
-          ],
-          "result_text": "DESIGN_TODO",
-          "_status_note": "DESIGN_TODO - Narrow win only; the bench grants a reset but makes clear counsel reached it on a thinner record or thinner patience."
-        },
-        {
           "id": "blunder_recovered",
-          "when": "primary_fact_count <= 1 || judicial_patience <= 1 || chapter1.decoy_incapacity == true",
+          "when": "chapter1.decoy_incapacity == true || primary_fact_count <= 1 || judicial_patience <= 1",
           "sets": [
             {
               "path": "chapter1.court_won_procedural_reset",
@@ -992,7 +1006,55 @@
             }
           ],
           "result_text": "DESIGN_TODO",
-          "_status_note": "DESIGN_TODO - The procedural reset remains available, but the court, Murrow, or an ally has to recover the motion from a bad packet."
+          "_status_note": "DESIGN_TODO - First-match floor. The reset survives, but only because the court, Murrow, or an ally recovers the motion from a bad packet — incapacity filed, or facts thin, or patience spent."
+        },
+        {
+          "id": "narrow_victory",
+          "when": "primary_fact_count >= 2 && decoy_count >= 2",
+          "sets": [
+            {
+              "path": "chapter1.court_won_procedural_reset",
+              "value": true
+            },
+            {
+              "path": "chapter1.court_outcome",
+              "value": "narrow"
+            }
+          ],
+          "result_text": "DESIGN_TODO",
+          "_status_note": "DESIGN_TODO - The packet got there, but two or more decoys were carried in. The bench grants the reset and notes the clutter on the record."
+        },
+        {
+          "id": "standard_victory",
+          "when": "primary_fact_count >= 2 && decoy_count <= 1 && judicial_patience >= 2",
+          "sets": [
+            {
+              "path": "chapter1.court_won_procedural_reset",
+              "value": true
+            },
+            {
+              "path": "chapter1.court_outcome",
+              "value": "standard"
+            }
+          ],
+          "result_text": "DESIGN_TODO",
+          "_status_note": "DESIGN_TODO - Competent procedural reset; two-or-more facts in, no significant decoy clutter, patience held."
+        },
+        {
+          "id": "strong_victory",
+          "when": "primary_fact_count >= 4 && decoy_count == 0 && judicial_patience >= 4",
+          "sets": [
+            {
+              "path": "chapter1.court_won_procedural_reset",
+              "value": true
+            },
+            {
+              "path": "chapter1.court_outcome",
+              "value": "strong"
+            }
+          ],
+          "result_text": "DESIGN_TODO",
+          "_status_note": "DESIGN_TODO - All four core facts in, zero decoys, patience healthy. The packet is whole and the bench grants the reset with costs."
         }
       ]
     }

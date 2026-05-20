@@ -9,10 +9,19 @@
 ## The agreed math is here. Tag-taxonomy validation is implemented against the
 ## closed list in data/tag_taxonomy.json (see validate_against_taxonomy below).
 ## Headless tests live in tests/test_effectiveness.gd (resolve buckets, backfire,
-## taxonomy validation). The resolver itself is not yet wired into
-## battle_controller.gd — that controller currently consumes pre-computed
-## "effectiveness" string buckets from court_round JSON via
-## bucket_to_force_multiplier() rather than calling resolve() live.
+## taxonomy validation).
+##
+## Wiring: battle_controller.gd::player_present() (see resolve() invocation
+## near line 593) calls resolve(move_tags, opp_weakness_tags, opp_strength_tags)
+## once the controller has determined the active question is a Phase 2 closing
+## (i.e. _is_phase_one_round() returns false). resolve() returns
+## { bucket, score, primary_match }, and the controller then converts the bucket
+## via bucket_to_force_multiplier() into the numeric multiplier applied to the
+## opponent's argument-strength bar.
+##
+## Author trap: every weighted tag dict passed in must sum to ~1.0. The
+## _assert_weights_sum_to_one helper enforces this and is the most common cause
+## of crashes when court_round JSON is hand-edited.
 
 class_name Effectiveness
 extends RefCounted

@@ -79,7 +79,7 @@
               "context_tags": ["fair_trial", "civil_proceedings"],
               "base_strength": 90,
               "weak_to": ["access_to_court", "procedural_fairness", "effective_remedy"],
-              "resists": ["proportionality", "positive_obligations"],
+              "resists": ["proportionality"],
               "immune_to": [],
               "on_intro": "The opposing argument treats procedure as decoration.",
               "on_defeat": "The right to a fair hearing is not a technicality. It is the condition under which everything else is decided.",

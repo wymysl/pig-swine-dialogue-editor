@@ -65,7 +65,7 @@ func _test_boot_loads_judgment_and_opponent() -> void:
 	var opponent = _controller.get_opponent("landlord_counsel_ch1")
 	_assert(loaded, "controller load_data returns true")
 	_assert(judgment != null, "procedural_reset_ch1 judgment loaded")
-	_assert(judgment != null and judgment.principle_moves.size() == 4, "judgment hydrates four principle moves")
+	_assert(judgment != null and judgment.principle_moves.size() == 5, "judgment hydrates five principle moves")
 	_assert(opponent != null, "landlord_counsel_ch1 opponent loaded")
 	_assert(opponent != null and opponent.court_rounds.size() == 3, "opponent hydrates three court rounds")
 
