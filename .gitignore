@@ -40,3 +40,5 @@ godot/_recover_office.gd*
 # Stray screenshots dumped into the scenes folder
 godot/scenes/Screenshot*.png
 godot/scenes/Screenshot*.png.import
+_audit/
+*.token

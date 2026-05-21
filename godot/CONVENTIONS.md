@@ -7,7 +7,7 @@ Authoritative spec for the Pig & Swine RPG Godot project. Every script, scene, a
 - **Viewport**: 1280×720 (16:9). Window override 2560×1440 (clean 2× for editor preview on 1440p+ monitors). `canvas_items` stretch with `fractional` mode.
 - **Texture filter**: nearest (`default_texture_filter=0`) — pixel-art renders crisp.
 - **Tile grid (layout convention)**: 64×64 px. Visible play area = 20×11.25 tiles. Used for positioning and authoring discipline; not enforced by a Godot TileMap node (see Floor system below).
-- **Character sprites (canonical)**: 124×124 px, 8-direction (idle + walk + run). Generated via Pixellab at 124×124 (no downscale step). Previous passes at 180×180, 112×112, and 128×128 are superseded.
+- **Character sprites (canonical)**: 64×64 px, 8-direction (idle + walk + run). Generated via Pixellab at 128×128 source, downscaled nearest-neighbor to 64×64 on export. Previous passes at 180×180, 124×124, 128×128, and 112×112 are superseded. Decision locked 2026-05-21 in `art/GRAPHICS_OVERHAUL_PLAN.md`; aligns with `§Y-sort and Sprite2D origin convention` math (`offset.y = -32`) and `State.CHAR_HEIGHT = 64`.
 - **Walk-animation policy**: 8-dir idle for everyone; 8-dir walk for Cula (player); 4-cardinal walk for NPCs (diagonal walk states map to nearest cardinal animation).
 - **Movement**: free 8-way via CharacterBody2D, NOT grid-locked. Diagonal velocity normalised (`velocity = input.normalized() * speed`). Walk 96 px/s, sprint 1.6×.
 - **Y-sort**: enabled on every interior root. Every character/prop Sprite2D has `offset.y` set so the node origin sits at the figure's feet.
