@@ -1,0 +1,1764 @@
+{
+  "source": "godot/data/dialogues/cula.json",
+  "total_states": 75,
+  "candidates": [
+    {
+      "source_state_id": "family_photo_ch1",
+      "target_file": "<stay>",
+      "route_reason": "preserved family-photo dispatch",
+      "target_beat": null,
+      "trigger": "!chapter1.viewed_family_photo",
+      "speaker": "cula",
+      "tags": [],
+      "payload_summary": {
+        "lines": [
+          "A family photo. Mr. Pig appears to be the youngest in it."
+        ]
+      },
+      "already_present": false,
+      "already_present_reason": "target file unreadable or absent",
+      "notes": []
+    },
+    {
+      "source_state_id": "family_photo_ch1_repeat",
+      "target_file": "<stay>",
+      "route_reason": "preserved family-photo dispatch",
+      "target_beat": null,
+      "trigger": "chapter1.viewed_family_photo == true",
+      "speaker": "cula",
+      "tags": [],
+      "payload_summary": {
+        "silent": true
+      },
+      "already_present": false,
+      "already_present_reason": "target file unreadable or absent",
+      "notes": []
+    },
+    {
+      "source_state_id": "cula_b1_arrival_observation",
+      "target_file": "<ambient>",
+      "route_reason": "internal monologue without NPC anchor",
+      "target_beat": "beat1",
+      "trigger": "!chapter1.met_pig",
+      "speaker": "cula_internal",
+      "tags": [
+        "beat1",
+        "internal",
+        "office_street"
+      ],
+      "payload_summary": {
+        "lines": [
+          "Pig & Swine. Attorneys, counselors, possibly open. That is not how they describe"
+        ]
+      },
+      "already_present": false,
+      "already_present_reason": "target file unreadable or absent",
+      "notes": [
+        "cula_internal speaker — render as internal echo, not dialogue line"
+      ]
+    },
+    {
+      "source_state_id": "cula_b2_office_first_impression",
+      "target_file": "<ambient>",
+      "route_reason": "internal monologue without NPC anchor",
+      "target_beat": "beat2",
+      "trigger": "!chapter1.met_asia && !chapter1.met_pig",
+      "speaker": "cula_internal",
+      "tags": [
+        "beat2",
+        "internal",
+        "pig_swine_office"
+      ],
+      "payload_summary": {
+        "lines": [
+          "Three file piles, one phone, one secretary, one panic from the back room.",
+          "Somewhere in here there is a coffee machine making a noise I cannot yet classify"
+        ]
+      },
+      "already_present": false,
+      "already_present_reason": "target file unreadable or absent",
+      "notes": [
+        "cula_internal speaker — render as internal echo, not dialogue line"
+      ]
+    },
+    {
+      "source_state_id": "cula_b2_asia_greeting",
+      "target_file": "asia.json",
+      "route_reason": "id-token 'asia'",
+      "target_beat": "beat2",
+      "trigger": "!chapter1.met_asia",
+      "speaker": "cula",
+      "tags": [
+        "beat2",
+        "asia",
+        "first_meeting"
+      ],
+      "payload_summary": {
+        "lines": [
+          "Good morning. Dr. A. Cula. First day. I was told to ask for reception, coffee, o",
+          "I see you have all three in motion. I will start with reception."
+        ]
+      },
+      "already_present": true,
+      "already_present_reason": "trigger overlap with target state 'asia_b2_via_behind'",
+      "notes": []
+    },
+    {
+      "source_state_id": "cula_b2_asia_dwell_options",
+      "target_file": "asia.json",
+      "route_reason": "id-token 'asia'",
+      "target_beat": "beat2",
+      "trigger": "chapter1.met_asia == true && !chapter1.met_pig && chapter1.state_choice == ''",
+      "speaker": "cula",
+      "tags": [],
+      "payload_summary": {
+        "options": {
+          "write_path": "chapter1.state_choice",
+          "chain": true,
+          "choices": [
+            {
+              "text": "(tenure)",
+              "value": "cula_b2_asia_dwell_tenure"
+            },
+            {
+              "text": "(today)",
+              "value": "cula_b2_asia_dwell_today"
+            },
+            {
+              "text": "(logistics)",
+              "value": "cula_b2_asia_dwell_logistics"
+            }
+          ]
+        }
+      },
+      "already_present": false,
+      "already_present_reason": "no match",
+      "notes": [
+        "source _comment already flags fan-out need"
+      ]
+    },
+    {
+      "source_state_id": "cula_b2_asia_dwell_tenure_reply",
+      "target_file": "asia.json",
+      "route_reason": "id-token 'asia'",
+      "target_beat": "beat2",
+      "trigger": "chapter1.state_choice == 'cula_b2_asia_dwell_tenure'",
+      "speaker": "cula",
+      "tags": [
+        "beat2",
+        "asia",
+        "dwell"
+      ],
+      "payload_summary": {
+        "lines": [
+          "Before I start anything I should probably break: how long have you been holding "
+        ],
+        "once": true
+      },
+      "already_present": false,
+      "already_present_reason": "no match",
+      "notes": []
+    },
+    {
+      "source_state_id": "cula_b2_asia_dwell_today_reply",
+      "target_file": "asia.json",
+      "route_reason": "id-token 'asia'",
+      "target_beat": "beat2",
+      "trigger": "chapter1.state_choice == 'cula_b2_asia_dwell_today'",
+      "speaker": "cula",
+      "tags": [
+        "beat2",
+        "asia",
+        "dwell"
+      ],
+      "payload_summary": {
+        "lines": [
+          "Is it always like this, or have I picked a particularly loud morning?"
+        ],
+        "once": true
+      },
+      "already_present": false,
+      "already_present_reason": "no match",
+      "notes": []
+    },
+    {
+      "source_state_id": "cula_b2_asia_dwell_logistics_reply",
+      "target_file": "asia.json",
+      "route_reason": "id-token 'asia'",
+      "target_beat": "beat2",
+      "trigger": "chapter1.state_choice == 'cula_b2_asia_dwell_logistics'",
+      "speaker": "cula",
+      "tags": [
+        "beat2",
+        "asia",
+        "dwell"
+      ],
+      "payload_summary": {
+        "lines": [
+          "Practical question. Where do you keep the binder labels? The blue spines I keep "
+        ],
+        "once": true
+      },
+      "already_present": false,
+      "already_present_reason": "no match",
+      "notes": []
+    },
+    {
+      "source_state_id": "cula_b3_pig_first_encounter",
+      "target_file": "pig.json",
+      "route_reason": "id-token 'pig'",
+      "target_beat": "beat3",
+      "trigger": "chapter1.met_asia == true && !chapter1.met_pig",
+      "speaker": "cula",
+      "tags": [
+        "beat3",
+        "pig",
+        "first_meeting"
+      ],
+      "payload_summary": {
+        "lines": [
+          "Mr. Pig. Cula. The reception sent me back.",
+          "I gather there is a great deal happening this morning.",
+          "Would you like to start with the firm, the client, or the deadline?"
+        ]
+      },
+      "already_present": false,
+      "already_present_reason": "no match",
+      "notes": []
+    },
+    {
+      "source_state_id": "cula_b3_pig_rent_reaction",
+      "target_file": "pig.json",
+      "route_reason": "id-token 'pig'",
+      "target_beat": "beat3",
+      "trigger": "chapter1.met_pig == true && !chapter1.pig_revealed_crisis",
+      "speaker": "cula",
+      "tags": [
+        "beat3",
+        "pig",
+        "internal_short"
+      ],
+      "payload_summary": {
+        "lines": [
+          "Six weeks. Understood.",
+          "I will take that as a fact and find Mr. Murrow."
+        ]
+      },
+      "already_present": false,
+      "already_present_reason": "no match",
+      "notes": []
+    },
+    {
+      "source_state_id": "cula_b3_pig_dwell_options",
+      "target_file": "pig.json",
+      "route_reason": "id-token 'pig'",
+      "target_beat": "beat3",
+      "trigger": "chapter1.pig_revealed_crisis == true && !chapter1.met_murrow && chapter1.state_choice == ''",
+      "speaker": "cula",
+      "tags": [],
+      "payload_summary": {
+        "options": {
+          "write_path": "chapter1.state_choice",
+          "chain": true,
+          "choices": [
+            {
+              "text": "(case)",
+              "value": "cula_b3_pig_dwell_case"
+            },
+            {
+              "text": "(okay)",
+              "value": "cula_b3_pig_dwell_okay"
+            },
+            {
+              "text": "(swine)",
+              "value": "cula_b3_pig_dwell_swine"
+            }
+          ]
+        }
+      },
+      "already_present": false,
+      "already_present_reason": "no match",
+      "notes": [
+        "source _comment already flags fan-out need"
+      ]
+    },
+    {
+      "source_state_id": "cula_b3_pig_dwell_case_reply",
+      "target_file": "pig.json",
+      "route_reason": "id-token 'pig'",
+      "target_beat": "beat3",
+      "trigger": "chapter1.state_choice == 'cula_b3_pig_dwell_case'",
+      "speaker": "cula",
+      "tags": [
+        "beat3",
+        "pig",
+        "dwell"
+      ],
+      "payload_summary": {
+        "lines": [
+          "Mr. Pig. The case itself. Could you give me the shape of it?"
+        ],
+        "once": true
+      },
+      "already_present": false,
+      "already_present_reason": "no match",
+      "notes": []
+    },
+    {
+      "source_state_id": "cula_b3_pig_dwell_okay_reply",
+      "target_file": "pig.json",
+      "route_reason": "id-token 'pig'",
+      "target_beat": "beat3",
+      "trigger": "chapter1.state_choice == 'cula_b3_pig_dwell_okay'",
+      "speaker": "cula",
+      "tags": [
+        "beat3",
+        "pig",
+        "dwell"
+      ],
+      "payload_summary": {
+        "lines": [
+          "Before I go, Mr. Pig. Are you all right? Today aside."
+        ],
+        "once": true
+      },
+      "already_present": false,
+      "already_present_reason": "no match",
+      "notes": []
+    },
+    {
+      "source_state_id": "cula_b3_pig_dwell_swine_reply",
+      "target_file": "pig.json",
+      "route_reason": "id-token 'pig'",
+      "target_beat": "beat3",
+      "trigger": "chapter1.state_choice == 'cula_b3_pig_dwell_swine'",
+      "speaker": "cula",
+      "tags": [
+        "beat3",
+        "pig",
+        "dwell"
+      ],
+      "payload_summary": {
+        "lines": [
+          "And Mr. Swine. Is he expected back this week, or is he travelling?"
+        ],
+        "once": true
+      },
+      "already_present": false,
+      "already_present_reason": "no match",
+      "notes": []
+    },
+    {
+      "source_state_id": "cula_b4_murrow_first_meeting_greeting",
+      "target_file": "murrow.json",
+      "route_reason": "id-token 'murrow'",
+      "target_beat": "beat4",
+      "trigger": "chapter1.has_law_binder == true && chapter1.pig_revealed_crisis == true && !chapter1.met_murrow",
+      "speaker": "cula",
+      "tags": [
+        "beat4",
+        "murrow",
+        "first_meeting"
+      ],
+      "payload_summary": {
+        "lines": [
+          "Mr. Murrow. I was told you'd have the Sikorska file.",
+          "Mr. Pig is currently in maritime conditions. I gathered it would be easier to as"
+        ]
+      },
+      "already_present": false,
+      "already_present_reason": "no match",
+      "notes": []
+    },
+    {
+      "source_state_id": "cula_b4_murrow_briefing_acknowledgment",
+      "target_file": "murrow.json",
+      "route_reason": "id-token 'murrow'",
+      "target_beat": "beat4",
+      "trigger": "chapter1.met_murrow == true && !chapter1.recruited_crab && chapter1.has_law_binder == true",
+      "speaker": "cula",
+      "tags": [
+        "beat4",
+        "murrow",
+        "internal_short"
+      ],
+      "payload_summary": {
+        "lines": [
+          "So the problem is not that the client missed the deadline. It is whether the cli",
+          "Wrong-door service, fourteen days from actual notice, motion to set aside. I can"
+        ]
+      },
+      "already_present": false,
+      "already_present_reason": "no match",
+      "notes": []
+    },
+    {
+      "source_state_id": "cula_b4_murrow_first_name_acceptance",
+      "target_file": "murrow.json",
+      "route_reason": "id-token 'murrow'",
+      "target_beat": "beat4",
+      "trigger": "chapter1.met_murrow == true && !chapter1.recruited_crab",
+      "speaker": "cula",
+      "tags": [
+        "beat4",
+        "murrow",
+        "address_form_pivot"
+      ],
+      "payload_summary": {
+        "lines": [
+          "Then it's Cula."
+        ]
+      },
+      "already_present": false,
+      "already_present_reason": "no match",
+      "notes": []
+    },
+    {
+      "source_state_id": "cula_b4_murrow_dwell_options",
+      "target_file": "murrow.json",
+      "route_reason": "id-token 'murrow'",
+      "target_beat": "beat4",
+      "trigger": "chapter1.met_murrow == true && !chapter1.recruited_crab && chapter1.state_choice == ''",
+      "speaker": "cula",
+      "tags": [],
+      "payload_summary": {
+        "options": {
+          "write_path": "chapter1.state_choice",
+          "chain": true,
+          "choices": [
+            {
+              "text": "(tenure)",
+              "value": "cula_b4_murrow_dwell_tenure"
+            },
+            {
+              "text": "(pattern)",
+              "value": "cula_b4_murrow_dwell_pattern"
+            },
+            {
+              "text": "(client)",
+              "value": "cula_b4_murrow_dwell_client"
+            }
+          ]
+        }
+      },
+      "already_present": false,
+      "already_present_reason": "no match",
+      "notes": [
+        "source _comment already flags fan-out need"
+      ]
+    },
+    {
+      "source_state_id": "cula_b4_murrow_dwell_tenure_reply",
+      "target_file": "murrow.json",
+      "route_reason": "id-token 'murrow'",
+      "target_beat": "beat4",
+      "trigger": "chapter1.state_choice == 'cula_b4_murrow_dwell_tenure'",
+      "speaker": "cula",
+      "tags": [
+        "beat4",
+        "murrow",
+        "dwell"
+      ],
+      "payload_summary": {
+        "lines": [
+          "Murrow. Out of curiosity. How long have you been at Pig & Swine?"
+        ],
+        "once": true
+      },
+      "already_present": false,
+      "already_present_reason": "no match",
+      "notes": []
+    },
+    {
+      "source_state_id": "cula_b4_murrow_dwell_pattern_reply",
+      "target_file": "murrow.json",
+      "route_reason": "id-token 'murrow'",
+      "target_beat": "beat4",
+      "trigger": "chapter1.state_choice == 'cula_b4_murrow_dwell_pattern'",
+      "speaker": "cula",
+      "tags": [
+        "beat4",
+        "murrow",
+        "dwell"
+      ],
+      "payload_summary": {
+        "lines": [
+          "Murrow. The wrong-address mechanism. Have you seen this shape of defect before?"
+        ],
+        "once": true
+      },
+      "already_present": false,
+      "already_present_reason": "no match",
+      "notes": []
+    },
+    {
+      "source_state_id": "cula_b4_murrow_dwell_client_reply",
+      "target_file": "murrow.json",
+      "route_reason": "id-token 'murrow'",
+      "target_beat": "beat4",
+      "trigger": "chapter1.state_choice == 'cula_b4_murrow_dwell_client'",
+      "speaker": "cula",
+      "tags": [
+        "beat4",
+        "murrow",
+        "dwell"
+      ],
+      "payload_summary": {
+        "lines": [
+          "And before I meet her. What should I expect from Mrs. Sikorska?"
+        ],
+        "once": true
+      },
+      "already_present": false,
+      "already_present_reason": "no match",
+      "notes": []
+    },
+    {
+      "source_state_id": "cula_b5_crab_recruitment_pitch",
+      "target_file": "crab.json",
+      "route_reason": "id-token 'crab'",
+      "target_beat": "beat5",
+      "trigger": "chapter1.has_law_binder == true && chapter1.met_murrow == true && !chapter1.met_crab",
+      "speaker": "cula",
+      "tags": [
+        "beat5",
+        "crab",
+        "first_meeting",
+        "recruitment"
+      ],
+      "payload_summary": {
+        "lines": [
+          "Crab. I'm Cula.",
+          "Sikorska eviction defense. The notice was served to old number seven; the buildi"
+        ]
+      },
+      "already_present": false,
+      "already_present_reason": "no match",
+      "notes": []
+    },
+    {
+      "source_state_id": "cula_b5_crab_dwell_options",
+      "target_file": "crab.json",
+      "route_reason": "id-token 'crab'",
+      "target_beat": "beat5",
+      "trigger": "chapter1.met_crab == true && !chapter1.recruited_crab && chapter1.state_choice == ''",
+      "speaker": "cula",
+      "tags": [],
+      "payload_summary": {
+        "options": {
+          "write_path": "chapter1.state_choice",
+          "chain": true,
+          "choices": [
+            {
+              "text": "(background)",
+              "value": "cula_b5_crab_dwell_background"
+            },
+            {
+              "text": "(why here)",
+              "value": "cula_b5_crab_dwell_why_here"
+            },
+            {
+              "text": "(case opinion)",
+              "value": "cula_b5_crab_dwell_case_opinion"
+            }
+          ]
+        }
+      },
+      "already_present": false,
+      "already_present_reason": "no match",
+      "notes": [
+        "source _comment already flags fan-out need"
+      ]
+    },
+    {
+      "source_state_id": "cula_b5_crab_dwell_background_reply",
+      "target_file": "crab.json",
+      "route_reason": "id-token 'crab'",
+      "target_beat": "beat5",
+      "trigger": "chapter1.state_choice == 'cula_b5_crab_dwell_background'",
+      "speaker": "cula",
+      "tags": [
+        "beat5",
+        "crab",
+        "dwell"
+      ],
+      "payload_summary": {
+        "lines": [
+          "Crab. Before we start: what's the shape of your background?"
+        ],
+        "once": true
+      },
+      "already_present": false,
+      "already_present_reason": "no match",
+      "notes": []
+    },
+    {
+      "source_state_id": "cula_b5_crab_dwell_why_here_reply",
+      "target_file": "crab.json",
+      "route_reason": "id-token 'crab'",
+      "target_beat": "beat5",
+      "trigger": "chapter1.state_choice == 'cula_b5_crab_dwell_why_here'",
+      "speaker": "cula",
+      "tags": [
+        "beat5",
+        "crab",
+        "dwell"
+      ],
+      "payload_summary": {
+        "lines": [
+          "Why Pig & Swine? You could have gone somewhere with a working printer."
+        ],
+        "once": true
+      },
+      "already_present": false,
+      "already_present_reason": "no match",
+      "notes": []
+    },
+    {
+      "source_state_id": "cula_b5_crab_dwell_case_opinion_reply",
+      "target_file": "crab.json",
+      "route_reason": "id-token 'crab'",
+      "target_beat": "beat5",
+      "trigger": "chapter1.state_choice == 'cula_b5_crab_dwell_case_opinion'",
+      "speaker": "cula",
+      "tags": [
+        "beat5",
+        "crab",
+        "dwell"
+      ],
+      "payload_summary": {
+        "lines": [
+          "You've seen the binder pages. Any opinion on the case before I waste your aftern"
+        ],
+        "once": true
+      },
+      "already_present": false,
+      "already_present_reason": "no match",
+      "notes": []
+    },
+    {
+      "source_state_id": "cula_b7_whimsy_first_meeting",
+      "target_file": "whimsy.json",
+      "route_reason": "id-token 'whimsy'",
+      "target_beat": "beat7",
+      "trigger": "chapter1.recruited_crab == true && !chapter1.met_whimsy",
+      "speaker": "cula",
+      "tags": [
+        "beat7",
+        "whimsy",
+        "first_meeting",
+        "cafe_paragraf"
+      ],
+      "payload_summary": {
+        "lines": [
+          "Mr. Whimsy. Cula, Pig & Swine.",
+          "There is a rights memo with coffee damage on it, and a hearing on Friday. I am t"
+        ]
+      },
+      "already_present": false,
+      "already_present_reason": "no match",
+      "notes": []
+    },
+    {
+      "source_state_id": "cula_b7_whimsy_procedural_vibes_response",
+      "target_file": "whimsy.json",
+      "route_reason": "id-token 'whimsy'",
+      "target_beat": "beat7",
+      "trigger": "chapter1.met_whimsy == true && !chapter1.recruited_whimsy",
+      "speaker": "cula",
+      "tags": [
+        "beat7",
+        "whimsy",
+        "recruitment"
+      ],
+      "payload_summary": {
+        "lines": [
+          "Vibes won't carry it. The defect is service; the doorway is fair hearing; the ar"
+        ]
+      },
+      "already_present": true,
+      "already_present_reason": "trigger overlap with target state 'whimsy_coffee_reaction_perfect_pre_recruit'",
+      "notes": []
+    },
+    {
+      "source_state_id": "cula_b7_whimsy_dwell_options",
+      "target_file": "whimsy.json",
+      "route_reason": "id-token 'whimsy'",
+      "target_beat": "beat7",
+      "trigger": "chapter1.met_whimsy == true && !chapter1.recruited_whimsy && chapter1.state_choice == ''",
+      "speaker": "cula",
+      "tags": [],
+      "payload_summary": {
+        "options": {
+          "write_path": "chapter1.state_choice",
+          "chain": true,
+          "choices": [
+            {
+              "text": "(office)",
+              "value": "cula_b7_whimsy_dwell_office"
+            },
+            {
+              "text": "(case read)",
+              "value": "cula_b7_whimsy_dwell_case_read"
+            },
+            {
+              "text": "(office visits)",
+              "value": "cula_b7_whimsy_dwell_office_visits"
+            }
+          ]
+        }
+      },
+      "already_present": false,
+      "already_present_reason": "no match",
+      "notes": [
+        "source _comment already flags fan-out need"
+      ]
+    },
+    {
+      "source_state_id": "cula_b7_whimsy_dwell_office_reply",
+      "target_file": "whimsy.json",
+      "route_reason": "id-token 'whimsy'",
+      "target_beat": "beat7",
+      "trigger": "chapter1.state_choice == 'cula_b7_whimsy_dwell_office'",
+      "speaker": "cula",
+      "tags": [
+        "beat7",
+        "whimsy",
+        "dwell"
+      ],
+      "payload_summary": {
+        "lines": [
+          "Mr. Whimsy. Why the café, and not the office?"
+        ],
+        "once": true
+      },
+      "already_present": false,
+      "already_present_reason": "no match",
+      "notes": []
+    },
+    {
+      "source_state_id": "cula_b7_whimsy_dwell_case_read_reply",
+      "target_file": "whimsy.json",
+      "route_reason": "id-token 'whimsy'",
+      "target_beat": "beat7",
+      "trigger": "chapter1.state_choice == 'cula_b7_whimsy_dwell_case_read'",
+      "speaker": "cula",
+      "tags": [
+        "beat7",
+        "whimsy",
+        "dwell"
+      ],
+      "payload_summary": {
+        "lines": [
+          "Setting the law aside for a second: what is your read on this one?"
+        ],
+        "once": true
+      },
+      "already_present": false,
+      "already_present_reason": "no match",
+      "notes": []
+    },
+    {
+      "source_state_id": "cula_b7_whimsy_dwell_office_visits_reply",
+      "target_file": "whimsy.json",
+      "route_reason": "id-token 'whimsy'",
+      "target_beat": "beat7",
+      "trigger": "chapter1.state_choice == 'cula_b7_whimsy_dwell_office_visits'",
+      "speaker": "cula",
+      "tags": [
+        "beat7",
+        "whimsy",
+        "dwell"
+      ],
+      "payload_summary": {
+        "lines": [
+          "Honest question: do you ever turn up at the office, or is this the rest of the l"
+        ],
+        "once": true
+      },
+      "already_present": false,
+      "already_present_reason": "no match",
+      "notes": []
+    },
+    {
+      "source_state_id": "cula_b8_office_return_internal",
+      "target_file": "<ambient>",
+      "route_reason": "internal monologue without NPC anchor",
+      "target_beat": "beat8",
+      "trigger": "chapter1.recruited_whimsy == true && !chapter1.halina_arrived",
+      "speaker": "cula_internal",
+      "tags": [
+        "beat8",
+        "internal",
+        "office_return"
+      ],
+      "payload_summary": {
+        "lines": [
+          "The meeting room has a table the rest of the office cannot afford. That tells me"
+        ]
+      },
+      "already_present": false,
+      "already_present_reason": "target file unreadable or absent",
+      "notes": [
+        "cula_internal speaker — render as internal echo, not dialogue line"
+      ]
+    },
+    {
+      "source_state_id": "cula_b8_halina_arrival_greeting",
+      "target_file": "halina.json",
+      "route_reason": "id-token 'halina'",
+      "target_beat": "beat8",
+      "trigger": "chapter1.halina_arrived == true && !chapter1.halina_met",
+      "speaker": "cula",
+      "tags": [
+        "beat8",
+        "halina",
+        "first_meeting"
+      ],
+      "payload_summary": {
+        "lines": [
+          "Good morning, Mrs. Sikorska. Dr. A. Cula.",
+          "This is Murrow, who has handled the case from the file. And my colleagues, Crab "
+        ]
+      },
+      "already_present": false,
+      "already_present_reason": "no match",
+      "notes": []
+    },
+    {
+      "source_state_id": "cula_b8_approach_choice",
+      "target_file": "halina.json",
+      "route_reason": "tag 'halina'",
+      "target_beat": "beat8",
+      "trigger": "chapter1.halina_met == true && chapter1.client_meeting_stance == ''",
+      "speaker": "cula",
+      "tags": [
+        "beat8",
+        "halina",
+        "stance_choice",
+        "LOAD_BEARING"
+      ],
+      "payload_summary": {
+        "lines": [
+          "Mrs. Sikorska. Before we open the folder, let me ask one question to set the sha"
+        ],
+        "options": {
+          "write_path": "chapter1.state_choice",
+          "chain": true,
+          "choices": [
+            {
+              "text": "Lead with how she is holding up. The eviction is on her, not",
+              "value": "sympathetic"
+            },
+            {
+              "text": "Lead with the notice. The sequence is what will land in cour",
+              "value": "blunt_procedural"
+            },
+            {
+              "text": "Lead with the lease and the inheritance. The tenancy validit",
+              "value": "technical"
+            }
+          ]
+        }
+      },
+      "already_present": false,
+      "already_present_reason": "no match",
+      "notes": [
+        "LOAD_BEARING — verify ownership before moving",
+        "carries LOAD_BEARING tag variant"
+      ]
+    },
+    {
+      "source_state_id": "cula_b8_sympathetic_open",
+      "target_file": "halina.json",
+      "route_reason": "tag 'halina'",
+      "target_beat": "beat8",
+      "trigger": "chapter1.client_meeting_stance == 'sympathetic' && !chapter1.halina_close_done",
+      "speaker": "cula",
+      "tags": [
+        "beat8",
+        "halina",
+        "stance_sympathetic"
+      ],
+      "payload_summary": {
+        "lines": [
+          "Mrs. Sikorska, before the documents. How are you managing this? You have had thr",
+          "And the building. How long have you been there?"
+        ]
+      },
+      "already_present": false,
+      "already_present_reason": "no match",
+      "notes": []
+    },
+    {
+      "source_state_id": "cula_b8_sympathetic_internal_fee",
+      "target_file": "halina.json",
+      "route_reason": "tag 'halina'",
+      "target_beat": "beat8",
+      "trigger": "chapter1.client_meeting_stance == 'sympathetic' && chapter1.client_fee_agreed == true",
+      "speaker": "cula_internal",
+      "tags": [
+        "beat8",
+        "halina",
+        "stance_sympathetic",
+        "internal"
+      ],
+      "payload_summary": {
+        "lines": [
+          "Five thousand. That is most of her month."
+        ]
+      },
+      "already_present": false,
+      "already_present_reason": "no match",
+      "notes": [
+        "cula_internal speaker — render as internal echo, not dialogue line"
+      ]
+    },
+    {
+      "source_state_id": "cula_b8_blunt_procedural_open",
+      "target_file": "halina.json",
+      "route_reason": "tag 'halina'",
+      "target_beat": "beat8",
+      "trigger": "chapter1.client_meeting_stance == 'blunt_procedural' && !chapter1.halina_close_done",
+      "speaker": "cula",
+      "tags": [
+        "beat8",
+        "halina",
+        "stance_blunt_procedural"
+      ],
+      "payload_summary": {
+        "lines": [
+          "Mrs. Sikorska. If it is all right with you, I will go in order. The notice. When",
+          "And before that one. Had there been other letters from the landlord, in the mont"
+        ]
+      },
+      "already_present": false,
+      "already_present_reason": "no match",
+      "notes": []
+    },
+    {
+      "source_state_id": "cula_b8_blunt_procedural_internal_fee",
+      "target_file": "halina.json",
+      "route_reason": "tag 'halina'",
+      "target_beat": "beat8",
+      "trigger": "chapter1.client_meeting_stance == 'blunt_procedural' && chapter1.client_fee_agreed == true",
+      "speaker": "cula_internal",
+      "tags": [
+        "beat8",
+        "halina",
+        "stance_blunt_procedural",
+        "internal"
+      ],
+      "payload_summary": {
+        "lines": [
+          "Fixed fee, no retainer, paid before court. Clean."
+        ]
+      },
+      "already_present": false,
+      "already_present_reason": "no match",
+      "notes": [
+        "cula_internal speaker — render as internal echo, not dialogue line"
+      ]
+    },
+    {
+      "source_state_id": "cula_b8_technical_open",
+      "target_file": "halina.json",
+      "route_reason": "tag 'halina'",
+      "target_beat": "beat8",
+      "trigger": "chapter1.client_meeting_stance == 'technical' && !chapter1.halina_close_done",
+      "speaker": "cula",
+      "tags": [
+        "beat8",
+        "halina",
+        "stance_technical"
+      ],
+      "payload_summary": {
+        "lines": [
+          "Mrs. Sikorska. Could we begin with the paperwork itself. The original lease, the",
+          "And the renumbering. Do you have anything from the building administration about"
+        ]
+      },
+      "already_present": false,
+      "already_present_reason": "no match",
+      "notes": []
+    },
+    {
+      "source_state_id": "cula_b8_technical_internal_fee",
+      "target_file": "halina.json",
+      "route_reason": "tag 'halina'",
+      "target_beat": "beat8",
+      "trigger": "chapter1.client_meeting_stance == 'technical' && chapter1.client_fee_agreed == true",
+      "speaker": "cula_internal",
+      "tags": [
+        "beat8",
+        "halina",
+        "stance_technical",
+        "internal"
+      ],
+      "payload_summary": {
+        "lines": [
+          "Single payment, no instalments, no retainer. That is the cleanest fee shape this"
+        ]
+      },
+      "already_present": false,
+      "already_present_reason": "no match",
+      "notes": [
+        "cula_internal speaker — render as internal echo, not dialogue line"
+      ]
+    },
+    {
+      "source_state_id": "cula_b8_dwell_options",
+      "target_file": "<unresolved>",
+      "route_reason": "no id-token, no NPC tag, no beat heuristic match",
+      "target_beat": "beat8",
+      "trigger": "chapter1.halina_met == true && chapter1.client_meeting_stance != '' && !chapter1.halina_close_done && chapter1.state_choice == ''",
+      "speaker": "cula",
+      "tags": [],
+      "payload_summary": {
+        "options": {
+          "write_path": "chapter1.state_choice",
+          "chain": true,
+          "choices": [
+            {
+              "text": "(apartment)",
+              "value": "cula_b8_dwell_apartment"
+            },
+            {
+              "text": "(referral)",
+              "value": "cula_b8_dwell_referral"
+            },
+            {
+              "text": "(taught)",
+              "value": "cula_b8_dwell_taught"
+            }
+          ]
+        }
+      },
+      "already_present": false,
+      "already_present_reason": "target file unreadable or absent",
+      "notes": [
+        "source _comment already flags fan-out need"
+      ]
+    },
+    {
+      "source_state_id": "cula_b8_dwell_apartment_reply",
+      "target_file": "halina.json",
+      "route_reason": "tag 'halina'",
+      "target_beat": "beat8",
+      "trigger": "chapter1.state_choice == 'cula_b8_dwell_apartment'",
+      "speaker": "cula",
+      "tags": [
+        "beat8",
+        "halina",
+        "dwell",
+        "biographical"
+      ],
+      "payload_summary": {
+        "lines": [
+          "Mrs. Sikorska. Tell me about the apartment. Not the case. The apartment itself."
+        ],
+        "once": true
+      },
+      "already_present": false,
+      "already_present_reason": "no match",
+      "notes": []
+    },
+    {
+      "source_state_id": "cula_b8_dwell_referral_reply",
+      "target_file": "halina.json",
+      "route_reason": "tag 'halina'",
+      "target_beat": "beat8",
+      "trigger": "chapter1.state_choice == 'cula_b8_dwell_referral'",
+      "speaker": "cula",
+      "tags": [
+        "beat8",
+        "halina",
+        "dwell"
+      ],
+      "payload_summary": {
+        "lines": [
+          "And how did you come to find us? Was there anyone else you were speaking with?"
+        ],
+        "once": true
+      },
+      "already_present": false,
+      "already_present_reason": "no match",
+      "notes": []
+    },
+    {
+      "source_state_id": "cula_b8_dwell_taught_reply",
+      "target_file": "halina.json",
+      "route_reason": "tag 'halina'",
+      "target_beat": "beat8",
+      "trigger": "chapter1.state_choice == 'cula_b8_dwell_taught'",
+      "speaker": "cula",
+      "tags": [
+        "beat8",
+        "halina",
+        "dwell"
+      ],
+      "payload_summary": {
+        "lines": [
+          "I take it from how you have laid out the folder that you have done a lot of care"
+        ],
+        "once": true
+      },
+      "already_present": false,
+      "already_present_reason": "no match",
+      "notes": []
+    },
+    {
+      "source_state_id": "cula_b8_cardiologist_silent_reaction",
+      "target_file": "halina.json",
+      "route_reason": "tag 'halina'",
+      "target_beat": "beat8",
+      "trigger": "chapter1.cardiologist_plant_landed == true",
+      "speaker": "cula_internal",
+      "tags": [
+        "beat8",
+        "halina",
+        "internal",
+        "cardiologist_plant"
+      ],
+      "payload_summary": {
+        "silent": true
+      },
+      "already_present": false,
+      "already_present_reason": "no match",
+      "notes": [
+        "cula_internal speaker — render as internal echo, not dialogue line"
+      ]
+    },
+    {
+      "source_state_id": "cula_b8_literary_epigram_reaction",
+      "target_file": "halina.json",
+      "route_reason": "tag 'halina'",
+      "target_beat": "beat8",
+      "trigger": "chapter1.halina_close_done == true",
+      "speaker": "cula",
+      "tags": [
+        "beat8",
+        "halina",
+        "internal_short"
+      ],
+      "payload_summary": {
+        "lines": [
+          "I will try to make the visit worth the timing, Mrs. Sikorska."
+        ]
+      },
+      "already_present": false,
+      "already_present_reason": "no match",
+      "notes": []
+    },
+    {
+      "source_state_id": "cula_b8_halina_closeout",
+      "target_file": "halina.json",
+      "route_reason": "id-token 'halina'",
+      "target_beat": "beat8",
+      "trigger": "chapter1.halina_close_done == true && chapter1.client_fee_agreed == true && !chapter1.archive_research_complete",
+      "speaker": "cula",
+      "tags": [
+        "beat8",
+        "halina",
+        "closeout"
+      ],
+      "payload_summary": {
+        "lines": [
+          "Thank you. We will have the motion drafted by tomorrow afternoon; the firm will ",
+          "Murrow. Archive Room?"
+        ]
+      },
+      "already_present": false,
+      "already_present_reason": "no match",
+      "notes": []
+    },
+    {
+      "source_state_id": "cula_b9_archive_setup",
+      "target_file": "<unresolved>",
+      "route_reason": "no id-token, no NPC tag, no beat heuristic match",
+      "target_beat": "beat9",
+      "trigger": "chapter1.halina_close_done == true && !chapter1.archive_research_complete",
+      "speaker": "cula",
+      "tags": [
+        "beat9",
+        "archive_room",
+        "internal_short"
+      ],
+      "payload_summary": {
+        "lines": [
+          "Article 135-bis, paragraph two. The binder has been waiting for this clause all "
+        ]
+      },
+      "already_present": false,
+      "already_present_reason": "target file unreadable or absent",
+      "notes": []
+    },
+    {
+      "source_state_id": "cula_b9_murrow_first_clause_response",
+      "target_file": "murrow.json",
+      "route_reason": "id-token 'murrow'",
+      "target_beat": "beat9",
+      "trigger": "chapter1.archive_research_complete == false && chapter1.has_law_binder == true",
+      "speaker": "cula",
+      "tags": [
+        "beat9",
+        "archive_room",
+        "murrow",
+        "internal_short"
+      ],
+      "payload_summary": {
+        "lines": [
+          "So the knowledge requirement is met. The landlord authorised the renumbering; th",
+          "Murrow. That is half the work done before we wrote anything."
+        ]
+      },
+      "already_present": false,
+      "already_present_reason": "no match",
+      "notes": []
+    },
+    {
+      "source_state_id": "cula_b9_murrow_second_clause_response",
+      "target_file": "murrow.json",
+      "route_reason": "id-token 'murrow'",
+      "target_beat": "beat9",
+      "trigger": "chapter1.archive_research_complete == false && chapter1.has_law_binder == true",
+      "speaker": "cula",
+      "tags": [
+        "beat9",
+        "archive_room",
+        "murrow",
+        "internal_short"
+      ],
+      "payload_summary": {
+        "lines": [
+          "Notice on the twenty-eighth of April; today's date; that puts us inside the wind",
+          "Murrow. Do we file the motion before or after the hearing time on Friday?"
+        ]
+      },
+      "already_present": false,
+      "already_present_reason": "no match",
+      "notes": []
+    },
+    {
+      "source_state_id": "cula_b9_murrow_third_clause_response",
+      "target_file": "murrow.json",
+      "route_reason": "id-token 'murrow'",
+      "target_beat": "beat9",
+      "trigger": "chapter1.archive_research_complete == false && chapter1.has_law_binder == true",
+      "speaker": "cula",
+      "tags": [
+        "beat9",
+        "archive_room",
+        "murrow",
+        "internal_short"
+      ],
+      "payload_summary": {
+        "lines": [
+          "Good. Then 'they accepted the notice' fails on its face. The current renter at n"
+        ]
+      },
+      "already_present": false,
+      "already_present_reason": "no match",
+      "notes": []
+    },
+    {
+      "source_state_id": "cula_b9_dwell_how_options",
+      "target_file": "<unresolved>",
+      "route_reason": "no id-token, no NPC tag, no beat heuristic match",
+      "target_beat": "beat9",
+      "trigger": "chapter1.has_law_binder == true && !chapter1.archive_research_complete && chapter1.state_choice == ''",
+      "speaker": "cula",
+      "tags": [],
+      "payload_summary": {
+        "options": {
+          "write_path": "chapter1.state_choice",
+          "chain": true,
+          "choices": [
+            {
+              "text": "(how found)",
+              "value": "cula_b9_dwell_how_found"
+            },
+            {
+              "text": "(used before)",
+              "value": "cula_b9_dwell_used_before"
+            },
+            {
+              "text": "(next)",
+              "value": "cula_b9_dwell_next"
+            }
+          ]
+        }
+      },
+      "already_present": false,
+      "already_present_reason": "target file unreadable or absent",
+      "notes": [
+        "source _comment already flags fan-out need"
+      ]
+    },
+    {
+      "source_state_id": "cula_b9_dwell_how_found_reply",
+      "target_file": "murrow.json",
+      "route_reason": "tag 'murrow'",
+      "target_beat": "beat9",
+      "trigger": "chapter1.state_choice == 'cula_b9_dwell_how_found'",
+      "speaker": "cula",
+      "tags": [
+        "beat9",
+        "archive_room",
+        "murrow",
+        "dwell"
+      ],
+      "payload_summary": {
+        "lines": [
+          "Murrow. The binder has hundreds of pages. How did you find the article that fits"
+        ],
+        "once": true
+      },
+      "already_present": false,
+      "already_present_reason": "no match",
+      "notes": []
+    },
+    {
+      "source_state_id": "cula_b9_dwell_used_before_reply",
+      "target_file": "murrow.json",
+      "route_reason": "tag 'murrow'",
+      "target_beat": "beat9",
+      "trigger": "chapter1.state_choice == 'cula_b9_dwell_used_before'",
+      "speaker": "cula",
+      "tags": [
+        "beat9",
+        "archive_room",
+        "murrow",
+        "dwell"
+      ],
+      "payload_summary": {
+        "lines": [
+          "Have you actually run a one-thirty-five-bis motion before, or is this our first?"
+        ],
+        "once": true
+      },
+      "already_present": false,
+      "already_present_reason": "no match",
+      "notes": []
+    },
+    {
+      "source_state_id": "cula_b9_dwell_next_reply",
+      "target_file": "murrow.json",
+      "route_reason": "tag 'murrow'",
+      "target_beat": "beat9",
+      "trigger": "chapter1.state_choice == 'cula_b9_dwell_next'",
+      "speaker": "cula",
+      "tags": [
+        "beat9",
+        "archive_room",
+        "murrow",
+        "dwell"
+      ],
+      "payload_summary": {
+        "lines": [
+          "Murrow. What is on the checklist between now and Friday?"
+        ],
+        "once": true
+      },
+      "already_present": false,
+      "already_present_reason": "no match",
+      "notes": []
+    },
+    {
+      "source_state_id": "cula_b9_archive_close",
+      "target_file": "<unresolved>",
+      "route_reason": "no id-token, no NPC tag, no beat heuristic match",
+      "target_beat": "beat9",
+      "trigger": "chapter1.archive_research_complete == true && !chapter1.court_ready",
+      "speaker": "cula",
+      "tags": [
+        "beat9",
+        "archive_room",
+        "internal_short"
+      ],
+      "payload_summary": {
+        "lines": [
+          "Defective service under Article 135-bis. Motion to set aside, within fourteen da"
+        ]
+      },
+      "already_present": false,
+      "already_present_reason": "target file unreadable or absent",
+      "notes": []
+    },
+    {
+      "source_state_id": "cula_b9_kundera_beat",
+      "target_file": "<ambient>",
+      "route_reason": "internal monologue without NPC anchor",
+      "target_beat": "beat9",
+      "trigger": "chapter1.archive_research_complete == true && !chapter1.court_ready",
+      "speaker": "cula_internal",
+      "tags": [
+        "beat9",
+        "internal",
+        "kundera_register",
+        "once_per_chapter"
+      ],
+      "payload_summary": {
+        "lines": [
+          "I notice that I do not yet know whether the firm is teaching me, or whether the "
+        ]
+      },
+      "already_present": false,
+      "already_present_reason": "target file unreadable or absent",
+      "notes": [
+        "cula_internal speaker — render as internal echo, not dialogue line"
+      ]
+    },
+    {
+      "source_state_id": "cula_b10_readiness_check",
+      "target_file": "murrow.json",
+      "route_reason": "tag 'murrow'",
+      "target_beat": "beat10",
+      "trigger": "chapter1.archive_research_complete == true && !chapter1.court_ready",
+      "speaker": "cula",
+      "tags": [
+        "beat10",
+        "murrow",
+        "readiness"
+      ],
+      "payload_summary": {
+        "lines": [
+          "Murrow. We have service, fairness, and a modest remedy. Please tell me that is a",
+          "Walk route, court time, who carries what. Run me through the checklist."
+        ]
+      },
+      "already_present": false,
+      "already_present_reason": "no match",
+      "notes": []
+    },
+    {
+      "source_state_id": "cula_b10_pig_lecture_reception",
+      "target_file": "pig.json",
+      "route_reason": "id-token 'pig'",
+      "target_beat": "beat10",
+      "trigger": "chapter1.pig_revealed_crisis == true && !chapter1.court_ready",
+      "speaker": "cula",
+      "tags": [
+        "beat10",
+        "pig",
+        "internal_short"
+      ],
+      "payload_summary": {
+        "lines": [
+          "Understood, Mr. Pig. We will keep the printer informed."
+        ]
+      },
+      "already_present": false,
+      "already_present_reason": "no match",
+      "notes": []
+    },
+    {
+      "source_state_id": "cula_b12_round1_response",
+      "target_file": "judge_district_ch1.json",
+      "route_reason": "court beat tag",
+      "target_beat": "beat12",
+      "trigger": "chapter1.entered_court == true && chapter1.casebook_judge_state != ''",
+      "speaker": "cula",
+      "tags": [
+        "beat12",
+        "court",
+        "round1"
+      ],
+      "payload_summary": {
+        "lines": [
+          "Your Honor. The notice was served to a non-current address. The building was ren",
+          "The client should not be treated as silent where the process failed to give her "
+        ]
+      },
+      "already_present": false,
+      "already_present_reason": "no match",
+      "notes": []
+    },
+    {
+      "source_state_id": "cula_b12_round2_response",
+      "target_file": "judge_district_ch1.json",
+      "route_reason": "court beat tag",
+      "target_beat": "beat12",
+      "trigger": "chapter1.casebook_judge_state == 'round2_open' || chapter1.casebook_judge_state == 'round2_active'",
+      "speaker": "cula",
+      "tags": [
+        "beat12",
+        "court",
+        "round2"
+      ],
+      "payload_summary": {
+        "lines": [
+          "Your Honor. A party cannot meaningfully defend a case it was never properly brou"
+        ]
+      },
+      "already_present": false,
+      "already_present_reason": "no match",
+      "notes": []
+    },
+    {
+      "source_state_id": "cula_b12_round3_remedy_sympathetic",
+      "target_file": "judge_district_ch1.json",
+      "route_reason": "court beat tag",
+      "target_beat": "beat12",
+      "trigger": "chapter1.casebook_judge_state == 'round3_open' && chapter1.client_meeting_stance == 'sympathetic'",
+      "speaker": "cula",
+      "tags": [
+        "beat12",
+        "court",
+        "round3",
+        "stance_sympathetic",
+        "LOAD_BEARING_REMEDY"
+      ],
+      "payload_summary": {
+        "lines": [
+          "Your Honor. The defect was a year in the making, but its effect on Mrs. Sikorska",
+          "We do not ask the court to decide the whole dispute today. We ask that the heari"
+        ]
+      },
+      "already_present": false,
+      "already_present_reason": "no match",
+      "notes": [
+        "carries LOAD_BEARING tag variant"
+      ]
+    },
+    {
+      "source_state_id": "cula_b12_round3_remedy_blunt_procedural",
+      "target_file": "judge_district_ch1.json",
+      "route_reason": "court beat tag",
+      "target_beat": "beat12",
+      "trigger": "chapter1.casebook_judge_state == 'round3_open' && chapter1.client_meeting_stance == 'blunt_procedural'",
+      "speaker": "cula",
+      "tags": [
+        "beat12",
+        "court",
+        "round3",
+        "stance_blunt_procedural",
+        "LOAD_BEARING_REMEDY"
+      ],
+      "payload_summary": {
+        "lines": [
+          "Your Honor. The defects are sequential. Service was invalid under Article 135-bi",
+          "On those grounds the hearing should be set aside and rescheduled."
+        ]
+      },
+      "already_present": false,
+      "already_present_reason": "no match",
+      "notes": [
+        "carries LOAD_BEARING tag variant"
+      ]
+    },
+    {
+      "source_state_id": "cula_b12_round3_remedy_technical",
+      "target_file": "judge_district_ch1.json",
+      "route_reason": "court beat tag",
+      "target_beat": "beat12",
+      "trigger": "chapter1.casebook_judge_state == 'round3_open' && chapter1.client_meeting_stance == 'technical'",
+      "speaker": "cula",
+      "tags": [
+        "beat12",
+        "court",
+        "round3",
+        "stance_technical",
+        "LOAD_BEARING_REMEDY"
+      ],
+      "payload_summary": {
+        "lines": [
+          "Your Honor. The tenancy is documented from nineteen sixty-two, original lease in",
+          "On those grounds the hearing should be set aside and rescheduled so that the sub"
+        ]
+      },
+      "already_present": false,
+      "already_present_reason": "no match",
+      "notes": [
+        "carries LOAD_BEARING tag variant"
+      ]
+    },
+    {
+      "source_state_id": "cula_b13_victory_internal",
+      "target_file": "<unresolved>",
+      "route_reason": "no id-token, no NPC tag, no beat heuristic match",
+      "target_beat": "beat13",
+      "trigger": "chapter1.court_won_procedural_reset == true && !chapter1.beat13_complete",
+      "speaker": "cula",
+      "tags": [
+        "beat13",
+        "internal_short"
+      ],
+      "payload_summary": {
+        "lines": [
+          "We won the part of the case that allows the case to exist. That feels appropriat"
+        ]
+      },
+      "already_present": false,
+      "already_present_reason": "target file unreadable or absent",
+      "notes": []
+    },
+    {
+      "source_state_id": "cula_b13_pig_celebration_response",
+      "target_file": "pig.json",
+      "route_reason": "id-token 'pig'",
+      "target_beat": "beat13",
+      "trigger": "chapter1.court_won_procedural_reset == true && !chapter1.beat13_complete",
+      "speaker": "cula",
+      "tags": [
+        "beat13",
+        "pig"
+      ],
+      "payload_summary": {
+        "lines": [
+          "Temporarily saved is still saved, Mr. Pig. I am learning that this office measur"
+        ]
+      },
+      "already_present": true,
+      "already_present_reason": "source id 'cula_b13_pig_celebration_response' referenced in target _comment",
+      "notes": []
+    },
+    {
+      "source_state_id": "cula_b13_murrow_ledger_silent",
+      "target_file": "murrow.json",
+      "route_reason": "id-token 'murrow'",
+      "target_beat": "beat13",
+      "trigger": "chapter1.court_won_procedural_reset == true && !chapter1.beat13_complete",
+      "speaker": "cula_internal",
+      "tags": [
+        "beat13",
+        "murrow",
+        "internal",
+        "ledger_plant",
+        "out_of_scope_visual"
+      ],
+      "payload_summary": {
+        "silent": true
+      },
+      "already_present": false,
+      "already_present_reason": "no match",
+      "notes": [
+        "cula_internal speaker — render as internal echo, not dialogue line"
+      ]
+    },
+    {
+      "source_state_id": "cula_b13_brief_murrow_response",
+      "target_file": "murrow.json",
+      "route_reason": "tag 'murrow'",
+      "target_beat": "beat13",
+      "trigger": "chapter1.court_won_procedural_reset == true && !chapter1.beat13_complete",
+      "speaker": "cula",
+      "tags": [
+        "beat13",
+        "murrow"
+      ],
+      "payload_summary": {
+        "lines": [
+          "Murrow. Send me what you have on the next file. Tomorrow morning is fine."
+        ]
+      },
+      "already_present": false,
+      "already_present_reason": "no match",
+      "notes": []
+    },
+    {
+      "source_state_id": "cula_b13_crab_response",
+      "target_file": "crab.json",
+      "route_reason": "id-token 'crab'",
+      "target_beat": "beat13",
+      "trigger": "chapter1.court_won_procedural_reset == true && !chapter1.beat13_complete",
+      "speaker": "cula",
+      "tags": [
+        "beat13",
+        "crab"
+      ],
+      "payload_summary": {
+        "lines": [
+          "The address argument carried it, Crab. Most of the round was your reading."
+        ]
+      },
+      "already_present": false,
+      "already_present_reason": "no match",
+      "notes": []
+    },
+    {
+      "source_state_id": "cula_b13_whimsy_response",
+      "target_file": "whimsy.json",
+      "route_reason": "id-token 'whimsy'",
+      "target_beat": "beat13",
+      "trigger": "chapter1.court_won_procedural_reset == true && !chapter1.beat13_complete",
+      "speaker": "cula",
+      "tags": [
+        "beat13",
+        "whimsy"
+      ],
+      "payload_summary": {
+        "lines": [
+          "I will look forward to the score, Whimsy. The written closing first, if you can."
+        ]
+      },
+      "already_present": false,
+      "already_present_reason": "no match",
+      "notes": []
+    },
+    {
+      "source_state_id": "cula_b13_asia_response",
+      "target_file": "asia.json",
+      "route_reason": "id-token 'asia'",
+      "target_beat": "beat13",
+      "trigger": "chapter1.court_won_procedural_reset == true && !chapter1.beat13_complete",
+      "speaker": "cula",
+      "tags": [
+        "beat13",
+        "asia"
+      ],
+      "payload_summary": {
+        "lines": [
+          "Thanks, Asia. Whatever you are sorting, please do not let me add to the pile unt"
+        ]
+      },
+      "already_present": false,
+      "already_present_reason": "no match",
+      "notes": []
+    },
+    {
+      "source_state_id": "cula_b14_postcard_reaction",
+      "target_file": "postcard_swine_ch1.json",
+      "route_reason": "postcard tag",
+      "target_beat": "beat14",
+      "trigger": "chapter1.received_swine_postcard == true && !chapter1.complete",
+      "speaker": "cula",
+      "tags": [
+        "beat14",
+        "swine",
+        "postcard",
+        "stinger"
+      ],
+      "payload_summary": {
+        "lines": [
+          "Japan, ski resorts, arbitration, no immediate downside. I distrust every noun in"
+        ]
+      },
+      "already_present": true,
+      "already_present_reason": "source id 'cula_b14_postcard_reaction' referenced in target _comment",
+      "notes": []
+    },
+    {
+      "source_state_id": "cula_b14_chapter_close",
+      "target_file": "postcard_swine_ch1.json",
+      "route_reason": "postcard tag",
+      "target_beat": "beat14",
+      "trigger": "chapter1.received_swine_postcard == true && !chapter1.complete",
+      "speaker": "cula",
+      "tags": [
+        "beat14",
+        "chapter_close",
+        "internal_short"
+      ],
+      "payload_summary": {
+        "lines": [
+          "Three districts on the map I could not walk through this morning. That is a lot ",
+          "Tomorrow. Murrow's next file, then the doors."
+        ]
+      },
+      "already_present": false,
+      "already_present_reason": "no match",
+      "notes": []
+    }
+  ]
+}

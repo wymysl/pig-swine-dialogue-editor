@@ -191,31 +191,11 @@ func _update_facing(target_pos: Vector2) -> void:
 		var anchor = get_node_or_null(prompt_anchor_path)
 		if anchor and anchor is Node2D:
 			target_node = anchor
-			
-	var dir = (target_pos - target_node.global_position).normalized()
-	var angle = rad_to_deg(dir.angle())
-	if angle < 0:
-		angle += 360.0
-	
-	var facing = "front"
-	if angle >= 337.5 or angle < 22.5:
-		facing = "right"
-	elif angle >= 22.5 and angle < 67.5:
-		facing = "front_right"
-	elif angle >= 67.5 and angle < 112.5:
-		facing = "front"
-	elif angle >= 112.5 and angle < 157.5:
-		facing = "front_left"
-	elif angle >= 157.5 and angle < 202.5:
-		facing = "left"
-	elif angle >= 202.5 and angle < 247.5:
-		facing = "back_left"
-	elif angle >= 247.5 and angle < 292.5:
-		facing = "back"
-	elif angle >= 292.5 and angle < 337.5:
-		facing = "back_right"
-		
-	_set_facing(facing)
+
+	var dir: Vector2 = (target_pos - target_node.global_position).normalized()
+	## Delegated to Facing.from_vector — see scripts/systems/facing.gd
+	## (2026-05-22 tech critique F6 deduplication).
+	_set_facing(Facing.from_vector(dir))
 
 func _set_facing(facing: String) -> void:
 	var target_node: Node2D = self

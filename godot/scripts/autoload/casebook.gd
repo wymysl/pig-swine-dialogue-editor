@@ -7,6 +7,12 @@ const JUDGMENTS_PATH: String = "res://data/judgments.json"
 
 var _judgments: Dictionary = {}
 
+## _boot_errors — fatal boot-time issues recorded so the smoke test can
+## query them via get_validation_errors. Mirrors the DialogueRunner pattern
+## (2026-05-22 tech critique F5 — boot failures here previously only pushed
+## errors to stderr, which the smoke gate did not inspect).
+var _boot_errors: Array[String] = []
+
 
 func _ready() -> void:
 	reload()
@@ -14,6 +20,7 @@ func _ready() -> void:
 
 func reload() -> void:
 	_judgments.clear()
+	_boot_errors.clear()
 	var parsed: Dictionary = _load_json_dictionary(JUDGMENTS_PATH)
 	var raw_judgments: Array = parsed.get("judgments", [])
 	for raw in raw_judgments:
@@ -26,6 +33,19 @@ func reload() -> void:
 		if judgment_id == "":
 			continue
 		_judgments[judgment_id] = judgment
+
+
+func get_validation_errors() -> Array[String]:
+	return _boot_errors.duplicate()
+
+
+func has_validation_errors() -> bool:
+	return not _boot_errors.is_empty()
+
+
+func _record_error(message: String) -> void:
+	_boot_errors.append(message)
+	push_error(message)
 
 
 func get_collected_judgments() -> Array[Dictionary]:
@@ -85,11 +105,11 @@ func _resolve_state_path(path: String) -> Variant:
 func _load_json_dictionary(path: String) -> Dictionary:
 	var file: FileAccess = FileAccess.open(path, FileAccess.READ)
 	if file == null:
-		push_error("Casebook: could not open %s" % path)
+		_record_error("Casebook: could not open %s" % path)
 		return {}
 	var parsed: Variant = JSON.parse_string(file.get_as_text())
 	file.close()
 	if not parsed is Dictionary:
-		push_error("Casebook: %s is not a JSON object" % path)
+		_record_error("Casebook: %s is not a JSON object" % path)
 		return {}
 	return parsed

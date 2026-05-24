@@ -356,7 +356,19 @@ func _mark_once_seen(state_id: String) -> void:
 		seen.append(state_id)
 
 
-func _set_state_value(data: Dictionary, path: String, value: Variant) -> void:
+## _set_state_value — write `value` into `data` at the dotted path. Returns
+## true on success, false on any missing-segment / unknown-key failure. The
+## v13 migration was created because the previous silent no-op variant of
+## this function let a typo'd write_path land nowhere (barista.json's
+## coffee_retry_decision); the 2026-05-22 tech critique F3 hardened it.
+##
+## Strictness: when `strict` is true (default), an unresolved path also emits
+## push_error so the bug surfaces in smoke + test_runner runs. Callers that
+## intentionally probe optional paths can pass strict=false to suppress.
+## Every production callsite today (on_dismiss mutations, options.write_path,
+## trust_path) routes through dialogue JSON whose paths are already validated
+## at boot by _validate_state — strict=true is safe there.
+func _set_state_value(data: Dictionary, path: String, value: Variant, strict: bool = true) -> bool:
 	var segments = path.split(".")
 	var current = data
 	for i in range(segments.size() - 1):
@@ -364,10 +376,16 @@ func _set_state_value(data: Dictionary, path: String, value: Variant) -> void:
 		if current is Dictionary and current.has(seg) and current[seg] is Dictionary:
 			current = current[seg]
 		else:
-			return
+			if strict:
+				push_error("DialogueRunner._set_state_value: unresolved path '%s' (segment '%s' missing or non-dict). Declare the slot in State.reset_state() and add a save migration." % [path, seg])
+			return false
 	var last_seg = segments[segments.size() - 1]
 	if current is Dictionary and current.has(last_seg):
 		current[last_seg] = value
+		return true
+	if strict:
+		push_error("DialogueRunner._set_state_value: unresolved path '%s' (leaf key '%s' not declared in State). Declare it in State.reset_state() and add a save migration." % [path, last_seg])
+	return false
 
 
 ## _signals — safe accessor; returns null in headless --script mode.

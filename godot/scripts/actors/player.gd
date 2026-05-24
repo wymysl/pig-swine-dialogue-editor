@@ -45,27 +45,7 @@ func _physics_process(_delta: float) -> void:
 	move_and_slide()
 
 ## Discretise a movement vector into one of 8 named directions (45° buckets).
-## Bucket centers: right=0°, front_right=45°, front=90°, front_left=135°,
-## left=180°, back_left=225°, back=270°, back_right=315°.
-## Each bucket spans ±22.5° around its center.
+## Delegated to scripts/systems/facing.gd — see Facing.from_vector for the
+## bucket math (2026-05-22 tech critique F6 deduplication).
 func _update_facing(dir: Vector2) -> void:
-	var angle := rad_to_deg(dir.angle())
-	if angle < 0.0:
-		angle += 360.0
-
-	if angle >= 337.5 or angle < 22.5:
-		_last_facing = "right"
-	elif angle >= 22.5 and angle < 67.5:
-		_last_facing = "front_right"
-	elif angle >= 67.5 and angle < 112.5:
-		_last_facing = "front"
-	elif angle >= 112.5 and angle < 157.5:
-		_last_facing = "front_left"
-	elif angle >= 157.5 and angle < 202.5:
-		_last_facing = "left"
-	elif angle >= 202.5 and angle < 247.5:
-		_last_facing = "back_left"
-	elif angle >= 247.5 and angle < 292.5:
-		_last_facing = "back"
-	elif angle >= 292.5 and angle < 337.5:
-		_last_facing = "back_right"
+	_last_facing = Facing.from_vector(dir)

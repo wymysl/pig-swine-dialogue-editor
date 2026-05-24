@@ -48,30 +48,9 @@ func _process(delta: float) -> void:
 			_set_facing(default_facing)
 			_start_patrol_timer()
 	else:
-		var dir = (patrol_target - global_position).normalized()
+		var dir: Vector2 = (patrol_target - global_position).normalized()
 		global_position += dir * patrol_speed * delta
-		
-		# To get the right facing suffix
-		var angle = rad_to_deg(dir.angle())
-		if angle < 0:
-			angle += 360.0
-		
-		var facing = "front"
-		if angle >= 337.5 or angle < 22.5:
-			facing = "right"
-		elif angle >= 22.5 and angle < 67.5:
-			facing = "front_right"
-		elif angle >= 67.5 and angle < 112.5:
-			facing = "front"
-		elif angle >= 112.5 and angle < 157.5:
-			facing = "front_left"
-		elif angle >= 157.5 and angle < 202.5:
-			facing = "left"
-		elif angle >= 202.5 and angle < 247.5:
-			facing = "back_left"
-		elif angle >= 247.5 and angle < 292.5:
-			facing = "back"
-		elif angle >= 292.5 and angle < 337.5:
-			facing = "back_right"
-			
-		play_animation("walk", facing)
+
+		## Delegated to Facing.from_vector — see scripts/systems/facing.gd
+		## (2026-05-22 tech critique F6 deduplication).
+		play_animation("walk", Facing.from_vector(dir))

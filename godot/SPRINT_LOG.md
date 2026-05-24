@@ -1886,3 +1886,35 @@ Verification:
 
 Out of scope this entry: extending the office room to the 20×11 target if Design ever wants it; that requires regenerating the Floor and Walls TileMapLayer cells together and is a separate scene-authoring sprint.
 
+---
+
+## 2026-05-22 — tech-critique remediation (F1/F2 docs/F3/F5/F6/F8)
+
+Hostile tech critique authored at `godot/critiques/2026-05-22-tech.md` (11 findings). Six are closed in this entry; F2-web-export, F4 (large-script splits), F7 (typed `Chapter1State`), F9 (stale-file purge), F10 (dead actor deletions) remain open pending Piotr's call. F11 (seedable RNG) is informational only this round.
+
+Files touched:
+
+- `godot/tests/test_save_roundtrip.gd` — F1: NEW. End-to-end save→disk→load coverage. T1 full-fixture round-trip + deep-equal assertion. T2 corrupt-JSON triggers `save_failed` and `reset_state()`. T3 missing-file returns false without emitting `save_failed`. T4 v7 fixture written to disk loads through `load_game` and equals `migrate_save` applied to the same dict in memory. T5 on-disk `version` stamp equals `State.SAVE_VERSION`. Closes a coverage gap that had grown across SAVE_VERSION 1 → 21 with zero round-trip enforcement.
+- `godot/scripts/autoload/dialogue_runner.gd` — F3: `_set_state_value(data, path, value)` rewritten to `(data, path, value, strict: bool = true) -> bool`. Returns true on success, false on unresolved path. In strict mode (default) the function `push_error`s. Legacy silent no-op (the same class of bug that drove the v13 migration) is preserved as opt-in via `strict=false`. All three production callsites (`_apply_mutations`, `_on_dialogue_option_committed` write_path + trust_path) keep default strict=true; they go through JSON paths already validated at boot by `_validate_state`.
+- `godot/tests/test_state_writer.gd` — F3: NEW. Five tests pinning the new contract: declared-path success, unknown-leaf strict-fail, missing-parent strict-fail, permissive-mode silent no-op, deep-nested-path success.
+- `godot/scripts/systems/facing.gd` — F6: NEW. `class_name Facing extends RefCounted` with `static func from_vector(dir) -> String` and `from_angle_degrees(angle) -> String`. Single source of truth for the 8-bucket facing math.
+- `godot/scripts/actors/player.gd`, `godot/scripts/actors/npc.gd`, `godot/scripts/actors/asia.gd` — F6: identical copy-pasted facing blocks (24 lines each) replaced with one-line calls into `Facing.from_vector`. Behavior preserved.
+- `godot/tests/test_facing.gd` — F6: NEW. Pins zero-vector→DEFAULT, the four cardinal centres, the four diagonal centres, the inclusive bucket boundaries (22.5°, 67.5°, 247.5°, 337.5°), and the magnitude-independence property.
+- `godot/scripts/main_controller.gd` — F8: `class_name MainController` added. `static var instance: MainController` set in `_ready()`, cleared in `_exit_tree()`. Replaces the `/root/Main` string-lookup contract.
+- `godot/scripts/actors/door.gd` — F8: `_try_open()` now reaches `MainController.instance.transition` instead of `get_tree().get_root().get_node_or_null("Main").get_node_or_null("RoomTransition")`. A renamed `Main.tscn` root node fails at boot through the smoke test rather than per-door `push_error` at open time.
+- `godot/scripts/autoload/casebook.gd` — F5: `_boot_errors: Array[String]` added; `get_validation_errors() / has_validation_errors() / _record_error()` mirror the DialogueRunner pattern. The two `_load_json_dictionary` failure paths now record into `_boot_errors` in addition to `push_error`.
+- `godot/tests/test_smoke.gd` — F5 + F8: smoke now (a) iterates `["DialogueRunner", "Casebook"]` and fails on any `get_validation_errors()` non-empty result (was DialogueRunner-only); (b) asserts `MainController.instance == instance` and `instance.transition != null` after boot.
+- `AGENTS.md`, `CLAUDE.md`, `godot/CONVENTIONS.md`, `godot/AGENTS.md` — F2 docs: canonical autoload list updated to acknowledge the fifth `_mcp_game_helper` autoload registered by `addons/godot_ai/` (approved 2026-05-21). New §"Approved development addons" section added in `godot/AGENTS.md` tracking the one approved addon and noting that web-export exclusion remains an open decision.
+
+Open per critique (Piotr's decision):
+
+- **F2 web export.** `_mcp_game_helper` ships in every export preset including web. Pending decision on whether to gate via `OS.has_feature` or to add `addons/godot_ai/` to the Web export-preset exclude filter.
+- **F4 large-script splits.** DialogueRunner (895 LOC), BattleController (723), BlueBinder (698) all exceed the 300-LOC cap. Deferred — non-trivial refactor.
+- **F7 typed `Chapter1State`.** Touches every State consumer. Deferred.
+- **F9 stale-file purge.** `.bak`, `.legacy`, `.pre_floor_fill`, `.pre_three_band`, `data/_drafts/`, `data/dialogues/_drafts/`. Pending Piotr's call on whether to delete or relocate to `_legacy/snapshots/<date>/`.
+- ~~**F10 dead actor scripts.**~~ CLOSED 2026-05-22 in this entry. `scripts/actors/wall_occluder.gd` (+`.uid`) and `scripts/actors/room_fog.gd` (+`.uid`) relocated via `git mv` to `_legacy/godot_scripts/`. New `_legacy/godot_scripts/README.md` documents what each was, when it was retired, and why. `tests/test_office_wall_visibility.gd` unchanged — it already asserts the live scene has no `WallOccluder` / `RoomFog` node, which remains the right runtime contract.
+
+Verification:
+
+- All-file inspection only. The bash sandbox in this session has no `godot` binary; `tests/test_smoke.gd`, `tests/test_runner.gd`, `tests/test_save_roundtrip.gd`, `tests/test_state_writer.gd`, and `tests/test_facing.gd` are not run from this entry. Piotr should run `make verify` (or the smoke + runner pair) before pushing.
+

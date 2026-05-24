@@ -91,14 +91,18 @@ func _try_open() -> void:
 			st = state_node.data
 		if not _is_required_flag_met(st):
 			return  # locked — Design will add locked_text feedback later
-	# Delegate to RoomTransition via MainController.
-	var mc: Node = get_tree().get_root().get_node_or_null("Main")
+	# Delegate to RoomTransition via MainController. The static `instance`
+	# accessor (2026-05-22 tech critique F8) replaces the prior hard-coded
+	# `/root/Main` string lookup so a rename of the Main.tscn root node
+	# surfaces as a compile-time class_name issue rather than a silent
+	# `push_error` on every door open.
+	var mc: MainController = MainController.instance
 	if mc == null:
-		push_error("Door: could not find /root/Main node.")
+		push_error("Door: MainController.instance is null — Main.tscn was not instantiated, or _ready has not run yet.")
 		return
-	var rt: Node = mc.get_node_or_null("RoomTransition")
+	var rt: Node = mc.transition
 	if rt == null:
-		push_error("Door: /root/Main/RoomTransition not found.")
+		push_error("Door: MainController.transition is null — RoomTransition not wired.")
 		return
 	if _sfx and _sfx.stream:
 		_sfx.play()

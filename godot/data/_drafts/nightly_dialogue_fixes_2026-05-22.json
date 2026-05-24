@@ -1,0 +1,10 @@
+[
+  {
+    "file": "dialogues/asia_hint_states_ch1.json",
+    "state_id": "hint_bonus_evidence_wojcik",
+    "field": "lines[0]",
+    "current": "Mrs. Wojcik rang earlier. She wanted to know whether Friday at fourteen hundred was the time, Dr. A. Cula. I said yes.",
+    "proposed": "Mrs. Wójcik rang earlier. She wanted to know whether Friday at fourteen hundred was the time, Dr. A. Cula. I said yes.",
+    "reason": "canonical name diacritic: neighbour's surname is Wójcik (per halina.json lines 43, 105, 114). The state slug stays wojcik (ID, ASCII); only the player-facing line needs the acute accent."
+  }
+]

@@ -353,7 +353,11 @@ Camera-relative naming: `front`, `back`, `left`, `right`, `front_left`, `front_r
 
 ## Existing scaffold to reuse, not rebuild
 
-- Autoloads: `State`, `Signals`, `Casebook`, `DialogueRunner`.
+- Autoloads: `State`, `Signals`, `Casebook`, `DialogueRunner`. A fifth
+  autoload `_mcp_game_helper` is registered by the Godot AI dev addon
+  (approved 2026-05-21; see `godot/AGENTS.md` §"Approved development
+  addons"). It is a development affordance only — no game system reads
+  from or writes to it.
 - Actor scripts: `player.gd`, `npc.gd`, `asia.gd`, `door.gd`, `pickup.gd`, `wall_occluder.gd`, `room_fog.gd`, `behind_desk_zone.gd`, `pig_idle_zone.gd`, `minigame_trigger.gd`.
 - System scripts: `room_transition.gd`, `save.gd`, `coffee_brewing.gd`.
 - UI scripts: `dialogue_box.gd`, `interaction_prompt.gd`.

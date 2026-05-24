@@ -38,7 +38,10 @@ this repository. This file is the Claude-specific quick start.
 - Primary target: web export.
 - Current runtime convention: 1280x720 viewport, 64x64 layout tiles, 112x112
   character sprites.
-- Key autoloads: `State`, `Signals`, `Casebook`, `DialogueRunner`.
+- Key autoloads: `State`, `Signals`, `Casebook`, `DialogueRunner`. A fifth
+  autoload `_mcp_game_helper` is registered by the Godot AI development
+  addon (approved 2026-05-21). It is dev tooling only and not part of any
+  game system.
 - Core rule: content is data, code is engine. Dialogue, doors, chapters,
   judgments, opponents, and item text live in JSON.
 

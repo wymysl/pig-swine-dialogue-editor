@@ -30,14 +30,45 @@ func _init() -> void:
 		printerr("[SmokeTest] FAIL: Main.tscn missing Save node")
 		quit(1)
 		return
-	var runner = get_root().get_node_or_null("DialogueRunner")
-	if runner != null and runner.has_method("get_validation_errors"):
-		var validation_errors: Array = runner.get_validation_errors()
-		if not validation_errors.is_empty():
-			printerr("[SmokeTest] FAIL: DialogueRunner validation emitted %d error(s)." % validation_errors.size())
-			for message in validation_errors:
-				printerr("  - %s" % str(message))
+
+	## Dev-addon autoload presence (2026-05-24): the Godot AI addon registers
+	## `_mcp_game_helper` per godot/AGENTS.md §"Approved development addons".
+	## It is a debugger-channel listener used during editor sessions only — no
+	## game system reads from it. Pinning its presence here keeps an
+	## accidental removal of `addons/godot_ai/` from boot-passing silently.
+	## When the open F2 web-export-exclusion decision lands, this assertion
+	## will need a feature-tag guard (e.g. `if not OS.has_feature("web")`).
+	if get_root().get_node_or_null("_mcp_game_helper") == null:
+		printerr("[SmokeTest] FAIL: missing dev autoload /root/_mcp_game_helper (addons/godot_ai/).")
+		quit(1)
+		return
+
+	## Boot-error inspection across autoloads with a validation-errors surface.
+	## 2026-05-22 tech critique F5: previously only DialogueRunner was gated;
+	## Casebook's JSON-load failures silently passed smoke.
+	for autoload_name in ["DialogueRunner", "Casebook"]:
+		var auto: Node = get_root().get_node_or_null(autoload_name)
+		if auto != null and auto.has_method("get_validation_errors"):
+			var errs: Array = auto.get_validation_errors()
+			if not errs.is_empty():
+				printerr("[SmokeTest] FAIL: %s reported %d boot error(s)." % [autoload_name, errs.size()])
+				for message in errs:
+					printerr("  - %s" % str(message))
+				quit(1)
+				return
+
+	## MainController.instance contract (2026-05-22 tech critique F8): the
+	## static accessor must be live after Main.tscn boot so actors like door.gd
+	## can route through MainController.instance.transition.
+	if instance is MainController:
+		if MainController.instance != instance:
+			printerr("[SmokeTest] FAIL: MainController.instance not wired to the booted Main node.")
 			quit(1)
 			return
+		if (instance as MainController).transition == null:
+			printerr("[SmokeTest] FAIL: MainController.transition is null after boot.")
+			quit(1)
+			return
+
 	print("[SmokeTest] PASS: Main.tscn loaded and _ready() fired without errors.")
 	quit(0)

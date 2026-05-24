@@ -59,7 +59,10 @@ If a conflict still matters, stop and ask the human.
 - Target: web export first.
 - Main project path: `godot/project.godot`.
 - Main scene: `res://scenes/Main.tscn`.
-- Autoloads: `State`, `Signals`, `Casebook`, `DialogueRunner`.
+- Autoloads: `State`, `Signals`, `Casebook`, `DialogueRunner`. The Godot AI
+  development addon also registers `_mcp_game_helper` (approved 2026-05-21,
+  see `godot/AGENTS.md` §"Approved development addons"); it is a dev-time
+  affordance, not a game system.
 - Current viewport: 1280x720, with 2560x1440 editor preview override.
 - Current tile layout convention: 64x64.
 - Current canonical character sprites: 64x64.

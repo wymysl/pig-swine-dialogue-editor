@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Install:
+    cp tools/com.piotr.pigswine.nightly-tests.plist ~/Library/LaunchAgents/
+    launchctl bootstrap gui/$(id -u) ~/Library/LaunchAgents/com.piotr.pigswine.nightly-tests.plist
+
+  Trigger a test run immediately (to verify it works):
+    launchctl kickstart -k gui/$(id -u)/com.piotr.pigswine.nightly-tests
+
+  Logs:
+    /tmp/pigswine-nightly-tests.out
+    /tmp/pigswine-nightly-tests.err
+
+  Uninstall:
+    launchctl bootout gui/$(id -u) ~/Library/LaunchAgents/com.piotr.pigswine.nightly-tests.plist
+-->
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>Label</key>
+    <string>com.piotr.pigswine.nightly-tests</string>
+
+    <key>ProgramArguments</key>
+    <array>
+        <string>/bin/bash</string>
+        <string>-lc</string>
+        <string>"$HOME/Documents/Silly projects/pig-swine-rpg/tools/nightly_tests.sh"</string>
+    </array>
+
+    <key>StartCalendarInterval</key>
+    <dict>
+        <key>Hour</key>
+        <integer>22</integer>
+        <key>Minute</key>
+        <integer>30</integer>
+    </dict>
+
+    <key>StandardOutPath</key>
+    <string>/tmp/pigswine-nightly-tests.out</string>
+    <key>StandardErrorPath</key>
+    <string>/tmp/pigswine-nightly-tests.err</string>
+
+    <key>RunAtLoad</key>
+    <false/>
+</dict>
+</plist>

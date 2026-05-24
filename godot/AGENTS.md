@@ -69,7 +69,7 @@ Authoring acceptance: when adding or modifying states for an NPC with an introdu
 
 ## Stack invariants (never violate)
 
-- Godot 4.6.2, GDScript only. No C#, no GDExtension, no third-party engine plugins without human approval.
+- Godot 4.6.2, GDScript only. No C#, no GDExtension, no third-party engine plugins without human approval. Approved addons are tracked in §"Approved development addons" below.
 - Top-down 2D. `Camera2D` follows the player; orthogonal grid; tile size 32×32 by default, sprites 32×48 for upright NPCs.
 - 128×128 overworld coordinate system from day one. Districts and routes are individual scenes loaded under one `overworld.tscn`. Chapter 1 only populates the Office Street corridor; later chapters extend into other districts.
 - Content is data, code is engine: dialogue lives in `data/dialogues/<npc_id>.json` (one file per NPC); voice references in `data/voice_references/<character_id>.jsonl`; quest steps in `data/chapters/chapter*.json`; doors in `data/doors.json`; Casebook judgments in `data/judgments.json`; opposing arguments in `data/argument_opponents.json`. Code reads these; designers edit these.
@@ -82,6 +82,19 @@ Authoring acceptance: when adding or modifying states for an NPC with an introdu
 - Accessibility: every UI text passes WCAG AA contrast. No information conveyed by color alone — Casebook effectiveness is shown by color *and* text label.
 - Save: one slot. Autosave on chapter transitions and major quest milestones; one manual save from the case bag.
 - Casebook: tag taxonomy is a closed list in `data/tag_taxonomy.json`. New tags require a Code artifact. Effectiveness logic lives only in `scripts/systems/battle/effectiveness.gd` — never per-judgment.
+
+## Approved development addons
+
+The repo contains one human-approved third-party addon. Any further addon
+requires the same explicit approval and an entry in this section.
+
+- **Godot AI** (`addons/godot_ai/`, approved 2026-05-21 by Piotr).
+  Registers a fifth autoload `_mcp_game_helper="*res://addons/godot_ai/runtime/game_helper.gd"`.
+  The autoload is a debugger-channel listener used during editor sessions to
+  let an external MCP client request screenshots and inspect scene state.
+  No game system reads from or writes to it; it is a dev affordance.
+  Web-export exclusion is an open decision (2026-05-22 tech critique F2):
+  the addon currently ships in every export preset.
 
 ## The Taste Standard
 

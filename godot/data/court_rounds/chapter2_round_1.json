@@ -1,0 +1,863 @@
+{
+  "version": 1,
+  "id": "chapter2_round_1",
+  "chapter": 2,
+  "opponent_id": "landlord_counsel_ch2",
+  "judgment_unlock": "rule_clarity_ch2",
+  "draft": true,
+  "_status": "Code-pass complete; Design text fields stubbed. AUTHORED 2026-05-24 per critiques/2026-05-22-ch2-round1-design-stub.md. Gated on Ch1 F1 closure (DESIGN_TODO inventory in chapter1_round_1.json) and on six open data dependencies: argument_frames_ch2.json (NEW FILE), argument_opponents.json::landlord_counsel_ch2 (new entry, three rounds), evidence_ch2.json (NEW FILE — building_rules_extract, eviction_notice, poster_photo), judgments.json::rule_clarity_ch2 (new judgment with principle_moves matching citation move_ids below), tag_taxonomy.json Ch2 extension (rule_clarity / vagueness / overbreadth / arbitrary_enforcement / equal_treatment / housing_proportionality / echr_8 / pl_const_75 / pl_const_32 / housing_eviction / building_regulation / expressive_conduct), state.gd::chapter2.round1_rule_argument_won + chapter2.round1_outcome defaults + SAVE_VERSION bump + migration test. `draft: true` flag set so any loader skips this file until dependencies land.",
+  "_owner_code": "id, opponent_id, judgment_unlock, phase_1_fact_finding action costs and fact flags, witness ids and budgets, statement ids and tags, press/present wiring, phase_2_closing frame gates, counter-question ids/tags/weighted dictionaries, citation move references and patience deltas, victory resolution.",
+  "_owner_design": "witness display names, statement text, press follow-up text, present judge reactions, judge counter-question text, citation flavor lines, defeat lines, partial lines, victory result lines.",
+  "_open_design_questions": [
+    "Q1: does Ch2's merits_defence penalty (patience_start: 3) match Ch1's, or do we want a Ch2-specific re-tuning given the three-round structure? Current: matches Ch1.",
+    "Q2: should the _fact.poster_unique_target dual-source pattern (set by either press OR present on zielinska.neighbor_observations) become a schema-level convention? _schema.md is currently silent on multi-source flags. Current: authored per stub; flagged here for schema review.",
+    "Q3: does Ch2 grant a procedural reset as floor (mirroring Ch1's procedural_reset_ch1) or does Ch2 require winning the round on the merits? Story §Victory states implies the latter. Current: NO procedural-reset floor; round1_rule_argument_won fires only via the four victory branches below.",
+    "Q4: is landlord_counsel_ch2 the same opponent entity as attorney_grzyb, or are they separate (Grzyb being the in-court advocate, landlord_counsel_ch2 the opponent-id for the schema-side moves collection)? Cross-reference with argument_opponents.json. Current: opponent_id=landlord_counsel_ch2 per stub."
+  ],
+  "phase_1_fact_finding": {
+    "action_costs": {
+      "press": 1,
+      "present": 1,
+      "present_bonus": 0
+    },
+    "witness_cooperation_total": 6,
+    "local_fact_flags": {
+      "_fact.rule_text_undefined_dignity": {
+        "scope": "local_round",
+        "resolution_weight": "primary",
+        "article_tags": [
+          "echr_8",
+          "pl_const_75"
+        ],
+        "principle_tags": [
+          "rule_clarity",
+          "vagueness"
+        ],
+        "context_tags": [
+          "housing_eviction",
+          "building_regulation"
+        ],
+        "set_by": [
+          "administrator_beton.rule_recitation.press_define_dignity"
+        ],
+        "used_by": [
+          "phase_2_closing.victory_resolution",
+          "phase_2_closing.jq_rule_text.requires_fact_flags",
+          "phase_2_closing.jq_dignity_definition.requires_fact_flags",
+          "phase_2_closing.jq_rule_text.citation.motion_void_for_vagueness.requires_fact_flags",
+          "phase_1_fact_finding.kowalski.notice_board_recollection.present_amendment_log.available_when"
+        ]
+      },
+      "_fact.no_published_examples": {
+        "scope": "local_round",
+        "resolution_weight": "primary",
+        "article_tags": [
+          "echr_8",
+          "pl_const_32"
+        ],
+        "principle_tags": [
+          "arbitrary_enforcement",
+          "rule_clarity"
+        ],
+        "context_tags": [
+          "housing_eviction",
+          "building_regulation"
+        ],
+        "set_by": [
+          "administrator_beton.rule_history.press_prior_enforcement"
+        ],
+        "used_by": [
+          "phase_2_closing.victory_resolution",
+          "phase_2_closing.jq_dignity_definition.requires_fact_flags",
+          "phase_2_closing.jq_targeted_enforcement.requires_fact_flags"
+        ]
+      },
+      "_fact.poster_unique_target": {
+        "scope": "local_round",
+        "resolution_weight": "primary",
+        "article_tags": [
+          "echr_8",
+          "pl_const_32"
+        ],
+        "principle_tags": [
+          "equal_treatment",
+          "arbitrary_enforcement",
+          "overbreadth"
+        ],
+        "context_tags": [
+          "housing_eviction",
+          "expressive_conduct"
+        ],
+        "set_by": [
+          "zielinska.neighbor_observations.press_other_residents_posters",
+          "zielinska.neighbor_observations.present_other_posters_photo"
+        ],
+        "used_by": [
+          "phase_2_closing.victory_resolution",
+          "phase_2_closing.jq_scope.requires_fact_flags",
+          "phase_2_closing.jq_targeted_enforcement.requires_fact_flags"
+        ],
+        "_status_note": "Dual-source flag: either press OR present on zielinska.neighbor_observations satisfies it. Schema-level convention review pending — see _open_design_questions Q2."
+      },
+      "_fact.rule_amended_post_hoc": {
+        "scope": "local_round",
+        "resolution_weight": "bonus",
+        "article_tags": [
+          "echr_8",
+          "pl_const_75"
+        ],
+        "principle_tags": [
+          "rule_clarity",
+          "equal_treatment"
+        ],
+        "context_tags": [
+          "housing_eviction",
+          "building_regulation"
+        ],
+        "set_by": [
+          "kowalski.notice_board_recollection.present_amendment_log"
+        ],
+        "used_by": [
+          "phase_2_closing.victory_resolution"
+        ]
+      }
+    },
+    "witnesses": [
+      {
+        "id": "administrator_beton",
+        "display_name": "DESIGN_TODO",
+        "_status_note": "Bureaucratic antagonist; speaks in passive voice; produces the rule text on demand but resists definitional pressure. Voice ref: data/voice_references/dialogue_samples_administrator_beton_landlord_representative.jsonl.",
+        "cooperation_budget": 3,
+        "statements": [
+          {
+            "id": "rule_recitation",
+            "text": "DESIGN_TODO",
+            "_status_note": "Opening statement: administrator reads the building rule aloud, with the offending 'dignity' clause as the contested term.",
+            "article_tags": [
+              "pl_const_75"
+            ],
+            "principle_tags": [
+              "rule_clarity"
+            ],
+            "context_tags": [
+              "housing_eviction",
+              "building_regulation"
+            ],
+            "press_options": [
+              {
+                "id": "press_define_dignity",
+                "cost": 1,
+                "follow_up_statement_id": "rule_definition_pressed",
+                "follow_up_text": "DESIGN_TODO",
+                "fact_flags_set": [
+                  "_fact.rule_text_undefined_dignity"
+                ]
+              },
+              {
+                "id": "press_who_drafted",
+                "cost": 1,
+                "follow_up_statement_id": "rule_drafting_pressed",
+                "follow_up_text": "DESIGN_TODO",
+                "fact_flags_set": []
+              }
+            ],
+            "present_options": [
+              {
+                "id": "present_rule_extract",
+                "evidence_id": "building_rules_extract",
+                "cost": 1,
+                "fact_flags_set": [],
+                "judge_reaction": "DESIGN_TODO",
+                "_status_note": "No flag set — this present action locks the rule text as in-record; it is the procedural anchor that unblocks the definitional press paths in Phase 2."
+              }
+            ],
+            "fact_flags_set": []
+          },
+          {
+            "id": "rule_definition_pressed",
+            "text": "DESIGN_TODO",
+            "_status_note": "Follow-up after press_define_dignity. Administrator cannot define 'dignity' without circularity. Sets the rule_text_undefined_dignity flag via the press path.",
+            "article_tags": [
+              "pl_const_75"
+            ],
+            "principle_tags": [
+              "vagueness",
+              "rule_clarity"
+            ],
+            "context_tags": [
+              "housing_eviction",
+              "building_regulation"
+            ],
+            "press_options": [],
+            "present_options": [],
+            "fact_flags_set": []
+          },
+          {
+            "id": "rule_drafting_pressed",
+            "text": "DESIGN_TODO",
+            "_status_note": "Follow-up after press_who_drafted. Administrator deflects to committee, surfaces no clear authority.",
+            "article_tags": [
+              "pl_const_75"
+            ],
+            "principle_tags": [
+              "rule_clarity"
+            ],
+            "context_tags": [
+              "building_regulation"
+            ],
+            "press_options": [],
+            "present_options": [],
+            "fact_flags_set": []
+          },
+          {
+            "id": "rule_history",
+            "text": "DESIGN_TODO",
+            "_status_note": "Second statement block from administrator. Sets up the prior-enforcement-history pressure.",
+            "article_tags": [
+              "pl_const_32"
+            ],
+            "principle_tags": [
+              "arbitrary_enforcement"
+            ],
+            "context_tags": [
+              "housing_eviction",
+              "building_regulation"
+            ],
+            "press_options": [
+              {
+                "id": "press_prior_enforcement",
+                "cost": 1,
+                "follow_up_statement_id": "history_admitted_thin",
+                "follow_up_text": "DESIGN_TODO",
+                "fact_flags_set": [
+                  "_fact.no_published_examples"
+                ]
+              }
+            ],
+            "present_options": [
+              {
+                "id": "present_eviction_notice",
+                "evidence_id": "eviction_notice",
+                "cost": 1,
+                "fact_flags_set": [],
+                "judge_reaction": "DESIGN_TODO",
+                "_status_note": "Presents the notice that names the rule; reinforces the in-record status of the contested clause."
+              }
+            ],
+            "fact_flags_set": []
+          },
+          {
+            "id": "history_admitted_thin",
+            "text": "DESIGN_TODO",
+            "_status_note": "Follow-up after press_prior_enforcement. Administrator admits no prior enforcement of this specific clause produced an eviction — sets no_published_examples flag via press path.",
+            "article_tags": [
+              "pl_const_32"
+            ],
+            "principle_tags": [
+              "arbitrary_enforcement",
+              "rule_clarity"
+            ],
+            "context_tags": [
+              "housing_eviction",
+              "building_regulation"
+            ],
+            "press_options": [],
+            "present_options": [],
+            "fact_flags_set": []
+          }
+        ]
+      },
+      {
+        "id": "kowalski",
+        "display_name": "DESIGN_TODO",
+        "_status_note": "Comic witness; 'no real disturbance' register; literal, wandering. Voice ref: data/voice_references/dialogue_samples_kowalski.jsonl.",
+        "cooperation_budget": 2,
+        "statements": [
+          {
+            "id": "notice_board_recollection",
+            "text": "DESIGN_TODO",
+            "_status_note": "Kowalski recalls the notice board; produces an off-handed observation that the rule text was amended after the alleged conduct. Bonus evidence available via present_amendment_log when rule_text_undefined_dignity is already set.",
+            "article_tags": [
+              "pl_const_75"
+            ],
+            "principle_tags": [
+              "rule_clarity",
+              "equal_treatment"
+            ],
+            "context_tags": [
+              "housing_eviction",
+              "building_regulation"
+            ],
+            "press_options": [
+              {
+                "id": "press_when_did_rule_change",
+                "cost": 1,
+                "follow_up_statement_id": "rule_change_admitted",
+                "follow_up_text": "DESIGN_TODO",
+                "fact_flags_set": []
+              }
+            ],
+            "present_options": [
+              {
+                "id": "present_amendment_log",
+                "evidence_id": "building_rules_extract",
+                "cost": 0,
+                "available_when": "_fact.rule_text_undefined_dignity",
+                "fact_flags_set": [
+                  "_fact.rule_amended_post_hoc"
+                ],
+                "judge_reaction": "DESIGN_TODO",
+                "_status_note": "Bonus present (cost 0). Gated on prior definitional-vagueness flag — locks the bonus path behind administrator-pressure work."
+              }
+            ],
+            "fact_flags_set": []
+          },
+          {
+            "id": "rule_change_admitted",
+            "text": "DESIGN_TODO",
+            "_status_note": "Follow-up after press_when_did_rule_change. Kowalski places the amendment after the alleged conduct date; no flag set here (the present_amendment_log path is the canonical evidence anchor for the bonus flag).",
+            "article_tags": [
+              "pl_const_75"
+            ],
+            "principle_tags": [
+              "rule_clarity"
+            ],
+            "context_tags": [
+              "building_regulation"
+            ],
+            "press_options": [],
+            "present_options": [],
+            "fact_flags_set": []
+          }
+        ]
+      },
+      {
+        "id": "zielinska",
+        "display_name": "DESIGN_TODO",
+        "_status_note": "Practical witness; targeted-enforcement angle from the ground floor. Voice ref: data/voice_references/dialogue_samples_zielinska.jsonl.",
+        "cooperation_budget": 1,
+        "statements": [
+          {
+            "id": "neighbor_observations",
+            "text": "DESIGN_TODO",
+            "_status_note": "Zielinska volunteers ground-floor observations: other residents posted comparable material, none was cited. Dual-source flag: press OR present satisfies _fact.poster_unique_target.",
+            "article_tags": [
+              "pl_const_32"
+            ],
+            "principle_tags": [
+              "equal_treatment",
+              "arbitrary_enforcement"
+            ],
+            "context_tags": [
+              "housing_eviction",
+              "expressive_conduct"
+            ],
+            "press_options": [
+              {
+                "id": "press_other_residents_posters",
+                "cost": 1,
+                "follow_up_statement_id": "other_posters_acknowledged",
+                "follow_up_text": "DESIGN_TODO",
+                "fact_flags_set": [
+                  "_fact.poster_unique_target"
+                ]
+              }
+            ],
+            "present_options": [
+              {
+                "id": "present_other_posters_photo",
+                "evidence_id": "poster_photo",
+                "cost": 1,
+                "fact_flags_set": [
+                  "_fact.poster_unique_target"
+                ],
+                "judge_reaction": "DESIGN_TODO",
+                "_status_note": "Dual-source flag: this present sets the same flag the press path sets; either action satisfies it. Schema-level convention review pending per _open_design_questions Q2."
+              }
+            ],
+            "fact_flags_set": []
+          },
+          {
+            "id": "other_posters_acknowledged",
+            "text": "DESIGN_TODO",
+            "_status_note": "Follow-up after press_other_residents_posters. Zielinska confirms specific instances; flag already set on the press hit, this state surfaces the in-record texture for closing.",
+            "article_tags": [
+              "pl_const_32"
+            ],
+            "principle_tags": [
+              "equal_treatment"
+            ],
+            "context_tags": [
+              "housing_eviction",
+              "expressive_conduct"
+            ],
+            "press_options": [],
+            "present_options": [],
+            "fact_flags_set": []
+          }
+        ]
+      }
+    ]
+  },
+  "phase_2_closing": {
+    "judicial_patience_default": 5,
+    "frame_gates": {
+      "rule_vagueness": {
+        "judicial_patience_start": 5,
+        "available_counter_questions": [
+          "jq_rule_text",
+          "jq_dignity_definition"
+        ]
+      },
+      "overbreadth": {
+        "judicial_patience_start": 5,
+        "available_counter_questions": [
+          "jq_rule_text",
+          "jq_scope"
+        ]
+      },
+      "arbitrary_enforcement": {
+        "judicial_patience_start": 5,
+        "available_counter_questions": [
+          "jq_scope",
+          "jq_targeted_enforcement"
+        ]
+      },
+      "merits_defence": {
+        "judicial_patience_start": 3,
+        "available_counter_questions": [
+          "jq_rule_text"
+        ],
+        "_status_note": "Wrong-shape frame for Ch2 Round 1 — the procedural lane here is rule clarity, not service of process. Patience penalty matches Ch1 convention (3 vs default 5). See _open_design_questions Q1."
+      }
+    },
+    "judge_counter_questions": [
+      {
+        "id": "jq_rule_text",
+        "text": "DESIGN_TODO",
+        "_status_note": "Opening question: judge probes the rule's textual basis. Pressure direction: rule-clarity weakness, discretion/deference strength.",
+        "opponent_pressure_move": "landlord_counsel_ch2.r1.assert_rule_clarity",
+        "article_tags": [
+          "pl_const_75"
+        ],
+        "principle_tags": [
+          "rule_clarity",
+          "vagueness"
+        ],
+        "context_tags": [
+          "housing_eviction",
+          "building_regulation"
+        ],
+        "pressure_weakness_tags": {
+          "rule_clarity": 0.60,
+          "vagueness": 0.40
+        },
+        "pressure_strength_tags": {
+          "discretion": 0.50,
+          "deference": 0.50
+        },
+        "requires_fact_flags": [
+          "_fact.rule_text_undefined_dignity"
+        ],
+        "judicial_patience_default": 5,
+        "available_citations": [
+          {
+            "move_id": "motion_void_for_vagueness",
+            "article_tags": [
+              "pl_const_75"
+            ],
+            "principle_tags": [
+              "vagueness",
+              "rule_clarity"
+            ],
+            "context_tags": [
+              "housing_eviction",
+              "building_regulation"
+            ],
+            "move_tags": {
+              "vagueness": 0.70,
+              "rule_clarity": 0.30
+            },
+            "requires_fact_flags": [
+              "_fact.rule_text_undefined_dignity"
+            ],
+            "judicial_patience_delta_on_hit": 2,
+            "judicial_patience_delta_on_miss": -1,
+            "judicial_patience_delta_on_backfire": -2,
+            "flavor_line": "DESIGN_TODO"
+          },
+          {
+            "move_id": "cite_constitutional_clarity",
+            "article_tags": [
+              "pl_const_75"
+            ],
+            "principle_tags": [
+              "rule_clarity",
+              "legal_certainty"
+            ],
+            "context_tags": [
+              "housing_eviction",
+              "building_regulation"
+            ],
+            "move_tags": {
+              "rule_clarity": 0.60,
+              "legal_certainty": 0.40
+            },
+            "requires_fact_flags": [
+              "_fact.rule_text_undefined_dignity"
+            ],
+            "judicial_patience_delta_on_hit": 1,
+            "judicial_patience_delta_on_miss": -1,
+            "judicial_patience_delta_on_backfire": -2,
+            "flavor_line": "DESIGN_TODO"
+          }
+        ],
+        "defeat_lines": [
+          "DESIGN_TODO"
+        ],
+        "partial_lines": [
+          "DESIGN_TODO"
+        ]
+      },
+      {
+        "id": "jq_dignity_definition",
+        "text": "DESIGN_TODO",
+        "_status_note": "Definitional pressure: judge demands a workable definition of the contested term. Requires both rule_text_undefined_dignity AND no_published_examples to open — the vagueness must be on the record AND the absence of prior enforcement examples must be established.",
+        "opponent_pressure_move": "landlord_counsel_ch2.r1.invoke_dignity_norm",
+        "article_tags": [
+          "pl_const_75"
+        ],
+        "principle_tags": [
+          "vagueness",
+          "rule_clarity"
+        ],
+        "context_tags": [
+          "housing_eviction",
+          "building_regulation"
+        ],
+        "pressure_weakness_tags": {
+          "vagueness": 1.00
+        },
+        "pressure_strength_tags": {
+          "deference": 0.50,
+          "discretion": 0.50
+        },
+        "requires_fact_flags": [
+          "_fact.rule_text_undefined_dignity",
+          "_fact.no_published_examples"
+        ],
+        "judicial_patience_default": 5,
+        "available_citations": [
+          {
+            "move_id": "motion_void_for_vagueness",
+            "article_tags": [
+              "pl_const_75"
+            ],
+            "principle_tags": [
+              "vagueness",
+              "rule_clarity"
+            ],
+            "context_tags": [
+              "housing_eviction",
+              "building_regulation"
+            ],
+            "move_tags": {
+              "vagueness": 0.70,
+              "rule_clarity": 0.30
+            },
+            "requires_fact_flags": [
+              "_fact.rule_text_undefined_dignity"
+            ],
+            "judicial_patience_delta_on_hit": 2,
+            "judicial_patience_delta_on_miss": -1,
+            "judicial_patience_delta_on_backfire": -2,
+            "flavor_line": "DESIGN_TODO"
+          },
+          {
+            "move_id": "cite_no_definitional_anchor",
+            "article_tags": [
+              "pl_const_75"
+            ],
+            "principle_tags": [
+              "vagueness",
+              "rule_clarity"
+            ],
+            "context_tags": [
+              "building_regulation"
+            ],
+            "move_tags": {
+              "vagueness": 0.50,
+              "rule_clarity": 0.50
+            },
+            "requires_fact_flags": [
+              "_fact.rule_text_undefined_dignity",
+              "_fact.no_published_examples"
+            ],
+            "judicial_patience_delta_on_hit": 2,
+            "judicial_patience_delta_on_miss": -1,
+            "judicial_patience_delta_on_backfire": -2,
+            "flavor_line": "DESIGN_TODO"
+          }
+        ],
+        "defeat_lines": [
+          "DESIGN_TODO"
+        ],
+        "partial_lines": [
+          "DESIGN_TODO"
+        ]
+      },
+      {
+        "id": "jq_scope",
+        "text": "DESIGN_TODO",
+        "_status_note": "Overbreadth pressure: judge tests whether the rule sweeps protected expression along with whatever it actually targets. ECHR Art 8 + PL Const 32 anchor.",
+        "opponent_pressure_move": "landlord_counsel_ch2.r1.assert_narrow_application",
+        "article_tags": [
+          "pl_const_32",
+          "echr_8"
+        ],
+        "principle_tags": [
+          "overbreadth",
+          "equal_treatment"
+        ],
+        "context_tags": [
+          "housing_eviction",
+          "expressive_conduct"
+        ],
+        "pressure_weakness_tags": {
+          "overbreadth": 0.60,
+          "equal_treatment": 0.40
+        },
+        "pressure_strength_tags": {
+          "discretion": 0.50,
+          "margin_of_appreciation": 0.50
+        },
+        "requires_fact_flags": [
+          "_fact.poster_unique_target"
+        ],
+        "judicial_patience_default": 5,
+        "available_citations": [
+          {
+            "move_id": "motion_overbreadth",
+            "article_tags": [
+              "pl_const_32",
+              "echr_8"
+            ],
+            "principle_tags": [
+              "overbreadth"
+            ],
+            "context_tags": [
+              "expressive_conduct",
+              "housing_eviction"
+            ],
+            "move_tags": {
+              "overbreadth": 0.70,
+              "equal_treatment": 0.30
+            },
+            "requires_fact_flags": [
+              "_fact.poster_unique_target"
+            ],
+            "judicial_patience_delta_on_hit": 2,
+            "judicial_patience_delta_on_miss": -1,
+            "judicial_patience_delta_on_backfire": -2,
+            "flavor_line": "DESIGN_TODO"
+          },
+          {
+            "move_id": "cite_equal_treatment_breach",
+            "article_tags": [
+              "pl_const_32"
+            ],
+            "principle_tags": [
+              "equal_treatment",
+              "arbitrary_enforcement"
+            ],
+            "context_tags": [
+              "expressive_conduct",
+              "housing_eviction"
+            ],
+            "move_tags": {
+              "equal_treatment": 0.60,
+              "arbitrary_enforcement": 0.40
+            },
+            "requires_fact_flags": [
+              "_fact.poster_unique_target"
+            ],
+            "judicial_patience_delta_on_hit": 1,
+            "judicial_patience_delta_on_miss": -1,
+            "judicial_patience_delta_on_backfire": -2,
+            "flavor_line": "DESIGN_TODO"
+          }
+        ],
+        "defeat_lines": [
+          "DESIGN_TODO"
+        ],
+        "partial_lines": [
+          "DESIGN_TODO"
+        ]
+      },
+      {
+        "id": "jq_targeted_enforcement",
+        "text": "DESIGN_TODO",
+        "_status_note": "Arbitrary-enforcement pressure: judge tests selective application. Requires both poster_unique_target AND no_published_examples — the differential treatment must be on the record AND the absence of prior similar enforcement must be established.",
+        "opponent_pressure_move": "landlord_counsel_ch2.r1.assert_neutral_enforcement",
+        "article_tags": [
+          "pl_const_32"
+        ],
+        "principle_tags": [
+          "arbitrary_enforcement",
+          "equal_treatment"
+        ],
+        "context_tags": [
+          "housing_eviction",
+          "expressive_conduct"
+        ],
+        "pressure_weakness_tags": {
+          "arbitrary_enforcement": 1.00
+        },
+        "pressure_strength_tags": {
+          "discretion": 0.50,
+          "deference": 0.50
+        },
+        "requires_fact_flags": [
+          "_fact.poster_unique_target",
+          "_fact.no_published_examples"
+        ],
+        "judicial_patience_default": 5,
+        "available_citations": [
+          {
+            "move_id": "motion_arbitrary_enforcement",
+            "article_tags": [
+              "pl_const_32"
+            ],
+            "principle_tags": [
+              "arbitrary_enforcement",
+              "equal_treatment"
+            ],
+            "context_tags": [
+              "housing_eviction",
+              "expressive_conduct"
+            ],
+            "move_tags": {
+              "arbitrary_enforcement": 0.70,
+              "equal_treatment": 0.30
+            },
+            "requires_fact_flags": [
+              "_fact.poster_unique_target",
+              "_fact.no_published_examples"
+            ],
+            "judicial_patience_delta_on_hit": 2,
+            "judicial_patience_delta_on_miss": -1,
+            "judicial_patience_delta_on_backfire": -2,
+            "flavor_line": "DESIGN_TODO"
+          },
+          {
+            "move_id": "cite_uniform_application_violated",
+            "article_tags": [
+              "pl_const_32"
+            ],
+            "principle_tags": [
+              "equal_treatment",
+              "arbitrary_enforcement"
+            ],
+            "context_tags": [
+              "housing_eviction",
+              "building_regulation"
+            ],
+            "move_tags": {
+              "equal_treatment": 0.50,
+              "arbitrary_enforcement": 0.50
+            },
+            "requires_fact_flags": [
+              "_fact.poster_unique_target"
+            ],
+            "judicial_patience_delta_on_hit": 1,
+            "judicial_patience_delta_on_miss": -1,
+            "judicial_patience_delta_on_backfire": -2,
+            "flavor_line": "DESIGN_TODO"
+          }
+        ],
+        "defeat_lines": [
+          "DESIGN_TODO"
+        ],
+        "partial_lines": [
+          "DESIGN_TODO"
+        ]
+      }
+    ],
+    "victory_resolution": {
+      "evaluation_order": [
+        "blunder_recovered",
+        "narrow_victory",
+        "standard_victory",
+        "strong_victory"
+      ],
+      "primary_fact_flags": [
+        "_fact.rule_text_undefined_dignity",
+        "_fact.no_published_examples",
+        "_fact.poster_unique_target"
+      ],
+      "_evaluation_doc": "First-match exclusivity per Ch1 §F5 convention. blunder_recovered fires when patience has collapsed but the player surfaced at least one primary flag (rescue branch). narrow/standard/strong gate on primary_fact_count thresholds. strong additionally requires bonus_fact_count >= 1 (the rule_amended_post_hoc bonus, which requires the kowalski present path gated on prior rule_text_undefined_dignity). No procedural-reset floor per _open_design_questions Q3 — round1_rule_argument_won fires ONLY via these four branches.",
+      "branches": [
+        {
+          "id": "blunder_recovered",
+          "when": "judicial_patience <= 1 && primary_fact_count >= 1",
+          "sets": [
+            {
+              "path": "chapter2.round1_rule_argument_won",
+              "value": true
+            },
+            {
+              "path": "chapter2.round1_outcome",
+              "value": "blunder_recovered"
+            }
+          ],
+          "result_text": "DESIGN_TODO"
+        },
+        {
+          "id": "narrow_victory",
+          "when": "primary_fact_count == 1 && judicial_patience >= 2",
+          "sets": [
+            {
+              "path": "chapter2.round1_rule_argument_won",
+              "value": true
+            },
+            {
+              "path": "chapter2.round1_outcome",
+              "value": "narrow"
+            }
+          ],
+          "result_text": "DESIGN_TODO"
+        },
+        {
+          "id": "standard_victory",
+          "when": "primary_fact_count == 2",
+          "sets": [
+            {
+              "path": "chapter2.round1_rule_argument_won",
+              "value": true
+            },
+            {
+              "path": "chapter2.round1_outcome",
+              "value": "standard"
+            }
+          ],
+          "result_text": "DESIGN_TODO"
+        },
+        {
+          "id": "strong_victory",
+          "when": "primary_fact_count >= 3 && bonus_fact_count >= 1",
+          "sets": [
+            {
+              "path": "chapter2.round1_rule_argument_won",
+              "value": true
+            },
+            {
+              "path": "chapter2.round1_outcome",
+              "value": "strong"
+            }
+          ],
+          "result_text": "DESIGN_TODO"
+        }
+      ]
+    }
+  }
+}
