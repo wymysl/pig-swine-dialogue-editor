@@ -3284,6 +3284,32 @@
 
   /* Topbar play button (matches existing topbar button shape). */
   #play-btn { /* host adds id="play-btn" */ }
+
+  /* ------------------------------------------------------------------
+     File-picker fallback (browsers without File System Access API).
+     Hidden by default; revealed by the JS feature-detect that runs at
+     load and by the catch-block that traps thrown showDirectoryPicker
+     calls (cross-origin iframe, permission denied, etc.). All styling
+     stays inside this block so the FSA-happy path is byte-identical.
+     ------------------------------------------------------------------ */
+  #open-files-btn { display: none; }
+  #open-files-btn.on { display: inline-flex; align-items: center; }
+  #fallback-mode-pill {
+    display: none;
+    align-items: center;
+    padding: 3px 9px;
+    margin-left: 4px;
+    border-radius: 999px;
+    background: rgba(212, 168, 74, 0.15);
+    border: 1px solid var(--accent);
+    color: var(--accent);
+    font-size: 10.5px;
+    font-weight: 500;
+    letter-spacing: 0.02em;
+    white-space: nowrap;
+  }
+  body.light #fallback-mode-pill { background: rgba(212, 168, 74, 0.18); }
+  #fallback-mode-pill.on { display: inline-flex; }
 </style>
 </head>
 <body>
@@ -3296,6 +3322,9 @@
     </div>
     <span class="divider-v"></span>
     <button id="open-btn" title="open or restore a folder of dialogue JSON files">Open folder</button>
+    <button id="open-files-btn" title="pick one or more dialogue JSON files (use this on browsers without folder access — iPad / Safari / Firefox)">Choose files…</button>
+    <span id="fallback-mode-pill" title="This browser does not support the File System Access API. Save triggers a file download — drop the downloaded files back into the dialogue folder yourself (e.g. via Working Copy on iPad).">File-picker mode (save = download)</span>
+    <input id="fallback-file-input" type="file" multiple accept=".json,application/json" style="display:none">
     <button id="new-file-btn" disabled="" title="create a new dialogue JSON in the opened folder">+ New file</button>
     <button id="save-btn" class="primary" disabled="" title="save current file (⌘S / Ctrl+S)">Save</button>
     <button id="save-all-btn" disabled="" title="save every dirty file (⇧⌘S / Ctrl+Shift+S)">Save all</button>
@@ -3554,7 +3583,12 @@ const _shortcutsModal = document.getElementById('shortcuts-modal');
 const _topbar = document.getElementById('topbar');
 
 function _updateFolderUiState() {
-  const hasFolder = !!dirHandle;
+  // Treat fallback-mode loaded files as a "folder" for UI-state purposes, so
+  // the sidebar empty hint hides and the welcome screen yields to the editor.
+  const hasFolder = !!dirHandle || (
+    typeof fallbackMode !== 'undefined' && fallbackMode &&
+    typeof files === 'object' && files && Object.keys(files).length > 0
+  );
   if (_sidebarEmpty) _sidebarEmpty.style.display = hasFolder ? 'none' : '';
   if (_topbar) _topbar.classList.toggle('needs-folder', !hasFolder);
   // While there's no folder, force the welcome (linear pane) into view so
@@ -3852,7 +3886,13 @@ function updateRestoreButton() {
 
 $('#open-btn').addEventListener('click', async () => {
   if (!hasFSA) {
-    alert('This browser does not support directory access. Use Chrome or Edge.');
+    // Browser lacks the File System Access API (iPad Safari, Firefox, etc.).
+    // Route the click to the file-picker fallback module instead of dying.
+    if (typeof triggerFallbackFilePicker === 'function') {
+      triggerFallbackFilePicker();
+    } else {
+      alert('This browser does not support directory access. Use Chrome or Edge.');
+    }
     return;
   }
   try {
@@ -3883,8 +3923,16 @@ $('#open-btn').addEventListener('click', async () => {
     updateRestoreButton();
   } catch (e) {
     if (e.name !== 'AbortError') {
-      console.error(e);
-      alert('Could not open folder: ' + e.message);
+      // Some browsers expose showDirectoryPicker but throw on call (cross-origin
+      // iframe, SecurityError on permission denial, NotAllowedError, etc.).
+      // Surface the file-picker fallback instead of leaving the user stranded.
+      console.warn('Directory picker failed; offering file-picker fallback:', e);
+      if (typeof enableFallbackMode === 'function') enableFallbackMode();
+      if (typeof triggerFallbackFilePicker === 'function') {
+        triggerFallbackFilePicker();
+      } else {
+        alert('Could not open folder: ' + e.message);
+      }
     }
   }
 });
@@ -7038,6 +7086,21 @@ async function saveFile(name) {
   const f = files[name];
   if (!f || !f.dirty) return;
   const text = serializeDialogue(f.json);
+  // Fallback path: no FSA handle (file-picker mode). Trigger a Blob download
+  // instead of writing through. The user is responsible for pushing the file
+  // back into the dialogue folder (e.g. via Working Copy on iPad).
+  if ((typeof fallbackMode !== 'undefined' && fallbackMode) || !f.handle) {
+    try {
+      downloadAsFile(name, text);
+      f.dirty = false;
+      f.savedSnapshot = buildSavedSnapshot(f.json);
+      return;
+    } catch (e) {
+      showToast(`Download failed: ${e.message}`, true);
+      console.error(e);
+      throw e;
+    }
+  }
   try {
     const writable = await f.handle.createWritable();
     await writable.write(text);
@@ -7080,6 +7143,18 @@ $('#save-btn').addEventListener('click', async () => {
 });
 
 $('#save-all-btn').addEventListener('click', async () => {
+  // In fallback mode bundle every dirty file into a single zip download —
+  // sequential downloads on iPad Safari each trigger a "Download this file?"
+  // prompt, so one zip-per-batch is dramatically better UX.
+  if (typeof fallbackMode !== 'undefined' && fallbackMode) {
+    try { await downloadAllDirtyAsZip(); } catch (e) { return; }
+    $('#save-btn').disabled = true;
+    $('#save-all-btn').disabled = true;
+    updateDirty();
+    renderSidebar();
+    renderContent();
+    return;
+  }
   let count = 0;
   for (const name of Object.keys(files)) {
     if (files[name].dirty) {
@@ -7766,6 +7841,257 @@ function toggleItalic(textarea) {
   textarea.setSelectionRange(newStart, newEnd);
   textarea.dispatchEvent(new Event('input', { bubbles: true }));
 }
+
+// ======================================================================
+// FILE-PICKER FALLBACK (browsers without the File System Access API).
+//
+// Engages automatically on iPad Safari, Firefox, and any other browser
+// where `window.showDirectoryPicker` is missing or rejects on call.
+// Adds:
+//   * "Choose files…" button + hidden <input type="file" multiple> for load
+//   * Blob+anchor download path for single-file saves
+//   * Inlined STORED-method ZIP writer for "Save all" → one bundled download
+//   * "File-picker mode (save = download)" status pill so the user knows
+//     saves don't auto-persist and must be pushed back through e.g. Working
+//     Copy on iPad.
+//
+// The FSA-happy desktop path is byte-identical: when `hasFSA` is true and
+// `showDirectoryPicker` succeeds, `fallbackMode` stays false and none of
+// this code runs except the one-shot feature-detect on load.
+// ======================================================================
+
+// `var` so vendor IIFEs (graph-view, simulator) can see it via window lookup,
+// matching the existing convention for `files` / `currentFile`.
+var fallbackMode = false;
+
+function enableFallbackMode() {
+  if (fallbackMode) return;
+  fallbackMode = true;
+  const filesBtn = document.getElementById('open-files-btn');
+  const pill = document.getElementById('fallback-mode-pill');
+  if (filesBtn) filesBtn.classList.add('on');
+  if (pill) pill.classList.add('on');
+  // Welcome footnote currently advertises Chrome/Edge only — soften it.
+  const footnote = document.querySelector('.welcome-footnote');
+  if (footnote) {
+    footnote.innerHTML = 'File System Access API not available here — using file-picker fallback. ' +
+      '<span class="dot">·</span> Saves will download files you must place back into the dialogue folder manually.';
+  }
+}
+
+function triggerFallbackFilePicker() {
+  enableFallbackMode();
+  const input = document.getElementById('fallback-file-input');
+  if (!input) return;
+  // Reset value so the change event fires even if user picks the same files
+  // a second time (some browsers suppress change for identical selections).
+  input.value = '';
+  input.click();
+}
+
+async function _handleFallbackFiles(fileList) {
+  if (!fileList || fileList.length === 0) return;
+  // Mirror loadAllFiles semantics: reset `files`, parse each picked .json,
+  // keep only dialogue-shaped objects, seed uids, build saved snapshots.
+  files = {};
+  let loaded = 0;
+  let skipped = 0;
+  for (const file of fileList) {
+    if (!file.name.endsWith('.json')) { skipped++; continue; }
+    try {
+      const text = await file.text();
+      const json = JSON.parse(text);
+      if (
+        json && typeof json === 'object' &&
+        (Array.isArray(json.states) || Array.isArray(json.idle_flavor) || json.npc_id)
+      ) {
+        seedFileUids(json);
+        files[file.name] = {
+          handle: null,                       // no FSA handle in fallback mode
+          json,
+          dirty: false,
+          staging: isStagingFile(file.name),
+          savedSnapshot: buildSavedSnapshot(json)
+        };
+        loaded++;
+      } else {
+        skipped++;
+      }
+    } catch (e) {
+      console.warn(`Skipping ${file.name}: ${e.message}`);
+      skipped++;
+    }
+  }
+  // loadAllFiles also runs these — keep parity so search / flag warnings /
+  // unused-flag panel populate identically to the FSA path.
+  const folderEl = document.getElementById('stat-folder');
+  if (folderEl) folderEl.textContent = `file-picker · ${loaded} file(s)`;
+  const fileCount = document.getElementById('file-count');
+  if (fileCount) fileCount.textContent = String(loaded);
+  // new-file requires a real dirHandle (it calls getFileHandle({create:true})).
+  // Leave it disabled in fallback mode — users do that on desktop.
+  knownSpeakers = (typeof collectSpeakers === 'function') ? collectSpeakers() : [];
+  flagPaths = (typeof harvestFlagPaths === 'function') ? harvestFlagPaths() : [];
+  if (typeof refreshFlagList === 'function') refreshFlagList();
+  if (typeof renderUnusedFlagsPanel === 'function') renderUnusedFlagsPanel();
+  renderSidebar();
+  if (typeof _updateFolderUiState === 'function') _updateFolderUiState();
+  if (loaded > 0) {
+    showToast(`Loaded ${loaded} file${loaded === 1 ? '' : 's'} (file-picker mode)`);
+  } else {
+    showToast(skipped > 0 ? `No dialogue files in selection (${skipped} skipped)` : 'No files picked', true);
+  }
+}
+
+function downloadAsFile(filename, text) {
+  const blob = new Blob([text], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  setTimeout(() => URL.revokeObjectURL(url), 5000);
+}
+
+// -------- Minimal STORED-method ZIP writer (no compression, no deps) --------
+// Built so "Save all" on iPad produces a single download instead of N prompts.
+// STORED method keeps the implementation tiny — no DEFLATE, no CRC table
+// loaded from elsewhere, just the standard CRC-32 polynomial inlined here.
+const _zipCrcTable = (function () {
+  const t = new Uint32Array(256);
+  for (let n = 0; n < 256; n++) {
+    let c = n;
+    for (let k = 0; k < 8; k++) c = (c & 1) ? (0xEDB88320 ^ (c >>> 1)) : (c >>> 1);
+    t[n] = c >>> 0;
+  }
+  return t;
+})();
+
+function _zipCrc32(bytes) {
+  let c = 0xFFFFFFFF >>> 0;
+  for (let i = 0; i < bytes.length; i++) {
+    c = (_zipCrcTable[(c ^ bytes[i]) & 0xFF] ^ (c >>> 8)) >>> 0;
+  }
+  return (c ^ 0xFFFFFFFF) >>> 0;
+}
+
+function _zipBytes(arr) { return new Uint8Array(arr); }
+function _zipU16(n) { return [n & 0xFF, (n >>> 8) & 0xFF]; }
+function _zipU32(n) { return [n & 0xFF, (n >>> 8) & 0xFF, (n >>> 16) & 0xFF, (n >>> 24) & 0xFF]; }
+
+function makeZipBlob(entries) {
+  // entries: [{ filename: string, data: Uint8Array }]
+  // ZIP date 0x0021 = Jan 1 1980 (the earliest representable date).
+  const localChunks = [];
+  const centralChunks = [];
+  let offset = 0;
+  const enc = new TextEncoder();
+  for (const e of entries) {
+    const nameBytes = enc.encode(e.filename);
+    const data = e.data;
+    const crc = _zipCrc32(data);
+    const lfh = _zipBytes([].concat(
+      _zipU32(0x04034b50),
+      _zipU16(20),                 // version needed to extract
+      _zipU16(0),                  // general purpose bit flag
+      _zipU16(0),                  // compression method (stored)
+      _zipU16(0),                  // last mod file time
+      _zipU16(0x0021),             // last mod file date (1980-01-01)
+      _zipU32(crc),
+      _zipU32(data.length),        // compressed size = uncompressed (stored)
+      _zipU32(data.length),
+      _zipU16(nameBytes.length),
+      _zipU16(0)                   // extra field length
+    ));
+    localChunks.push(lfh, nameBytes, data);
+    const lfhTotal = lfh.length + nameBytes.length + data.length;
+    const cdh = _zipBytes([].concat(
+      _zipU32(0x02014b50),
+      _zipU16(20),                 // version made by
+      _zipU16(20),                 // version needed to extract
+      _zipU16(0), _zipU16(0),
+      _zipU16(0), _zipU16(0x0021),
+      _zipU32(crc),
+      _zipU32(data.length),
+      _zipU32(data.length),
+      _zipU16(nameBytes.length),
+      _zipU16(0), _zipU16(0), _zipU16(0), _zipU16(0),
+      _zipU32(0),                  // external file attributes
+      _zipU32(offset)              // relative offset of local header
+    ));
+    centralChunks.push(cdh, nameBytes);
+    offset += lfhTotal;
+  }
+  const cdSize = centralChunks.reduce((s, c) => s + c.length, 0);
+  const cdOffset = offset;
+  const eocd = _zipBytes([].concat(
+    _zipU32(0x06054b50),
+    _zipU16(0), _zipU16(0),
+    _zipU16(entries.length),
+    _zipU16(entries.length),
+    _zipU32(cdSize),
+    _zipU32(cdOffset),
+    _zipU16(0)                     // .ZIP file comment length
+  ));
+  return new Blob([...localChunks, ...centralChunks, eocd], { type: 'application/zip' });
+}
+
+async function downloadAllDirtyAsZip() {
+  const dirty = Object.entries(files).filter(([_, f]) => f.dirty);
+  if (dirty.length === 0) { showToast('Nothing to save'); return; }
+  if (dirty.length === 1) {
+    // No point zipping a single file.
+    const [name, _f] = dirty[0];
+    await saveFile(name);
+    showToast(`Downloaded ${name}`);
+    return;
+  }
+  const enc = new TextEncoder();
+  const entries = dirty.map(([name, f]) => ({
+    filename: name,
+    data: enc.encode(serializeDialogue(f.json))
+  }));
+  const zip = makeZipBlob(entries);
+  const stamp = new Date().toISOString().replace(/[:.]/g, '-').slice(0, 19);
+  const url = URL.createObjectURL(zip);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `dialogue-changes-${stamp}.zip`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  setTimeout(() => URL.revokeObjectURL(url), 5000);
+  // Mark all clean and refresh snapshots so .modified highlights clear.
+  for (const [_name, f] of dirty) {
+    f.dirty = false;
+    f.savedSnapshot = buildSavedSnapshot(f.json);
+  }
+  showToast(`Downloaded ${dirty.length} files as zip`);
+}
+
+// -------- Wire up the fallback UI (idempotent, no FSA-path side-effects) -----
+(function _initFallback() {
+  const filesBtn = document.getElementById('open-files-btn');
+  const input = document.getElementById('fallback-file-input');
+  if (filesBtn) {
+    filesBtn.addEventListener('click', () => triggerFallbackFilePicker());
+  }
+  if (input) {
+    input.addEventListener('change', (e) => {
+      const list = e.target.files;
+      _handleFallbackFiles(list).catch((err) => {
+        console.error(err);
+        showToast(`Load failed: ${err.message}`, true);
+      });
+    });
+  }
+  // Feature-detect at load: if FSA is missing, reveal the fallback UI so it's
+  // discoverable BEFORE the user clicks "Open folder" and hits a surprise.
+  if (!hasFSA) enableFallbackMode();
+})();
+
 </script>
 
 
