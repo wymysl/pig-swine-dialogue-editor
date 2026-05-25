@@ -3310,6 +3310,29 @@
   }
   body.light #fallback-mode-pill { background: rgba(212, 168, 74, 0.18); }
   #fallback-mode-pill.on { display: inline-flex; }
+  /* In fallback mode the topbar gains two extra elements (Choose files +
+     pill) plus the user is typically on a narrow viewport (iPad). The
+     existing #topbar uses overflow:hidden + flex-shrink:0, which clips
+     the right-side view-toggle group on narrow widths. Turn the topbar
+     into a horizontal-scroll container ONLY when fallback is active so
+     the desktop FSA path is byte-identical. */
+  body.fallback-mode #topbar {
+    overflow-x: auto;
+    overflow-y: hidden;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: thin;
+  }
+  body.fallback-mode #topbar::-webkit-scrollbar { height: 4px; }
+  body.fallback-mode #topbar::-webkit-scrollbar-thumb {
+    background: var(--border); border-radius: 2px;
+  }
+  /* In compact mode (topbar overflowing) also drop our button's text-only
+     label, matching the existing pattern for refresh-flags/theme/view-
+     toggle. The pill stays — it's a status indicator — but shrinks. */
+  #topbar.compact #open-files-btn { padding: 5px 8px; }
+  #topbar.compact #fallback-mode-pill {
+    padding: 3px 7px; font-size: 10px; letter-spacing: 0;
+  }
 </style>
 </head>
 <body>
@@ -3323,8 +3346,9 @@
     <span class="divider-v"></span>
     <button id="open-btn" title="open or restore a folder of dialogue JSON files">Open folder</button>
     <button id="open-files-btn" title="pick one or more dialogue JSON files (use this on browsers without folder access — iPad / Safari / Firefox)">Choose files…</button>
-    <span id="fallback-mode-pill" title="This browser does not support the File System Access API. Save triggers a file download — drop the downloaded files back into the dialogue folder yourself (e.g. via Working Copy on iPad).">File-picker mode (save = download)</span>
+    <span id="fallback-mode-pill" title="This browser does not support the File System Access API. Save triggers a file download — drop the downloaded files back into the dialogue folder yourself (e.g. via Working Copy on iPad).">Save = download</span>
     <input id="fallback-file-input" type="file" multiple accept=".json,application/json" style="display:none">
+    <input id="fallback-gd-input" type="file" accept=".gd,text/plain" style="display:none">
     <button id="new-file-btn" disabled="" title="create a new dialogue JSON in the opened folder">+ New file</button>
     <button id="save-btn" class="primary" disabled="" title="save current file (⌘S / Ctrl+S)">Save</button>
     <button id="save-all-btn" disabled="" title="save every dirty file (⇧⌘S / Ctrl+Shift+S)">Save all</button>
@@ -7236,6 +7260,17 @@ if (refreshFlagsBtn) {
 const loadStateGdBtn = $('#load-state-gd-btn');
 if (loadStateGdBtn) {
   loadStateGdBtn.addEventListener('click', async () => {
+    // Fallback path: no showOpenFilePicker (iPad Safari, Firefox).
+    // Route through a plain <input type="file"> — gives us a read-only
+    // stateGdText, which is enough to drive the undeclared-flag warning
+    // system. Auto-add / auto-remove still need a real handle and will
+    // surface their existing "state.gd isn't loaded" toast in fallback.
+    if (typeof window.showOpenFilePicker !== 'function') {
+      _pendingGdRole = 'state';
+      const gdInput = document.getElementById('fallback-gd-input');
+      if (gdInput) { gdInput.value = ''; gdInput.click(); }
+      return;
+    }
     try {
       let handle = stateGdHandle;
       if (!handle) {
@@ -7282,6 +7317,16 @@ if (loadStateGdBtn) {
 const loadSaveGdBtn = $('#load-save-gd-btn');
 if (loadSaveGdBtn) {
   loadSaveGdBtn.addEventListener('click', async () => {
+    // Fallback path: no showOpenFilePicker. Use the shared gd file input.
+    // Without a handle, the auto-migration-block writer can't patch save.gd;
+    // we just stash the text so the editor at least sees that save.gd was
+    // loaded.
+    if (typeof window.showOpenFilePicker !== 'function') {
+      _pendingGdRole = 'save';
+      const gdInput = document.getElementById('fallback-gd-input');
+      if (gdInput) { gdInput.value = ''; gdInput.click(); }
+      return;
+    }
     try {
       let handle = saveGdHandle;
       if (!handle) {
@@ -7863,14 +7908,25 @@ function toggleItalic(textarea) {
 // `var` so vendor IIFEs (graph-view, simulator) can see it via window lookup,
 // matching the existing convention for `files` / `currentFile`.
 var fallbackMode = false;
+// Routes the fallback gd <input> change event to either state.gd or save.gd
+// parsing depending on which Load button the user clicked. 'state' | 'save'.
+var _pendingGdRole = null;
 
 function enableFallbackMode() {
   if (fallbackMode) return;
   fallbackMode = true;
+  // Body class drives the CSS that turns the topbar into a horizontal-scroll
+  // container so the view-toggle group at the right edge stays reachable on
+  // narrow viewports (iPad portrait, etc.).
+  document.body.classList.add('fallback-mode');
   const filesBtn = document.getElementById('open-files-btn');
   const pill = document.getElementById('fallback-mode-pill');
   if (filesBtn) filesBtn.classList.add('on');
   if (pill) pill.classList.add('on');
+  // Re-evaluate topbar compactness now that two new elements are visible.
+  if (typeof _evaluateTopbarCompactness === 'function') {
+    requestAnimationFrame(_evaluateTopbarCompactness);
+  }
   // Welcome footnote currently advertises Chrome/Edge only — soften it.
   const footnote = document.querySelector('.welcome-footnote');
   if (footnote) {
@@ -8071,10 +8127,53 @@ async function downloadAllDirtyAsZip() {
   showToast(`Downloaded ${dirty.length} files as zip`);
 }
 
+// -------- state.gd / save.gd fallback loader -------------------------------
+// Reads the picked .gd file as text and routes to either parseStateGd (so the
+// undeclared-flag warning system lights up) or save.gd's lightweight sanity
+// check. Auto-add / auto-remove flows still need a real FSA handle and will
+// surface their existing "isn't loaded" toast when invoked.
+async function _handleFallbackGdFile(file) {
+  if (!file) return;
+  let text;
+  try {
+    text = await file.text();
+  } catch (e) {
+    showToast(`Couldn't read ${file.name}: ${e.message}`, true);
+    return;
+  }
+  const role = _pendingGdRole;
+  _pendingGdRole = null;
+  if (role === 'state') {
+    stateGdText = text;
+    try { parseStateGd(text); } catch (e) {
+      showToast(`state.gd parse failed: ${e.message}`, true);
+      return;
+    }
+    renderContent();
+    if (typeof renderUnusedFlagsPanel === 'function') renderUnusedFlagsPanel();
+    const lbl = document.querySelector('#load-state-gd-btn .btn-label');
+    if (lbl) lbl.textContent = `state.gd ✓ (${declaredFlagPaths.size})`;
+    showToast(`Parsed ${declaredFlagPaths.size} flag${declaredFlagPaths.size === 1 ? '' : 's'} from ${file.name} (read-only; auto-add disabled in file-picker mode)`);
+  } else if (role === 'save') {
+    saveGdText = text;
+    const lbl = document.querySelector('#load-save-gd-btn .btn-label');
+    if (lbl) lbl.textContent = `save.gd ✓`;
+    if (!/func\s+migrate_save\s*\(/.test(text)) {
+      showToast(`That file doesn't look like save.gd (no migrate_save). Loaded anyway.`, true);
+    } else {
+      showToast(`Loaded ${file.name} (${text.split('\n').length} lines, read-only)`);
+    }
+  } else {
+    // Unknown role — ignore, but warn.
+    console.warn('Fallback gd-input fired with no pending role.');
+  }
+}
+
 // -------- Wire up the fallback UI (idempotent, no FSA-path side-effects) -----
 (function _initFallback() {
   const filesBtn = document.getElementById('open-files-btn');
   const input = document.getElementById('fallback-file-input');
+  const gdInput = document.getElementById('fallback-gd-input');
   if (filesBtn) {
     filesBtn.addEventListener('click', () => triggerFallbackFilePicker());
   }
@@ -8082,6 +8181,15 @@ async function downloadAllDirtyAsZip() {
     input.addEventListener('change', (e) => {
       const list = e.target.files;
       _handleFallbackFiles(list).catch((err) => {
+        console.error(err);
+        showToast(`Load failed: ${err.message}`, true);
+      });
+    });
+  }
+  if (gdInput) {
+    gdInput.addEventListener('change', (e) => {
+      const f = e.target.files && e.target.files[0];
+      _handleFallbackGdFile(f).catch((err) => {
         console.error(err);
         showToast(`Load failed: ${err.message}`, true);
       });
