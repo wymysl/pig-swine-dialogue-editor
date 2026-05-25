@@ -1,5 +1,5 @@
 // Pig & Swine Dialogue Editor — Service Worker
-const CACHE = "dialogue-editor-v3";
+const CACHE = "dialogue-editor-v4";
 const PRECACHE_URLS = [
   "./",
   "./index.html",
