@@ -443,19 +443,11 @@ func end_round() -> Dictionary:
 		return result
 
 	_write_chapter1_flag("casebook_judge_state", _active_round.react_tag)
-	var all_non_backfire: bool = true
-	for index in [1, 2, 3]:
-		if str(_round_buckets.get(index, "backfires")) == "backfires":
-			all_non_backfire = false
-			break
 
 	var packet_result: Dictionary = consume_assembled_packet()
-	var outcome: String = str(packet_result.get("outcome", OUTCOME_BLUNDER_RECOVERED))
-	if not all_non_backfire and (outcome == OUTCOME_STRONG or outcome == OUTCOME_STANDARD):
-		outcome = OUTCOME_NARROW
+	var outcome: String = _compute_court_outcome(packet_result)
 	_write_chapter1_flag("court_won_procedural_reset", true)
 	_write_chapter1_flag("won_court", true)
-
 	_write_chapter1_flag("court_outcome", outcome)
 	result["packet_score"] = packet_result
 	result["court_won_procedural_reset"] = bool(_chapter1().get("court_won_procedural_reset", false))
@@ -673,7 +665,10 @@ func consume_assembled_packet() -> Dictionary:
 		## of crab_incapacity_withdrawal in crab.json, after the player has seen
 		## Crab's withdrawal beat. See Step 5.2, 2026-05-26 design plan.
 
-	_write_chapter1_flag("court_outcome", str(score.get("outcome", OUTCOME_BLUNDER_RECOVERED)))
+	## court_outcome is NOT written here. Packet completeness alone cannot
+	## determine the outcome — Phase 2 citation quality matters. The
+	## dispositive outcome is computed by _compute_court_outcome() at
+	## end-of-round-3. See Step 1.1 of the 2026-05-26 design plan.
 	_packet_submission_applied = true
 	_packet_submission_result = score.duplicate(true)
 	_emit_trial_record_packet_scored(_packet_submission_result)
@@ -904,6 +899,25 @@ func _append_phase2_result(
 		"opponent_move": opponent_move,
 	})
 	_emit_trial_record_citation_resolved(citation_id, effectiveness_bucket, opponent_move)
+
+
+func _append_phase2_result(round_index: int, citation_id: String, effectiveness_bucket: String, opponent_move: String) -> void:
+	var state_node: Node = get_node_or_null("/root/State")
+	if state_node == null:
+		return
+	var data: Dictionary = state_node.get("data")
+	if not data.has("chapter1") or not data["chapter1"] is Dictionary:
+		return
+	var ch1: Dictionary = data["chapter1"]
+	if not ch1.has("phase2_round_results") or not ch1["phase2_round_results"] is Array:
+		return
+	var results: Array = ch1["phase2_round_results"]
+	results.append({
+		"round": round_index,
+		"citation_id": citation_id,
+		"effectiveness_bucket": effectiveness_bucket,
+		"opponent_move": opponent_move,
+	})
 
 
 func _packet_evidence_for_slot(slot_key: String, chapter1: Dictionary) -> String:
