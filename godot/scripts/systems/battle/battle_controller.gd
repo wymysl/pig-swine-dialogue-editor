@@ -901,25 +901,6 @@ func _append_phase2_result(
 	_emit_trial_record_citation_resolved(citation_id, effectiveness_bucket, opponent_move)
 
 
-func _append_phase2_result(round_index: int, citation_id: String, effectiveness_bucket: String, opponent_move: String) -> void:
-	var state_node: Node = get_node_or_null("/root/State")
-	if state_node == null:
-		return
-	var data: Dictionary = state_node.get("data")
-	if not data.has("chapter1") or not data["chapter1"] is Dictionary:
-		return
-	var ch1: Dictionary = data["chapter1"]
-	if not ch1.has("phase2_round_results") or not ch1["phase2_round_results"] is Array:
-		return
-	var results: Array = ch1["phase2_round_results"]
-	results.append({
-		"round": round_index,
-		"citation_id": citation_id,
-		"effectiveness_bucket": effectiveness_bucket,
-		"opponent_move": opponent_move,
-	})
-
-
 func _packet_evidence_for_slot(slot_key: String, chapter1: Dictionary) -> String:
 	var state_key: String = str(PACKET_SLOT_STATE_KEYS.get(slot_key, ""))
 	if state_key == "":

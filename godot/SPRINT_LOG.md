@@ -5,6 +5,12 @@ order. Format: date — role — task — files touched — outcome.
 
 ---
 
+**2026-05-26 — QA — Standup follow-up: voice audit, _drafts/ triage, battle screen smoke test.**
+Voice audit: `python3 tools/voice_audit.py godot/data/voice_references/` — 40 files, 24,812 records, 0 violations, EXIT clean.
+_drafts/ triage: 5 files confirmed safe to `git rm` (nightly_design_pig_2026-05-14.json, nightly_design_beat13_close_2026-05-17.json, beat1_murrow_2026-05-17.json, nightly_dialogue_fixes_2026-05-15.json, nightly_dialogue_fixes_2026-05-22.json — all fixes already applied in live dialogues/). 1 file ready to merge with no code blocker (asia_hints_player_driven_2026-05-16_v2.json → asia_hint_states_ch1.json, 9 states). 4 files blocked on SAVE_VERSION bumps (crab/murrow/whimsy player-driven, murrow beat9). 4 files need authoring (mail_carrier, route_blocker_business, route_blocker_residential, tram_waiter — all placeholder). 10 ch1_*_2026-05-17 consolidation drafts need a diff pass against live dialogues/ before any promotion decision. chapter2_round_1.json gated (draft:true, 6 dependencies). New file: `tests/test_battle_screen_wiring.gd` — 19 structural checks on battle_screen.tscn (CanvasLayer root, 10 child nodes, 3 API methods, set_phase_label/set_witness_cooperation/set_judicial_patience mutation, clamp at both bounds, ResultOverlay hidden at boot). Verified: `godot --headless --path godot --script tests/test_battle_screen_wiring.gd` → EXIT 0, all 19 checks PASS.
+
+---
+
 **Session 1 — 2026-05-04 — Code — Bootstrapped Godot 4.6.2 project.**
 Files created: `project.godot` (960×640, integer scaling, pixel-perfect, GL Compatibility, `config/use_custom_user_dir=true`, `config/custom_user_dir_name="pig_swine_rpg"`); `scripts/autoload/state.gd` (SAVE_VERSION=1, reset_state()→{}); `scripts/autoload/signals.gd` (empty bus stub); `scripts/autoload/casebook.gd` (empty stub); `scripts/main_controller.gd` (VERSION="0.1.0", prints on _ready); `scripts/actors/player.gd` (CharacterBody2D, WASD+arrows, raw position update); `scenes/Main.tscn` (Node2D MainController + CurrentScene slot); `scenes/world/routes/office_street.tscn` (960×640 dark ColorRect floor + Player CharacterBody2D + Sprite2D + Camera2D); `export_presets.cfg` (Web preset); `exports/web/.gitignore` (excludes build artefacts); `tests/test_runner.gd` (GUT skeleton, exits 0); `tests/test_smoke.gd` (loads Main.tscn, waits one frame, exits 0); `icon.svg` (placeholder).
 Acceptance results (all with `--log-file /tmp/godot.log` workaround — see note below):

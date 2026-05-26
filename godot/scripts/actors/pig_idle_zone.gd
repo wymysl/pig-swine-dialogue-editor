@@ -50,13 +50,16 @@ func _ready() -> void:
 func _load_zone_barbs() -> Array:
 	var file: FileAccess = FileAccess.open(ZONE_BARBS_PATH, FileAccess.READ)
 	if file == null:
+		push_warning("PigIdleZone: could not open %s — using hardcoded fallback lines." % ZONE_BARBS_PATH)
 		return LINES
 	var parsed: Variant = JSON.parse_string(file.get_as_text())
 	file.close()
 	if not (parsed is Dictionary):
+		push_warning("PigIdleZone: %s is not a JSON object — using hardcoded fallback lines." % ZONE_BARBS_PATH)
 		return LINES
 	var lines: Variant = parsed.get(NPC_ID, [])
 	if not (lines is Array) or lines.is_empty():
+		push_warning("PigIdleZone: %s missing or empty key '%s' — using hardcoded fallback lines." % [ZONE_BARBS_PATH, NPC_ID])
 		return LINES
 	return lines
 

@@ -108,7 +108,14 @@
     { "key": "badges.day_one_survivor", "default": false, "set_by": "postcard_swine_ch1.json chapter_close award_badge action" },
     { "key": "routes_unlocked.residential", "default": false, "set_by": "postcard_swine_ch1.json chapter_close unlock_route action" },
     { "key": "routes_unlocked.business_district", "default": false, "set_by": "postcard_swine_ch1.json chapter_close unlock_route action" },
-    { "key": "routes_unlocked.court_plaza", "default": false, "set_by": "postcard_swine_ch1.json chapter_close unlock_route action" }
+    { "key": "routes_unlocked.court_plaza", "default": false, "set_by": "postcard_swine_ch1.json chapter_close unlock_route action" },
+
+    { "key": "chapter1.rehearsal_accepted", "default": false, "_type": "bool", "_owner": "murrow.json murrow_rehearsal_accepted on_dismiss", "_reader": "engine — game orchestration opens rehearsal minigame when flag transitions true", "set_by": "murrow.json murrow_rehearsal_accepted on_dismiss (Step 4.1, 2026-05-26)" },
+    { "key": "chapter1.rehearsal_declined", "default": false, "_type": "bool", "_owner": "murrow.json murrow_rehearsal_skip on_dismiss", "_reader": "murrow.json murrow_rehearsal_offer trigger (!rehearsal_declined); murrow_rehearsal_debrief trigger (!rehearsal_declined)", "set_by": "murrow.json murrow_rehearsal_skip on_dismiss (Step 4.1, 2026-05-26)" },
+    { "key": "chapter1.rehearsal_complete", "default": false, "_type": "bool", "_owner": "engine — rehearsal minigame end_rehearsal()", "_reader": "murrow.json murrow_rehearsal_offer trigger (!rehearsal_complete); murrow_rehearsal_debrief trigger (rehearsal_complete == true)", "set_by": "engine — rehearsal minigame end_rehearsal() call (Step 4.1, 2026-05-26)" },
+
+    { "key": "chapter1.picked_up_article_8", "default": false, "_type": "bool", "_owner": "engine — pickup.gd via items.json article_8_brief", "_reader": "Casebook unlock; argument resolver when item is played as evidence", "set_by": "engine — pickup.gd on collect (article_8_brief)" },
+    { "key": "chapter1.picked_up_article_10", "default": false, "_type": "bool", "_owner": "engine — pickup.gd via items.json article_10_digest", "_reader": "Casebook unlock; argument resolver when item is played as evidence", "set_by": "engine — pickup.gd on collect (article_10_digest)" }
   ],
   "steps": []
 }

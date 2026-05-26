@@ -65,17 +65,14 @@ func _ready() -> void:
 	_btn_sympathetic.grab_focus()
 
 
-## _commit — write stance to State, fire signal, dismiss.
-## Called from each button's pressed handler with that button's stance value.
-## Idempotent against double-clicks: if menu is already mid-dismiss the
-## queue_free() prevents re-entry.
+## _commit — retired state write removed (2026-05-26 audit fix).
+## The active path writes client_meeting_stance via halina.json options
+## write_path handled by DialogueRunner. This script is a debug artifact only;
+## it must NOT write State directly or it becomes a dual-writer for that flag.
+## If you need to test the stance pick in isolation, instantiate this scene and
+## inspect the stance_picked signal — do not rely on State side-effects.
 func _commit(stance: String) -> void:
-	var state_node = get_node_or_null("/root/State")
-	if state_node:
-		state_node.data["chapter1"]["client_meeting_stance"] = stance
-	var sigs = get_node_or_null("/root/Signals")
-	if sigs and sigs.has_signal("chapter1_flag_changed"):
-		sigs.chapter1_flag_changed.emit("client_meeting_stance", stance)
+	push_warning("ClientStanceMenu._commit: retired script instantiated. stance_picked emitted for '%s' but State was NOT written. Use halina.json options flow instead." % stance)
 	get_tree().paused = false
 	stance_picked.emit(stance)
 	queue_free()

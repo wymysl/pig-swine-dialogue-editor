@@ -1164,13 +1164,17 @@ func _show_result() -> void:
 		_result_panel.modulate = Color(1, 1, 1, 0)
 		_result_panel.visible = true
 	if _result_grade_label:
-		_result_grade_label.text = "Grade: " + grade_str
+		_result_grade_label.text = _coffee_text_value("result_grade_prefix", "Grade: ") + grade_str
 	if _result_buff_label:
-		_result_buff_label.text = "Status: " + str(result["buff"])
+		var buff_str: String = str(result["buff"])
+		var result_lines: Variant = _coffee_text.get("result_lines", {})
+		var buff_text: String = str((result_lines as Dictionary).get(buff_str, buff_str)) \
+			if result_lines is Dictionary else buff_str
+		_result_buff_label.text = buff_text
 	if _result_detail_label:
-		_result_detail_label.text = "Quality: %d  Bitterness: %d  Combo: %d" % [
-			_brew_quality, _bitterness, _max_combo
-		]
+		_result_detail_label.text = _coffee_text_value(
+			"result_detail_format", "Quality: %d  Bitterness: %d  Combo: %d"
+		) % [_brew_quality, _bitterness, _max_combo]
 
 	## Show the stamp that matches the grade — admitted for D and above, objected for F.
 	if _stamp_admitted:

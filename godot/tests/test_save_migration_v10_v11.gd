@@ -141,11 +141,12 @@ func _init() -> void:
 	var state_inst: Node = state_script.new()
 	var default_state: Dictionary = state_inst.reset_state()
 	var reset_ok: bool = true
+	var reset_ch1: Dictionary = {}
 	if not default_state.has("chapter1") or not default_state["chapter1"] is Dictionary:
 		_fail("T5: reset_state missing chapter1 dict")
 		reset_ok = false
 	else:
-		var reset_ch1: Dictionary = default_state["chapter1"]
+		reset_ch1 = default_state["chapter1"]
 		for key in v11_expected:
 			if not reset_ch1.has(key):
 				_fail("T5: reset_state missing v11 key " + key)
