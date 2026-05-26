@@ -19,11 +19,12 @@
       "patience_drain_amount": 0,
       "post_reaction_player_options": [
         {
-          "id": "proceed_to_remedy",
-          "text": "Proceed to the remedy phase.",
-          "leads_to_state_id": "round_3_open",
+          "id": "proceed_to_next_round",
+          "text": "Proceed to the next round.",
+          "leads_to_state_id": "round_2_open",
           "judicial_patience_delta": 0,
-          "leads_to_round_outcome": "advance"
+          "leads_to_round_outcome": "advance",
+          "_routing_note": "Retargeted from round_3_open → round_2_open on 2026-05-26 per design plan Step 3.2 / Step 3.1 SPRINT_LOG followup #4. Even the well-fitted-frame path now walks through Round 2 (fair hearing) and Round 3 (remedy proportionality) so the three-round arc plays out."
         }
       ]
     },

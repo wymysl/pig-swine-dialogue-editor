@@ -1,0 +1,16 @@
+{
+  "version": 23,
+  "data": {
+    "current_scene_path": "res://scenes/world/routes/office_street.tscn",
+    "current_spawn_id": "default",
+    "chapter1": {
+      "court_outcome": "",
+      "client_meeting_evidence": "",
+      "phase2_round_results": [],
+      "packet_slot_address_non_current": "envelope_address_number_seven",
+      "packet_slot_landlord_knowledge": "renewal_2019_number_twelve",
+      "packet_slot_actual_notice_window": "notice_timeline_april",
+      "packet_slot_no_third_party_authority": "resident_no_7_no_authority"
+    }
+  }
+}

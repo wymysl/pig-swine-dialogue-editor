@@ -1,0 +1,20 @@
+{
+    "version": 1,
+    "_voice_spec_pending": true,
+    "_voice_spec_ref": "narrative_revision/voice_spec_smokers_lawyer_ch1.md",
+    "_doc": "INERT STUB pending voice-spec acceptance. The sprite has been on the street since the 2026-05-18 Pixellab street-pack sprints, but Design's halt condition (.antigravity/skills/design.md §Halt conditions) forbids authoring lines for an NPC whose voice is not established. This file exists only to silence the dialogue_runner missing-file warning that has been firing on interaction since 2026-05-18. The single state is voice-neutral by construction — a stage-direction-style observation with no spoken line — so it does not lock the register before Piotr accepts the voice spec. Once accepted, this stub is replaced by authored content per the spec's §Recommended scope for v1 lines.",
+    "npc_id": "smokers_lawyer_ch1",
+    "display_name": "Smoking junior lawyer",
+    "states": [
+        {
+            "id": "smokers_lawyer_ambient_stub",
+            "trigger": "",
+            "_comment": "Voice-neutral stub. No spoken line; a stage-direction observation only. The character looks up, registers a colleague, returns to his cigarette. Replace with authored content once the voice spec is accepted.",
+            "speaker": "stage_direction",
+            "lines": [
+                "(He glances up, registers a colleague, looks back at his cigarette.)"
+            ],
+            "tags": ["chapter1", "ambient", "office_street", "stub", "voice_spec_pending"]
+        }
+    ]
+}

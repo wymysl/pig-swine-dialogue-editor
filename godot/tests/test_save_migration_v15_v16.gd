@@ -89,7 +89,9 @@ func _test_v15_to_v16_preserves_existing() -> void:
 	_assert(migrated["chapter1"]["met_pig"] == true, "met_pig preserved")
 	_assert(migrated["chapter1"]["state_choice"] == "formal", "state_choice preserved")
 	_assert(migrated["chapter1"]["murrow_choice"] == "friendly", "existing murrow_choice preserved")
-	_assert(migrated["chapter1"]["halina_trust"] == 7, "halina_trust preserved")
+	## halina_trust 7 (≥ 5) → migrated to halina_stance = "high" at v27.
+	_assert(not migrated["chapter1"].has("halina_trust"), "halina_trust erased by v27 migration")
+	_assert(migrated["chapter1"].get("halina_stance", "") == "high", "halina_trust 7 → halina_stance 'high'")
 	_assert(migrated["dialogue_states_seen"].has("murrow_case_summary"), "dialogue_states_seen preserved")
 	save_node.free()
 

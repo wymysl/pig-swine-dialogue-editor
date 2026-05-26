@@ -10,11 +10,12 @@ At the end of every sprint, after Design / Code / Art artifacts have shipped and
 
 - `AGENTS.md`
 - `PLAN.md`
+- `PROPOSALS.md`
 - `SPRINT_LOG.md` (full sprint, not just last 5 — QA must see every artifact in the cycle)
 - Every Design / Code / Art artifact from this sprint
-- The relevant section of `../story.txt` for the chapter's acceptance criteria
-- `../battle_mechanics.txt` when the sprint touched the Casebook system
-- `../minigames.txt` when the sprint touched a mini-game
+- Relevant active `data/`, `scripts/`, and `scenes/` touched by the sprint
+- Frozen root `.txt` files only when active docs/data point to them or the user
+  explicitly asks for historical context
 - `tests/` directory in full
 - `BUILD_NOTES.md` (last 5 entries)
 
@@ -67,4 +68,7 @@ At the end of every sprint, after Design / Code / Art artifacts have shipped and
 - A QA test reveals a P0 break (chapter cannot be completed, save corruption, console errors that block play) — file the bug artifact, halt the sprint, escalate to Orchestrator.
 - The previous sprint's save fixture is missing — file a fixture-restore request and halt.
 - Web export fails — file a build-failure artifact targeting Code and halt.
-- Tests pass but the chapter "feels wrong" against `../story.txt` (e.g., a line that violates the Taste Standard slipped through) — file an artifact targeting Design with the offending line, do not edit the line.
+- Tests pass but the chapter "feels wrong" against active `PLAN.md`,
+  `PROPOSALS.md`, `AGENTS.md`, or committed runtime data (e.g., a line that
+  violates the Taste Standard slipped through) — file an artifact targeting
+  Design with the offending line, do not edit the line.

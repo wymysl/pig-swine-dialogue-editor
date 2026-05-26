@@ -242,12 +242,22 @@
         {
             "id": "crab_b13_response",
             "trigger": "chapter1.court_won_procedural_reset == true && !chapter1.beat13_complete",
-            "_comment": "**2026-05-25 fan-out (F4/F5):** Beat 13 post-victory exchange with Crab, paired with cula.json::cula_b13_crab_response. Per Crab bible: 'pretends not to be impressed' — professional indifference made visible. Cula's reply ('The address argument carried it, Crab. Most of the round was your reading.') is inlined; Crab's lead-in is the TODO Piotr authors. Ordered before after_engagement so b13 wins over the catch-all.",
+            "_comment": "Beat 13 post-victory exchange with Crab, paired with cula.json::cula_b13_crab_response. Pretends-not-to-be-impressed register per Crab bible: 'professional indifference made visible.' 'The only possible result' is both accurate and deflating; 'correctly presented' is the concession Crab makes while pretending there is nothing to concede. **2026-05-24 promotion** of data/_drafts/nightly_design_pig_2026-05-14.json::crab_beat13.proposed_state line. Ordered before after_engagement so b13 wins over the catch-all.",
             "lines": [
-                "[TODO 2026-05-25: Piotr to author Crab's b13 lead-in. Voice: pretends-not-to-be-impressed register per Crab bible. One short observation that registers the win without flattering counsel. Possible angle: a procedural note about what the bench actually did, dry-collegial.]",
+                "It was the only possible result from those facts. Good facts, correctly presented.",
                 {"speaker": "cula", "text": "The address argument carried it, Crab. Most of the round was your reading."}
             ],
             "once": true
+        },
+        {
+            "id": "crab_incapacity_withdrawal",
+            "trigger": "chapter1.decoy_incapacity == true && chapter1.recruited_crab == true && chapter1.entered_court == true",
+            "_comment": "Step 5.2 (2026-05-26 design plan): In-court withdrawal beat. Fires after consume_assembled_packet() emits crab_withdrew_after_incapacity and the court-round NPC layer serves this state. Crab does not re-lecture — he gave the moral argument in crab_post_halina_incapacity_refuses pre-court. Here he names the situation and acts on what he already said. Address form bare 'Cula' (post-recruit). once:true — state-seen record preserved by dialogue_states_seen (SAVE_VERSION 12). on_dismiss writes recruited_crab = false, which is the deferred flag flip that battle_controller.gd no longer writes directly.",
+            "lines": ["Cula. The packet has the incapacity argument in it.", "I said I would not draft to it. Pressing the witnesses is drafting to it."],
+            "once": true,
+            "on_dismiss": [
+                {"set": "chapter1.recruited_crab", "value": false}
+            ]
         },
         {
             "id": "after_engagement",

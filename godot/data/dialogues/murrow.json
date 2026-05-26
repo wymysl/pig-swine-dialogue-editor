@@ -229,11 +229,71 @@
             ]
         },
         {
+            "id": "murrow_rehearsal_offer",
+            "trigger": "chapter1.met_murrow == true && chapter1.has_law_binder == true && !chapter1.rehearsal_complete && !chapter1.rehearsal_declined && !chapter1.court_ready && !chapter1.entered_court",
+            "_comment": "Step 4.1 (2026-05-26 design plan). Fires after Murrow's first-meeting and binder handoff — Beat 3 or Beat 4 window. Optional but strongly suggested. Murrow proposes a dry run against a record before the real hearing. The options block gates on state_choice so the offer doesn't re-fire after commitment. 'Want to try this on a record before the real one?' is the plan's suggested hook. Address form: bare 'Cula' per post-friend-invitation rules. Voice: archival, low-affect, functional — the offer is efficient, not warm.",
+            "lines": [
+                "Cula. One thing before you go.",
+                "The hearing is Friday. You have not stood in front of this judge before. The verbs are not self-evident the first time — Press is not the same move as Present, and confusing them in front of the bench is expensive.",
+                "I can run you through the service record as a witness. Thirty minutes. The record will be the same record, the defects will be the same defects, and you will have used the verbs once before they count.",
+                "It is not required. But the first time a judge asks you to put something on the record and you hesitate, you will wish you had done it."
+            ],
+            "options": {
+                "write_path": "chapter1.state_choice",
+                "chain": true,
+                "choices": [
+                    {"text": "Yes. Walk me through it.", "value": "murrow_rehearsal_accepted"},
+                    {"text": "I have the binder. I'll manage.", "value": "murrow_rehearsal_skip"}
+                ]
+            }
+        },
+        {
+            "id": "murrow_rehearsal_accepted",
+            "trigger": "chapter1.state_choice == 'murrow_rehearsal_accepted'",
+            "_comment": "Step 4.1. Chained from murrow_rehearsal_offer 'yes' choice. Murrow's brief setup lines before the rehearsal starts. He steps into witness-mode without ceremony — the transition is marked by register shift, not announcement. on_dismiss writes rehearsal_accepted = true (edge-trigger for game orchestration to open the rehearsal) and clears state_choice. once:true; if the player somehow re-triggers, the orchestration side should have already consumed rehearsal_accepted.",
+            "lines": [
+                "Good.",
+                "I will take the record-keeper role. You have three questions before I close the file. Use Press to draw out what the record does not say. Use Present when you have a document that puts a fact on record rather than a question.",
+                "The Trial Record panel will show you what you have established. Watch it.",
+                {"speaker": "cula", "text": "Ready."},
+                "Then we begin."
+            ],
+            "once": true,
+            "on_dismiss": [
+                {"set": "chapter1.rehearsal_accepted", "value": true},
+                {"set": "chapter1.state_choice", "value": ""}
+            ]
+        },
+        {
+            "id": "murrow_rehearsal_skip",
+            "trigger": "chapter1.state_choice == 'murrow_rehearsal_skip'",
+            "_comment": "Step 4.1. Chained from murrow_rehearsal_offer 'no' choice. Murrow accepts the refusal without commentary — one line, no editorial. once:true so it doesn't re-fire. on_dismiss writes rehearsal_declined = true (silences murrow_rehearsal_offer and murrow_rehearsal_debrief without claiming the rehearsal was done) and clears state_choice.",
+            "lines": [
+                "Your call. Find me if you want it before fourteen hundred."
+            ],
+            "once": true,
+            "on_dismiss": [
+                {"set": "chapter1.rehearsal_declined", "value": true},
+                {"set": "chapter1.state_choice", "value": ""}
+            ]
+        },
+        {
+            "id": "murrow_rehearsal_debrief",
+            "trigger": "chapter1.rehearsal_complete == true && !chapter1.rehearsal_declined && !chapter1.court_ready && !chapter1.entered_court && chapter1.met_murrow == true",
+            "_comment": "Step 4.1. Fires once after end_rehearsal() writes rehearsal_complete = true and the player returns to Murrow. !rehearsal_declined ensures this state does not fire for players who skipped via murrow_rehearsal_skip. Murrow steps out of witness mode with a dry, low-affect close — no praise, no recap. once:true.",
+            "lines": [
+                "You have used them. That is enough.",
+                "The real record will resist more than I did. Press when you need the fact surfaced; Present when you have the document in hand. The order matters.",
+                "Binder is ready. Crab is waiting."
+            ],
+            "once": true
+        },
+        {
             "id": "murrow_b13_brief",
             "trigger": "chapter1.court_won_procedural_reset == true && !chapter1.beat13_complete",
-            "_comment": "**2026-05-25 fan-out (F4/F5):** Beat 13 post-victory exchange with Murrow, paired with cula.json::cula_b13_brief_murrow_response. Per chapter_1.md §322: dry-collegial; checklist-style remark about the next case. Cula's reply ('Murrow. Send me what you have on the next file. Tomorrow morning is fine.') is inlined; Murrow's question line is the TODO Piotr authors. The b13_complete flag write is the responsibility of whichever Beat 13 state runs last in the sequence; this state does not write it.",
+            "_comment": "Beat 13 post-victory exchange with Murrow, paired with cula.json::cula_b13_brief_murrow_response. Dry-collegial register; checklist-style remark about the next case. The 'ledger is current' beat echoes the visual-scripting ledger update from story.txt Beat 13 without naming it — a player who saw Murrow close the ledger feels the connection. **2026-05-24 promotion** of data/_drafts/nightly_design_pig_2026-05-14.json::murrow_beat13.proposed_state line, replacing the TODO placeholder. The b13_complete flag write is the responsibility of whichever Beat 13 state runs last in the sequence (coffee_machine_ch1.json env-beat); this state does not write it.",
             "lines": [
-                "[TODO 2026-05-25: Piotr to author Murrow's brief post-victory line. Voice: dry-collegial. One short forward-looking sentence — what is on Murrow's desk after Sikorska clears. The Ch4 ledger plant lives in cula.json::cula_b13_murrow_ledger_silent and remains silent; do not write it here.]",
+                "Cula. The motion is on the record. The ledger is current. The next file is already on the shelf.",
                 {"speaker": "cula", "text": "Murrow. Send me what you have on the next file. Tomorrow morning is fine."}
             ],
             "once": true

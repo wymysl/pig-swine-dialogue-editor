@@ -88,7 +88,8 @@ func _test_full_roundtrip() -> void:
 		"active_case_id": "chapter1_sikorska",
 		"chapter1": {
 			"met_pig": true,
-			"halina_trust": 4,
+			"halina_stance": "high",
+			"incapacity_penalty": false,
 			"client_meeting_stance": "blunt_procedural",
 			"witness_cooperation": 2,
 			"judicial_patience": 5,
@@ -123,7 +124,7 @@ func _test_full_roundtrip() -> void:
 
 	_assert(st.data.get("active_case_id", "") == "chapter1_sikorska", "active_case_id round-trips")
 	_assert(st.data.get("chapter1", {}).get("met_pig", false) == true, "chapter1.met_pig bool survives")
-	_assert(int(st.data.get("chapter1", {}).get("halina_trust", -1)) == 4, "chapter1.halina_trust int survives")
+	_assert(str(st.data.get("chapter1", {}).get("halina_stance", "")) == "high", "chapter1.halina_stance survives")
 	_assert(str(st.data.get("chapter1", {}).get("client_meeting_stance", "")) == "blunt_procedural", "string enum survives")
 	_assert(st.data.get("badges", {}).get("day_one_survivor", false) == true, "badge round-trips")
 	_assert(st.data.get("routes_unlocked", {}).get("residential", false) == true, "route_unlocked round-trips")
@@ -259,8 +260,8 @@ func _test_v7_disk_load_matches_in_memory_migration() -> void:
 		"v7 → current adds badges.day_one_survivor")
 	_assert(disk_data.get("routes_unlocked", {}).has("residential"),
 		"v7 → current adds routes_unlocked.residential")
-	_assert(disk_data.get("chapter1", {}).has("halina_trust"),
-		"v7 → current adds chapter1.halina_trust")
+	_assert(disk_data.get("chapter1", {}).has("halina_stance"),
+		"v7 → current adds chapter1.halina_stance (renamed from halina_trust v27)")
 
 	DirAccess.remove_absolute(ProjectSettings.globalize_path(path))
 	save_node.queue_free()

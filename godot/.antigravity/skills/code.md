@@ -17,10 +17,10 @@ When the task involves game state, save/load, room transitions, evidence board, 
 - `scenes/Main.tscn` (full — to understand integration points)
 - All files under `scripts/systems/` you will touch
 - `data/chapters/chapter*.json` for the chapter being touched (state-machine fields)
-- The relevant section of `../story.txt` for the chapter and beats
-- `../world.txt` when touching the overworld, doors, or route blockers
-- `../battle_mechanics.txt` when touching the Casebook Battle System
-- `../minigames.txt` when touching mini-games
+- `PROPOSALS.md`, relevant `data/` files, and current implementation files for
+  the system being touched
+- Frozen root `.txt` files only when active docs/data point to them or the user
+  explicitly asks for historical context
 
 ## Allowed writes
 
@@ -57,8 +57,8 @@ When the task involves game state, save/load, room transitions, evidence board, 
 - **Cross-system communication**: through `Signals` autoload only. If two systems must share data, they share through one state field with one owner.
 - **Typed GDScript everywhere**: every parameter, every return, every variable that escapes one line. `Variant` is a smell.
 - **Scene wiring lives in `Main.tscn`**: scene-target router, autoload references, top-level UI overlays. If `Main.tscn` grows beyond ~100 nodes, file a refactor artifact.
-- **Overworld pattern** (per `../world.txt`): one top-level `overworld.tscn` with multiple `TileMapLayer` children for ground/roads/buildings/decoration/collision; districts loaded as scene children; doors are `Area2D` nodes scripted from `data/doors.json`; route blockers are `route_blocker.gd` nodes that pull `locked_text` from data.
-- **Casebook Battle System pattern** (per `../battle_mechanics.txt`): `battle_controller.gd` runs the encounter loop; `effectiveness.gd` resolves the three-tag fit (Article / Principle / Context); `judgment.gd` and `principle_move.gd` are pure-data resources hydrated from `data/judgments.json`; `argument_opponent.gd` likewise from `data/argument_opponents.json`. UI text uses the legal register only (`AGENTS.md` §Forbidden patterns).
+- **Overworld pattern** (per active `PLAN.md`, `PROPOSALS.md`, and `data/doors.json`): one top-level `overworld.tscn` with multiple `TileMapLayer` children for ground/roads/buildings/decoration/collision; districts loaded as scene children; doors are `Area2D` nodes scripted from `data/doors.json`; route blockers are `route_blocker.gd` nodes that pull `locked_text` from data.
+- **Casebook Battle System pattern** (per active `PROPOSALS.md`, court-round data, and battle scripts): `battle_controller.gd` runs the encounter loop; `effectiveness.gd` resolves the three-tag fit (Article / Principle / Context); `judgment.gd` and `principle_move.gd` are pure-data resources hydrated from `data/judgments.json`; `argument_opponent.gd` likewise from `data/argument_opponents.json`. UI text uses the legal register only (`AGENTS.md` §Forbidden patterns).
 - **Mini-game pattern**: each mini-game is one scene + one script under `scripts/systems/mini_games/`, runs as a child of `Main.tscn` while paused, returns a structured result dict via signal, never blocks chapter progression on failure.
 
 ## Output (Artifact)
@@ -88,5 +88,6 @@ When the task involves game state, save/load, room transitions, evidence board, 
 - A change requires editing files outside Code's allowed-writes — stop and file a request artifact targeting the responsible role.
 - Two systems would share a state field as co-owners — refactor; one owner only.
 - A request asks Code to write dialogue text — file a Design request artifact and halt.
-- A request asks Code to extend Polish legal doctrine — bounce to Design (which will file a `style_canon.txt` extension proposal if needed).
+- A request asks Code to extend Polish legal doctrine — bounce to Design, which
+  will update active Design data/proposals or file a request artifact.
 - The required dialogue text or art for a feature does not yet exist — file the request artifact and halt; do not stub with placeholder text in committed code.

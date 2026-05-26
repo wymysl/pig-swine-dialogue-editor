@@ -53,6 +53,15 @@ func _init() -> void:
 	_test_press_decrements_witness_cooperation()
 	_test_unknown_tag_rejected_by_taxonomy()
 	_test_end_to_end_three_round_smoke()
+	_test_complete_packet_available_citation_stays_strong()
+	_test_complete_packet_weak_citations_not_strong()
+	_test_unavailable_phase2_citation_downgrades_packet()
+	_test_phase2_backfire_downgrades_packet()
+	_test_phase2_round_results_accumulated()
+	_test_start_round_loads_chapter1_round_file()
+	_test_end_round_intermediate_returns_next_index_no_recursion()
+	_test_state_accumulates_across_rounds()
+	_test_mid_round_2_save_roundtrip()
 
 	_finish()
 
@@ -170,7 +179,11 @@ func _test_unknown_tag_rejected_by_taxonomy() -> void:
 
 
 func _test_end_to_end_three_round_smoke() -> void:
-	print("[T8] full three-round smoke")
+	## Updated 2026-05-26 per design plan Step 3.2: end_round no longer
+	## recurses into start_round(N+1); the caller now drives the next round
+	## explicitly. Test asserts the round_2/round_3 cuts wire up correctly
+	## without the old auto-advance.
+	print("[T8] full three-round smoke (explicit round advance, no recursion)")
 	_reset_state()
 	_seed_good_frame()
 	var move = _motion_to_set_aside()
@@ -178,12 +191,16 @@ func _test_end_to_end_three_round_smoke() -> void:
 	_controller.start_round("landlord_counsel_ch1", 1)
 	_controller.opponent_advance()
 	var r1: Dictionary = _controller.player_present(move, "envelope_address_number_seven")
-	_controller.end_round()
+	var end1: Dictionary = _controller.end_round()
+	_assert(int(end1.get("next_round_index", 0)) == 2, "end_round R1 returns next_round_index 2")
 
+	_controller.start_round("landlord_counsel_ch1", 2)
 	_controller.opponent_advance()
 	var r2: Dictionary = _controller.player_present(move, "rights_memo_article_6")
-	_controller.end_round()
+	var end2: Dictionary = _controller.end_round()
+	_assert(int(end2.get("next_round_index", 0)) == 3, "end_round R2 returns next_round_index 3")
 
+	_controller.start_round("landlord_counsel_ch1", 3)
 	_controller.opponent_advance()
 	var r3: Dictionary = _controller.player_present(move, "renewal_2019_number_twelve")
 	var final_result: Dictionary = _controller.end_round()
@@ -194,6 +211,255 @@ func _test_end_to_end_three_round_smoke() -> void:
 	_assert(all_non_backfire, "all three rounds resolved without backfire")
 	_assert(final_result.get("court_won_procedural_reset", false) == true, "court_won_procedural_reset set true")
 	_assert(_chapter1()["court_won_procedural_reset"] == true, "State carries court_won_procedural_reset true")
+	_assert(not final_result.has("next_round_index"), "end_round R3 does NOT return next_round_index (terminal)")
+
+
+func _test_complete_packet_available_citation_stays_strong() -> void:
+	## Step 1.1 corrective contract: moving court_outcome out of
+	## consume_assembled_packet() must not erase the old best outcome. A complete
+	## packet plus the current available Phase 2 citation still reaches STRONG.
+	print("[T9] complete packet + available Phase 2 citation stays OUTCOME_STRONG")
+	_reset_state()
+	_seed_complete_packet()
+	var move = _motion_to_set_aside()
+	_controller.start_round("landlord_counsel_ch1", 3)
+	_controller.opponent_advance()
+	var present_result: Dictionary = _controller.player_present(move, "renewal_2019_number_twelve")
+	var final_result: Dictionary = _controller.end_round()
+	var results: Array = _chapter1().get("phase2_round_results", [])
+
+	_assert(present_result.get("evidence_available", false) == true, "Phase 2 citation evidence is available")
+	_assert(results.size() == 1, "one Phase 2 citation recorded")
+	if results.size() > 0:
+		_assert(results[0].get("evidence_available", false) == true,
+			"recorded citation preserves evidence availability")
+	_assert(final_result.get("court_outcome", "") == "strong",
+		"available current citation preserves OUTCOME_STRONG")
+
+
+func _test_complete_packet_weak_citations_not_strong() -> void:
+	## Step 1.1 load-bearing test: a player who completes the packet perfectly
+	## but deliberately mis-cites in Phase 2 must NOT get OUTCOME_STRONG.
+	print("[T10] complete packet + weak Phase 2 citations downgrades to OUTCOME_NARROW")
+	_reset_state()
+	_seed_complete_packet()
+
+	## Manually inject weak Phase 2 results to simulate
+	## mis-citation without needing to run the full 3-round flow.
+	_chapter1()["phase2_round_results"] = [
+		{"round": 3, "citation_id": "bad_cite_1", "evidence_id": "", "evidence_available": true, "effectiveness_bucket": "no_effect", "opponent_move": "move_a"},
+		{"round": 3, "citation_id": "bad_cite_2", "evidence_id": "", "evidence_available": true, "effectiveness_bucket": "not_very_effective", "opponent_move": "move_b"},
+	]
+
+	var move = _motion_to_set_aside()
+	_controller.start_round("landlord_counsel_ch1", 3)
+	_controller.opponent_advance()
+	_controller.player_present(move, "renewal_2019_number_twelve")
+	var final_result: Dictionary = _controller.end_round()
+
+	var outcome: String = str(final_result.get("court_outcome", ""))
+	_assert(outcome == "narrow",
+		"complete packet with weak citations downgrades to OUTCOME_NARROW (got '%s')" % outcome)
+
+
+func _test_unavailable_phase2_citation_downgrades_packet() -> void:
+	## A citation using evidence outside the current Phase 2 frame must not
+	## inherit the packet's strong outcome.
+	print("[T11] unavailable Phase 2 citation downgrades complete packet")
+	_reset_state()
+	_seed_complete_packet()
+
+	var move = _motion_to_set_aside()
+	_controller.start_round("landlord_counsel_ch1", 3)
+	_controller.opponent_advance()
+	var present_result: Dictionary = _controller.player_present(move, "unknown_exhibit")
+	var final_result: Dictionary = _controller.end_round()
+
+	_assert(present_result.get("evidence_available", true) == false,
+		"unknown evidence is unavailable in Phase 2")
+	_assert(final_result.get("court_outcome", "") == "narrow",
+		"unavailable citation downgrades final outcome to OUTCOME_NARROW")
+
+
+func _test_phase2_backfire_downgrades_packet() -> void:
+	## Any Phase 2 backfire must downgrade the final band, even if later
+	## citations are clean. This protects against per-round bucket overwrites.
+	print("[T12] Phase 2 backfire downgrades complete packet")
+	_reset_state()
+	_seed_complete_packet()
+	_chapter1()["phase2_round_results"] = [
+		{"round": 3, "citation_id": "bad_cite_backfire", "evidence_id": "", "evidence_available": true, "effectiveness_bucket": "backfires", "opponent_move": "move_a"},
+	]
+
+	var move = _motion_to_set_aside()
+	_controller.start_round("landlord_counsel_ch1", 3)
+	_controller.opponent_advance()
+	_controller.player_present(move, "renewal_2019_number_twelve")
+	var final_result: Dictionary = _controller.end_round()
+
+	_assert(final_result.get("court_outcome", "") == "narrow",
+		"backfire history downgrades final outcome to OUTCOME_NARROW")
+
+
+func _test_phase2_round_results_accumulated() -> void:
+	## Verify that player_present in Phase 2 (round 3) appends to
+	## chapter1.phase2_round_results in state.
+	print("[T13] Phase 2 present appends citation and evidence ids")
+	_reset_state()
+	_seed_good_frame()
+	_controller.start_round("landlord_counsel_ch1", 3)
+	_controller.opponent_advance()
+	var move = _motion_to_set_aside()
+	_controller.player_present(move, "renewal_2019_number_twelve")
+	var results: Array = _chapter1().get("phase2_round_results", [])
+	_assert(results.size() == 1, "one Phase 2 result recorded")
+	if results.size() > 0:
+		var entry: Dictionary = results[0]
+		_assert(entry.has("round") and entry["round"] == 3, "round is 3")
+		_assert(entry.has("citation_id") and entry["citation_id"] == move.id, "citation_id is the move id")
+		_assert(entry.has("evidence_id") and entry["evidence_id"] == "renewal_2019_number_twelve", "evidence_id present")
+		_assert(entry.has("evidence_available") and entry["evidence_available"] == true, "evidence_available present")
+		_assert(entry.has("effectiveness_bucket"), "effectiveness_bucket present")
+		_assert(entry.has("opponent_move"), "opponent_move present")
+		_assert(_valid_bucket(entry["effectiveness_bucket"]), "bucket is valid")
+
+
+func _test_start_round_loads_chapter1_round_file() -> void:
+	## Step 3.2: start_round(opp, N) must load chapter1_round_N.json into a
+	## controller-side cache exposed via get_active_round_data(). This is the
+	## load-bearing assertion for "Controller can run rounds 1 → 2 → 3 with
+	## each pulling its own data file" (2026-05-26 design plan Step 3.2).
+	print("[T14] start_round loads per-round chapter1_round_N.json file")
+	_reset_state()
+	_seed_good_frame()
+	for round_index in [1, 2, 3]:
+		_controller.start_round("landlord_counsel_ch1", round_index)
+		var data: Dictionary = _controller.get_active_round_data()
+		var expected_id: String = "chapter1_round_%d" % round_index
+		_assert(not data.is_empty(), "round %d data dict is non-empty" % round_index)
+		_assert(str(data.get("id", "")) == expected_id, "round %d data file id == '%s'" % [round_index, expected_id])
+		_assert(int(data.get("chapter", 0)) == 1, "round %d data file declares chapter 1" % round_index)
+		_assert(data.has("phase_1_fact_finding"), "round %d data exposes phase_1_fact_finding" % round_index)
+		_assert(data.has("phase_2_closing"), "round %d data exposes phase_2_closing" % round_index)
+
+
+func _test_end_round_intermediate_returns_next_index_no_recursion() -> void:
+	## Step 3.2 acceptance: end_round on rounds 1-2 must NOT auto-advance into
+	## start_round(N+1) (the old recursive behavior). It writes the round's
+	## react_tag and returns next_round_index for the caller to drive.
+	print("[T15] end_round R1/R2 returns next_round_index without recursing")
+	_reset_state()
+	_seed_good_frame()
+	var move = _motion_to_set_aside()
+
+	_controller.start_round("landlord_counsel_ch1", 1)
+	_controller.opponent_advance()
+	_controller.player_present(move, "envelope_address_number_seven")
+	var pre_state: String = str(_chapter1().get("casebook_judge_state", ""))
+	var end_r1: Dictionary = _controller.end_round()
+	var post_state: String = str(_chapter1().get("casebook_judge_state", ""))
+	_assert(int(end_r1.get("next_round_index", -1)) == 2, "R1 end_round returns next_round_index == 2")
+	_assert(post_state == "round_1_react", "R1 end_round writes casebook_judge_state == round_1_react (got '%s'; pre-state '%s')" % [post_state, pre_state])
+
+	## Without the caller explicitly calling start_round(2), the controller
+	## remains anchored on round 1's active_round_data — no silent advance.
+	_assert(str(_controller.get_active_round_data().get("id", "")) == "chapter1_round_1",
+		"controller does NOT auto-advance: active round data still chapter1_round_1")
+
+	_controller.start_round("landlord_counsel_ch1", 2)
+	_controller.opponent_advance()
+	_controller.player_present(move, "rights_memo_article_6")
+	var end_r2: Dictionary = _controller.end_round()
+	_assert(int(end_r2.get("next_round_index", -1)) == 3, "R2 end_round returns next_round_index == 3")
+	_assert(str(_chapter1().get("casebook_judge_state", "")) == "round_2_react",
+		"R2 end_round writes casebook_judge_state == round_2_react")
+
+
+func _test_state_accumulates_across_rounds() -> void:
+	## Step 3.2 acceptance: "State accumulates across rounds (Round 2's Phase 2
+	## sees Round 1's fact-flags; Round 3 sees both)." Flags written by
+	## player_press in R1 must persist into R3's Phase 2 view of State.data.
+	print("[T16] chapter1.* flags from earlier rounds persist into later rounds")
+	_reset_state()
+	_seed_good_frame()
+
+	## R1: press a witness statement that establishes a chapter1.* flag.
+	## 'file_says_served' triggers _establish_evidence; if the evidence entry
+	## carries a sets_flag pointing under chapter1.*, the flag flips.
+	_controller.start_round("landlord_counsel_ch1", 1)
+	_controller.opponent_advance()
+	_controller.player_press("file_says_served")
+	var r1_cooperation: int = int(_chapter1().get("witness_cooperation", 0))
+	_assert(r1_cooperation == 2, "R1 press decremented witness_cooperation to 2 (got %d)" % r1_cooperation)
+	_controller.end_round()
+
+	## R2: cooperation budget resets at start of R2's Phase 1, but chapter1.*
+	## state (proposed_frame, packet slots, has_law_binder, etc.) does NOT.
+	_controller.start_round("landlord_counsel_ch1", 2)
+	_assert(_chapter1().get("proposed_frame", "") == "defective_service_135bis",
+		"R2 sees R1's proposed_frame (set via _seed_good_frame)")
+	_assert(_chapter1().get("binder_read_envelope", false) == true,
+		"R2 sees R1's binder_read_envelope flag")
+	_controller.end_round()
+
+	## R3: same accumulated context still present.
+	_controller.start_round("landlord_counsel_ch1", 3)
+	_assert(_chapter1().get("binder_read_envelope", false) == true,
+		"R3 still sees binder_read_envelope flag")
+	_assert(_chapter1().get("binder_read_renewal", false) == true,
+		"R3 still sees binder_read_renewal flag")
+
+
+func _test_mid_round_2_save_roundtrip() -> void:
+	## Step 3.2 verification: "Save round-trip mid-Round-2." The Step 3.2
+	## controller refactor does NOT change State.data shape (the round-file
+	## cache is in-memory only), so SAVE_VERSION is unchanged. This test
+	## proves that mid-Round-2 chapter1 state survives a disk round-trip
+	## through save.gd::save_game / load_game.
+	print("[T17] mid-Round-2 save/load disk round-trip preserves chapter1 state")
+	_reset_state()
+	_seed_good_frame()
+	var move = _motion_to_set_aside()
+
+	## Drive to mid-Round-2: open R1, do one Phase 1 action, close R1 (which
+	## writes casebook_judge_state := round_1_react and returns next index),
+	## then open R2 (which writes casebook_judge_state := round_2_open).
+	_controller.start_round("landlord_counsel_ch1", 1)
+	_controller.opponent_advance()
+	_controller.player_present(move, "envelope_address_number_seven")
+	_controller.end_round()
+	_controller.start_round("landlord_counsel_ch1", 2)
+	_controller.opponent_advance()
+	_controller.player_present(move, "rights_memo_article_6")
+
+	var mid_state: String = str(_chapter1().get("casebook_judge_state", ""))
+	var mid_frame: String = str(_chapter1().get("proposed_frame", ""))
+	_assert(mid_state == "round_2_react", "mid-R2 casebook_judge_state == round_2_react (got '%s')" % mid_state)
+
+	## Disk round-trip via a standalone Save node instance, pattern lifted
+	## from tests/test_save_roundtrip.gd::_make_save.
+	var save_script: GDScript = load("res://scripts/systems/save.gd") as GDScript
+	var save_node: Node = save_script.new()
+	get_root().add_child(save_node)
+	var tmp_path: String = "user://test_battle_round_save_%d.json" % Time.get_ticks_usec()
+	save_node.set_save_path_for_tests(tmp_path)
+
+	var save_ok: bool = save_node.save_game()
+	_assert(save_ok, "save_game returns true on mid-R2 state")
+
+	## Mutate State.data away from the saved snapshot so load has work to do.
+	_state_node.data = _state_node.reset_state()
+	_assert(str(_chapter1().get("casebook_judge_state", "")) != "round_2_react",
+		"State reset cleared mid-R2 casebook_judge_state")
+
+	var load_ok: bool = save_node.load_game()
+	_assert(load_ok, "load_game returns true reading the mid-R2 save")
+	_assert(str(_chapter1().get("casebook_judge_state", "")) == "round_2_react",
+		"casebook_judge_state == round_2_react survives the disk round-trip")
+	_assert(str(_chapter1().get("proposed_frame", "")) == mid_frame,
+		"proposed_frame survives the disk round-trip")
+
+	save_node.queue_free()
 
 
 func _motion_to_set_aside():
@@ -207,6 +473,20 @@ func _seed_good_frame() -> void:
 	_chapter1()["binder_read_renewal"] = true
 	_chapter1()["binder_read_renumbering"] = true
 	_chapter1()["has_rights_memo"] = true
+
+
+func _seed_complete_packet() -> void:
+	_seed_good_frame()
+	_chapter1()["element_non_current_address"] = true
+	_chapter1()["element_landlord_knowledge"] = true
+	_chapter1()["element_timely_actual_notice_motion"] = true
+	_chapter1()["element_no_third_party_cure"] = true
+	_chapter1()["surfaced_notice_timeline"] = true
+	_chapter1()["surfaced_resident_no_authority"] = true
+	_chapter1()["packet_slot_address_non_current"] = "envelope_address_number_seven"
+	_chapter1()["packet_slot_landlord_knowledge"] = "renewal_2019_number_twelve"
+	_chapter1()["packet_slot_actual_notice_window"] = "notice_timeline_april"
+	_chapter1()["packet_slot_no_third_party_authority"] = "resident_no_7_no_authority"
 
 
 func _reset_state() -> void:

@@ -35,12 +35,19 @@ extends RefCounted
 ## argument is *strongest*. A move whose primary tag matches any strength tag
 ## triggers the `backfires` bucket regardless of the dot-product score.
 
-const STRENGTH_BACKFIRE_THRESHOLD: float = 0.5  ## min weight to count as a "primary" tag
+## Calibrated for normalized multi-tag judgments (Step 2.3, 2026-05-26).
+## With 10-tag judgments each tag normalizes to ~0.09-0.10 weight; dot products
+## against 3–4 tag weak_to arrays peak around 0.25-0.35.  Thresholds are set
+## at 1/10th of the pre-calibration values so the full bucket range is reachable
+## with real in-game moves.  Synthetic single-tag probes (weight 1.0) still
+## produce super_effective (score 0.25-0.33 >> 0.07); multi-tag probes with
+## partial overlap fall into lower buckets.
+const STRENGTH_BACKFIRE_THRESHOLD: float = 0.05  ## min weight to count as a "primary" tag
 
 const BUCKET_THRESHOLDS := {
-    "super_effective":     0.70,
-    "effective":           0.40,
-    "not_very_effective":  0.15,
+    "super_effective":     0.07,
+    "effective":           0.04,
+    "not_very_effective":  0.015,
     "no_effect":           0.00,
     # backfires is < 0.0 OR strength-collision (handled separately)
 }

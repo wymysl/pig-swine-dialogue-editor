@@ -1,4 +1,4 @@
-[gd_scene format=4 uid="uid://dhi07iernn4aj"]
+[gd_scene load_steps=44 format=4 uid="uid://dhi07iernn4aj"]
 
 [ext_resource type="Script" uid="uid://vwn6hsy0ypn7" path="res://scripts/actors/player.gd" id="1_player"]
 [ext_resource type="Script" uid="uid://ckwlgat482exj" path="res://scripts/actors/door.gd" id="2_door"]
@@ -58,9 +58,9 @@ size = Vector2(16, 768)
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_bfu"]
 size = Vector2(2560, 12)
 
-[node name="OfficeStreet" type="Node2D" unique_id=1803482466]
+[node name="OfficeStreet" type="Node2D"]
 
-[node name="Floor" type="ColorRect" parent="." unique_id=1656640189]
+[node name="Floor" type="ColorRect" parent="."]
 offset_right = 2560.0
 offset_bottom = 768.0
 color = Color(0.18, 0.22, 0.28, 1)
@@ -81,45 +81,45 @@ repeat_size = Vector2(640, 0)
 color = Color(0.16, 0.2, 0.3, 1)
 polygon = PackedVector2Array(0, 384, 0, 314, 60, 314, 60, 254, 100, 254, 100, 324, 170, 324, 170, 224, 220, 224, 220, 304, 280, 304, 280, 264, 340, 264, 340, 324, 400, 324, 400, 254, 460, 254, 460, 314, 520, 314, 520, 274, 580, 274, 580, 314, 640, 314, 640, 384)
 
-[node name="StreetTiles" type="TileMapLayer" parent="." unique_id=400000]
+[node name="StreetTiles" type="TileMapLayer" parent="."]
 tile_map_data = PackedByteArray("AAAAAAYAAAAAAAEAAAABAAYAAAAAAAEAAAACAAYAAAAAAAEAAAADAAYAAAAAAAEAAAAEAAYAAAAAAAEAAAAFAAYAAAAAAAEAAAAGAAYAAAAAAAEAAAAHAAYAAAAAAAEAAAAIAAYAAAAAAAEAAAAJAAYAAAAAAAEAAAAKAAYAAAAAAAEAAAALAAYAAAAAAAEAAAAMAAYAAAAAAAEAAAANAAYAAAAAAAEAAAAOAAYAAAAAAAEAAAAPAAYAAAAAAAEAAAAQAAYAAAAAAAEAAAARAAYAAAAAAAEAAAASAAYAAAAAAAEAAAATAAYAAAAAAAEAAAAUAAYAAAAAAAEAAAAVAAYAAAAAAAEAAAAWAAYAAAAAAAEAAAAXAAYAAAAAAAEAAAAYAAYAAAAAAAEAAAAZAAYAAAAAAAEAAAAaAAYAAAAAAAEAAAAbAAYAAAAAAAEAAAAcAAYAAAAAAAEAAAAdAAYAAAAAAAEAAAAeAAYAAAAAAAEAAAAfAAYAAAAAAAEAAAAgAAYAAAAAAAEAAAAhAAYAAAAAAAEAAAAiAAYAAAAAAAEAAAAjAAYAAAAAAAEAAAAkAAYAAAAAAAEAAAAlAAYAAAAAAAEAAAAmAAYAAAAAAAEAAAAnAAYAAAAAAAEAAAAAAAcAAAAAAAEAAAABAAcAAAAAAAEAAAACAAcAAAAAAAEAAAADAAcAAAAAAAEAAAAEAAcAAAAAAAEAAAAFAAcAAAAAAAEAAAAGAAcAAAAAAAEAAAAHAAcAAAAAAAEAAAAIAAcAAAAAAAEAAAAJAAcAAAAAAAEAAAAKAAcAAAAAAAEAAAALAAcAAAAAAAEAAAAMAAcAAAAAAAEAAAANAAcAAAAAAAEAAAAOAAcAAAAAAAEAAAAPAAcAAAAAAAEAAAAQAAcAAAAAAAEAAAARAAcAAAAAAAEAAAASAAcAAAAAAAEAAAATAAcAAAAAAAEAAAAUAAcAAAAAAAEAAAAVAAcAAAAAAAEAAAAWAAcAAAAAAAEAAAAXAAcAAAAAAAEAAAAYAAcAAAAAAAEAAAAZAAcAAAAAAAEAAAAaAAcAAAAAAAEAAAAbAAcAAAAAAAEAAAAcAAcAAAAAAAEAAAAdAAcAAAAAAAEAAAAeAAcAAAAAAAEAAAAfAAcAAAAAAAEAAAAgAAcAAAAAAAEAAAAhAAcAAAAAAAEAAAAiAAcAAAAAAAEAAAAjAAcAAAAAAAEAAAAkAAcAAAAAAAEAAAAlAAcAAAAAAAEAAAAmAAcAAAAAAAEAAAAnAAcAAAAAAAEAAAAAAAgAAAAAAAEAAAABAAgAAAAAAAEAAAACAAgAAAAAAAEAAAADAAgAAAAAAAEAAAAEAAgAAAAAAAEAAAAFAAgAAAAAAAEAAAAGAAgAAAAAAAEAAAAHAAgAAAAAAAEAAAAIAAgAAAAAAAEAAAAJAAgAAAAAAAEAAAAKAAgAAAAAAAEAAAALAAgAAAAAAAEAAAAMAAgAAAAAAAEAAAANAAgAAAAAAAEAAAAOAAgAAAAAAAEAAAAPAAgAAAAAAAEAAAAQAAgAAAAAAAEAAAARAAgAAAAAAAEAAAASAAgAAAAAAAEAAAATAAgAAAAAAAEAAAAUAAgAAAAAAAEAAAAVAAgAAAAAAAEAAAAWAAgAAAAAAAEAAAAXAAgAAAAAAAEAAAAYAAgAAAAAAAEAAAAZAAgAAAAAAAEAAAAaAAgAAAAAAAEAAAAbAAgAAAAAAAEAAAAcAAgAAAAAAAEAAAAdAAgAAAAAAAEAAAAeAAgAAAAAAAEAAAAfAAgAAAAAAAEAAAAgAAgAAAAAAAEAAAAhAAgAAAAAAAEAAAAiAAgAAAAAAAEAAAAjAAgAAAAAAAEAAAAkAAgAAAAAAAEAAAAlAAgAAAAAAAEAAAAmAAgAAAAAAAEAAAAnAAgAAgADAAAAAAAAAAkAAAAAAAAAAAABAAkAAAAAAAAAAAACAAkAAAAAAAAAAAADAAkAAAAAAAAAAAAEAAkAAAAAAAAAAAAFAAkAAAAAAAAAAAAGAAkAAAAAAAAAAAAHAAkAAAAAAAAAAAAIAAkAAAAAAAAAAAAJAAkAAAAAAAAAAAAKAAkAAAAAAAAAAAALAAkAAAAAAAAAAAAMAAkAAAAAAAAAAAANAAkAAAAAAAAAAAAOAAkAAAAAAAAAAAAPAAkAAAAAAAAAAAAQAAkAAAAAAAAAAAARAAkAAAAAAAAAAAASAAkAAAAAAAAAAAATAAkAAAAAAAAAAAAUAAkAAAAAAAAAAAAVAAkAAAAAAAAAAAAWAAkAAAAAAAAAAAAXAAkAAAAAAAAAAAAYAAkAAAAAAAAAAAAZAAkAAAAAAAAAAAAaAAkAAAAAAAAAAAAbAAkAAAAAAAAAAAAcAAkAAAAAAAAAAAAdAAkAAAAAAAAAAAAeAAkAAAAAAAAAAAAfAAkAAAAAAAAAAAAgAAkAAAAAAAAAAAAhAAkAAAAAAAAAAAAiAAkAAAAAAAAAAAAjAAkAAAAAAAAAAAAkAAkAAAAAAAAAAAAlAAkAAAAAAAAAAAAmAAkAAAAAAAAAAAAnAAkAAAAAAAAAAAAAAAoAAAAAAAAAAAABAAoAAAAAAAAAAAACAAoAAAAAAAAAAAADAAoAAAAAAAAAAAAEAAoAAAAAAAAAAAAFAAoAAAAAAAAAAAAGAAoAAAAAAAAAAAAHAAoAAAAAAAAAAAAIAAoAAAAAAAAAAAAJAAoAAAAAAAAAAAAKAAoAAAAAAAAAAAALAAoAAAAAAAAAAAAMAAoAAAAAAAAAAAANAAoAAAAAAAAAAAAOAAoAAAAAAAAAAAAPAAoAAAAAAAAAAAAQAAoAAAAAAAAAAAARAAoAAAAAAAAAAAASAAoAAAAAAAAAAAATAAoAAAAAAAAAAAAUAAoAAAAAAAAAAAAVAAoAAAAAAAAAAAAWAAoAAAAAAAAAAAAXAAoAAAAAAAAAAAAYAAoAAAAAAAAAAAAZAAoAAAAAAAAAAAAaAAoAAAAAAAAAAAAbAAoAAAAAAAAAAAAcAAoAAAAAAAAAAAAdAAoAAAAAAAAAAAAeAAoAAAAAAAAAAAAfAAoAAAAAAAAAAAAgAAoAAAAAAAAAAAAhAAoAAAAAAAAAAAAiAAoAAAAAAAAAAAAjAAoAAAAAAAAAAAAkAAoAAAAAAAAAAAAlAAoAAAAAAAAAAAAmAAoAAAAAAAAAAAAnAAoAAAAAAAAAAAA=")
 tile_set = ExtResource("31_warsaw_tileset")
 
-[node name="Building" type="Sprite2D" parent="." unique_id=400100]
+[node name="Building" type="Sprite2D" parent="."]
 position = Vector2(418, 192)
 scale = Vector2(0.7515, 0.7515)
 texture = ExtResource("32_ps_facade")
 
-[node name="BuildingBooksLegal" type="Sprite2D" parent="." unique_id=400110]
+[node name="BuildingBooksLegal" type="Sprite2D" parent="."]
 position = Vector2(990, 192)
 scale = Vector2(0.8188, 0.8188)
 texture = ExtResource("33_b_books_legal_things")
 
-[node name="BuildingKamienicaPlain" type="Sprite2D" parent="." unique_id=400111]
+[node name="BuildingKamienicaPlain" type="Sprite2D" parent="."]
 position = Vector2(1303, 192)
 scale = Vector2(0.8552, 0.8552)
 texture = ExtResource("34_b_kamienica_plain")
 
-[node name="BuildingYellow" type="Sprite2D" parent="." unique_id=400120]
+[node name="BuildingYellow" type="Sprite2D" parent="."]
 position = Vector2(1611, 240)
 texture = ExtResource("35_b_kamienica_yellow")
 
-[node name="BuildingBlue" type="Sprite2D" parent="." unique_id=400121]
+[node name="BuildingBlue" type="Sprite2D" parent="."]
 position = Vector2(1914, 240)
 texture = ExtResource("36_b_kamienica_blue")
 
-[node name="BuildingWarehouse" type="Sprite2D" parent="." unique_id=400122]
+[node name="BuildingWarehouse" type="Sprite2D" parent="."]
 position = Vector2(2277, 248)
 texture = ExtResource("37_b_warehouse_red_brick")
 
-[node name="DoorIndicator" type="ColorRect" parent="." unique_id=143868402]
+[node name="DoorIndicator" type="ColorRect" parent="."]
 offset_left = 35.0
 offset_top = 368.0
 offset_right = 76.0
 offset_bottom = 384.0
 color = Color(0.08, 0.08, 0.12, 1)
 
-[node name="FrontDoor" type="Area2D" parent="." unique_id=2002665854]
+[node name="FrontDoor" type="Area2D" parent="."]
 position = Vector2(79, 400)
 collision_layer = 0
 collision_mask = 2
@@ -128,29 +128,29 @@ door_id = "office_front_door"
 target_scene = "res://scenes/interiors/pig_swine_office.tscn"
 target_spawn_id = "StreetSpawn"
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="FrontDoor" unique_id=2120902228]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="FrontDoor"]
 position = Vector2(-23.5, 6)
 shape = SubResource("RectangleShape2D_2")
 
-[node name="OfficeSpawn" type="Node2D" parent="." unique_id=282351275]
+[node name="OfficeSpawn" type="Node2D" parent="."]
 position = Vector2(79, 430)
 
-[node name="Player" type="CharacterBody2D" parent="." unique_id=624004415]
+[node name="Player" type="CharacterBody2D" parent="."]
 z_index = 1
 position = Vector2(79, 480)
 collision_layer = 2
 script = ExtResource("1_player")
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Player" unique_id=489872544]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Player"]
 position = Vector2(0, 24)
 shape = SubResource("RectangleShape2D_1")
 
-[node name="Visual" type="AnimatedSprite2D" parent="Player" unique_id=1772147733]
+[node name="Visual" type="AnimatedSprite2D" parent="Player"]
 position = Vector2(0, -8)
 sprite_frames = ExtResource("3_cula_frames")
 animation = &"idle_front"
 
-[node name="Camera2D" type="Camera2D" parent="Player" unique_id=2145807978]
+[node name="Camera2D" type="Camera2D" parent="Player"]
 limit_left = 0
 limit_top = 0
 limit_right = 2560
@@ -158,14 +158,14 @@ limit_bottom = 768
 position_smoothing_enabled = true
 position_smoothing_speed = 8.0
 
-[node name="CafeDoorIndicator" type="ColorRect" parent="." unique_id=758619548]
+[node name="CafeDoorIndicator" type="ColorRect" parent="."]
 offset_left = 371.0
 offset_top = 364.0
 offset_right = 410.0
 offset_bottom = 380.0
 color = Color(0.08, 0.08, 0.12, 1)
 
-[node name="CafeDoor" type="Area2D" parent="." unique_id=168081816]
+[node name="CafeDoor" type="Area2D" parent="."]
 position = Vector2(410, 400)
 collision_layer = 0
 collision_mask = 2
@@ -174,29 +174,29 @@ door_id = "street_to_cafe"
 target_scene = "res://scenes/interiors/cafe_paragraf.tscn"
 target_spawn_id = "CafeSpawn"
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="CafeDoor" unique_id=772068219]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="CafeDoor"]
 position = Vector2(-19.25, 6)
 shape = SubResource("RectangleShape2D_2")
 
-[node name="CafeSpawn" type="Node2D" parent="." unique_id=709907963]
+[node name="CafeSpawn" type="Node2D" parent="."]
 position = Vector2(410, 430)
 
-[node name="Walls" type="StaticBody2D" parent="." unique_id=884197458]
+[node name="Walls" type="StaticBody2D" parent="."]
 collision_mask = 0
 
-[node name="Top" type="CollisionShape2D" parent="Walls" unique_id=1504605018]
+[node name="Top" type="CollisionShape2D" parent="Walls"]
 position = Vector2(1280, -8)
 shape = SubResource("RectangleShape2D_t7h76")
 
-[node name="Bottom" type="CollisionShape2D" parent="Walls" unique_id=1572954701]
+[node name="Bottom" type="CollisionShape2D" parent="Walls"]
 position = Vector2(1280, 776)
 shape = SubResource("RectangleShape2D_bso4j")
 
-[node name="Left" type="CollisionShape2D" parent="Walls" unique_id=2111926347]
+[node name="Left" type="CollisionShape2D" parent="Walls"]
 position = Vector2(-8, 384)
 shape = SubResource("RectangleShape2D_uipt3")
 
-[node name="Right" type="CollisionShape2D" parent="Walls" unique_id=189555934]
+[node name="Right" type="CollisionShape2D" parent="Walls"]
 position = Vector2(2568, 384)
 shape = SubResource("RectangleShape2D_t344o")
 
@@ -204,114 +204,114 @@ shape = SubResource("RectangleShape2D_t344o")
 position = Vector2(1280, 388)
 shape = SubResource("RectangleShape2D_bfu")
 
-[node name="Tram17" type="Sprite2D" parent="." unique_id=300001]
+[node name="Tram17" type="Sprite2D" parent="."]
 position = Vector2(1300, 620)
 scale = Vector2(0.18, 0.18)
 texture = ExtResource("5_tram17")
 
-[node name="BollardFrontLeft" type="Sprite2D" parent="." unique_id=300003]
+[node name="BollardFrontLeft" type="Sprite2D" parent="."]
 position = Vector2(45, 425)
 texture = ExtResource("6_bollard")
 
-[node name="BollardFrontRight" type="Sprite2D" parent="." unique_id=300004]
+[node name="BollardFrontRight" type="Sprite2D" parent="."]
 position = Vector2(115, 425)
 texture = ExtResource("6_bollard")
 
-[node name="BollardCafeLeft" type="Sprite2D" parent="." unique_id=300005]
+[node name="BollardCafeLeft" type="Sprite2D" parent="."]
 position = Vector2(375, 425)
 texture = ExtResource("6_bollard")
 
-[node name="BollardCafeRight" type="Sprite2D" parent="." unique_id=300006]
+[node name="BollardCafeRight" type="Sprite2D" parent="."]
 position = Vector2(445, 425)
 texture = ExtResource("6_bollard")
 
-[node name="StreetBench" type="Sprite2D" parent="." unique_id=300011]
+[node name="StreetBench" type="Sprite2D" parent="."]
 position = Vector2(200, 470)
 scale = Vector2(0.5, 0.5)
 texture = ExtResource("8_street_bench")
 
-[node name="AbandonedCoffeeCup" type="Sprite2D" parent="." unique_id=300012]
+[node name="AbandonedCoffeeCup" type="Sprite2D" parent="."]
 position = Vector2(215, 455)
 texture = ExtResource("9_abandoned_coffee_cup")
 
-[node name="TrashBin" type="Sprite2D" parent="." unique_id=300013]
+[node name="TrashBin" type="Sprite2D" parent="."]
 position = Vector2(380, 470)
 scale = Vector2(0.4, 0.4)
 texture = ExtResource("10_trash_bin_public")
 
-[node name="GraffitiDecal01" type="Sprite2D" parent="." unique_id=300014]
+[node name="GraffitiDecal01" type="Sprite2D" parent="."]
 position = Vector2(825, 371)
 scale = Vector2(0.34615386, 0.34615386)
 texture = ExtResource("11_graffiti_decal_01")
 
-[node name="ParkedSedan" type="Sprite2D" parent="." unique_id=300015]
+[node name="ParkedSedan" type="Sprite2D" parent="."]
 position = Vector2(700, 620)
 scale = Vector2(0.7, 0.7)
 texture = ExtResource("12_parked_sedan")
 
-[node name="Pigeon1" type="Sprite2D" parent="." unique_id=300016]
+[node name="Pigeon1" type="Sprite2D" parent="."]
 position = Vector2(610, 470)
 scale = Vector2(0.6, 0.6)
 texture = ExtResource("13_pigeon_idle")
 
-[node name="CatenaryPole" type="Sprite2D" parent="." unique_id=300020]
+[node name="CatenaryPole" type="Sprite2D" parent="."]
 position = Vector2(1100, 520)
 scale = Vector2(1.5, 2.5)
 texture = ExtResource("14_catenary_pole")
 
-[node name="TramStopPlatform" type="Sprite2D" parent="." unique_id=300021]
+[node name="TramStopPlatform" type="Sprite2D" parent="."]
 position = Vector2(1280, 580)
 texture = ExtResource("15_tram_stop_platform")
 
-[node name="TramStopSign17" type="Sprite2D" parent="." unique_id=300022]
+[node name="TramStopSign17" type="Sprite2D" parent="."]
 position = Vector2(1180, 540)
 texture = ExtResource("16_tram_stop_sign")
 
-[node name="StreetNameOfficeStreet" type="Sprite2D" parent="." unique_id=300023]
+[node name="StreetNameOfficeStreet" type="Sprite2D" parent="."]
 position = Vector2(794, 267)
 scale = Vector2(0.31024095, 0.31024095)
 texture = ExtResource("17_street_name_office")
 
-[node name="Pigeon2" type="Sprite2D" parent="." unique_id=300024]
+[node name="Pigeon2" type="Sprite2D" parent="."]
 position = Vector2(1420, 470)
 scale = Vector2(0.6, 0.6)
 texture = ExtResource("13_pigeon_idle")
 
-[node name="CourtSignpost" type="Sprite2D" parent="." unique_id=300030]
+[node name="CourtSignpost" type="Sprite2D" parent="."]
 position = Vector2(1700, 500)
 scale = Vector2(0.7, 0.7)
 texture = ExtResource("18_court_signpost")
 
-[node name="NoticeBoard" type="Sprite2D" parent="." unique_id=300031]
+[node name="NoticeBoard" type="Sprite2D" parent="."]
 position = Vector2(1820, 280)
 texture = ExtResource("19_notice_board")
 
-[node name="StreetNameCounselRow" type="Sprite2D" parent="." unique_id=300032]
+[node name="StreetNameCounselRow" type="Sprite2D" parent="."]
 position = Vector2(2240, 290)
 scale = Vector2(0.31122458, 0.3112246)
 texture = ExtResource("20_street_name_counsel")
 
-[node name="FencedPlanter" type="Sprite2D" parent="." unique_id=300033]
+[node name="FencedPlanter" type="Sprite2D" parent="."]
 position = Vector2(1850, 470)
 scale = Vector2(0.7, 0.7)
 texture = ExtResource("21_fenced_planter")
 
-[node name="ParkedHatchback" type="Sprite2D" parent="." unique_id=300040]
+[node name="ParkedHatchback" type="Sprite2D" parent="."]
 position = Vector2(2200, 620)
 scale = Vector2(0.7, 0.7)
 texture = ExtResource("22_parked_hatchback")
 
-[node name="GraffitiDecal02" type="Sprite2D" parent="." unique_id=300041]
+[node name="GraffitiDecal02" type="Sprite2D" parent="."]
 position = Vector2(1365, 316)
 scale = Vector2(0.7631579, 0.7631579)
 texture = ExtResource("23_graffiti_decal_02")
 
-[node name="KioskPress" type="Sprite2D" parent="." unique_id=300042]
+[node name="KioskPress" type="Sprite2D" parent="."]
 position = Vector2(2387, 470)
 scale = Vector2(1.3914664, 1.3914664)
 texture = ExtResource("24_kiosk_press")
 
-[node name="SmokersLawyer" type="Area2D" parent="." unique_id=300050]
+[node name="SmokersLawyer" type="Area2D" parent="."]
 position = Vector2(180, 460)
 collision_layer = 4
 collision_mask = 2
@@ -320,12 +320,12 @@ npc_id = "smokers_lawyer_ch1"
 display_name = "Junior Lawyer"
 npc_color = Color(0.11, 0.16, 0.25, 1)
 
-[node name="Visual" type="AnimatedSprite2D" parent="SmokersLawyer" unique_id=300051]
+[node name="Visual" type="AnimatedSprite2D" parent="SmokersLawyer"]
 scale = Vector2(0.5, 0.5)
 sprite_frames = ExtResource("26_smokers_frames")
 animation = &"idle_front"
 
-[node name="TramWaiter" type="Area2D" parent="." unique_id=300060]
+[node name="TramWaiter" type="Area2D" parent="."]
 position = Vector2(1230, 580)
 collision_layer = 4
 collision_mask = 2
@@ -334,12 +334,12 @@ npc_id = "tram_waiter_ch1"
 display_name = "Elderly Woman"
 npc_color = Color(0.35, 0.16, 0.29, 1)
 
-[node name="Visual" type="AnimatedSprite2D" parent="TramWaiter" unique_id=300061]
+[node name="Visual" type="AnimatedSprite2D" parent="TramWaiter"]
 scale = Vector2(0.5, 0.5)
 sprite_frames = ExtResource("27_tram_waiter_frames")
 animation = &"idle_front"
 
-[node name="MailCarrier" type="Area2D" parent="." unique_id=300070]
+[node name="MailCarrier" type="Area2D" parent="."]
 position = Vector2(1600, 500)
 collision_layer = 4
 collision_mask = 2
@@ -348,12 +348,12 @@ npc_id = "mail_carrier_ch1"
 display_name = "Mail Carrier"
 npc_color = Color(0.91, 0.78, 0.25, 1)
 
-[node name="Visual" type="AnimatedSprite2D" parent="MailCarrier" unique_id=300071]
+[node name="Visual" type="AnimatedSprite2D" parent="MailCarrier"]
 scale = Vector2(0.5, 0.5)
 sprite_frames = ExtResource("28_mail_carrier_frames")
 animation = &"idle_front"
 
-[node name="ResidentialBlocker" type="Area2D" parent="." unique_id=300080]
+[node name="ResidentialBlocker" type="Area2D" parent="."]
 position = Vector2(2000, 580)
 collision_layer = 4
 collision_mask = 2
@@ -362,12 +362,12 @@ npc_id = "route_blocker_residential_ch1"
 display_name = "City Worker"
 npc_color = Color(0.78, 0.66, 0.41, 1)
 
-[node name="Visual" type="AnimatedSprite2D" parent="ResidentialBlocker" unique_id=300081]
+[node name="Visual" type="AnimatedSprite2D" parent="ResidentialBlocker"]
 scale = Vector2(0.5, 0.5)
 sprite_frames = ExtResource("29_res_blocker_frames")
 animation = &"idle_front"
 
-[node name="BusinessBlocker" type="Area2D" parent="." unique_id=300090]
+[node name="BusinessBlocker" type="Area2D" parent="."]
 position = Vector2(2480, 500)
 collision_layer = 4
 collision_mask = 2
@@ -376,9 +376,9 @@ npc_id = "route_blocker_business_ch1"
 display_name = "Security Guard"
 npc_color = Color(0.1, 0.08, 0.06, 1)
 
-[node name="Visual" type="AnimatedSprite2D" parent="BusinessBlocker" unique_id=300091]
+[node name="Visual" type="AnimatedSprite2D" parent="BusinessBlocker"]
 scale = Vector2(0.5, 0.5)
 sprite_frames = ExtResource("30_biz_blocker_frames")
 animation = &"idle_front"
 
-[node name="UnifyPost" parent="." unique_id=1154489390 instance=ExtResource("36_fc5lm")]
+[node name="UnifyPost" parent="." instance=ExtResource("36_fc5lm")]

@@ -17,6 +17,11 @@ extends Area2D
 ## inside the zone, the linger timer is suppressed for that visit. The timer
 ## resets on exit so a new visit without [E] still triggers normally.
 
+const ZONE_BARBS_PATH: String = "res://data/zone_barbs.json"
+const NPC_ID: String = "asia"
+
+## LINES — defensive in-code fallback only. Canonical values live in
+## data/zone_barbs.json::asia and are loaded on _ready().
 const LINES: Array = [
 	"Dr. A. Cula? Are you looking for paperclips?",
 	"If you need to print something, just ask.",
@@ -31,14 +36,30 @@ var _player_inside: bool = false
 var _timer: float = 0.0
 var _fired: bool = false
 var _player_engaged: bool = false
+var _lines: Array = LINES
 
 
 func _ready() -> void:
+	_lines = _load_zone_barbs()
 	body_entered.connect(_on_body_entered)
 	body_exited.connect(_on_body_exited)
 	var sigs = get_node_or_null("/root/Signals")
 	if sigs and sigs.has_signal("dialogue_requested"):
 		sigs.dialogue_requested.connect(_on_dialogue_requested)
+
+
+func _load_zone_barbs() -> Array:
+	var file: FileAccess = FileAccess.open(ZONE_BARBS_PATH, FileAccess.READ)
+	if file == null:
+		return LINES
+	var parsed: Variant = JSON.parse_string(file.get_as_text())
+	file.close()
+	if not (parsed is Dictionary):
+		return LINES
+	var lines: Variant = parsed.get(NPC_ID, [])
+	if not (lines is Array) or lines.is_empty():
+		return LINES
+	return lines
 
 
 func _on_dialogue_requested(npc_id: String, _display_name: String) -> void:
@@ -82,7 +103,7 @@ func _process(delta: float) -> void:
 		sigs.dialogue_requested.emit("asia", "Asia")
 	else:
 		## Ambient line; post-meeting flavor.
-		sigs.dialogue_line_ready.emit("Asia", "asia", [LINES[randi() % LINES.size()]])
+		sigs.dialogue_line_ready.emit("Asia", "asia", [_lines[randi() % _lines.size()]])
 
 
 func _on_body_entered(body: Node2D) -> void:

@@ -1,0 +1,64 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/ui/trial_record_panel.gd" id="1_trp"]
+
+[node name="TrialRecordPanel" type="PanelContainer"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+script = ExtResource("1_trp")
+
+[node name="MarginContainer" type="MarginContainer" parent="."]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme_override_constants/margin_left = 8
+theme_override_constants/margin_right = 8
+theme_override_constants/margin_top = 8
+theme_override_constants/margin_bottom = 8
+
+[node name="VBox" type="VBoxContainer" parent="MarginContainer"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+
+[node name="PanelTitle" type="Label" parent="MarginContainer/VBox"]
+text = "Trial Record"
+theme_override_font_sizes/font_size = 15
+theme_override_colors/font_color = Color(0.86, 0.84, 0.80, 1)
+
+[node name="Separator1" type="HSeparator" parent="MarginContainer/VBox"]
+
+[node name="FactsHeader" type="Label" parent="MarginContainer/VBox"]
+text = "Facts on Record"
+theme_override_font_sizes/font_size = 12
+theme_override_colors/font_color = Color(0.70, 0.69, 0.66, 1)
+
+[node name="FactsList" type="VBoxContainer" parent="MarginContainer/VBox"]
+
+[node name="Separator2" type="HSeparator" parent="MarginContainer/VBox"]
+
+[node name="AuthoritiesHeader" type="Label" parent="MarginContainer/VBox"]
+text = "Authorities Cited"
+theme_override_font_sizes/font_size = 12
+theme_override_colors/font_color = Color(0.70, 0.69, 0.66, 1)
+
+[node name="AuthoritiesList" type="VBoxContainer" parent="MarginContainer/VBox"]
+
+[node name="Separator3" type="HSeparator" parent="MarginContainer/VBox"]
+
+[node name="OpposingPosition" type="Label" parent="MarginContainer/VBox"]
+text = ""
+autowrap_mode = 3
+theme_override_font_sizes/font_size = 12
+theme_override_colors/font_color = Color(0.64, 0.63, 0.60, 1)
+
+[node name="EffectivenessPopup" type="PanelContainer" parent="MarginContainer/VBox"]
+visible = false
+
+[node name="EffectivenessLabel" type="Label" parent="MarginContainer/VBox/EffectivenessPopup"]
+text = ""
+autowrap_mode = 3
+horizontal_alignment = 1
+theme_override_font_sizes/font_size = 14
+theme_override_colors/font_color = Color(0.86, 0.84, 0.80, 1)

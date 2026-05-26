@@ -45,7 +45,6 @@ func _init() -> void:
 		"current_spawn_id": "default",
 		"chapter1": {
 			"halina_met": true,
-			"halina_trust": 4,
 			"halina_r0_done": true,
 			"halina_r1_choice": "warm",
 			"halina_r1_done": true,

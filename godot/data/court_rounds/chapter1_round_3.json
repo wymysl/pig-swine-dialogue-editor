@@ -1,0 +1,832 @@
+{
+  "version": 1,
+  "id": "chapter1_round_3",
+  "chapter": 1,
+  "opponent_id": "landlord_counsel_ch1",
+  "judgment_unlock": "procedural_reset_ch1",
+  "_status": "Code+Design pass complete. Phase 1 fact-finding wiring matches the Round 1 schema; Phase 2 closing's available citations carry Round 1 and Round 2 primary fact flags forward as gating predicates per design plan Step 3.1 (\"misses cascade to Round 3's available remedy\"). Phase 2 victory_resolution is the dispositive court-arc resolver post-Step-3.2 — predicates evaluate cumulative primary_fact_count across all three rounds. Round 3 writes chapter1.court_won_procedural_reset and chapter1.casebook_judge_state. It does NOT write chapter1.court_outcome — that is computed by battle_controller.gd::_compute_court_outcome() per design plan Step 1.1 (SAVE_VERSION 23).",
+  "_owner_code": "id, opponent_id, judgment_unlock, phase_1_fact_finding action costs and fact flags, witness ids and budgets, statement ids and tags, press/present wiring, phase_2_closing frame gates, counter-question ids/tags/weighted dictionaries, citation move references and patience deltas, victory_resolution branch wiring (court_won_procedural_reset write — dispositive — and casebook_judge_state advance to round_3_remedy).",
+  "_owner_design": "witness display names, statement text, press follow-up text, present judge reactions, judge counter-question text, citation flavor lines, defeat lines, partial lines, victory result lines.",
+  "phase_1_fact_finding": {
+    "action_costs": {
+      "press": 1,
+      "present": 1,
+      "present_bonus": 0
+    },
+    "witness_cooperation_total": 4,
+    "local_fact_flags": {
+      "_fact.rehearing_window_available": {
+        "scope": "local_round",
+        "resolution_weight": "primary",
+        "article_tags": [
+          "echr_6",
+          "pl_const_45"
+        ],
+        "principle_tags": [
+          "effective_remedy",
+          "access_to_court"
+        ],
+        "context_tags": [
+          "civil_proceedings",
+          "deadline",
+          "documentary"
+        ],
+        "set_by": [
+          "court_clerk.clerk_calendar_status"
+        ],
+        "used_by": [
+          "phase_2_closing.jq_remedy_what_exactly.requires_fact_flags",
+          "phase_2_closing.jq_remedy_what_exactly.citation.rehearing_as_remedy.requires_fact_flags",
+          "phase_2_closing.victory_resolution"
+        ]
+      },
+      "_fact.merits_reservable": {
+        "scope": "local_round",
+        "resolution_weight": "primary",
+        "article_tags": [
+          "echr_6",
+          "pl_const_45"
+        ],
+        "principle_tags": [
+          "effective_remedy",
+          "procedural_fairness"
+        ],
+        "context_tags": [
+          "civil_proceedings",
+          "housing",
+          "fair_trial"
+        ],
+        "set_by": [
+          "court_clerk.clerk_calendar_status.press_clerk_merits_separation"
+        ],
+        "used_by": [
+          "phase_2_closing.jq_remedy_what_exactly.requires_fact_flags",
+          "phase_2_closing.jq_remedy_what_exactly.citation.rehearing_as_remedy.requires_fact_flags",
+          "phase_2_closing.victory_resolution"
+        ]
+      },
+      "_fact.no_landlord_prejudice_filed": {
+        "scope": "local_round",
+        "resolution_weight": "primary",
+        "article_tags": [
+          "echr_6"
+        ],
+        "principle_tags": [
+          "proportionality",
+          "legitimate_aim"
+        ],
+        "context_tags": [
+          "civil_proceedings",
+          "documentary",
+          "deadline"
+        ],
+        "set_by": [
+          "court_usher.usher_no_prejudice_on_file"
+        ],
+        "used_by": [
+          "phase_2_closing.jq_landlord_prejudice_test.requires_fact_flags",
+          "phase_2_closing.jq_landlord_prejudice_test.citation.rehearing_as_remedy.requires_fact_flags",
+          "phase_2_closing.victory_resolution"
+        ]
+      },
+      "_fact.client_present_today": {
+        "scope": "local_round",
+        "resolution_weight": "primary",
+        "article_tags": [
+          "echr_6",
+          "pl_const_45"
+        ],
+        "principle_tags": [
+          "access_to_court",
+          "procedural_fairness"
+        ],
+        "context_tags": [
+          "civil_proceedings",
+          "fair_trial",
+          "housing"
+        ],
+        "set_by": [
+          "court_usher.usher_no_prejudice_on_file.press_usher_gallery_present"
+        ],
+        "used_by": [
+          "phase_2_closing.jq_remedy_what_exactly.citation.rehearing_as_remedy.requires_fact_flags",
+          "phase_2_closing.victory_resolution"
+        ]
+      },
+      "_fact.bonus_tenancy_chain_uncontested": {
+        "scope": "local_round",
+        "resolution_weight": "bonus",
+        "article_tags": [
+          "echr_6"
+        ],
+        "principle_tags": [
+          "prescribed_by_law",
+          "legal_certainty"
+        ],
+        "context_tags": [
+          "housing",
+          "documentary",
+          "civil_proceedings"
+        ],
+        "set_by": [
+          "court_clerk.clerk_calendar_status.present_lease_chain_at_clerk"
+        ],
+        "used_by": [
+          "phase_2_closing.victory_resolution"
+        ]
+      },
+      "_fact.bonus_proportionality_anchor": {
+        "scope": "local_round",
+        "resolution_weight": "bonus",
+        "article_tags": [
+          "echr_6"
+        ],
+        "principle_tags": [
+          "effective_remedy",
+          "proportionality"
+        ],
+        "context_tags": [
+          "fair_trial",
+          "civil_proceedings"
+        ],
+        "set_by": [
+          "court_usher.usher_no_prejudice_on_file.present_rights_memo_at_usher"
+        ],
+        "used_by": [
+          "phase_2_closing.victory_resolution"
+        ]
+      },
+      "_fact.bonus_witness_continuity_remedy": {
+        "scope": "local_round",
+        "resolution_weight": "bonus",
+        "article_tags": [
+          "echr_6"
+        ],
+        "principle_tags": [
+          "proportionality",
+          "procedural_fairness"
+        ],
+        "context_tags": [
+          "housing",
+          "civil_proceedings"
+        ],
+        "set_by": [
+          "court_usher.usher_no_prejudice_on_file.present_wojcik_at_usher"
+        ],
+        "used_by": [
+          "phase_2_closing.victory_resolution"
+        ]
+      },
+      "_fact.bonus_landlord_correspondence_remedy": {
+        "scope": "local_round",
+        "resolution_weight": "bonus",
+        "article_tags": [
+          "echr_6"
+        ],
+        "principle_tags": [
+          "service_of_process",
+          "legal_certainty"
+        ],
+        "context_tags": [
+          "civil_proceedings",
+          "documentary"
+        ],
+        "set_by": [
+          "court_clerk.clerk_calendar_status.present_return_to_sender_at_clerk"
+        ],
+        "used_by": [
+          "phase_2_closing.victory_resolution"
+        ]
+      }
+    },
+    "witnesses": [
+      {
+        "id": "court_clerk",
+        "display_name": "Court Clerk",
+        "_status_note": "Same court clerk as Round 1, returning. Same register — dry-institutional, the registry transcribes, the registry records. Round 3 focuses her on scheduling and on the costs/merits separation rule rather than service. She is the procedural calendar made articulate.",
+        "cooperation_budget": 2,
+        "statements": [
+          {
+            "id": "clerk_calendar_status",
+            "text": "Your Honour. The court's calendar shows three remaining hearing slots in the statutory window — the eleventh, the eighteenth, and the twenty-fifth of the present month. The bench has discretion as to which. Rescheduling occurs in the ordinary course; no party need petition for it.",
+            "_status_note": "Opening statement. Three available dates inside the statutory window — the remedy is mechanically simple. The 'no party need petition' line is the load-bearing dryness: the rehearing is administrative, which is exactly the modest-remedy frame story.txt requires.",
+            "article_tags": [
+              "echr_6",
+              "pl_const_45"
+            ],
+            "principle_tags": [
+              "effective_remedy",
+              "access_to_court"
+            ],
+            "context_tags": [
+              "civil_proceedings",
+              "deadline",
+              "documentary"
+            ],
+            "press_options": [
+              {
+                "id": "press_clerk_merits_separation",
+                "cost": 1,
+                "follow_up_statement_id": "clerk_merits_costs_separation",
+                "follow_up_text": "Reserved-costs orders are routine where a hearing is set aside on a service ground. The merits remain on the docket. The court does not, in this form of order, decide the underlying tenancy; the court restores the schedule. The registry has a template; the bench fills the date.",
+                "_status_note": "Follow-up: the procedural reset doesn't decide the merits. Critical for the remedy-discipline rule (story.txt: 'the player should not win everything'). The 'registry has a template; the bench fills the date' line lands the modesty of the remedy as ordinary court craft.",
+                "fact_flags_set": [
+                  "_fact.merits_reservable"
+                ]
+              },
+              {
+                "id": "press_clerk_priority_calendar",
+                "cost": 1,
+                "follow_up_statement_id": "clerk_priority_calendar",
+                "follow_up_text": "The eleventh is the earliest available slot. The registry would prefer it because the cooperative-office paperwork on the corrected address can be lodged by the seventh. The eighteenth and the twenty-fifth are equally available. The court's preference governs.",
+                "_status_note": "Follow-up: surfaces the calendar machinery. Lays foundation for 'no prejudice from short adjournment' without naming it — the rescheduling can be done within a week, which means the petitioner's prejudice argument has nothing structural to hang on.",
+                "fact_flags_set": []
+              }
+            ],
+            "present_options": [
+              {
+                "id": "present_lease_chain_at_clerk",
+                "evidence_id": "lease_1962_inheritance_1987",
+                "cost": 0,
+                "available_when": "chapter1.client_meeting_evidence == 'lease_1962_inheritance_1987'",
+                "fact_flags_set": [
+                  "_fact.bonus_tenancy_chain_uncontested"
+                ],
+                "judge_reaction": "The 1962 original lease, the 1987 succession, the renewal series through last year. The tenancy chain is uncontested and the court is not deciding it today. The registry will note the documents as bench reference; the merits remain off the schedule. Counsel will not over-read this."
+              },
+              {
+                "id": "present_return_to_sender_at_clerk",
+                "evidence_id": "return_to_sender_slip",
+                "cost": 0,
+                "available_when": "chapter1.client_meeting_evidence == 'return_to_sender_slip'",
+                "fact_flags_set": [
+                  "_fact.bonus_landlord_correspondence_remedy"
+                ],
+                "judge_reaction": "The return-to-sender slip already on the record. Counsel offers it now for the proposition that the petitioner's own correspondence chain knew number twelve in March. The court accepts it on that limited footing. The exhibit speaks to remedy-fitting, not to the underlying tenancy."
+              }
+            ],
+            "fact_flags_set": [
+              "_fact.rehearing_window_available"
+            ]
+          },
+          {
+            "id": "clerk_merits_costs_separation",
+            "text": "The reserved-costs order is a one-line entry on the form. The merits are noted as 'reserved' and the schedule restored to the docket. The petitioner is free to bring the underlying matter; the bench is free, on that future day, to hear it. Today's order does not displace either.",
+            "_status_note": "Follow-up state. Lays out the structural neutrality of the procedural reset — the order changes the schedule, not the substance. 'Today's order does not displace either' is the line for Cula's eventual citation: the bench is not adjudicating, only restoring.",
+            "article_tags": [
+              "echr_6",
+              "pl_const_45"
+            ],
+            "principle_tags": [
+              "effective_remedy",
+              "procedural_fairness"
+            ],
+            "context_tags": [
+              "civil_proceedings",
+              "fair_trial",
+              "housing"
+            ],
+            "press_options": [],
+            "present_options": [],
+            "fact_flags_set": []
+          },
+          {
+            "id": "clerk_priority_calendar",
+            "text": "The eleventh is open at fourteen hundred; the eighteenth at ten and at fifteen; the twenty-fifth at eleven. The court's diary is available to either counsel for inspection on request. The matter takes its turn in the ordinary course.",
+            "_status_note": "Follow-up state. The bureaucratic calendar laid out plainly. 'The matter takes its turn in the ordinary course' is the closer — no party need do anything heroic; the schedule already accommodates the remedy. Subverts the petitioner's prejudice argument without addressing it.",
+            "article_tags": [
+              "echr_6"
+            ],
+            "principle_tags": [
+              "effective_remedy",
+              "legal_certainty"
+            ],
+            "context_tags": [
+              "civil_proceedings",
+              "deadline",
+              "documentary"
+            ],
+            "press_options": [],
+            "present_options": [],
+            "fact_flags_set": []
+          }
+        ]
+      },
+      {
+        "id": "court_usher",
+        "display_name": "Court Usher",
+        "_status_note": "Senior court usher. He runs the gallery, signs the day-list, and notices everything the bailiff has been told not to. Less procedural than the clerk; more observational. His statements speak to who is in the courtroom today and what the parties have actually filed. Address to Cula: 'sir' or no form.",
+        "cooperation_budget": 2,
+        "statements": [
+          {
+            "id": "usher_no_prejudice_on_file",
+            "text": "Your Honour. I have the day-list and the registry packet for this matter. There is no prejudice affidavit on file from the petitioner. No motion to expedite. No application for an interim order. The petitioner's filings are limited to the original petition, the bailiff's return, and the order of the eighth.",
+            "_status_note": "Opening statement. The petitioner has filed nothing supporting the prejudice argument his counsel is now making at the bench. The dryness lands the argument as rhetorical — there is no documentary record of the prejudice the petitioner asks the court to weigh.",
+            "article_tags": [
+              "echr_6"
+            ],
+            "principle_tags": [
+              "proportionality",
+              "legitimate_aim",
+              "procedural_fairness"
+            ],
+            "context_tags": [
+              "civil_proceedings",
+              "documentary",
+              "deadline"
+            ],
+            "press_options": [
+              {
+                "id": "press_usher_gallery_present",
+                "cost": 1,
+                "follow_up_statement_id": "usher_gallery_present_response",
+                "follow_up_text": "The respondent is present in the gallery. I signed her in at the witness-bench desk before the morning session. She has been here since the court opened. The court is welcome to take notice for the record; the registry has already entered her appearance for today.",
+                "_status_note": "Follow-up: the structural ironic counterpoint to Round 2. On the eighth of April Halina wasn't in the room because she didn't know there was a room. Today she has been here since the doors opened. The 'witness-bench desk' detail anchors the fact materially — somebody signed her in.",
+                "fact_flags_set": [
+                  "_fact.client_present_today"
+                ]
+              },
+              {
+                "id": "press_usher_landlord_attendance",
+                "cost": 1,
+                "follow_up_statement_id": "usher_landlord_attendance_response",
+                "follow_up_text": "The petitioner is not present. The petitioner's counsel is present. The petitioner has filed no representation today beyond counsel — no affidavit, no excuse for absence, no representative. That is, of course, permitted; I observe it for what it is.",
+                "_status_note": "Follow-up: load-bearing parallel. On the eighth of April Halina's absence was treated as default; today the petitioner's absence is treated as procedurally fine. The usher names the asymmetry without prosecuting it. Lands the proportionality argument as procedural observation.",
+                "fact_flags_set": []
+              }
+            ],
+            "present_options": [
+              {
+                "id": "present_rights_memo_at_usher",
+                "evidence_id": "rights_memo_article_6",
+                "cost": 0,
+                "available_when": "chapter1.has_rights_memo == true",
+                "fact_flags_set": [
+                  "_fact.bonus_proportionality_anchor"
+                ],
+                "judge_reaction": "The Rights Memo, again. Counsel cites the effective-remedy clause for the proposition that the remedy must reach the right. The court notes the citation for purposes of remedy-fitting only; the bench is not, in this round, weighing the underlying interference."
+              },
+              {
+                "id": "present_wojcik_at_usher",
+                "evidence_id": "wojcik_witness_statement",
+                "cost": 0,
+                "available_when": "chapter1.client_meeting_evidence == 'wojcik_witness_statement'",
+                "fact_flags_set": [
+                  "_fact.bonus_witness_continuity_remedy"
+                ],
+                "judge_reaction": "Mrs. Wójcik's affidavit, offered now for the proposition that the harm of further delay falls on a continuous tenant. The court accepts the offer on that limited footing — the remedy's modesty is sharpened, not its substance."
+              }
+            ],
+            "fact_flags_set": [
+              "_fact.no_landlord_prejudice_filed"
+            ]
+          },
+          {
+            "id": "usher_gallery_present_response",
+            "text": "Mrs. Sikorska is on the second bench from the rail, third seat from the aisle. She has the case folder open on her lap. The bailiff who effected the original service is also present; he is at the witness end of the gallery and has been since his testimony closed. The room is composed.",
+            "_status_note": "Follow-up state. Pure courtroom observation, in registers the bench will hear cleanly. 'The room is composed' lands as a quiet refutation of the petitioner's rhetorical urgency — there is no procedural emergency here. The case folder detail is the load-bearing humanity beat: Halina has done the work.",
+            "article_tags": [
+              "echr_6",
+              "pl_const_45"
+            ],
+            "principle_tags": [
+              "access_to_court",
+              "procedural_fairness"
+            ],
+            "context_tags": [
+              "civil_proceedings",
+              "fair_trial",
+              "housing"
+            ],
+            "press_options": [],
+            "present_options": [],
+            "fact_flags_set": []
+          },
+          {
+            "id": "usher_landlord_attendance_response",
+            "text": "Counsel for the petitioner attends. The petitioner himself does not. The court's record reflects no application for excused attendance; the absence is unannounced and procedurally unremarkable. The petitioner's counsel will speak on his client's behalf when called.",
+            "_status_note": "Follow-up state. The asymmetry of attendance noted in the usher's neutral register. 'Procedurally unremarkable' is the load-bearing dryness — the petitioner's absence is fine, which by structural inference makes the petitioner's prejudice argument from absence implausible. The bench will draw the inference if counsel does the work to lay the foundation.",
+            "article_tags": [
+              "echr_6"
+            ],
+            "principle_tags": [
+              "proportionality",
+              "procedural_fairness"
+            ],
+            "context_tags": [
+              "civil_proceedings",
+              "documentary"
+            ],
+            "press_options": [],
+            "present_options": [],
+            "fact_flags_set": []
+          }
+        ]
+      }
+    ]
+  },
+  "phase_2_closing": {
+    "judicial_patience_default": 5,
+    "frame_gates": {
+      "defective_service_135bis": {
+        "judicial_patience_start": 5,
+        "available_counter_questions": [
+          "jq_remedy_what_exactly",
+          "jq_landlord_prejudice_test"
+        ]
+      },
+      "third_party_non_cure": {
+        "judicial_patience_start": 5,
+        "available_counter_questions": [
+          "jq_remedy_what_exactly",
+          "jq_landlord_prejudice_test"
+        ],
+        "_status_note": "Third-clause frame is still operative through Round 3 — the remedy question follows whichever well-fitted frame carried the prior rounds."
+      },
+      "fair_hearing_article_6": {
+        "judicial_patience_start": 5,
+        "available_counter_questions": [
+          "jq_remedy_what_exactly",
+          "jq_landlord_prejudice_test"
+        ],
+        "_status_note": "Article 6 frame remains operative — Round 3 is the remedy phase regardless of frame, and the citation set is the same."
+      },
+      "merits_defence": {
+        "judicial_patience_start": 3,
+        "available_counter_questions": [
+          "jq_remedy_what_exactly"
+        ],
+        "_status_note": "Wrong-shape frame still incurs the reduced patience and the narrowed question set. The bench will not entertain the prejudice question from a merits-frame counsel."
+      },
+      "overbroad_remedy": {
+        "judicial_patience_start": 3,
+        "available_counter_questions": [
+          "jq_remedy_what_exactly",
+          "jq_landlord_prejudice_test"
+        ],
+        "_status_note": "Overbroad-remedy frame — patience reduced because counsel has already signalled a remedy-shape error. The bench will hear both questions, but the leeway is thinner."
+      }
+    },
+    "judge_counter_questions": [
+      {
+        "id": "jq_remedy_what_exactly",
+        "text": "Counsel. Identify the remedy. The court can grant any number of things; the court is interested in which one counsel actually wants. Stay inside the defect counsel has proved.",
+        "_status_note": "Round 3 opening counter-question — direct echo of the judge_b12_round3_open dialogue ('the court can grant any number of things'). The bench is asking counsel to name the procedurally licit, modestly scoped remedy. Lands the modest-remedy discipline as a question, not a lecture. The 'stay inside the defect counsel has proved' clause is the cascade hook — if Round 1 or Round 2 facts are thin, the defeat path is the bench observing precisely that.",
+        "opponent_pressure_move": "ask_for_everything",
+        "article_tags": [
+          "echr_6",
+          "pl_const_45"
+        ],
+        "principle_tags": [
+          "effective_remedy",
+          "access_to_court",
+          "procedural_fairness"
+        ],
+        "context_tags": [
+          "civil_proceedings",
+          "housing",
+          "fair_trial"
+        ],
+        "pressure_weakness_tags": {
+          "echr_6": 0.12,
+          "pl_const_45": 0.10,
+          "effective_remedy": 0.35,
+          "access_to_court": 0.18,
+          "procedural_fairness": 0.10,
+          "civil_proceedings": 0.08,
+          "housing": 0.04,
+          "fair_trial": 0.03
+        },
+        "pressure_strength_tags": {
+          "legitimate_aim": 0.50,
+          "proportionality": 0.50
+        },
+        "requires_fact_flags": [
+          "_fact.rehearing_window_available",
+          "_fact.merits_reservable"
+        ],
+        "judicial_patience_default": 5,
+        "available_citations": [
+          {
+            "move_id": "rehearing_as_remedy",
+            "article_tags": [
+              "echr_6",
+              "pl_const_45"
+            ],
+            "principle_tags": [
+              "effective_remedy",
+              "access_to_court",
+              "procedural_fairness"
+            ],
+            "context_tags": [
+              "civil_proceedings",
+              "housing",
+              "deadline"
+            ],
+            "move_tags": {
+              "echr_6": 0.15,
+              "pl_const_45": 0.10,
+              "effective_remedy": 0.32,
+              "access_to_court": 0.17,
+              "procedural_fairness": 0.10,
+              "civil_proceedings": 0.08,
+              "housing": 0.05,
+              "deadline": 0.03
+            },
+            "requires_fact_flags": [
+              "_fact.rehearing_window_available",
+              "_fact.merits_reservable",
+              "_fact.client_present_today"
+            ],
+            "judicial_patience_delta_on_hit": 2,
+            "judicial_patience_delta_on_miss": -1,
+            "judicial_patience_delta_on_backfire": -2,
+            "flavor_line": "The remedy is the rehearing. Not a dismissal. Not a finding on the merits. Not a permanent injunction against the petitioner's future filings. The eleventh is available; the eighteenth is available; the twenty-fifth is available. The registry has the corrected address on file. The client is in this room, present, prepared, with the case folder open on her lap. We are asking the court to give her the day she should have had. That is all we are asking. The court will note that the petitioner is not present today either, and yet the proceeding has continued; the right we are seeking for the client is the right the petitioner already exercises by counsel."
+          },
+          {
+            "move_id": "motion_to_set_aside",
+            "article_tags": [
+              "echr_6",
+              "pl_const_45"
+            ],
+            "principle_tags": [
+              "service_of_process",
+              "procedural_fairness",
+              "access_to_court"
+            ],
+            "context_tags": [
+              "civil_proceedings",
+              "service_failure",
+              "fair_trial"
+            ],
+            "move_tags": {
+              "echr_6": 0.20,
+              "pl_const_45": 0.15,
+              "service_of_process": 0.20,
+              "procedural_fairness": 0.20,
+              "access_to_court": 0.15,
+              "civil_proceedings": 0.05,
+              "service_failure": 0.03,
+              "fair_trial": 0.02
+            },
+            "requires_fact_flags": [
+              "_fact.rehearing_window_available"
+            ],
+            "judicial_patience_delta_on_hit": 1,
+            "judicial_patience_delta_on_miss": -2,
+            "judicial_patience_delta_on_backfire": -3,
+            "flavor_line": "The motion to set aside, under Article 135-bis § 2, with the schedule restored to the docket on a date the court selects. The remedy is the order; the order is the entry on the form. We are not asking the court to draft anything that is not already a template.",
+            "_status_note": "Acceptable fallback if the rehearing citation is gated out. The patience-on-miss delta is steeper than rehearing_as_remedy because, in the remedy round, naming the motion without naming the rehearing is rhetorically incomplete; the bench has signalled it wants the remedy noun."
+          }
+        ],
+        "frame_gates": {
+          "overbroad_remedy": {
+            "available_citation_ids": [
+              "rehearing_as_remedy"
+            ]
+          },
+          "merits_defence": {
+            "available_citation_ids": [
+              "motion_to_set_aside",
+              "rehearing_as_remedy"
+            ]
+          }
+        },
+        "defeat_lines": [
+          "Counsel asks for more than the defect proved. The court will not draft what counsel has not earned.",
+          "The remedy is not in the speech. The remedy is the bench's date. Counsel will name the date the court is being asked to set."
+        ],
+        "partial_lines": [
+          "Counsel has named the shape. The court would prefer the date.",
+          "The remedy noun reaches the bench. The bench is willing to hear the calendar."
+        ]
+      },
+      {
+        "id": "jq_landlord_prejudice_test",
+        "text": "Counsel. The petitioner's counsel asks the court to weigh adjournment-prejudice against the procedural defect. Identify the evidentiary foundation for that prejudice. Identify what, on the registry record before this bench, makes rescheduling within the statutory window a cost the petitioner cannot bear.",
+        "_status_note": "Round 3 follow-up counter-question. The judge tests the opposing counsel's prejudice argument against the actual filings — and the actual filings do not support it. Asks Cula to do the work of naming the absence, not just complaining about it. The 'within the statutory window' clause anchors the proportionality test in something concrete: the schedule already accommodates the remedy.",
+        "opponent_pressure_move": "landlord_prejudice",
+        "article_tags": [
+          "echr_6",
+          "pl_const_45"
+        ],
+        "principle_tags": [
+          "proportionality",
+          "effective_remedy",
+          "legitimate_aim"
+        ],
+        "context_tags": [
+          "civil_proceedings",
+          "housing",
+          "deadline"
+        ],
+        "pressure_weakness_tags": {
+          "echr_6": 0.12,
+          "pl_const_45": 0.08,
+          "proportionality": 0.30,
+          "effective_remedy": 0.20,
+          "legitimate_aim": 0.10,
+          "civil_proceedings": 0.10,
+          "housing": 0.05,
+          "deadline": 0.05
+        },
+        "pressure_strength_tags": {
+          "proportionality": 0.50,
+          "legitimate_aim": 0.50
+        },
+        "requires_fact_flags": [
+          "_fact.no_landlord_prejudice_filed"
+        ],
+        "judicial_patience_default": 5,
+        "available_citations": [
+          {
+            "move_id": "rehearing_as_remedy",
+            "article_tags": [
+              "echr_6",
+              "pl_const_45"
+            ],
+            "principle_tags": [
+              "effective_remedy",
+              "proportionality",
+              "procedural_fairness"
+            ],
+            "context_tags": [
+              "civil_proceedings",
+              "deadline",
+              "housing"
+            ],
+            "move_tags": {
+              "echr_6": 0.14,
+              "pl_const_45": 0.10,
+              "effective_remedy": 0.28,
+              "proportionality": 0.18,
+              "procedural_fairness": 0.10,
+              "civil_proceedings": 0.10,
+              "deadline": 0.05,
+              "housing": 0.05
+            },
+            "requires_fact_flags": [
+              "_fact.no_landlord_prejudice_filed",
+              "_fact.rehearing_window_available"
+            ],
+            "judicial_patience_delta_on_hit": 2,
+            "judicial_patience_delta_on_miss": -1,
+            "judicial_patience_delta_on_backfire": -3,
+            "flavor_line": "The prejudice the petitioner urges has not been filed. There is no affidavit. There is no motion to expedite. There is no application for an interim order. The petitioner has not filed today even an excuse for his own absence. The court is being asked to weigh a cost the petitioner has not entered into the record against the right of a tenant who is on the second bench, third seat from the aisle. The proportionality assessment, on these documents, runs in one direction only — toward the rehearing, on a date the bench selects, in the ordinary course."
+          },
+          {
+            "move_id": "motion_to_set_aside_full",
+            "article_tags": [
+              "echr_6",
+              "pl_const_45"
+            ],
+            "principle_tags": [
+              "service_of_process",
+              "procedural_fairness",
+              "access_to_court",
+              "effective_remedy"
+            ],
+            "context_tags": [
+              "civil_proceedings",
+              "service_failure",
+              "fair_trial"
+            ],
+            "move_tags": {
+              "echr_6": 0.18,
+              "pl_const_45": 0.12,
+              "service_of_process": 0.18,
+              "procedural_fairness": 0.15,
+              "access_to_court": 0.12,
+              "effective_remedy": 0.15,
+              "civil_proceedings": 0.05,
+              "service_failure": 0.03,
+              "fair_trial": 0.02
+            },
+            "requires_fact_flags": [
+              "_fact.notice_received_april_28",
+              "_fact.landlord_knew_address",
+              "_fact.no_appearance_logged",
+              "_fact.no_landlord_prejudice_filed"
+            ],
+            "judicial_patience_delta_on_hit": 2,
+            "judicial_patience_delta_on_miss": -1,
+            "judicial_patience_delta_on_backfire": -2,
+            "flavor_line": "The petitioner's prejudice is rhetorical because the petitioner's record is empty. The petitioner knew the address; the petitioner used the old one; the petitioner secured a hearing the client could not attend; the petitioner now asks the court to find rescheduling a hardship he has not documented. Four elements run the other way. The motion to set aside, on its full footing, is the order the registry has the form for.",
+            "_status_note": "Strongest available citation in the prejudice question. Requires the cumulative full-packet fact set — three primary facts from Rounds 1 and 2 plus the Round 3 prejudice fact. Cascade-faithful: if any prior-round primary was missed, the full-packet citation is locked here and counsel falls back to the simpler rehearing move."
+          }
+        ],
+        "frame_gates": {
+          "overbroad_remedy": {
+            "available_citation_ids": [
+              "rehearing_as_remedy"
+            ]
+          }
+        },
+        "defeat_lines": [
+          "The prejudice argument has not been engaged on its own terms. The court has heard counsel's discomfort with it but not counsel's answer to it.",
+          "Counsel will need to name the petitioner's empty docket aloud. The bench will not do counsel's pointing."
+        ],
+        "partial_lines": [
+          "Counsel begins to test the prejudice claim against the filings. The court is willing to hear the test completed.",
+          "The proportionality argument reaches the bench. The bench would like the filings invoked by name."
+        ]
+      }
+    ],
+    "victory_resolution": {
+      "_evaluation_doc": "Round 3 is the dispositive court-arc resolver post-Step-3.2. First-match resolution; blunder-first to keep the decoy and incapacity paths legible against the otherwise standard/strong predicates. primary_fact_flags is the CUMULATIVE primary fact set across Rounds 1, 2, and 3 — twelve flags total. primary_fact_count aliases the number of cumulative primary flags set; decoy_count aliases the number of chapter1.decoy_* flags set; judicial_patience is read from chapter1.judicial_patience. Branches write chapter1.court_won_procedural_reset (true on every band — story.txt's Beat 12 floor) and chapter1.casebook_judge_state := 'round_3_remedy' (triggers the existing judge_b12_remedy_<band> dialogue in judge_district_ch1.json). Branches DO NOT write chapter1.court_outcome — that is computed by battle_controller.gd::_compute_court_outcome() at end-of-round-3 reading packet_scorer + chapter1.phase2_round_results (design plan Step 1.1; SAVE_VERSION 23). The result_text variants are narrator-register summary text bridging the last Phase 2 citation and the judge's verbatim remedy announcement; they do not duplicate the dialogue's first-person voice. Note: chapter1_round_1.json's victory_resolution will be neutered to round-advancement in Step 3.2 — until that lands, both Round 1 and Round 3 resolvers fire and Round 3 is the authoritative one.",
+      "evaluation_order": [
+        "blunder_recovered",
+        "narrow_victory",
+        "standard_victory",
+        "strong_victory"
+      ],
+      "primary_fact_flags": [
+        "_fact.landlord_knew_address",
+        "_fact.notice_received_april_28",
+        "_fact.resident_no_authority",
+        "_fact.renumbering_2015_documented",
+        "_fact.ex_parte_hearing_held",
+        "_fact.no_appearance_logged",
+        "_fact.no_authority_check_at_door",
+        "_fact.bailiff_served_petitioner_address",
+        "_fact.rehearing_window_available",
+        "_fact.merits_reservable",
+        "_fact.no_landlord_prejudice_filed",
+        "_fact.client_present_today"
+      ],
+      "decoy_flags": [
+        "chapter1.decoy_merits",
+        "chapter1.decoy_notice_period",
+        "chapter1.decoy_standing_wrong_party",
+        "chapter1.decoy_overbroad_remedy",
+        "chapter1.decoy_incapacity"
+      ],
+      "branches": [
+        {
+          "id": "blunder_recovered",
+          "when": "chapter1.decoy_incapacity == true || primary_fact_count <= 4 || judicial_patience <= 1",
+          "sets": [
+            {
+              "path": "chapter1.court_won_procedural_reset",
+              "value": true
+            },
+            {
+              "path": "chapter1.casebook_judge_state",
+              "value": "round_3_remedy"
+            }
+          ],
+          "result_text": "The bench has been generous with its silences and is no longer being generous. The court closes the third question on its own motion. The order will issue under Article 135-bis § 2; the schedule will restore; the registry has the form. The reasoning is the bench's, not counsel's, and the order says so on its face. Pig & Swine has carried a procedural reset out of the room despite itself — somewhere in the file, the corrected address that counsel did not place there is the document the bench has cited.",
+          "_status_note": "Blunder-recovered band — incapacity decoy filed, or cumulative fact count critically thin (≤4 across all three rounds), or patience exhausted. The court grants the procedural reset because the defect is on the face of the documents; counsel did not earn the win. Narrator pre-bridge to the judge_b12_remedy_blunder_recovered or judge_b12_remedy_narrow_incapacity dialogue in judge_district_ch1.json. Does NOT duplicate the bench's verbatim words — those are the dialogue's job."
+        },
+        {
+          "id": "narrow_victory",
+          "when": "primary_fact_count >= 5 && decoy_count >= 2",
+          "sets": [
+            {
+              "path": "chapter1.court_won_procedural_reset",
+              "value": true
+            },
+            {
+              "path": "chapter1.casebook_judge_state",
+              "value": "round_3_remedy"
+            }
+          ],
+          "result_text": "The bench grants the motion on the procedural floor with a record the court describes as thin. The order is brief. The reasoning, in the court's preferred minimalist form, is the bench-default note that the petitioner's documents already supplied the defect and counsel located it in the second and third questions if not in the first. The merits remain open. The reschedule restores the docket. Counsel files out under no banner.",
+          "_status_note": "Narrow band — at least five primary facts established cumulatively, but two or more decoys were filed during the round. The bench grants on the floor because the architecture of the win was structural rather than rhetorical. Pre-bridge to judge_b12_remedy_narrow_<decoy> dialogue."
+        },
+        {
+          "id": "standard_victory",
+          "when": "primary_fact_count >= 7 && decoy_count <= 1 && judicial_patience >= 2",
+          "sets": [
+            {
+              "path": "chapter1.court_won_procedural_reset",
+              "value": true
+            },
+            {
+              "path": "chapter1.casebook_judge_state",
+              "value": "round_3_remedy"
+            }
+          ],
+          "result_text": "The bench grants the motion to set aside under Article 135-bis § 2. The schedule restores; the registry has the form. The court's order is short. The reasoning is shorter. The petitioner's counsel sits down without being asked. Mrs. Sikorska closes the case folder on her lap and does not stand up; she has been told to remain seated and does. Counsel files out behind the bailiff with the corrected docket in hand and a client still tenanted, in absentia, on the second bench.",
+          "_status_note": "Standard band — at least seven of twelve cumulative primary facts, at most one decoy, patience above the danger floor. The canonical Beat 12 outcome. Pre-bridge to judge_b12_remedy_standard or judge_b12_remedy_standard_technical dialogue."
+        },
+        {
+          "id": "strong_victory",
+          "when": "primary_fact_count >= 10 && decoy_count == 0 && judicial_patience >= 4",
+          "sets": [
+            {
+              "path": "chapter1.court_won_procedural_reset",
+              "value": true
+            },
+            {
+              "path": "chapter1.casebook_judge_state",
+              "value": "round_3_remedy"
+            }
+          ],
+          "result_text": "The bench grants the motion to set aside under Article 135-bis § 2. Before issuing the order the judge underlines two words on the bench's copy of the petition and, for the duration of one full breath, lets the room watch him do it. The four elements of the defect appear in the file. The Article 6 architecture appears in the transcript. The proportionality of the remedy appears in the calendar. The court has not, in some years, been able to record all three. The schedule restores. The merits are reserved. Costs follow the petitioner. The order goes no further than that; the order does not need to.",
+          "_status_note": "Strong band — at least ten of twelve cumulative primary facts, no decoys, patience high. The 'underlines two words and lets the room watch him do it' is the controlled bench-flourish — the judge does not lecture; the judge does the smallest visible thing and the courtroom reads it. Pre-bridge to judge_b12_remedy_strong or judge_b12_remedy_strong_technical dialogue. Mirrors the Round 1 strong-victory result_text's restraint while letting the cumulative-architecture observation carry the round's weight."
+        }
+      ]
+    }
+  }
+}

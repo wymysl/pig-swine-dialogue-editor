@@ -4,42 +4,72 @@ This plan governs a fresh Godot 4.6.2 build of Pig & Swine RPG, with Google Anti
 
 ## Source of truth
 
-The unified spec lives in five `.txt` files at the repo root:
+As of 2026-05-26 Step 6.2, the five root `.txt` files are frozen reference
+material, not active source of truth. Active authority now lives in the Godot
+tree:
 
-- `../story.txt` — chapters, beats, NPC behavior, gates, court structure (Parts 1, 3, 4).
-- `../world.txt` — overworld structure, 128×128 coordinate system, district scenes, route blockers, chapter-based unlocking, English↔Polish place-name translation table (Part 2).
-- `../minigames.txt` — Coffee Brewing and Document Chase (Part 5). Scooter Racing and Ski Slalom are dropped; Final Printer is reframed as a Casebook battle.
-- `../battle_mechanics.txt` — the Casebook Battle System (Part 6).
-- `../style_canon.txt` — Taste Standard examples, voice references, visual/audio canon, court design principles, Warsaw atmosphere and easter-egg roster.
+- `AGENTS.md` and `.antigravity/skills/` — governance, ownership, and role
+  rules.
+- `PLAN.md` — current scope, build plan, out-of-scope calls, and standing
+  decisions.
+- `PROPOSALS.md` — approved editorial/design decisions and proposal status.
+- `CONVENTIONS.md` — current runtime numbers, asset dimensions, palettes, and
+  implementation conventions.
+- `data/` — committed runtime content: dialogue, chapters, items, doors,
+  Casebook judgments, opponents, evidence, court rounds, tags, and voice
+  references.
+- `scripts/` and `scenes/` — shipped behavior and implementation reality.
+- `SPRINT_LOG.md` and `BUILD_NOTES.md` — recent facts and verification notes.
 
-Voice-reference drafts per character live in `godot/data/voice_references/<character_id>.jsonl` (audited, committed-clean). The previous JS prototype, the legacy `design/` canon, and the legacy `dialogue_samples.txt` are under `_legacy/` and explicitly out-of-scope.
+Frozen root references:
+
+- `../story.txt`
+- `../world.txt`
+- `../minigames.txt`
+- `../battle_mechanics.txt`
+- `../style_canon.txt`
+
+Read root references only when active sources point there, when mining
+historical context, or when the user explicitly asks. If they disagree with the
+active Godot layer, the active Godot layer wins.
+
+Voice-reference drafts per character live in `godot/data/voice_references/<character_id>.jsonl` (audited, committed-clean). The previous JS prototype, the legacy `design` canon, and the legacy `dialogue_samples.txt` are under `_legacy/` and explicitly out-of-scope.
 
 ## Decisions on file
 
 - **Engine:** Godot 4.6.2, GDScript.
 - **Perspective:** top-down tile, with `Camera2D` follow.
-- **Coordinate system:** 128×128 overworld from day one (per `world.txt`). Districts populated chapter by chapter, blocked routes visible from minute one.
+- **Coordinate system:** 128×128 overworld from day one (per active `PLAN.md` /
+  `PROPOSALS.md` decisions). Districts populated chapter by chapter, blocked
+  routes visible from minute one.
 - **Primary export target:** HTML5/web. Native exports come after Chapter 1 ships.
 - **Agent roles:** Design, Code, Art, QA. Four collapsed roles, see `.antigravity/skills/`.
 - **Asset rule:** small committed PNG sprites and short OGG loops are allowed. Aesthetic constraints (32×48 sprites, ~40-color palette, original audio only, pixelated-readable-warm) remain. See `AGENTS.md`.
-- **Casebook Battle System** is a core Code-owned system, not a one-off Chapter 1 feature. See `../battle_mechanics.txt` and `AGENTS.md` §"File ownership".
+- **Casebook Battle System** is a core Code-owned system, not a one-off Chapter
+  1 feature. See `PROPOSALS.md`, active runtime data under `data/`, and
+  `AGENTS.md` §"File ownership".
 
 ## Why a fresh build, not a port
 
-The valuable assets are the five `.txt` files at repo root and the audited voice-reference corpus in `godot/data/voice_references/`. The JS code in `_legacy/archive/` is throwaway. Read the spec; build it new.
+The valuable active assets are the Godot governance docs, approved proposals,
+runtime `data/`, implementation files, and audited voice-reference corpus in
+`godot/data/voice_references/`. The root `.txt` files are frozen historical
+reference. The JS code in `_legacy/archive/` is throwaway.
 
 ## Project structure
 
-The Godot tree below combines what `world.txt` prescribes (district and route scenes) with the standard project hygiene (autoloads, systems, data directories).
+The Godot tree below combines the active route/district decisions in this plan
+and `PROPOSALS.md` with standard project hygiene (autoloads, systems, data
+directories).
 
 ```
 pig-swine-rpg/
   _legacy/                         # frozen — JS prototype, old design canon, dialogue_samples.txt
-  story.txt                        # SOURCE OF TRUTH
-  world.txt
-  minigames.txt
-  battle_mechanics.txt
-  style_canon.txt
+  story.txt                        # frozen reference
+  world.txt                        # frozen reference
+  minigames.txt                    # frozen reference
+  battle_mechanics.txt             # frozen reference
+  style_canon.txt                  # frozen reference
   tools/
     voice_audit.py                 # mechanical audit + auto-fix for voice JSONLs
     README.md
@@ -140,14 +170,17 @@ Two principles. **Content is data, code is engine**: dialogue, doors, judgments,
 
 ## Vertical slice plan
 
-Chapter 1, web-exported, playable end-to-end, no console errors. Chapter 1 from `story.txt` is detailed enough to drive ~6 sprints. Resist the temptation to scaffold all five chapters or implement the full overworld first.
+Chapter 1, web-exported, playable end-to-end, no console errors. Chapter 1 is
+driven by this plan, `PROPOSALS.md`, current runtime `data/`, and recent sprint
+logs; root `story.txt` is frozen reference. Resist the temptation to scaffold
+all five chapters or implement the full overworld first.
 
 1. **Skeleton** (1–2 sessions). Empty Godot project; autoloads `state.gd`, `signals.gd`, `casebook.gd`; placeholder Office Street with a player that walks; web export passes; QA writes `tests/test_runner.gd`.
-2. **Office Street + Pig & Swine interior** (2–3 sessions). `office_street.tscn` and `pig_swine_office.tscn` with door transitions. Asia at reception. Mr. Pig pacing. Murrow hidden near files. Coffee machine that makes a noise admissible only under seal. Dialogue runner reads `dialogues.json`. Save/load round-trip works. Locked routes (Residential, Business, City Hall, Airport, Supreme Court) visible with `route_blocker.gd` flavor lines from `story.txt`.
+2. **Office Street + Pig & Swine interior** (2–3 sessions). `office_street.tscn` and `pig_swine_office.tscn` with door transitions. Asia at reception. Mr. Pig pacing. Murrow hidden near files. Coffee machine that makes a noise admissible only under seal. Dialogue runner reads active dialogue JSON. Save/load round-trip works. Locked routes (Residential, Business, City Hall, Airport, Supreme Court) visible with `route_blocker.gd` flavor lines from runtime data.
 3. **Investigation loop** (3–4 sessions). Asia hint states. Murrow's case briefing. Procedural Binder pickup in archive area. Crab and Whimsy recruitment. Café Paragraf scene with optional coffee mini-game. Docket (Q), Case Bag (I), Casebook view (C — placeholder until court).
-4. **Casebook Battle System v1** (3–4 sessions). The minimum Casebook engine sufficient for Chapter 1 court: `judgment.gd`, `principle_move.gd`, `argument_opponent.gd`, `effectiveness.gd`, `battle_controller.gd`, `battle_screen.tscn`. Three-tag effectiveness resolver (Article + Principle + Context). One starter judgment delivered with the Procedural Binder. Court round = battle encounter. Wrong-but-funny moves from `story.txt`.
+4. **Casebook Battle System v1** (3–4 sessions). The minimum Casebook engine sufficient for Chapter 1 court: `judgment.gd`, `principle_move.gd`, `argument_opponent.gd`, `effectiveness.gd`, `battle_controller.gd`, `battle_screen.tscn`. Three-tag effectiveness resolver (Article + Principle + Context). One starter judgment delivered with the Procedural Binder. Court round = battle encounter. Wrong-but-funny moves from active court-round and dialogue data.
 5. **Court + payoff** (2–3 sessions). Three court rounds wired as battle encounters. Result screen with stat deltas. Day-One Summary. Swine postcard. "Day-One Survivor" badge.
-6. **Polish + writing pass** (2–3 sessions). Asia/Pig/Murrow/Crab/Whimsy expression sets. Per-location music loops. Coffee mini-game with rhythm-timing per `minigames.txt`. Four dialogue states per recurring NPC. Taste-Standard pass on every line.
+6. **Polish + writing pass** (2–3 sessions). Asia/Pig/Murrow/Crab/Whimsy expression sets. Per-location music loops. Coffee mini-game per active mini-game data and approved proposals. Four dialogue states per recurring NPC. Taste-Standard pass on every line.
 
 A "session" is one focused agent run plus your review, ~30–90 minutes of human time. Total budget for the slice: ~14–20 sessions, ~4–8 weeks at one daily session.
 
@@ -183,9 +216,13 @@ Substitutions for Godot:
 - Chapter 2–5 scaffolding beyond the JSON file headers.
 - Native Mac/iOS exports.
 - True isometric perspective.
-- Districts beyond what Chapter 1 needs (per `world.txt` chapter-based unlocking).
+- Districts beyond what Chapter 1 needs (per active chapter-based unlocking
+  discipline in this plan and `PROPOSALS.md`).
 - Evidence Board, Document Chase, Scooter Racing, Ski Slalom, Final Printer.
-- Fast travel / tram (defer per `world.txt` until after a chapter or two of manual walking).
+- Fast travel / tram (defer until after a chapter or two of manual walking).
+- No Ch2 authoring (data files, scenes, dialogue, opponents) until a stranger has
+  played through Ch1 on the web build, sat through the Day-One Summary, and
+  signed off on the Casebook reveal.
 
 If an agent proposes work in this list, reject the artifact with one line: "out of scope per PLAN.md §Out of scope". Do not negotiate.
 

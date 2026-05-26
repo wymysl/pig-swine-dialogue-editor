@@ -1,0 +1,30 @@
+{
+    "ui_labels": {
+        "panel_title": "Trial Record",
+        "facts_section": "Facts on Record",
+        "authorities_section": "Authorities Cited",
+        "opposing_position_label": "Opposing position"
+    },
+    "bucket_labels": {
+        "super_effective": {
+            "text": "Super effective — strikes the article squarely",
+            "color": [0.58, 0.90, 0.50, 1.0]
+        },
+        "effective": {
+            "text": "Effective",
+            "color": [0.78, 0.93, 0.70, 1.0]
+        },
+        "not_very_effective": {
+            "text": "Not very effective",
+            "color": [0.86, 0.74, 0.40, 1.0]
+        },
+        "no_effect": {
+            "text": "No effect",
+            "color": [0.75, 0.73, 0.70, 1.0]
+        },
+        "backfires": {
+            "text": "Backfires — confirms opposing counsel's frame",
+            "color": [0.92, 0.45, 0.45, 1.0]
+        }
+    }
+}

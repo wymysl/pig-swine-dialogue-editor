@@ -1,0 +1,871 @@
+{
+  "version": 1,
+  "id": "chapter1_round_2",
+  "chapter": 1,
+  "opponent_id": "landlord_counsel_ch1",
+  "judgment_unlock": "procedural_reset_ch1",
+  "_status": "Code+Design pass complete. Phase 1 fact-finding wiring matches the Round 1 schema; Phase 2 closing carries Round 1's primary fact flags forward into the new fair-hearing question set per design plan Step 3.1.",
+  "_owner_code": "id, opponent_id, judgment_unlock, phase_1_fact_finding action costs and fact flags, witness ids and budgets, statement ids and tags, press/present wiring, phase_2_closing frame gates, counter-question ids/tags/weighted dictionaries, citation move references and patience deltas, victory_resolution branch wiring (advance-only — no court_won_procedural_reset or court_outcome writes; those land in Round 3 per Step 1.1).",
+  "_owner_design": "witness display names, statement text, press follow-up text, present judge reactions, judge counter-question text, citation flavor lines, defeat lines, partial lines, victory result lines.",
+  "phase_1_fact_finding": {
+    "action_costs": {
+      "press": 1,
+      "present": 1,
+      "present_bonus": 0
+    },
+    "witness_cooperation_total": 5,
+    "local_fact_flags": {
+      "_fact.ex_parte_hearing_held": {
+        "scope": "local_round",
+        "resolution_weight": "primary",
+        "article_tags": [
+          "echr_6",
+          "pl_const_45"
+        ],
+        "principle_tags": [
+          "access_to_court",
+          "procedural_fairness"
+        ],
+        "context_tags": [
+          "civil_proceedings",
+          "fair_trial",
+          "documentary"
+        ],
+        "set_by": [
+          "court_stenographer.stenographer_record_of_april_eighth"
+        ],
+        "used_by": [
+          "phase_2_closing.jq_article_6_substance.requires_fact_flags",
+          "phase_2_closing.jq_merits_anticipation.requires_fact_flags",
+          "phase_2_closing.jq_article_6_substance.citation.motion_to_set_aside.requires_fact_flags",
+          "phase_2_closing.victory_resolution"
+        ]
+      },
+      "_fact.no_appearance_logged": {
+        "scope": "local_round",
+        "resolution_weight": "primary",
+        "article_tags": [
+          "echr_6",
+          "pl_const_45"
+        ],
+        "principle_tags": [
+          "access_to_court",
+          "procedural_fairness"
+        ],
+        "context_tags": [
+          "civil_proceedings",
+          "fair_trial",
+          "documentary"
+        ],
+        "set_by": [
+          "court_stenographer.stenographer_record_of_april_eighth.press_register_for_appearance"
+        ],
+        "used_by": [
+          "phase_2_closing.jq_article_6_substance.requires_fact_flags",
+          "phase_2_closing.jq_article_6_substance.citation.motion_to_set_aside.requires_fact_flags",
+          "phase_2_closing.victory_resolution"
+        ]
+      },
+      "_fact.no_authority_check_at_door": {
+        "scope": "local_round",
+        "resolution_weight": "primary",
+        "article_tags": [
+          "echr_6",
+          "pl_const_45"
+        ],
+        "principle_tags": [
+          "service_of_process",
+          "procedural_fairness"
+        ],
+        "context_tags": [
+          "civil_proceedings",
+          "service_failure",
+          "housing"
+        ],
+        "set_by": [
+          "court_bailiff.bailiff_service_at_number_seven.press_bailiff_authority_check"
+        ],
+        "used_by": [
+          "phase_2_closing.jq_article_6_substance.citation.third_clause_non_cure.requires_fact_flags",
+          "phase_2_closing.jq_merits_anticipation.citation.third_clause_non_cure.requires_fact_flags",
+          "phase_2_closing.victory_resolution"
+        ]
+      },
+      "_fact.bailiff_served_petitioner_address": {
+        "scope": "local_round",
+        "resolution_weight": "primary",
+        "article_tags": [
+          "echr_6"
+        ],
+        "principle_tags": [
+          "service_of_process",
+          "legal_certainty"
+        ],
+        "context_tags": [
+          "civil_proceedings",
+          "service_failure",
+          "documentary"
+        ],
+        "set_by": [
+          "court_bailiff.bailiff_service_at_number_seven.press_bailiff_instruction_sheet"
+        ],
+        "used_by": [
+          "phase_2_closing.jq_merits_anticipation.requires_fact_flags",
+          "phase_2_closing.jq_merits_anticipation.citation.motion_to_set_aside.requires_fact_flags",
+          "phase_2_closing.victory_resolution"
+        ]
+      },
+      "_fact.bonus_landlord_solo_at_hearing": {
+        "scope": "local_round",
+        "resolution_weight": "bonus",
+        "article_tags": [
+          "echr_6"
+        ],
+        "principle_tags": [
+          "access_to_court",
+          "procedural_fairness"
+        ],
+        "context_tags": [
+          "civil_proceedings",
+          "fair_trial"
+        ],
+        "set_by": [
+          "court_stenographer.stenographer_record_of_april_eighth.present_rights_memo_at_stenographer"
+        ],
+        "used_by": [
+          "phase_2_closing.victory_resolution"
+        ]
+      },
+      "_fact.bonus_bailiff_old_address_known": {
+        "scope": "local_round",
+        "resolution_weight": "bonus",
+        "article_tags": [
+          "echr_6"
+        ],
+        "principle_tags": [
+          "service_of_process"
+        ],
+        "context_tags": [
+          "civil_proceedings",
+          "housing",
+          "documentary"
+        ],
+        "set_by": [
+          "court_bailiff.bailiff_service_at_number_seven.present_landlord_contact_at_bailiff"
+        ],
+        "used_by": [
+          "phase_2_closing.victory_resolution"
+        ]
+      },
+      "_fact.bonus_no_continuance_request": {
+        "scope": "local_round",
+        "resolution_weight": "bonus",
+        "article_tags": [
+          "echr_6",
+          "pl_const_45"
+        ],
+        "principle_tags": [
+          "access_to_court",
+          "procedural_fairness"
+        ],
+        "context_tags": [
+          "civil_proceedings",
+          "fair_trial",
+          "housing"
+        ],
+        "set_by": [
+          "court_stenographer.stenographer_record_of_april_eighth.present_wojcik_at_stenographer"
+        ],
+        "used_by": [
+          "phase_2_closing.victory_resolution"
+        ]
+      },
+      "_fact.bonus_return_slip_misdirection": {
+        "scope": "local_round",
+        "resolution_weight": "bonus",
+        "article_tags": [
+          "echr_6"
+        ],
+        "principle_tags": [
+          "service_of_process",
+          "legal_certainty"
+        ],
+        "context_tags": [
+          "civil_proceedings",
+          "service_failure",
+          "documentary"
+        ],
+        "set_by": [
+          "court_bailiff.bailiff_service_at_number_seven.present_return_to_sender_at_bailiff"
+        ],
+        "used_by": [
+          "phase_2_closing.victory_resolution"
+        ]
+      }
+    },
+    "witnesses": [
+      {
+        "id": "court_stenographer",
+        "display_name": "Court Stenographer",
+        "_status_note": "Neutral institutional voice. Late-career, slightly dry; speaks of hearings as paginated objects. No flourish; the register is record-keeping. Refers to the court as 'the court' not 'we'; the bench is 'his honour' only when quoting written orders. Address to Cula: 'counsel' or no form.",
+        "cooperation_budget": 3,
+        "statements": [
+          {
+            "id": "stenographer_record_of_april_eighth",
+            "text": "Your Honour. The transcript of the hearing of the eighth of April is on the registry record. The proceeding was opened at nine seventeen and closed at nine forty-one. The court entered default in the ordinary course. The transcript runs to four pages.",
+            "_status_note": "Opening statement. The hearing happened — the room sat, the clerk recorded, the court entered default — but the witness names none of the people who weren't there. Setting up the fair-hearing question without prosecuting it. The 'four pages' is the load-bearing dryness: a hearing that decided a tenancy occupied less than half an hour.",
+            "article_tags": [
+              "echr_6",
+              "pl_const_45"
+            ],
+            "principle_tags": [
+              "access_to_court",
+              "procedural_fairness"
+            ],
+            "context_tags": [
+              "civil_proceedings",
+              "fair_trial",
+              "documentary"
+            ],
+            "press_options": [
+              {
+                "id": "press_register_for_appearance",
+                "cost": 1,
+                "follow_up_statement_id": "stenographer_no_appearance_entered",
+                "follow_up_text": "There was no entered appearance for the respondent. The court called the matter; no party rose for Mrs. Sikorska. The petitioner's counsel proceeded on the papers. The default was entered because nobody answered the call, not because anyone weighed the absence.",
+                "_status_note": "Follow-up: court machinery ran. Nobody asked why no one was there. The pivot is the lawyerly understatement — 'because nobody answered the call' — leaving the conclusion 'and nobody at this court tried to find out why' implicit.",
+                "fact_flags_set": [
+                  "_fact.no_appearance_logged"
+                ]
+              },
+              {
+                "id": "press_hearing_duration",
+                "cost": 1,
+                "follow_up_statement_id": "stenographer_hearing_duration",
+                "follow_up_text": "Twenty-four minutes by the wall clock. The court reads the petition into the record, hears petitioning counsel briefly, reviews the bailiff's return, and enters the order. The respondent's right to be heard, in this court, takes the form of an empty chair and a typed minute.",
+                "_status_note": "Follow-up: how long did the hearing take? Twenty-four minutes. The line is procedurally accurate and rhetorically devastating without raising its voice. 'An empty chair and a typed minute' is the punctuation.",
+                "fact_flags_set": []
+              }
+            ],
+            "present_options": [
+              {
+                "id": "present_rights_memo_at_stenographer",
+                "evidence_id": "rights_memo_article_6",
+                "cost": 0,
+                "available_when": "chapter1.has_rights_memo == true",
+                "fact_flags_set": [
+                  "_fact.bonus_landlord_solo_at_hearing"
+                ],
+                "judge_reaction": "The Rights Memo. The court notes counsel's submission that, on the transcript counsel has just heard described, the only voice in the room was the petitioner's. The point is on the record."
+              },
+              {
+                "id": "present_wojcik_at_stenographer",
+                "evidence_id": "wojcik_witness_statement",
+                "cost": 0,
+                "available_when": "chapter1.client_meeting_evidence == 'wojcik_witness_statement'",
+                "fact_flags_set": [
+                  "_fact.bonus_no_continuance_request"
+                ],
+                "judge_reaction": "Mrs. Wójcik's statement. The witness is continuous at the address since 1991 and not so much as approached, by court or by counsel, before the order was entered. Continuance was never sought because nobody knew it was needed. The court will accept the affidavit on that footing."
+              }
+            ],
+            "fact_flags_set": [
+              "_fact.ex_parte_hearing_held"
+            ]
+          },
+          {
+            "id": "stenographer_no_appearance_entered",
+            "text": "There was no entered appearance for the respondent. There was no telephone appearance, no agent, no notice from any party that an appearance was forthcoming. The court called Sikorska in the ordinary way. The room did not answer. The court proceeded.",
+            "_status_note": "Follow-up state: amplifies the no-appearance fact. 'The room did not answer' is the line — passive, accurate, leaves the architecture of the absence visible.",
+            "article_tags": [
+              "echr_6",
+              "pl_const_45"
+            ],
+            "principle_tags": [
+              "access_to_court",
+              "procedural_fairness"
+            ],
+            "context_tags": [
+              "civil_proceedings",
+              "fair_trial"
+            ],
+            "press_options": [],
+            "present_options": [],
+            "fact_flags_set": []
+          },
+          {
+            "id": "stenographer_hearing_duration",
+            "text": "Twenty-four minutes from gavel to order. The respondent's absence is recorded on page two, line eleven, in the form 'Respondent: not present, no appearance entered.' The line is a sentence. The witness has been asked to read it before.",
+            "_status_note": "Follow-up state: the bureaucratic dryness of the absence's documentation. The stenographer has read this line out in court before — the implication is that ex parte default is routine, which is the procedural-fairness defect's invisibility precisely.",
+            "article_tags": [
+              "echr_6",
+              "pl_const_45"
+            ],
+            "principle_tags": [
+              "procedural_fairness"
+            ],
+            "context_tags": [
+              "civil_proceedings",
+              "fair_trial",
+              "documentary"
+            ],
+            "press_options": [],
+            "present_options": [],
+            "fact_flags_set": []
+          },
+          {
+            "id": "stenographer_no_substitute_appearance",
+            "text": "No counsel appeared on the respondent's behalf at the hearing of the eighth. No relative, no neighbour, no agent. The court did not have before it any indication that the respondent had been reached at all. The court is not, by procedure, obliged to inquire further at that stage.",
+            "_status_note": "Latent statement — reached through the press chain if the player follows the appearance question. Lays the foundation for the Article 6 'right to be heard' citation: not only was there no appearance, there was no signal that one was even possible. The 'not obliged to inquire' closer is the load-bearing line for the systemic-defect argument.",
+            "article_tags": [
+              "echr_6",
+              "pl_const_45"
+            ],
+            "principle_tags": [
+              "access_to_court",
+              "procedural_fairness"
+            ],
+            "context_tags": [
+              "civil_proceedings",
+              "fair_trial"
+            ],
+            "press_options": [],
+            "present_options": [],
+            "fact_flags_set": []
+          }
+        ]
+      },
+      {
+        "id": "court_bailiff",
+        "display_name": "Court Bailiff",
+        "_status_note": "The bailiff who effected the eighth-of-April service. Mid-career, careful, no flourish — speaks like a man whose job has been audited. Refers to the form, the registry, the instruction sheet. Does not editorialise about whether the address was correct. He went where he was told and reported what he saw.",
+        "cooperation_budget": 2,
+        "statements": [
+          {
+            "id": "bailiff_service_at_number_seven",
+            "text": "Your Honour. I served the envelope at the address on the instruction sheet — number seven, third floor, second door on the right. A man opened the door. He accepted the envelope. I marked the form, signed it, and entered it in the registry that afternoon.",
+            "_status_note": "Opening statement. Bare procedural account. The man, the door, the envelope. No mention of relation, residence, or authority — the precise omissions Round 2 needs to make visible. The 'second door on the right' is the load-bearing detail: somebody actually went to a door, and that door was the wrong one.",
+            "article_tags": [
+              "echr_6",
+              "pl_const_45"
+            ],
+            "principle_tags": [
+              "service_of_process",
+              "procedural_fairness"
+            ],
+            "context_tags": [
+              "civil_proceedings",
+              "service_failure",
+              "housing"
+            ],
+            "press_options": [
+              {
+                "id": "press_bailiff_authority_check",
+                "cost": 1,
+                "follow_up_statement_id": "bailiff_authority_check_response",
+                "follow_up_text": "I confirmed the recipient signed for it. The form requires service. The form does not require me to ask the recipient whether he is the addressee, or related to her, or authorised by her. I do not ask. I deliver. The procedure asks only that the envelope be left at the address.",
+                "_status_note": "The doctrinal bombshell delivered in the bailiff's own voice. The procedure asked nothing of him; he asked nothing in return. The third-clause non-cure point is now anchored in the bailiff's testimony, not just in the resident's. Stays neutral: the bailiff isn't admitting fault; he's describing the form.",
+                "fact_flags_set": [
+                  "_fact.no_authority_check_at_door"
+                ]
+              },
+              {
+                "id": "press_bailiff_instruction_sheet",
+                "cost": 1,
+                "follow_up_statement_id": "bailiff_instruction_sheet_response",
+                "follow_up_text": "The instruction sheet I received was prepared by petitioning counsel. It listed an address. I do not cross-check addresses against the cooperative office. I do not pull the renumbering record. The address on the sheet was the address I went to. That is the procedure.",
+                "_status_note": "The other half of the systemic defect: the petitioner controls the address, and nothing in the procedure audits it. 'That is the procedure' is the dry-bureaucratic closer that does the rhetorical work for Cula.",
+                "fact_flags_set": [
+                  "_fact.bailiff_served_petitioner_address"
+                ]
+              }
+            ],
+            "present_options": [
+              {
+                "id": "present_landlord_contact_at_bailiff",
+                "evidence_id": "landlord_contact",
+                "cost": 0,
+                "available_when": "chapter1.client_meeting_evidence == 'landlord_contact'",
+                "fact_flags_set": [
+                  "_fact.bonus_bailiff_old_address_known"
+                ],
+                "judge_reaction": "The pre-notice correspondence at number twelve. The petitioner had a current address in his own hand six months before the bailiff was sent to a stale one. Counsel will not need to belabour the point; the registry will note the exhibit."
+              },
+              {
+                "id": "present_return_to_sender_at_bailiff",
+                "evidence_id": "return_to_sender_slip",
+                "cost": 0,
+                "available_when": "chapter1.client_meeting_evidence == 'return_to_sender_slip'",
+                "fact_flags_set": [
+                  "_fact.bonus_return_slip_misdirection"
+                ],
+                "judge_reaction": "The return-to-sender slip. The petitioner's own clerk documented that number seven was a closed channel. The instruction sheet the bailiff received did not reflect that record. The exhibit is marked."
+              }
+            ],
+            "fact_flags_set": []
+          },
+          {
+            "id": "bailiff_authority_check_response",
+            "text": "I do not ask. I deliver. The court asks me whether the man at the door accepted; the man accepted. The court does not ask, and procedure does not require me to ask, whether the man at the door was Mrs. Sikorska's anything. Were the procedure otherwise, the witness would be a different witness.",
+            "_status_note": "Follow-up state. Closer is the load-bearing register hit — 'were the procedure otherwise, the witness would be a different witness' is the legal-comedy line: the bailiff is naming, in his own register, the doctrinal vacuum he operates inside. Not bitter, not defensive; descriptive.",
+            "article_tags": [
+              "echr_6",
+              "pl_const_45"
+            ],
+            "principle_tags": [
+              "service_of_process",
+              "procedural_fairness"
+            ],
+            "context_tags": [
+              "civil_proceedings",
+              "service_failure"
+            ],
+            "press_options": [],
+            "present_options": [],
+            "fact_flags_set": []
+          },
+          {
+            "id": "bailiff_instruction_sheet_response",
+            "text": "Counsel prepares the sheet. The registry transcribes the sheet. I receive what the registry transcribes. There is no audit point between counsel's address and my door. The chain runs as the chain is drawn. If counsel's address is wrong, my door is wrong. I have no instrument that tells me otherwise.",
+            "_status_note": "Follow-up state. The 'chain runs as the chain is drawn' line is the systemic-defect formulation — the procedure faithfully delivers whatever the petitioner submits, including the petitioner's mistakes. Lands the Article 6 procedural-safeguards argument without naming it.",
+            "article_tags": [
+              "echr_6"
+            ],
+            "principle_tags": [
+              "service_of_process",
+              "legal_certainty"
+            ],
+            "context_tags": [
+              "civil_proceedings",
+              "service_failure",
+              "documentary"
+            ],
+            "press_options": [],
+            "present_options": [],
+            "fact_flags_set": []
+          }
+        ]
+      }
+    ]
+  },
+  "phase_2_closing": {
+    "judicial_patience_default": 5,
+    "frame_gates": {
+      "defective_service_135bis": {
+        "judicial_patience_start": 5,
+        "available_counter_questions": [
+          "jq_article_6_substance",
+          "jq_merits_anticipation"
+        ]
+      },
+      "third_party_non_cure": {
+        "judicial_patience_start": 5,
+        "available_counter_questions": [
+          "jq_article_6_substance",
+          "jq_merits_anticipation"
+        ],
+        "_status_note": "Third-clause frame remains well-fitted for Round 2 — Article 6 substance question opens on the cure point and pivots to the broader fair-hearing argument."
+      },
+      "fair_hearing_article_6": {
+        "judicial_patience_start": 5,
+        "available_counter_questions": [
+          "jq_article_6_substance",
+          "jq_merits_anticipation"
+        ],
+        "_status_note": "Best-fitted frame for Round 2 — the supplementary frame becomes the lead frame as the round's question is the Article 6 right itself."
+      },
+      "merits_defence": {
+        "judicial_patience_start": 3,
+        "available_counter_questions": [
+          "jq_merits_anticipation"
+        ],
+        "_status_note": "Wrong-shape frame — Phase 2 starts with reduced patience and the judge skips straight to the merits-pre-emption question, denying counsel the cleaner Article 6 opening."
+      }
+    },
+    "judge_counter_questions": [
+      {
+        "id": "jq_article_6_substance",
+        "text": "Counsel. Article 6 has been spoken. The court would prefer not to be told what it says. The court would prefer to be told what it required, of this petitioner, on the eighth of April. Distinguish the right from the recitation. What was the petitioner obliged to do, beyond filling the envelope, that the petitioner did not do.",
+        "_status_note": "Round 2 opening counter-question. Judge does the bench-habit move from his canonical voice — refuses the recitation, asks for the operative requirement. Demands counsel name the procedural step the petitioner skipped. Lands the Article 6 question as a 'what did this party owe' rather than 'what does the text say' inquiry.",
+        "opponent_pressure_move": "technicality_does_not_matter",
+        "article_tags": [
+          "echr_6",
+          "pl_const_45"
+        ],
+        "principle_tags": [
+          "access_to_court",
+          "procedural_fairness",
+          "effective_remedy"
+        ],
+        "context_tags": [
+          "civil_proceedings",
+          "fair_trial"
+        ],
+        "pressure_weakness_tags": {
+          "echr_6": 0.18,
+          "pl_const_45": 0.12,
+          "access_to_court": 0.25,
+          "procedural_fairness": 0.25,
+          "effective_remedy": 0.10,
+          "civil_proceedings": 0.05,
+          "fair_trial": 0.05
+        },
+        "pressure_strength_tags": {
+          "prescribed_by_law": 0.50,
+          "legitimate_aim": 0.50
+        },
+        "requires_fact_flags": [
+          "_fact.no_appearance_logged",
+          "_fact.ex_parte_hearing_held"
+        ],
+        "judicial_patience_default": 5,
+        "available_citations": [
+          {
+            "move_id": "motion_to_set_aside",
+            "article_tags": [
+              "echr_6",
+              "pl_const_45"
+            ],
+            "principle_tags": [
+              "access_to_court",
+              "procedural_fairness",
+              "service_of_process"
+            ],
+            "context_tags": [
+              "civil_proceedings",
+              "fair_trial",
+              "service_failure"
+            ],
+            "move_tags": {
+              "echr_6": 0.22,
+              "pl_const_45": 0.15,
+              "access_to_court": 0.20,
+              "procedural_fairness": 0.20,
+              "service_of_process": 0.12,
+              "civil_proceedings": 0.05,
+              "fair_trial": 0.03,
+              "service_failure": 0.03
+            },
+            "requires_fact_flags": [
+              "_fact.notice_received_april_28",
+              "_fact.no_appearance_logged"
+            ],
+            "judicial_patience_delta_on_hit": 1,
+            "judicial_patience_delta_on_miss": -1,
+            "judicial_patience_delta_on_backfire": -2,
+            "flavor_line": "Article 6 does not stop at the envelope. The right reaches the room. On the eighth of April there was a room and there was a hearing and there was no party for the respondent to be — because the envelope had not reached her and the chair had no way of knowing. The bench's own minute reads, page two, line eleven: 'Respondent: not present, no appearance entered.' That line is the defect.",
+            "_status_note": "Strong citation in the Article 6 substance question. Quoting the bench's own transcript page+line is the controlled-flourish move — Cula isn't asking the court to take counsel's word for it. Lands the right as something the petitioner failed to enable, not something the court failed to do."
+          },
+          {
+            "move_id": "third_clause_non_cure",
+            "article_tags": [
+              "echr_6",
+              "pl_const_45"
+            ],
+            "principle_tags": [
+              "service_of_process",
+              "procedural_fairness"
+            ],
+            "context_tags": [
+              "civil_proceedings",
+              "service_failure",
+              "housing"
+            ],
+            "move_tags": {
+              "echr_6": 0.18,
+              "pl_const_45": 0.10,
+              "service_of_process": 0.28,
+              "procedural_fairness": 0.22,
+              "civil_proceedings": 0.10,
+              "service_failure": 0.08,
+              "housing": 0.04
+            },
+            "requires_fact_flags": [
+              "_fact.resident_no_authority",
+              "_fact.no_authority_check_at_door"
+            ],
+            "judicial_patience_delta_on_hit": 1,
+            "judicial_patience_delta_on_miss": -1,
+            "judicial_patience_delta_on_backfire": -2,
+            "flavor_line": "The respondent's counsel will say the form was satisfied because a signature appeared at an address. The bailiff has told this court, in this court's own words, 'I do not ask. I deliver.' The procedure asks nothing of the recipient's relation to the addressee. It also does not cure what it does not ask. Doręczenie zastępcze, third clause, sets that limit by statute. The signature at number seven did not bootstrap the absent client into the room."
+          },
+          {
+            "move_id": "rehearing_as_remedy",
+            "article_tags": [
+              "echr_6",
+              "pl_const_45"
+            ],
+            "principle_tags": [
+              "effective_remedy",
+              "access_to_court"
+            ],
+            "context_tags": [
+              "civil_proceedings",
+              "housing",
+              "fair_trial"
+            ],
+            "move_tags": {
+              "echr_6": 0.14,
+              "pl_const_45": 0.10,
+              "effective_remedy": 0.30,
+              "access_to_court": 0.18,
+              "civil_proceedings": 0.10,
+              "housing": 0.10,
+              "fair_trial": 0.08
+            },
+            "requires_fact_flags": [],
+            "judicial_patience_delta_on_hit": 1,
+            "judicial_patience_delta_on_miss": -2,
+            "judicial_patience_delta_on_backfire": -3,
+            "flavor_line": "The Article 6 right is not vindicated by saying it. It is vindicated by giving the client a hearing she has not had. That is the remedy ask the court will hear in due course; for now, the right is identified and the architecture of its violation is on the registry record.",
+            "_status_note": "Acceptable but suboptimal here — citing the remedy in Round 2 is premature. Patience delta on miss is steeper than the other Round 2 citations because the judge specifically asked for the obligation analysis, not the remedy preview."
+          }
+        ],
+        "frame_gates": {
+          "fair_hearing_article_6": {
+            "available_citation_ids": [
+              "motion_to_set_aside",
+              "third_clause_non_cure"
+            ]
+          },
+          "third_party_non_cure": {
+            "available_citation_ids": [
+              "third_clause_non_cure",
+              "motion_to_set_aside"
+            ]
+          }
+        },
+        "defeat_lines": [
+          "Counsel has recited the article. The court has read it. The court is still waiting to be told what the petitioner did not do.",
+          "The article is on the wall behind the bench, in Polish and in French. Counsel will need to identify the operative requirement rather than the inscription."
+        ],
+        "partial_lines": [
+          "Counsel begins to narrow. The court will hear the obligation named — not the right, the obligation.",
+          "Counsel has the room; counsel does not yet have the bench. Continue."
+        ]
+      },
+      {
+        "id": "jq_merits_anticipation",
+        "text": "Counsel. The respondent's counsel — anticipating, perhaps — submits that the merits would have failed in any event, and so the procedural objection is academic. The court is not entirely persuaded by counsel-for-the-other-side either, but the court would prefer counsel's answer. Why is procedure required when the outcome on the merits, ex hypothesi, would not have changed.",
+        "_status_note": "Round 2 follow-up counter-question. The judge is playing devil's-advocate honestly — he says he isn't fully persuaded by the opposing argument either, then asks counsel to do the work. Anti-utilitarian framing: 'why procedure when outcome is fixed' is the trap-question; the right answer names procedure as constitutive of the outcome, not separate from it.",
+        "opponent_pressure_move": "merits_override",
+        "article_tags": [
+          "echr_6",
+          "pl_const_45"
+        ],
+        "principle_tags": [
+          "procedural_fairness",
+          "access_to_court",
+          "effective_remedy"
+        ],
+        "context_tags": [
+          "civil_proceedings",
+          "fair_trial",
+          "housing"
+        ],
+        "pressure_weakness_tags": {
+          "echr_6": 0.15,
+          "pl_const_45": 0.10,
+          "procedural_fairness": 0.28,
+          "access_to_court": 0.22,
+          "effective_remedy": 0.10,
+          "civil_proceedings": 0.08,
+          "fair_trial": 0.07
+        },
+        "pressure_strength_tags": {
+          "legal_certainty": 0.50,
+          "legitimate_aim": 0.50
+        },
+        "requires_fact_flags": [
+          "_fact.ex_parte_hearing_held",
+          "_fact.bailiff_served_petitioner_address"
+        ],
+        "judicial_patience_default": 5,
+        "available_citations": [
+          {
+            "move_id": "motion_to_set_aside",
+            "article_tags": [
+              "echr_6",
+              "pl_const_45"
+            ],
+            "principle_tags": [
+              "procedural_fairness",
+              "access_to_court"
+            ],
+            "context_tags": [
+              "civil_proceedings",
+              "fair_trial"
+            ],
+            "move_tags": {
+              "echr_6": 0.20,
+              "pl_const_45": 0.15,
+              "procedural_fairness": 0.25,
+              "access_to_court": 0.20,
+              "civil_proceedings": 0.10,
+              "fair_trial": 0.10
+            },
+            "requires_fact_flags": [
+              "_fact.bailiff_served_petitioner_address",
+              "_fact.ex_parte_hearing_held"
+            ],
+            "judicial_patience_delta_on_hit": 1,
+            "judicial_patience_delta_on_miss": -1,
+            "judicial_patience_delta_on_backfire": -2,
+            "flavor_line": "The petitioner's counsel argues that the merits would have run his way regardless. The court has no way of knowing that, because the court has not heard the merits and was not asked to. The Convention does not award procedure on a probability — it awards procedure because the probability is what the procedure is for. The motion is to set aside the entry of default and put the matter where it should already have been: on a contested schedule. The petitioner is free to be confident on a day the client can answer."
+          },
+          {
+            "move_id": "third_clause_non_cure",
+            "article_tags": [
+              "echr_6",
+              "pl_const_45"
+            ],
+            "principle_tags": [
+              "service_of_process",
+              "procedural_fairness"
+            ],
+            "context_tags": [
+              "civil_proceedings",
+              "service_failure"
+            ],
+            "move_tags": {
+              "echr_6": 0.15,
+              "pl_const_45": 0.10,
+              "service_of_process": 0.30,
+              "procedural_fairness": 0.25,
+              "civil_proceedings": 0.10,
+              "service_failure": 0.10
+            },
+            "requires_fact_flags": [
+              "_fact.resident_no_authority",
+              "_fact.no_authority_check_at_door"
+            ],
+            "judicial_patience_delta_on_hit": 1,
+            "judicial_patience_delta_on_miss": -1,
+            "judicial_patience_delta_on_backfire": -2,
+            "flavor_line": "The merits would not have failed at this hearing because there were no merits at this hearing. The court entered default because nobody answered the call. Nobody answered the call because the envelope went to a man who could neither pass it on in time nor speak for an addressee he had never met. Third clause non-cure is the statutory rule that says: the form is the form and a stranger's signature does not stand in for a client's silence."
+          },
+          {
+            "move_id": "notice_window",
+            "article_tags": [
+              "echr_6",
+              "pl_const_45"
+            ],
+            "principle_tags": [
+              "service_of_process",
+              "access_to_court"
+            ],
+            "context_tags": [
+              "civil_proceedings",
+              "service_failure",
+              "deadline"
+            ],
+            "move_tags": {
+              "echr_6": 0.15,
+              "pl_const_45": 0.12,
+              "service_of_process": 0.22,
+              "access_to_court": 0.21,
+              "civil_proceedings": 0.10,
+              "service_failure": 0.10,
+              "deadline": 0.10
+            },
+            "requires_fact_flags": [
+              "_fact.notice_received_april_28"
+            ],
+            "judicial_patience_delta_on_hit": 1,
+            "judicial_patience_delta_on_miss": -1,
+            "judicial_patience_delta_on_backfire": -2,
+            "flavor_line": "The clock runs from actual notice. Actual notice fell on the twenty-eighth of April — twenty days after the hearing, three days into a fourteen-day window that the client could not have known about. The petitioner asks the court to treat that window as having closed inside a room she did not know she had been excluded from. The procedure does not contemplate that closure."
+          }
+        ],
+        "frame_gates": {
+          "merits_defence": {
+            "available_citation_ids": [
+              "motion_to_set_aside",
+              "third_clause_non_cure"
+            ]
+          },
+          "fair_hearing_article_6": {
+            "available_citation_ids": [
+              "motion_to_set_aside",
+              "third_clause_non_cure",
+              "notice_window"
+            ]
+          }
+        },
+        "defeat_lines": [
+          "Counsel has not yet answered why the right is required. The court does not accept 'because it is required' as an answer to its own question.",
+          "The petitioner's hypothetical has not been engaged. Engage it, or move on."
+        ],
+        "partial_lines": [
+          "Counsel has begun to answer. The court is willing to hear the answer completed.",
+          "The procedural-as-constitutive point is reaching the bench. The bench would like it landed."
+        ]
+      }
+    ],
+    "victory_resolution": {
+      "_evaluation_doc": "Round 2 advancement resolver. First-match. No writes to chapter1.court_won_procedural_reset or chapter1.court_outcome — those resolutions live in chapter1_round_3.json and in _compute_court_outcome() per design plan Step 1.1 (SAVE_VERSION 23). Round 2's only state write is chapter1.casebook_judge_state := 'round_2_react' on every branch, which fires the existing judge_b12_react_r2 dialogue and advances the controller to Round 3. The result_text variants describe how cleanly the Article 6 fair-hearing point was carried into the round transition; they are the narrator/judge bridge text between the last Phase 2 citation and the Round 3 bench prompt.",
+      "evaluation_order": [
+        "round_2_collapse",
+        "round_2_narrow",
+        "round_2_standard",
+        "round_2_strong"
+      ],
+      "primary_fact_flags": [
+        "_fact.ex_parte_hearing_held",
+        "_fact.no_appearance_logged",
+        "_fact.no_authority_check_at_door",
+        "_fact.bailiff_served_petitioner_address"
+      ],
+      "branches": [
+        {
+          "id": "round_2_collapse",
+          "when": "primary_fact_count <= 1 || judicial_patience <= 1",
+          "sets": [
+            {
+              "path": "chapter1.casebook_judge_state",
+              "value": "round_2_react"
+            }
+          ],
+          "result_text": "The bench has stopped writing. The court reporter's keys carry the silence for a beat too long. The judge does not look up. 'Counsel,' the bench says, 'the court will treat the Article 6 question as preserved by the record, not by counsel. The third question will be remedy. Counsel may take a moment.' The minute reads, line forty-one, 'Court closes Round 2 on the bench's own motion.'",
+          "_status_note": "Round 2 collapse band. The bench has gone past patience or the player established only the entry-statement facts. No mockery; the court preserves the issue for counsel and moves on. The 'on the bench's own motion' echo of the Round 1 blunder-recovered formulation is intentional — both rounds share the same dry-rescue mechanic."
+        },
+        {
+          "id": "round_2_narrow",
+          "when": "primary_fact_count >= 2 && judicial_patience >= 2",
+          "sets": [
+            {
+              "path": "chapter1.casebook_judge_state",
+              "value": "round_2_react"
+            }
+          ],
+          "result_text": "The bench notes the Article 6 point as carried, narrowly, on the witness statements counsel surfaced. The third-clause cure question is closed against the petitioner. The court will hear remedy. The judge underlines two words on the bench's copy of the petition and does not say which two.",
+          "_status_note": "Round 2 narrow band. Player established the minimum to carry the fair-hearing point. The 'underlines two words and does not say which' is the dry-comedy holdover from the strong-outcome voice anchor; in narrow, it lands as the bench keeping its own counsel."
+        },
+        {
+          "id": "round_2_standard",
+          "when": "primary_fact_count >= 3 && judicial_patience >= 3",
+          "sets": [
+            {
+              "path": "chapter1.casebook_judge_state",
+              "value": "round_2_react"
+            }
+          ],
+          "result_text": "The bench accepts the Article 6 argument on the record as counsel has laid it. The third clause is read against the petitioner. The fair-hearing right is identified on the architecture of the procedure, not on rhetoric, which is the form in which the court prefers to receive it. The matter proceeds to remedy.",
+          "_status_note": "Round 2 standard band. Three of four primary facts established. The line 'on the architecture of the procedure, not on rhetoric' compresses the round's whole thesis — the defect is structural, not stylistic."
+        },
+        {
+          "id": "round_2_strong",
+          "when": "primary_fact_count == 4 && judicial_patience >= 4",
+          "sets": [
+            {
+              "path": "chapter1.casebook_judge_state",
+              "value": "round_2_react"
+            }
+          ],
+          "result_text": "The bench notes the Article 6 argument as fully assembled. Four facts — the hearing held, the appearance unentered, the recipient's authority unverified, the petitioner's own instruction sheet unchecked — produce the defect in the form Article 6 contemplates and the form the third clause exists to refuse to cure. The court reserves the remedy question for the third round and addresses petitioner's counsel directly: 'You may proceed; the court will not require the merits argument you appear to be preparing.'",
+          "_status_note": "Round 2 strong band. All four primary facts. The closing line is the canonical strong-Round-2 anchor — the bench turning to the opposing counsel to head off a doomed merits ramp without lecturing Cula. The Article 6 victory is procedural, not rhetorical, exactly as Round 2 was designed to be."
+        }
+      ]
+    }
+  }
+}

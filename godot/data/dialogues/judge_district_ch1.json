@@ -49,6 +49,19 @@
             "tags": ["beat12", "court", "round_1", "dry_surprise", "technical_carrier"]
         },
         {
+            "id": "round_1_sit_down_bench_initiative",
+            "trigger": "chapter1.casebook_judge_state == 'round_1_bench_initiative'",
+            "_comment": "Bench-initiative path. Fires when counsel has sat down after icy_silence — the battle controller routes here via leads_to_state_id on the sit_down post_reaction_player_option. The court does the Round 1 work itself on the face of the documents. Two beats: (1) the defect is named by the bench, not counsel; (2) the bench moves on to the second question without comment on counsel's performance. No cruelty, no warmth — the bench is doing its job where counsel did not. The trigger casebook_judge_state value 'round_1_bench_initiative' is set by battle_controller on the bench_initiative leads_to_round_outcome path (wiring deferred to Step 3.2 / controller refactor). The incapacity-competence point was already addressed in the icy_silence template lines that precede this state.",
+            "lines": [
+                "The court notes, on its own reading of the file, that the notice of the eighth was directed to flat number seven. The respondent's address in the lease register — signed by the landlord in two thousand and nineteen — is flat number twelve.",
+                "The service question is on the face of the documents. The court will proceed to the second question. Counsel may address why the defect matters to the client's right to be heard."
+            ],
+            "on_dismiss": [
+                {"set": "chapter1.casebook_judge_state", "value": "round_2_open"}
+            ],
+            "tags": ["beat12", "court", "round_1", "bench_initiative", "icy_silence_path", "incapacity_blunder"]
+        },
+        {
             "id": "judge_b12_round2_open",
             "trigger": "chapter1.casebook_judge_state == 'round_2_open'",
             "_comment": "Round 2 bench prompt. Second question: fair hearing / due process. Register: procedural, neutral, with one bench-habit sentence per critique F7 — the court pre-emptively warns against the lazy 'whichever hearing happened' framing. Lands the bench's diagnosable register without ceding the round's substantive question.",

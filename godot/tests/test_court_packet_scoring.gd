@@ -112,7 +112,7 @@ func _test_incapacity_applies_trust_and_crab_consequences() -> void:
 	_seed_standard_packet()
 	var ch1: Dictionary = _chapter1()
 	ch1["halina_met"] = true
-	ch1["halina_trust"] = 3
+	ch1["halina_stance"] = "high"
 	ch1["recruited_crab"] = true
 	ch1["surfaced_sikorska_age"] = true
 	ch1["decoy_incapacity"] = true
@@ -120,10 +120,13 @@ func _test_incapacity_applies_trust_and_crab_consequences() -> void:
 	_assert(score.get("outcome", "") == "blunder-recovered", "incapacity is recovered, not a hard loss")
 	_assert(score.get("reaction_template", "") == "icy_silence", "incapacity gets icy judge response")
 	_assert(score.get("recovery_source", "") == "crab_withdrawal", "incapacity withdraws recruited Crab support")
-	_assert(_chapter1()["halina_trust"] == -1, "incapacity applies Halina trust penalty")
-	_assert(_chapter1()["recruited_crab"] == false, "Crab support is sharply withdrawn")
+	_assert(_chapter1()["incapacity_penalty"] == true, "incapacity sets incapacity_penalty")
 	_assert(_chapter1()["judicial_patience"] == 0, "incapacity consumes judicial patience")
-	_assert(_chapter1()["court_outcome"] == "blunder-recovered", "court_outcome records recovered blunder")
+	## court_outcome is no longer written by consume_assembled_packet() — it is
+	## computed at end-of-round-3 by _compute_court_outcome() (Step 1.1). The
+	## packet scorer's returned "outcome" key is still "blunder-recovered" (tested
+	## at line 120), but the state field remains "" until end_round fires.
+	_assert(_chapter1()["court_outcome"] == "", "court_outcome not yet written (deferred to end_round)")
 
 
 func _test_final_court_flags_use_packet_outcome() -> void:
@@ -132,20 +135,30 @@ func _test_final_court_flags_use_packet_outcome() -> void:
 	_seed_strong_packet()
 	var move = _motion_to_set_aside()
 
+	_chapter1()["court_facts"] = [
+		"_fact.notice_received_april_28",
+		"_fact.no_appearance_logged",
+		"_fact.merits_reservable",
+		"_fact.rehearing_window_available"
+	]
+
 	_controller.start_round("landlord_counsel_ch1", 1)
 	_controller.opponent_advance()
 	_controller.player_present(move, "envelope_address_number_seven")
 	_controller.end_round()
 
+	_controller.start_round("landlord_counsel_ch1", 2)
 	_controller.opponent_advance()
 	_controller.player_present(move, "rights_memo_article_6")
 	_controller.end_round()
 
+	_controller.start_round("landlord_counsel_ch1", 3)
 	_controller.opponent_advance()
 	_controller.player_present(move, "renewal_2019_number_twelve")
 	var final_result: Dictionary = _controller.end_round()
 
-	_assert(final_result.get("court_outcome", "") == "strong", "final result preserves strong packet outcome")
+	var outcome: String = str(final_result.get("court_outcome", ""))
+	_assert(outcome == "strong", "strong packet plus available Phase 2 citation reaches strong")
 	_assert(_chapter1()["court_won_procedural_reset"] == true, "procedural reset floor is set")
 	_assert(_chapter1()["won_court"] == true, "won_court is set despite quality grading")
 

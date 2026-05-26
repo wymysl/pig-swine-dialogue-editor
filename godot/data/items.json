@@ -80,6 +80,30 @@
       "required_for_rounds": ["round_3_remedy"],
       "_round_effect": "Round 3 only — historical weight for the tenancy-validity argument supporting the rehearing-remedy ask (react_round_1_technical holds lease for Round 3). Judge adds one-clause acknowledgment that the underlying tenancy is not before the court (remedy_round_3_technical).",
       "pickup_line": "The 1962 assignment is her father's. The 1987 paperwork is the succession. The chain runs clean through both reorganizations."
+    },
+
+    "article_8_brief": {
+      "display_name": "Abandoned Article 8 Brief",
+      "description": "A brief left on a Café Paragraf side table by a previous client's counsel — or possibly by the counsel of the counsel's previous client's opposing party. The argument is proportionality of eviction under Article 8 ECHR: family continuity, margin of appreciation, private life. Whoever argued it did not take it with them. The case settled, or the client stopped paying, or the counsel stopped caring. In any event, it is a Casebook entry now.",
+      "chapter": 1,
+      "beat": "5-11",
+      "_beat_note": "Available from the moment the player enters Café Paragraf in Ch1 through to court. Placed at the side table near the window — a discarded brief from a previous client's case, not connected to the current matter.",
+      "item_type": "casebook_pickup",
+      "_casebook_note": "Unlocks home_and_family_ch8 in the Casebook. Deliberately wrong for the Sikorska eviction. Player who selects it in court learns the article-fit lesson via the Trial Record panel.",
+      "state_flag": "chapter1.picked_up_article_8",
+      "pickup_line": "A brief left on the side table. Article 8 — proportionality, family continuity, margin of appreciation. Someone had the right framework for the wrong case. Or the wrong framework for the right one. Either way, it is unclaimed."
+    },
+
+    "article_10_digest": {
+      "display_name": "Murrow's Strasbourg Digest (Press Freedom)",
+      "description": "A photocopied Grand Chamber digest on Article 10 ECHR, flagged in yellow by Murrow. Yellow means 'interesting but not immediately useful.' The digest covers Nowicki v. Poland and adjacent press-freedom cases: chilling effect, public interest, proportionality of restriction. The yellow tab is load-bearing. This has nothing to do with Halina Sikorska.",
+      "chapter": 1,
+      "beat": "9-11",
+      "_beat_note": "Available once the player enters the Archive Room in Ch1 (Beat 9 and later). Placed near the filing shelves where Murrow's reference materials are stored.",
+      "item_type": "casebook_pickup",
+      "_casebook_note": "Unlocks expression_and_press_ch10 in the Casebook. Obviously wrong for the Sikorska eviction. Player who selects it in court has not read the case. Moves should land in the no_effect bucket.",
+      "state_flag": "chapter1.picked_up_article_10",
+      "pickup_line": "Murrow's tab is yellow. Yellow means interesting but not immediately useful. Strasbourg, Grand Chamber, Article 10. Press freedom, chilling effect, proportionality of restriction. None of this concerns Halina Sikorska. The yellow is correct."
     }
 
   }

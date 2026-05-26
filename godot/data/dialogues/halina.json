@@ -1,13 +1,13 @@
 {
     "version": 3,
     "npc_id": "halina",
-    "_provenance": "V1.4 phase-7 voice pack (V1_4_halina_meeting_research.md). Session 27 (2026-05-13): shared intro factored into client_meeting_intro with chain:true options. Session 29 (2026-05-13): restructured into trust-meter system — three monolithic branch states replaced by round-based structure (intro → r0_response → r1 → r1_response → r2 → r2_response → close → optional reveal). trust_delta on each choice increments chapter1.halina_trust; tier thresholds gate two-variant Halina responses per round. High trust (≥ 5 total) unlocks the landlord-intimidation reveal post-close.",
-    "_scope": "halina.json owns the Beat 8 client meeting. Trust meter: halina_trust (int), halina_r0/r1/r2_done (bool), halina_r1/r2_choice (string re-fire guards), halina_close_done (bool), landlord_tip_received (bool). Bonus evidence: r0_technical=lease_1962_inheritance_1987, r0_high=wojcik_witness_statement, r0_blunt/r1_high=return_to_sender_slip, r2_high=landlord_contact. Chapter-4 corridor sighting out of scope (Ch4 pack).",
+    "_provenance": "V1.4 phase-7 voice pack (V1_4_halina_meeting_research.md). Session 27 (2026-05-13): shared intro factored into client_meeting_intro with chain:true options. Session 29 (2026-05-13): restructured into trust-meter system — three monolithic branch states replaced by round-based structure (intro → r0_response → r1 → r1_response → r2 → r2_response → close → optional reveal). 2026-05-26 Step 5.3: halina_trust integer dropped; halina_stance set in each r0_response on_dismiss ('high'/'blunt'/'technical'); trust_delta removed from all options blocks; tier thresholds replaced with halina_stance equality checks. Reveal threshold 'halina_trust >= 5' becomes 'halina_stance == high && !incapacity_penalty'.",
+    "_scope": "halina.json owns the Beat 8 client meeting. Stance fields: halina_stance (String: high/blunt/technical/''), incapacity_penalty (bool). Structural flags: halina_r0/r1/r2_done (bool), halina_r1/r2_choice (string re-fire guards), halina_close_done (bool), landlord_tip_received (bool). Bonus evidence: r0_technical=lease_1962_inheritance_1987, r0_high=wojcik_witness_statement, r0_blunt/r1_high=return_to_sender_slip, r2_high=landlord_contact. Chapter-4 corridor sighting out of scope (Ch4 pack).",
     "states": [
         {
             "id": "client_meeting_intro",
             "trigger": "chapter1.halina_met == false && chapter1.client_meeting_stance == ''",
-            "_comment": "Shared intro: Asia announces, Halina enters, round of introductions, Murrow hands off. Options (chain:true) present Cula's three opening lines. trust_delta applied before chain re-fires, so the r0_response tier check sees the updated halina_trust immediately.",
+            "_comment": "Shared intro: Asia announces, Halina enters, round of introductions, Murrow hands off. Options (chain:true) present Cula's three opening lines. write_path sets client_meeting_stance; halina_stance is set in the r0_response on_dismiss of each branch.",
             "lines": [
                 "Good morning. Halina Sikorska. I've been told you can help.",
                 {"speaker": "cula", "text": "Good morning, Mrs. Sikorska. Dr. A. Cula. Please, sit. Thank you for coming in."},
@@ -20,19 +20,18 @@
             ],
             "options": {
                 "write_path": "chapter1.client_meeting_stance",
-                "trust_path": "chapter1.halina_trust",
                 "chain": true,
                 "choices": [
-                    {"text": "How are you holding up? The last three weeks...", "value": "sympathetic", "trust_delta": 2},
-                    {"text": "I wanted to ask you about the notice. When was it dated?", "value": "blunt_procedural", "trust_delta": 0},
-                    {"text": "Please tell us about the lease history. How far back does it run?", "value": "technical", "trust_delta": 1}
+                    {"text": "How are you holding up? The last three weeks...", "value": "sympathetic"},
+                    {"text": "I wanted to ask you about the notice. When was it dated?", "value": "blunt_procedural"},
+                    {"text": "Please tell us about the lease history. How far back does it run?", "value": "technical"}
                 ]
             }
         },
         {
             "id": "client_meeting_r0_response_high",
-            "trigger": "chapter1.halina_met == false && chapter1.halina_r0_done == false && chapter1.halina_trust >= 2",
-            "_comment": "Fires when Cula opened sympathetically (trust ≥ 2). Halina opens up: personal history, long tenancy, Mrs. Wójcik's offer to testify. Sets bonus_evidence = wojcik_witness_statement.",
+            "trigger": "chapter1.halina_met == false && chapter1.halina_r0_done == false && chapter1.client_meeting_stance == 'sympathetic'",
+            "_comment": "Fires when Cula opened sympathetically. Halina opens up: personal history, long tenancy, Mrs. Wójcik's offer to testify. Sets halina_stance = 'high' and bonus_evidence = wojcik_witness_statement.",
             "lines": [
                 {"speaker": "cula", "text": "Mrs. Sikorska, how are you holding up? The last three weeks must've been tough..."},
                 "Thank you for asking. The matter has occupied more of my attention than I would have chosen. I have done what was needed.",
@@ -47,13 +46,14 @@
             ],
             "on_dismiss": [
                 {"set": "chapter1.halina_r0_done", "value": true},
+                {"set": "chapter1.halina_stance", "value": "high"},
                 {"set": "chapter1.client_meeting_evidence", "value": "wojcik_witness_statement"}
             ]
         },
         {
             "id": "client_meeting_r0_response_blunt",
             "trigger": "chapter1.halina_met == false && chapter1.halina_r0_done == false && chapter1.client_meeting_stance == 'blunt_procedural'",
-            "_comment": "Fires when Cula opened blunt-procedurally. Halina gives the notice sequence first; the prior returned letter becomes the stance's bonus evidence. **2026-05-25 critique F2:** added two observational asides — the young man's apology at the door, and the woman at the landlord's office who read the address back twice — so the procedural recitation carries the texture the high-trust paths use, without breaking the blunt-procedural register.",
+            "_comment": "Fires when Cula opened blunt-procedurally. Halina gives the notice sequence first; the prior returned letter becomes the stance's bonus evidence. Sets halina_stance = 'blunt'. **2026-05-25 critique F2:** added two observational asides — the young man's apology at the door, and the woman at the landlord's office who read the address back twice.",
             "lines": [
                 {"speaker": "cula", "text": "Mrs. Sikorska. I wanted to ask about the notice first. Date, receipt, and who brought it to you."},
                 "The notice is dated the eighth of April. I received it on the twenty-eighth. The young man now living at number seven brought it down. He had opened the first page before realising it was not for him. He apologised at the door.",
@@ -67,13 +67,14 @@
             ],
             "on_dismiss": [
                 {"set": "chapter1.halina_r0_done", "value": true},
+                {"set": "chapter1.halina_stance", "value": "blunt"},
                 {"set": "chapter1.client_meeting_evidence", "value": "return_to_sender_slip"}
             ]
         },
         {
             "id": "client_meeting_r0_response_technical",
             "trigger": "chapter1.halina_met == false && chapter1.halina_r0_done == false && chapter1.client_meeting_stance == 'technical'",
-            "_comment": "Fires when Cula opened technically (trust < 2, technical stance). Halina stays factual: lease chain, renumbering, notice address discrepancy. Sets bonus_evidence = lease_1962_inheritance_1987. **2026-05-25 critique F2:** added one biographical sentence (Halina's father as a railwayman assigned to Warsaw) so the technical recitation grounds in a teacher's-tic detail without breaking register. Matches the 'railways' biographical detail volunteered in client_meeting_r0_response_high.",
+            "_comment": "Fires when Cula opened technically. Halina stays factual: lease chain, renumbering, notice address discrepancy. Sets halina_stance = 'technical' and bonus_evidence = lease_1962_inheritance_1987. **2026-05-25 critique F2:** added one biographical sentence (Halina's father as a railwayman) so the technical recitation grounds in a teacher's-tic detail without breaking register.",
             "lines": [
                 {"speaker": "cula", "text": "Mrs. Sikorska. The lease chain. Walk me through it from the beginning."},
                 "My father had the lease from nineteen sixty-two. He was a railwayman — they assigned him the apartment when he was moved to Warsaw. I inherited in eighty-seven, after his death. The renewal is from two thousand and nineteen. Number twelve — the post-renumbering address.",
@@ -87,30 +88,30 @@
             ],
             "on_dismiss": [
                 {"set": "chapter1.halina_r0_done", "value": true},
+                {"set": "chapter1.halina_stance", "value": "technical"},
                 {"set": "chapter1.client_meeting_evidence", "value": "lease_1962_inheritance_1987"}
             ]
         },
         {
             "id": "client_meeting_r1",
             "trigger": "chapter1.halina_met == false && chapter1.halina_r0_done == true && chapter1.halina_r1_choice == ''",
-            "_comment": "Cula's second question round. Three approaches; trust_delta 2/1/0. write_path halina_r1_choice guards re-fire during chain. Chains to r1_response tier states.",
+            "_comment": "Cula's second question round. Three approaches. write_path halina_r1_choice guards re-fire during chain. Chains to r1_response tier states. trust_delta removed (Step 5.3); tier selection now keys off halina_stance.",
             "lines": [
                 {"speaker": "cula", "text": "A few more questions."}
             ],
             "options": {
                 "write_path": "chapter1.halina_r1_choice",
-                "trust_path": "chapter1.halina_trust",
                 "chain": true,
                 "choices": [
-                    {"text": "Mrs. Wójcik — is she available to give a statement this week?", "value": "warm", "trust_delta": 2},
-                    {"text": "The notice — when was it dated, and when did you actually receive it.", "value": "procedural", "trust_delta": 1},
-                    {"text": "The building was renumbered. What year, and what was the old apartment number.", "value": "technical", "trust_delta": 0}
+                    {"text": "Mrs. Wójcik — is she available to give a statement this week?", "value": "warm"},
+                    {"text": "The notice — when was it dated, and when did you actually receive it.", "value": "procedural"},
+                    {"text": "The building was renumbered. What year, and what was the old apartment number.", "value": "technical"}
                 ]
             }
         },
         {
             "id": "client_meeting_r1_response_high",
-            "trigger": "chapter1.halina_met == false && chapter1.halina_r1_choice != '' && chapter1.halina_r1_done == false && chapter1.halina_trust >= 3",
+            "trigger": "chapter1.halina_met == false && chapter1.halina_r1_choice != '' && chapter1.halina_r1_done == false && chapter1.halina_stance == 'high'",
             "_comment": "Halina responds openly: Mrs. Wójcik available Friday, and she volunteers the return-to-sender slip from October — prior knowledge of correct address. Sets bonus_evidence = return_to_sender_slip.",
             "lines": [
                 "She is at home on Friday afternoon. She will sign whatever is needed. She has been a widow longer than I have been one. She is patient.",
@@ -145,24 +146,23 @@
         {
             "id": "client_meeting_r2",
             "trigger": "chapter1.halina_met == false && chapter1.halina_r1_done == true && chapter1.halina_r2_choice == ''",
-            "_comment": "Cula's third question round. Three approaches; trust_delta 2/1/0. write_path halina_r2_choice guards re-fire during chain. Chains to r2_response tier states.",
+            "_comment": "Cula's third question round. Three approaches. write_path halina_r2_choice guards re-fire during chain. Chains to r2_response tier states. trust_delta removed (Step 5.3); tier selection keys off halina_stance.",
             "lines": [
                 {"speaker": "cula", "text": "One more area."}
             ],
             "options": {
                 "write_path": "chapter1.halina_r2_choice",
-                "trust_path": "chapter1.halina_trust",
                 "chain": true,
                 "choices": [
-                    {"text": "Has the landlord been in contact with you directly — outside of the formal notices.", "value": "empathetic", "trust_delta": 2},
-                    {"text": "The cooperative office — is the original lease chain accessible before Thursday.", "value": "assertive", "trust_delta": 1},
-                    {"text": "The renewal agreement of two thousand and nineteen. Does it show the post-renumbering address.", "value": "technical", "trust_delta": 0}
+                    {"text": "Has the landlord been in contact with you directly — outside of the formal notices.", "value": "empathetic"},
+                    {"text": "The cooperative office — is the original lease chain accessible before Thursday.", "value": "assertive"},
+                    {"text": "The renewal agreement of two thousand and nineteen. Does it show the post-renumbering address.", "value": "technical"}
                 ]
             }
         },
         {
             "id": "client_meeting_r2_response_high",
-            "trigger": "chapter1.halina_met == false && chapter1.halina_r2_choice != '' && chapter1.halina_r2_done == false && chapter1.halina_trust >= 4",
+            "trigger": "chapter1.halina_met == false && chapter1.halina_r2_choice != '' && chapter1.halina_r2_done == false && chapter1.halina_stance == 'high'",
             "_comment": "Halina, now trusting, discloses the landlord's personal visit in March — 'think carefully about your situation.' She hadn't mentioned it; she wasn't sure it was relevant. Intimidation plant for Ch4. Sets bonus_evidence = landlord_contact.",
             "lines": [
                 "Yes. Once.",
@@ -307,7 +307,7 @@
         },
         {
             "id": "client_meeting_reveal",
-            "trigger": "chapter1.halina_met == true && chapter1.landlord_tip_received == false && chapter1.halina_trust >= 5",
+            "trigger": "chapter1.halina_met == true && chapter1.landlord_tip_received == false && chapter1.halina_stance == 'high' && !chapter1.incapacity_penalty",
             "_comment": "High-trust reveal (fires once after close if total trust ≥ 5). Halina catches Cula alone: landlord came to her door in February, before the notice — 'think carefully about your situation.' She thought it was manners. It was not. Seeds the Ch4 landlord-intimidation thread and strengthens the cardiologist plant. Must be ordered before post_meeting_ch1 so it takes priority when halina_met == true. **2026-05-19 critique F10:** reordered to fire AFTER halina_post_meeting_decoy_incapacity_cold so the rebuke (behavioural correction) lands before the reveal (earned disclosure) on the rare conjoint-condition path.",
             "lines": [
                 "Dr. A. Cula. A moment, if you have one.",

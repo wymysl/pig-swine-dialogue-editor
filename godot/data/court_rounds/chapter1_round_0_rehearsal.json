@@ -1,0 +1,220 @@
+{
+    "version": 1,
+    "id": "chapter1_round_0_rehearsal",
+    "chapter": 1,
+    "_status": "Design-pass complete.",
+    "_note": "Rehearsal mode — Phase 1 only. No opponent_id; no phase_2_closing; no verdict. The single witness (Murrow playing a registry record-keeper) surfaces the Press and Present verbs without commitment consequences. All local_fact_flags are scope:local_round only; they do not persist to chapter1 state. The only persistent write is chapter1.rehearsal_complete, set by battle_controller.end_rehearsal() on completion. Witness cooperation_total is 3 (tight: forces the player to choose which threads to pull).",
+    "_owner_code": "id, phase_1_fact_finding action costs and fact flags, witness cooperation budgets, statement ids and tags, press/present wiring.",
+    "_owner_design": "witness display name, statement text, press follow-up text, present judge reaction text.",
+    "phase_1_fact_finding": {
+        "action_costs": {
+            "press": 1,
+            "present": 1,
+            "present_bonus": 0
+        },
+        "witness_cooperation_total": 3,
+        "local_fact_flags": {
+            "_rehearsal._fact.address_unverified": {
+                "scope": "local_round",
+                "resolution_weight": "primary",
+                "article_tags": [
+                    "echr_6",
+                    "pl_const_45"
+                ],
+                "principle_tags": [
+                    "service_of_process",
+                    "legal_certainty"
+                ],
+                "context_tags": [
+                    "civil_proceedings",
+                    "service_failure",
+                    "documentary"
+                ],
+                "set_by": [
+                    "murrow_as_witness.registry_service_record.press_address_current"
+                ]
+            },
+            "_rehearsal._fact.no_correction_filed": {
+                "scope": "local_round",
+                "resolution_weight": "primary",
+                "article_tags": [
+                    "echr_6"
+                ],
+                "principle_tags": [
+                    "service_of_process",
+                    "legal_certainty"
+                ],
+                "context_tags": [
+                    "civil_proceedings",
+                    "service_failure"
+                ],
+                "set_by": [
+                    "murrow_as_witness.registry_no_audit.press_correction_history"
+                ]
+            },
+            "_rehearsal._fact.filing_date_documented": {
+                "scope": "local_round",
+                "resolution_weight": "bonus",
+                "article_tags": [
+                    "echr_6"
+                ],
+                "principle_tags": [
+                    "service_of_process",
+                    "legal_certainty"
+                ],
+                "context_tags": [
+                    "civil_proceedings",
+                    "documentary"
+                ],
+                "set_by": [
+                    "murrow_as_witness.registry_service_record.press_filing_date"
+                ]
+            },
+            "_rehearsal._fact.renumbering_on_record": {
+                "scope": "local_round",
+                "resolution_weight": "primary",
+                "article_tags": [
+                    "echr_6",
+                    "pl_const_45"
+                ],
+                "principle_tags": [
+                    "service_of_process",
+                    "legal_certainty",
+                    "procedural_fairness"
+                ],
+                "context_tags": [
+                    "civil_proceedings",
+                    "service_failure",
+                    "documentary"
+                ],
+                "set_by": [
+                    "murrow_as_witness.registry_no_audit.present_renumbering_rehearsal"
+                ]
+            }
+        },
+        "witnesses": [
+            {
+                "id": "murrow_as_witness",
+                "display_name": "Murrow (as Record Clerk)",
+                "_note": "Murrow steps behind an imaginary lectern and reads off the service log as a neutral registry clerk. His statements are deliberately administrative and free of the archival warmth he uses as himself. The player must press to expose what the record does not say — that the address was never verified, that no correction was ever filed, and that the filing date post-dates the 2015 renumbering. The present option surfaces the renumbering document as proof the address was already wrong at the time of filing.",
+                "cooperation_budget": 3,
+                "statements": [
+                    {
+                        "id": "registry_service_record",
+                        "text": "The court registry records a service attempt at the address submitted on the petition. The bailiff's return confirmation is on file. The matter is entered as served.",
+                        "article_tags": [
+                            "echr_6",
+                            "pl_const_45"
+                        ],
+                        "principle_tags": [
+                            "service_of_process",
+                            "procedural_fairness"
+                        ],
+                        "context_tags": [
+                            "civil_proceedings",
+                            "service_failure",
+                            "documentary"
+                        ],
+                        "press_options": [
+                            {
+                                "id": "press_address_current",
+                                "cost": 1,
+                                "follow_up_statement_id": "registry_no_audit",
+                                "follow_up_text": "The address in the service record is the address on the petition. The registry transcribes what is filed. We have no mechanism to verify it against the municipal renumbering register.",
+                                "fact_flags_set": [
+                                    "_rehearsal._fact.address_unverified"
+                                ]
+                            },
+                            {
+                                "id": "press_filing_date",
+                                "cost": 1,
+                                "follow_up_statement_id": "registry_filing_date",
+                                "follow_up_text": "The petition was filed in two thousand and nineteen. The address entered is the same address that has been on the petitioner's file since two thousand and sixteen.",
+                                "fact_flags_set": [
+                                    "_rehearsal._fact.filing_date_documented"
+                                ]
+                            }
+                        ],
+                        "present_options": [],
+                        "fact_flags_set": []
+                    },
+                    {
+                        "id": "registry_no_audit",
+                        "text": "The registry does not audit addresses against municipal records. The address on the petition is the address we record. If the filing party has an incorrect address in their file, that is not a registry error.",
+                        "article_tags": [
+                            "echr_6",
+                            "pl_const_45"
+                        ],
+                        "principle_tags": [
+                            "service_of_process",
+                            "legal_certainty"
+                        ],
+                        "context_tags": [
+                            "civil_proceedings",
+                            "service_failure",
+                            "documentary"
+                        ],
+                        "press_options": [
+                            {
+                                "id": "press_correction_history",
+                                "cost": 1,
+                                "follow_up_statement_id": "registry_no_correction",
+                                "follow_up_text": "No correction was ever submitted by the petitioning party to update the service address. The address on this file has not changed since the petition was lodged.",
+                                "fact_flags_set": [
+                                    "_rehearsal._fact.no_correction_filed"
+                                ]
+                            }
+                        ],
+                        "present_options": [
+                            {
+                                "id": "present_renumbering_rehearsal",
+                                "evidence_id": "renumbering_2015_fact",
+                                "cost": 0,
+                                "fact_flags_set": [
+                                    "_rehearsal._fact.renumbering_on_record"
+                                ],
+                                "judge_reaction": "The municipal renumbering instrument, dated two thousand and fifteen. The petition carries an address the municipality retired four years before it was filed. You have put the defect on the record. That is what this verb does."
+                            }
+                        ],
+                        "fact_flags_set": []
+                    },
+                    {
+                        "id": "registry_filing_date",
+                        "text": "The address on this petition was entered in two thousand and sixteen. The same address appears on all subsequent filings. No update was received from the petitioner at any point prior to this hearing.",
+                        "article_tags": [
+                            "echr_6"
+                        ],
+                        "principle_tags": [
+                            "service_of_process",
+                            "legal_certainty"
+                        ],
+                        "context_tags": [
+                            "civil_proceedings",
+                            "documentary"
+                        ],
+                        "press_options": [],
+                        "present_options": [],
+                        "fact_flags_set": []
+                    },
+                    {
+                        "id": "registry_no_correction",
+                        "text": "No correction was submitted. No updated address appears in the file. The record stands as entered.",
+                        "article_tags": [
+                            "echr_6"
+                        ],
+                        "principle_tags": [
+                            "service_of_process",
+                            "legal_certainty"
+                        ],
+                        "context_tags": [
+                            "civil_proceedings"
+                        ],
+                        "press_options": [],
+                        "present_options": [],
+                        "fact_flags_set": []
+                    }
+                ]
+            }
+        ]
+    }
+}

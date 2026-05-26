@@ -107,7 +107,8 @@ func _test_strong_packet_survives_save_load_and_reaches_strong_dialogue() -> voi
 	_assert(score.get("outcome", "") == "strong", "loaded 4/4 packet scores strong")
 
 	var final_result: Dictionary = _play_court_to_remedy()
-	_assert(final_result.get("court_outcome", "") == "strong", "court final result preserves strong packet outcome")
+	var outcome: String = str(final_result.get("court_outcome", ""))
+	_assert(outcome == "strong", "strong packet plus available Phase 2 citation reaches strong")
 	_assert(ch1["court_won_procedural_reset"] == true and ch1["won_court"] == true,
 		"court outcome flags are set on strong path")
 
@@ -168,7 +169,6 @@ func _test_decoy_notice_period() -> void:
 	_reset_state()
 	_surface_required_evidence()
 	_ch1()["surfaced_tenancy_act_window"] = true
-	_ch1()["halina_trust"] = 2
 	_refresh_binder()
 	_assign_strong_packet()
 	_binder.set_decoy_selected("decoy_notice_period", true)
@@ -180,7 +180,6 @@ func _test_decoy_notice_period() -> void:
 		"notice-period decoy uses cool dismissal")
 	_assert(score.get("outcome", "") == "blunder-recovered",
 		"notice-period decoy is recovered rather than blocking the chapter")
-	_assert(_ch1()["halina_trust"] == 1, "notice-period decoy applies Halina trust penalty")
 
 
 func _test_decoy_standing_wrong_party() -> void:
@@ -188,7 +187,6 @@ func _test_decoy_standing_wrong_party() -> void:
 	_reset_state()
 	_surface_required_evidence()
 	_ch1()["surfaced_property_transfer"] = true
-	_ch1()["halina_trust"] = 2
 	_refresh_binder()
 	_assign_strong_packet()
 	_binder.set_decoy_selected("decoy_standing_wrong_party", true)
@@ -201,7 +199,6 @@ func _test_decoy_standing_wrong_party() -> void:
 	_assert(score.get("outcome", "") == "blunder-recovered",
 		"standing decoy is recovered rather than hard-failing")
 	_assert(_ch1()["judicial_patience"] == 2, "standing decoy applies -3 judicial patience")
-	_assert(_ch1()["halina_trust"] == 1, "standing decoy applies Halina trust penalty")
 
 
 func _test_overbroad_remedy() -> void:
@@ -219,7 +216,7 @@ func _test_overbroad_remedy() -> void:
 	_assert(score.get("reaction_template", "") == "sharper_really_your_theory",
 		"overbroad remedy gets the sharper bench reaction")
 
-	_ch1()["casebook_judge_state"] = "round_3_remedy"
+	_play_court_to_remedy()
 	var judge: Dictionary = _request_dialogue("judge_district_ch1", "Judge")
 	_assert(_first_line(judge).contains("asked for the world"),
 		"judge overbroad-remedy dialogue is selected")
@@ -232,7 +229,7 @@ func _test_incapacity_blunder() -> void:
 	_surface_required_evidence()
 	_ch1()["halina_met"] = true
 	_ch1()["surfaced_sikorska_age"] = true
-	_ch1()["halina_trust"] = 4
+	_ch1()["halina_stance"] = "high"
 	_ch1()["recruited_crab"] = true
 	_refresh_binder()
 	_assign_strong_packet()
@@ -245,11 +242,10 @@ func _test_incapacity_blunder() -> void:
 		"incapacity gets the icy bench reaction")
 	_assert(score.get("outcome", "") == "blunder-recovered",
 		"incapacity is recovered as the chapter floor")
-	_assert(_ch1()["halina_trust"] == 0, "incapacity applies -4 Halina trust")
-	_assert(_ch1()["recruited_crab"] == false, "incapacity withdraws Crab support")
+	_assert(_ch1()["incapacity_penalty"] == true, "incapacity sets incapacity_penalty")
 	_assert(_ch1()["judicial_patience"] == 0, "incapacity drains judicial patience")
 
-	_ch1()["casebook_judge_state"] = "round_3_remedy"
+	_play_court_to_remedy()
 	var judge: Dictionary = _request_dialogue("judge_district_ch1", "Judge")
 	_assert(_first_line(judge).contains("cognitive, not chronological"),
 		"judge incapacity dialogue names the capacity error")
@@ -266,10 +262,13 @@ func _test_missing_evidence_under_investigated_path() -> void:
 	var score: Dictionary = _controller.consume_assembled_packet()
 	_assert(score.get("outcome", "") == "blunder-recovered",
 		"empty packet is recovered by the court floor")
-	_assert(score.get("recovery_source", "") == "court_redirect",
-		"under-investigated packet uses court redirect when no ally can rescue it")
-	_assert(_ch1()["court_outcome"] == "blunder-recovered",
-		"court_outcome records under-investigated recovery")
+	_assert(score.get("recovery_source", "") == "bench_initiative",
+		"under-investigated packet uses bench initiative label when no ally can rescue it")
+	## Step 1.1: consume_assembled_packet() no longer writes court_outcome to
+	## state — that is deferred to _compute_court_outcome() at end_round. The
+	## returned dictionary still carries the outcome key; state stays "".
+	_assert(_ch1()["court_outcome"] == "",
+		"court_outcome not yet written (deferred to end_round)")
 
 
 func _reset_state() -> void:
@@ -310,14 +309,22 @@ func _assign_standard_packet() -> void:
 
 
 func _play_court_to_remedy() -> Dictionary:
+	_ch1()["court_facts"] = [
+		"_fact.notice_received_april_28",
+		"_fact.no_appearance_logged",
+		"_fact.merits_reservable",
+		"_fact.rehearing_window_available"
+	]
 	var move = _motion_to_set_aside()
 	_controller.start_round("landlord_counsel_ch1", 1)
 	_controller.opponent_advance()
 	_controller.player_present(move, "envelope_address_number_seven")
 	_controller.end_round()
+	_controller.start_round("landlord_counsel_ch1", 2)
 	_controller.opponent_advance()
 	_controller.player_present(move, "rights_memo_article_6")
 	_controller.end_round()
+	_controller.start_round("landlord_counsel_ch1", 3)
 	_controller.opponent_advance()
 	_controller.player_present(move, "renewal_2019_number_twelve")
 	return _controller.end_round()

@@ -1,0 +1,14 @@
+{
+  "_doc": "Ambient lines spoken by NPCs when the player lingers in an NPC-specific trigger zone. Read by scripts/actors/*_zone.gd. Code owns keys (npc_id); Design owns line text. Distinct from <npc>.json::idle_flavor, which is general-purpose self-talk shown at idle outside any zone.",
+  "asia": [
+    "Dr. A. Cula? Are you looking for paperclips?",
+    "If you need to print something, just ask.",
+    "I would love to chat with you, but I have all this chaos to manage.",
+    "Have you lost something?",
+    "I'm wondering who even uses fax anymore."
+  ],
+  "pig": [
+    "Every second you stand still, a client somewhere is also standing still. This is a coincidence I cannot afford.",
+    "Standing still is a philosophical position, Dr. A. Cula. I do not endorse it professionally."
+  ]
+}

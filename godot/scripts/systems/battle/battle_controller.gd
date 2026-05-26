@@ -128,6 +128,8 @@ const OPPONENTS_PATH: String = "res://data/argument_opponents.json"
 const TAXONOMY_PATH: String = "res://data/tag_taxonomy.json"
 const EVIDENCE_PATH: String = "res://data/evidence_ch1.json"
 const FRAMES_PATH: String = "res://data/argument_frames_ch1.json"
+const ROUND_FILE_TEMPLATE: String = "res://data/court_rounds/chapter%d_round_%d.json"
+const REHEARSAL_PATH: String = "res://data/court_rounds/chapter1_round_0_rehearsal.json"
 const JUDGMENT_SCRIPT = preload("res://scripts/systems/battle/judgment.gd")
 const OPPONENT_SCRIPT = preload("res://scripts/systems/battle/argument_opponent.gd")
 const PACKET_SCORER = preload("res://scripts/systems/battle/packet_scorer.gd")
@@ -196,6 +198,22 @@ var _packet_submission_result: Dictionary = {}
 var _phase_one: PhaseOneController = PhaseOneController.new()
 var _phase_two: PhaseTwoController = PhaseTwoController.new()
 
+## Per-round data file cache — populated by start_round() from
+## chapter%d_round_%d.json. Replaces the old recursive-start_round model that
+## inherited Phase 1 state across rounds. Step 3.2 narrow scope (2026-05-26
+## design plan): the file is loaded so downstream consumers (UI, dialogue,
+## future per-round Phase 1 → Phase 2 wiring) can read declared witnesses,
+## judge counter-questions, and victory_resolution branches. The current
+## controller still uses opponent.get_round() for opponent moves and computes
+## the dispositive outcome via _compute_court_outcome(); evaluating
+## victory_resolution from the data file is a deferred follow-up.
+var _active_round_data: Dictionary = {}
+
+## _rehearsal_active — true while a start_rehearsal() session is in progress.
+## Cleared by end_rehearsal(). Guards rehearsal_press / rehearsal_present so
+## they cannot fire during a live court round, and vice versa.
+var _rehearsal_active: bool = false
+
 
 static func state_rank_for_tag(tag: String) -> int:
 	return int(STATE_RANKS.get(tag, 999))
@@ -263,6 +281,7 @@ func start_round(opponent_id: String, round_index: int) -> void:
 	_round_index = round_index
 	_current_move_index = 0
 	_last_result = {}
+	_active_round_data = _load_round_file(opponent.chapter, round_index)
 
 	if _is_phase_one_round(round_index):
 		if round_index == 1:
@@ -282,6 +301,7 @@ func start_round(opponent_id: String, round_index: int) -> void:
 			_emit_judge_skepticism(round_index, proposed_frame)
 
 	_write_chapter1_flag("casebook_judge_state", round.round_tag)
+	_emit_trial_record_round_started(round_index)
 
 
 func opponent_advance() -> Dictionary:
@@ -307,6 +327,7 @@ func opponent_advance() -> Dictionary:
 	if move != null:
 		result["opponent_move_id"] = move.move_id
 		result["opponent_move"] = move.display_name
+	_emit_trial_record_opponent_stated(str(result.get("opponent_move", "")))
 	_last_result = result
 	return result
 
@@ -372,6 +393,11 @@ func player_present(move: Resource, evidence_id: String) -> Dictionary:
 		_write_chapter1_flag("judicial_patience", _phase_two.judicial_patience)
 
 	_round_buckets[_round_index] = bucket
+	if not _is_phase_one_round(_round_index):
+		var opponent_move_id: String = ""
+		if opponent_move != null:
+			opponent_move_id = opponent_move.move_id
+		_append_phase2_result(_round_index, move.id, bucket, opponent_move_id, evidence_id, evidence_available)
 
 	var result: Dictionary = _base_result(resolved)
 	result["action"] = "present"
@@ -389,6 +415,11 @@ func player_present(move: Resource, evidence_id: String) -> Dictionary:
 	return result
 
 
+## end_round closes the active round. Step 3.2 (2026-05-26 design plan) dropped
+## the recursive start_round(opp, N+1) hand-off: the caller now drives the next
+## round explicitly via start_round(_active_opponent.id, result.next_round_index).
+## End-of-Round-3 still computes the dispositive court_outcome via
+## _compute_court_outcome() against the accumulated phase2_round_results.
 func end_round() -> Dictionary:
 	if _active_round == null or _active_opponent == null:
 		push_error("BattleController.end_round: no active round")
@@ -405,8 +436,9 @@ func end_round() -> Dictionary:
 	}
 
 	if _round_index < 3:
-		start_round(_active_opponent.id, _round_index + 1)
-		result["next_state"] = str(_chapter1().get("casebook_judge_state", ""))
+		_write_chapter1_flag("casebook_judge_state", _active_round.react_tag)
+		result["next_round_index"] = _round_index + 1
+		result["casebook_judge_state"] = str(_chapter1().get("casebook_judge_state", ""))
 		_last_result = result
 		return result
 
@@ -433,6 +465,183 @@ func end_round() -> Dictionary:
 	return result
 
 
+## start_rehearsal — begins the Phase-1-only Murrow rehearsal encounter.
+##
+## Loads chapter1_round_0_rehearsal.json, arms the PhaseOneController with the
+## file's declared witness_cooperation_total, and emits trial_record_round_started(0)
+## so the Trial Record panel (Step 1.2) can surface as a teaching UI. No
+## opponent; no packet; no outcome band. Call end_rehearsal() to close.
+##
+## Returns false if data has not loaded or the rehearsal file is missing.
+func start_rehearsal() -> bool:
+	if not _ensure_loaded():
+		return false
+	var rehearsal_data: Dictionary = _load_json_dictionary(REHEARSAL_PATH)
+	if rehearsal_data.is_empty():
+		push_error("BattleController.start_rehearsal: failed to load rehearsal file")
+		return false
+
+	_active_round_data = rehearsal_data
+	_rehearsal_active = true
+	_round_index = 0
+	_last_result = {}
+
+	var pf: Dictionary = {}
+	if rehearsal_data.get("phase_1_fact_finding", {}) is Dictionary:
+		pf = rehearsal_data["phase_1_fact_finding"]
+	var cooperation: int = int(pf.get("witness_cooperation_total", 3))
+	_phase_one.start(cooperation)
+
+	_emit_trial_record_round_started(0)
+	return true
+
+
+## end_rehearsal — closes the active rehearsal and writes the sole persistent
+## flag: chapter1.rehearsal_complete = true. Returns a result Dictionary for
+## downstream consumers (dialogue trigger, test assertions).
+func end_rehearsal() -> Dictionary:
+	if not _rehearsal_active:
+		push_error("BattleController.end_rehearsal: no rehearsal in progress")
+		return {}
+	_rehearsal_active = false
+	_write_chapter1_flag("rehearsal_complete", true)
+	_active_round_data = {}
+	var result: Dictionary = {
+		"rehearsal_complete": true,
+		"facts_established": _phase_one.established_evidence_ids.keys(),
+		"presses_used": _phase_one.press_count,
+	}
+	_last_result = result
+	return result
+
+
+## is_rehearsal_active — true between start_rehearsal() and end_rehearsal().
+func is_rehearsal_active() -> bool:
+	return _rehearsal_active
+
+
+## rehearsal_press — advance the Phase 1 cooperation counter and record a
+## fact from the rehearsal witness. Does NOT write to chapter1 state (the
+## rehearsal is consequence-free; only rehearsal_complete persists). Emits
+## trial_record_fact_established with an empty flag_name so the Trial Record
+## panel can render the press without triggering state-change side-effects.
+##
+## statement_id: the witness statement id being pressed (from the rehearsal
+## file's witnesses[].statements[].press_options[].follow_up_statement_id).
+## local_fact_flag: the _rehearsal._fact.* flag id declared in the rehearsal
+## file (empty string if the press sets no local fact).
+func rehearsal_press(statement_id: String, local_fact_flag: String) -> Dictionary:
+	if not _rehearsal_active:
+		push_error("BattleController.rehearsal_press: no rehearsal in progress")
+		return {}
+	_phase_one.spend_press(1)
+	if local_fact_flag != "":
+		_phase_one.establish_evidence(local_fact_flag)
+		_emit_trial_record_fact_established(statement_id, "")
+	var result: Dictionary = {
+		"action": "rehearsal_press",
+		"statement_id": statement_id,
+		"local_fact_flag": local_fact_flag,
+		"witness_cooperation": _phase_one.witness_cooperation,
+		"presses_used": _phase_one.press_count,
+	}
+	_last_result = result
+	return result
+
+
+## rehearsal_present — establish a fact from the rehearsal witness via a
+## presented document. Like rehearsal_press, writes nothing to chapter1 state.
+## Emits trial_record_fact_established so the Trial Record panel surfaces the
+## fact as it would in a live round.
+##
+## evidence_id: the evidence id being presented (from present_options[].evidence_id).
+## local_fact_flag: the _rehearsal._fact.* flag declared in the rehearsal file.
+func rehearsal_present(evidence_id: String, local_fact_flag: String) -> Dictionary:
+	if not _rehearsal_active:
+		push_error("BattleController.rehearsal_present: no rehearsal in progress")
+		return {}
+	if local_fact_flag != "":
+		_phase_one.establish_evidence(local_fact_flag)
+	_emit_trial_record_fact_established(evidence_id, "")
+	var result: Dictionary = {
+		"action": "rehearsal_present",
+		"evidence_id": evidence_id,
+		"local_fact_flag": local_fact_flag,
+		"witness_cooperation": _phase_one.witness_cooperation,
+	}
+	_last_result = result
+	return result
+
+
+## get_active_round_data — exposes the chapter%d_round_%d.json dict loaded
+## on the most recent start_round() call. Consumers (Trial Record panel,
+## dialogue dispatchers, focused tests) read witness lists, judge counter-
+## questions, frame_gates, and victory_resolution from this dict without
+## re-reading the file. Returns {} if no round is active.
+func get_active_round_data() -> Dictionary:
+	return _active_round_data.duplicate(true)
+
+
+func _load_round_file(chapter: int, round_index: int) -> Dictionary:
+	if chapter <= 0 or round_index <= 0:
+		push_error("BattleController._load_round_file: invalid chapter %d / round %d" % [chapter, round_index])
+		return {}
+	var path: String = ROUND_FILE_TEMPLATE % [chapter, round_index]
+	if not FileAccess.file_exists(path):
+		push_error("BattleController._load_round_file: missing round file %s" % path)
+		return {}
+	var parsed: Dictionary = _load_json_dictionary(path)
+	if parsed.is_empty():
+		push_error("BattleController._load_round_file: failed to parse %s" % path)
+		return {}
+	return parsed
+
+
+## _compute_court_outcome — determines the dispositive court_outcome band
+## from BOTH packet completeness (via packet_scorer) AND Phase 2 citation
+## quality (via chapter1.phase2_round_results). Replaces the old premature
+## court_outcome write in consume_assembled_packet().
+##
+## Current Ch1 outcome bands:
+##   OUTCOME_STRONG / STANDARD = packet outcome preserved unless Phase 2 downgrades it
+##   OUTCOME_NARROW = packet narrow ∨ any Phase 2 backfire/unavailable citation
+##                    ∨ accumulated weak/no-effect citation history
+##   OUTCOME_BLUNDER_RECOVERED = incapacity / burns-round path
+func _compute_court_outcome(packet_result: Dictionary) -> String:
+	var packet_outcome: String = str(packet_result.get("outcome", OUTCOME_BLUNDER_RECOVERED))
+
+	## Blunder-recovered stays blunder-recovered — the packet itself is
+	## fatally compromised (incapacity filed, round burned, ≤1 slot supported).
+	if packet_outcome == OUTCOME_BLUNDER_RECOVERED:
+		return OUTCOME_BLUNDER_RECOVERED
+
+	## Read Phase 2 citation results accumulated by player_present().
+	## Today's Chapter 1 closing records a single broad citation in Round 3, and
+	## the live resolver is still tuned for wider multi-citation play. Until that
+	## data lands, Phase 2 acts as a downgrade layer without making a single
+	## sparse-but-available citation erase a complete packet.
+	var ch1: Dictionary = _chapter1()
+	var results: Array = []
+	if ch1.get("phase2_round_results", []) is Array:
+		results = ch1.get("phase2_round_results", [])
+
+	var weak_phase2_count: int = 0
+	for entry in results:
+		if not entry is Dictionary:
+			continue
+		var bucket: String = str(entry.get("effectiveness_bucket", "no_effect"))
+		if bucket == "backfires":
+			return OUTCOME_NARROW
+		if entry.has("evidence_available") and not bool(entry.get("evidence_available", true)):
+			return OUTCOME_NARROW
+		if bucket == "not_very_effective" or bucket == "no_effect":
+			weak_phase2_count += 1
+
+	if weak_phase2_count >= 2:
+		return OUTCOME_NARROW
+	return packet_outcome
+
+
 func evaluate_packet_submission() -> Dictionary:
 	if not _ensure_loaded():
 		return {}
@@ -448,9 +657,8 @@ func consume_assembled_packet() -> Dictionary:
 		return {}
 
 	_write_chapter1_flag("judicial_patience", int(score.get("starting_judicial_patience", PHASE_TWO_DEFAULT_PATIENCE)))
-	var trust_delta: int = int(score.get("halina_trust_delta", 0))
-	if trust_delta != 0:
-		_write_chapter1_flag("halina_trust", int(_chapter1().get("halina_trust", 0)) + trust_delta)
+	if bool(score.get("has_incapacity_blunder", false)):
+		_write_chapter1_flag("incapacity_penalty", true)
 
 	var dominant_frame: String = str(score.get("dominant_frame", FRAME_DEFAULT))
 	if dominant_frame == "":
@@ -460,11 +668,15 @@ func consume_assembled_packet() -> Dictionary:
 	if str(_chapter1().get("packet_requested_remedy", DEFAULT_REMEDY)) != DEFAULT_REMEDY:
 		_write_chapter1_flag("decoy_overbroad_remedy", true)
 	if bool(score.get("crab_support_withdrawn", false)):
-		_write_chapter1_flag("recruited_crab", false)
+		_emit_crab_withdrew_after_incapacity()
+		## recruited_crab is NOT flipped here. The flag is written by on_dismiss
+		## of crab_incapacity_withdrawal in crab.json, after the player has seen
+		## Crab's withdrawal beat. See Step 5.2, 2026-05-26 design plan.
 
 	_write_chapter1_flag("court_outcome", str(score.get("outcome", OUTCOME_BLUNDER_RECOVERED)))
 	_packet_submission_applied = true
 	_packet_submission_result = score.duplicate(true)
+	_emit_trial_record_packet_scored(_packet_submission_result)
 	return _packet_submission_result.duplicate(true)
 
 
@@ -662,6 +874,36 @@ func _establish_evidence(evidence_id: String) -> void:
 		_write_chapter1_flag(key, evidence_id)
 	else:
 		_write_chapter1_flag(key, true)
+	_emit_trial_record_fact_established(evidence_id, key)
+
+
+func _append_phase2_result(
+	round_index: int,
+	citation_id: String,
+	effectiveness_bucket: String,
+	opponent_move: String,
+	evidence_id: String,
+	evidence_available: bool
+) -> void:
+	var state_node: Node = get_node_or_null("/root/State")
+	if state_node == null:
+		return
+	var data: Dictionary = state_node.get("data")
+	if not data.has("chapter1") or not data["chapter1"] is Dictionary:
+		return
+	var ch1: Dictionary = data["chapter1"]
+	if not ch1.has("phase2_round_results") or not ch1["phase2_round_results"] is Array:
+		return
+	var results: Array = ch1["phase2_round_results"]
+	results.append({
+		"round": round_index,
+		"citation_id": citation_id,
+		"evidence_id": evidence_id,
+		"evidence_available": evidence_available,
+		"effectiveness_bucket": effectiveness_bucket,
+		"opponent_move": opponent_move,
+	})
+	_emit_trial_record_citation_resolved(citation_id, effectiveness_bucket, opponent_move)
 
 
 func _packet_evidence_for_slot(slot_key: String, chapter1: Dictionary) -> String:
@@ -715,6 +957,45 @@ func _emit_judge_skepticism(round_index: int, proposed_frame: String) -> void:
 	var sigs: Node = get_node_or_null("/root/Signals")
 	if sigs != null and sigs.has_signal("judge_skepticism_raised"):
 		sigs.judge_skepticism_raised.emit(round_index, proposed_frame)
+
+
+## Trial Record panel signal helpers — all guard against missing autoload so they
+## compile safely in headless --script mode where /root/Signals may not be registered.
+
+func _emit_trial_record_round_started(round_index: int) -> void:
+	var sigs: Node = get_node_or_null("/root/Signals")
+	if sigs != null and sigs.has_signal("trial_record_round_started"):
+		sigs.trial_record_round_started.emit(round_index)
+
+
+func _emit_trial_record_fact_established(evidence_id: String, flag_name: String) -> void:
+	var sigs: Node = get_node_or_null("/root/Signals")
+	if sigs != null and sigs.has_signal("trial_record_fact_established"):
+		sigs.trial_record_fact_established.emit(evidence_id, flag_name)
+
+
+func _emit_trial_record_citation_resolved(citation_id: String, bucket: String, opponent_move: String) -> void:
+	var sigs: Node = get_node_or_null("/root/Signals")
+	if sigs != null and sigs.has_signal("trial_record_citation_resolved"):
+		sigs.trial_record_citation_resolved.emit(citation_id, bucket, opponent_move)
+
+
+func _emit_trial_record_opponent_stated(move_display_name: String) -> void:
+	var sigs: Node = get_node_or_null("/root/Signals")
+	if sigs != null and sigs.has_signal("trial_record_opponent_stated"):
+		sigs.trial_record_opponent_stated.emit(move_display_name)
+
+
+func _emit_trial_record_packet_scored(packet_result: Dictionary) -> void:
+	var sigs: Node = get_node_or_null("/root/Signals")
+	if sigs != null and sigs.has_signal("trial_record_packet_scored"):
+		sigs.trial_record_packet_scored.emit(packet_result)
+
+
+func _emit_crab_withdrew_after_incapacity() -> void:
+	var sigs: Node = get_node_or_null("/root/Signals")
+	if sigs != null and sigs.has_signal("crab_withdrew_after_incapacity"):
+		sigs.crab_withdrew_after_incapacity.emit()
 
 
 func _is_merits_frame(frame_id: String) -> bool:

@@ -178,9 +178,9 @@
         {
             "id": "whimsy_b13_response",
             "trigger": "chapter1.court_won_procedural_reset == true && !chapter1.beat13_complete",
-            "_comment": "**2026-05-25 fan-out (F4/F5):** Beat 13 post-victory exchange with Whimsy, paired with cula.json::cula_b13_whimsy_response. Per Whimsy bible / story.txt Beat 13: 'proposes turning the judgment into a musical.' Cula's reply ('I will look forward to the score, Whimsy. The written closing first, if you can.') is inlined; Whimsy's flourish is the TODO Piotr authors. Address form bare 'Whimsy' from Cula (post-recruit per AGENTS.md).",
+            "_comment": "Beat 13 post-victory exchange with Whimsy, paired with cula.json::cula_b13_whimsy_response. Theatrical-aesthete register; the judgment-as-artistic-specimen framing per story.txt Beat 13 ('proposes turning the judgment into a musical') — Cynic register, theatrical distancing dressed as flourish. 'A throughline, a reversal, and a satisfying last line' is correct literary analysis applied to a procedural court order; 'dramatic rights' is the laugh. **2026-05-24 promotion** of data/_drafts/nightly_design_pig_2026-05-14.json::whimsy_beat13.proposed_state line. Address form bare 'Cula' from Whimsy (post-recruit per AGENTS.md).",
             "lines": [
-                "[TODO 2026-05-25: Piotr to author Whimsy's b13 flourish. Voice: theatrical-aesthete; one extended metaphor turning the procedural reset into a performance. The 'judgment as musical' framing is the canonical seed; the actual flourish can wander as long as it lands on something the bench would tolerate. One Wordsworth or Shakespeare cite is in budget.]",
+                "Cula. The judgment has a throughline, a reversal, and a satisfying last line. I want the dramatic rights.",
                 {"speaker": "cula", "text": "I will look forward to the score, Whimsy. The written closing first, if you can."}
             ],
             "once": true

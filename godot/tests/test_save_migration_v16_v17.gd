@@ -113,7 +113,9 @@ func _test_v16_to_v17_preserves_existing() -> void:
 	_assert(migrated["chapter1"]["met_pig"] == true, "met_pig preserved")
 	_assert(migrated["chapter1"]["met_murrow"] == true, "met_murrow preserved")
 	_assert(migrated["chapter1"]["won_court"] == true, "won_court preserved")
-	_assert(migrated["chapter1"]["halina_trust"] == 7, "halina_trust preserved")
+	## halina_trust 7 (≥ 5) → migrated to halina_stance = "high" at v27.
+	_assert(not migrated["chapter1"].has("halina_trust"), "halina_trust erased by v27 migration")
+	_assert(migrated["chapter1"].get("halina_stance", "") == "high", "halina_trust 7 → halina_stance 'high'")
 	_assert(migrated["chapter1"]["coffee_retry_decision"] == "retry", "coffee_retry_decision preserved")
 	_assert(migrated["chapter1"]["state_choice"] == "blunt", "state_choice preserved")
 	_assert(migrated["chapter1"]["murrow_choice"] == "friendly", "murrow_choice preserved")
@@ -164,8 +166,8 @@ func _test_reset_state_declares_new_keys() -> void:
 		"judicial_patience declared 5")
 	_assert(ch1.has("witness_cooperation") and ch1["witness_cooperation"] == 0,
 		"witness_cooperation declared 0")
-	## Regression: earlier-version keys still present.
-	_assert(ch1.has("halina_trust"), "halina_trust still in reset_state (v11 regression)")
+	## Regression: stance fields present (v27 replaced halina_trust).
+	_assert(ch1.has("halina_stance"), "halina_stance in reset_state (v27 rename)")
 	_assert(ch1.has("state_choice"), "state_choice still in reset_state (v15 regression)")
 	_assert(ch1.has("murrow_choice"), "murrow_choice still in reset_state (v16 regression)")
 	state_node.free()
@@ -204,7 +206,7 @@ func _test_full_v1_to_v17_chain() -> void:
 	_assert(ch1.has("state_choice"), "state_choice exists (v15 regression)")
 	_assert(ch1.has("murrow_choice"), "murrow_choice exists (v16 regression)")
 	_assert(ch1.has("won_court"), "won_court exists (v13 regression)")
-	_assert(ch1.has("halina_trust"), "halina_trust exists (v11 regression)")
+	_assert(ch1.has("halina_stance"), "halina_stance exists (v27 rename of halina_trust)")
 	_assert(ch1.has("coffee_retry_decision"), "coffee_retry_decision exists (v13 regression)")
 	_assert(migrated.has("dialogue_states_seen"), "dialogue_states_seen exists (v12 regression)")
 	_assert(migrated.has("badges"), "badges exists (v8 regression)")

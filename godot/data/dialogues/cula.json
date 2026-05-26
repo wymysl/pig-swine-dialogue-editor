@@ -68,6 +68,18 @@
             "lines": ["Single payment, no instalments, no retainer. That is the cleanest fee shape this firm has billed in a while."]
         },
         {
+            "id": "incapacity_recovery_internal",
+            "trigger": "chapter1.court_won_procedural_reset == true && chapter1.decoy_incapacity == true && !chapter1.incapacity_reflection_seen",
+            "once": true,
+            "tags": ["beat13", "post_court", "incapacity_path", "internal"],
+            "_comment": "Post-court internal reflection — incapacity decoy path only. Fires once after court_won_procedural_reset on the bench-initiative outcome. Cula registers the gap between what he argued and what the bench found. One line; no self-pity, no resolution. STAGING NOTE: speaker cula_internal has no rendered channel until the DialogueRunner thought-balloon extension lands (D3 = option c, per 2026-05-26 design plan Open Decisions). This state is authored and staged; dispatch wiring is deferred to the AG sprint that builds the thought-balloon UI. on_dismiss writes incapacity_reflection_seen so the state fires at most once per playthrough.",
+            "speaker": "cula_internal",
+            "lines": ["I held the wrong argument. The court found the right one without me."],
+            "on_dismiss": [
+                {"set": "chapter1.incapacity_reflection_seen", "value": true}
+            ]
+        },
+        {
             "id": "cula_b9_archive_setup",
             "trigger": "chapter1.halina_close_done == true && !chapter1.archive_research_complete",
             "tags": ["beat9", "archive_room", "internal_short"],

@@ -1,5 +1,13 @@
 # Editorial Proposals on the Source Spec
 
+> AUTHORITY UPDATE (2026-05-26, design-plan Step 6.2 Option A):
+> This file is now part of the active design authority, together with
+> `PLAN.md`, `AGENTS.md`, `CONVENTIONS.md`, runtime `data/`, `scripts/`,
+> and `scenes/`. The five root `.txt` files are frozen reference material.
+> Older text below preserves the wording from when these proposals targeted
+> root-spec edits; read that wording as historical rationale, not as an
+> instruction to treat root `.txt` files as current source of truth.
+
 This file holds my editorial calls on the four root `.txt` files. Each proposal is one of three types:
 
 - **CUT** — material that's redundant, bloated, or unrealistic for a one-developer-plus-agents project.
@@ -179,6 +187,8 @@ User approved all proposals. Language decision: **English version first; Polish 
 
 | # | Item | Status | Notes |
 |---|---|---|---|
+| — | `PROPOSAL_player_driven_argument.md` | **DONE** | Subsumed into 2026-05-26 remediation plan. Item closed. |
+| — | `PROPOSAL_mechanical_depth_2026-05-18.md` | **DONE** | Subsumed into 2026-05-26 remediation plan. Item closed. |
 | 1 | Casebook is load-bearing; no wild encounters; closed taxonomy; resolver formula | **DONE** | Decisions baked into `PLAN.md` and `AGENTS.md`. `data/tag_taxonomy.json` and `scripts/systems/battle/effectiveness.gd` skeleton committed. |
 | 2 | Cut premature district scenes; cut pixel-bound table; clarify "visible" for locked routes | **DONE** | Decisions baked into `PLAN.md` (deferred districts) and `AGENTS.md` (signpost convention). `world.txt` has been cleaned up to reflect these decisions. |
 | 3 | Keep Coffee + Document Chase; defer Scooter and Ski; reframe Final Printer as Casebook battle | **DONE** | Decisions baked into `PLAN.md` (out-of-scope-permanently) and `AGENTS.md` (forbidden patterns). `minigames.txt` has been updated to reflect these decisions. |

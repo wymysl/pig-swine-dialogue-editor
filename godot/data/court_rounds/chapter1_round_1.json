@@ -974,14 +974,11 @@
         {
           "id": "blunder_recovered",
           "when": "chapter1.decoy_incapacity == true || primary_fact_count <= 1 || judicial_patience <= 1",
+          "_court_outcome_note": "court_outcome is no longer written by Round 1; the dispositive court_outcome is computed by battle_controller._compute_court_outcome() at end-of-Round-3 against the accumulated phase2_round_results. Neutered 2026-05-26 per design plan Step 3.2 / Step 3.1 SPRINT_LOG followup #3.",
           "sets": [
             {
               "path": "chapter1.court_won_procedural_reset",
               "value": true
-            },
-            {
-              "path": "chapter1.court_outcome",
-              "value": "blunder-recovered"
             }
           ],
           "result_text": "The bench is cool. The order is read out without comment, and counsel realises before it finishes that the motion has landed in spite of how it was carried in — somewhere in the bundle, a corrected address that counsel did not place there is doing the work. The court grants the motion to set aside under KPC Article 135-bis § 2. The hearing is restored. The client is entitled to be present when the merits are heard, and that day is not today. Counsel walks out aware of what the firm caught for him."
@@ -993,10 +990,6 @@
             {
               "path": "chapter1.court_won_procedural_reset",
               "value": true
-            },
-            {
-              "path": "chapter1.court_outcome",
-              "value": "narrow"
             }
           ],
           "result_text": "The bench grants the motion on the procedural floor. The order will be read as written: KPC Article 135-bis § 2, defective service, hearing restored. The judge adds, for the record, that counsel made arguments the court did not need to reach today and would prefer not to have been asked to. The remedy is the rehearing on the merits in the ordinary course. The merits remain open."
@@ -1008,10 +1001,6 @@
             {
               "path": "chapter1.court_won_procedural_reset",
               "value": true
-            },
-            {
-              "path": "chapter1.court_outcome",
-              "value": "standard"
             }
           ],
           "result_text": "The bench grants the motion to set aside. KPC Article 135-bis § 2. The service is found defective; the hearing is restored; the merits are reserved for the rescheduled day. The order is short. The court neither congratulates nor begrudges. Counsel files out behind the bailiff with the corrected docket in hand and the client, in absentia, still tenanted."
@@ -1023,10 +1012,6 @@
             {
               "path": "chapter1.court_won_procedural_reset",
               "value": true
-            },
-            {
-              "path": "chapter1.court_outcome",
-              "value": "strong"
             }
           ],
           "result_text": "The bench grants the motion to set aside under KPC Article 135-bis § 2. Before issuing the order the judge pauses for half a beat — long enough that the bailiff looks up — and notes for the record that the four elements of the defect appear in the file in the form Article 135-bis § 2 contemplates, which the bench is not always able to say. The remedy is, of course, modest: a rehearing on the merits, scheduled in the ordinary course, costs against the petitioner. The client is restored to the proceeding. The order goes no further than that. It does not need to."

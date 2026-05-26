@@ -189,7 +189,7 @@ func _test_full_v1_to_v18_chain() -> void:
 	_assert(ch1.has("state_choice"), "state_choice exists (v15 regression)")
 	_assert(ch1.has("murrow_choice"), "murrow_choice exists (v16 regression)")
 	_assert(ch1.has("won_court"), "won_court exists (v13 regression)")
-	_assert(ch1.has("halina_trust"), "halina_trust exists (v11 regression)")
+	_assert(ch1.has("halina_stance"), "halina_stance exists (v27 rename of halina_trust)")
 	_assert(ch1.has("proposed_frame"), "proposed_frame exists (v17 regression)")
 	_assert(ch1.has("judicial_patience"), "judicial_patience exists (v17 regression)")
 	_assert(ch1.has("witness_cooperation"), "witness_cooperation exists (v17 regression)")

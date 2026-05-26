@@ -12,6 +12,7 @@ extends CanvasLayer
 
 const EVIDENCE_FILE: String = "res://data/evidence_ch1.json"
 const FRAMES_FILE: String = "res://data/argument_frames_ch1.json"
+const STRINGS_FILE: String = "res://data/case_folder_strings.json"
 const PACKET_SCORER = preload("res://scripts/systems/battle/packet_scorer.gd")
 
 const SLOT_NON_CURRENT_ADDRESS: String = "element_non_current_address"
@@ -26,6 +27,10 @@ const SLOT_ORDER: Array[String] = [
 	SLOT_NO_THIRD_PARTY_AUTHORITY,
 ]
 
+## SLOT_LABELS — defensive in-code fallback only. Canonical values live in
+## case_folder_strings.json::binder.slot_labels and are loaded on _ready().
+## Use _slot_label(slot_key) for runtime lookups; this const exists so a
+## strings-file load failure still renders something readable.
 const SLOT_LABELS: Dictionary = {
 	SLOT_NON_CURRENT_ADDRESS: "Address non-current",
 	SLOT_LANDLORD_KNOWLEDGE: "Landlord knowledge",
@@ -88,6 +93,9 @@ const DEFAULT_REMEDY: String = "procedural_reset"
 ## iteration preserves.
 var _evidence: Dictionary = {}
 var _frames: Dictionary = {}
+## _strings — case_folder_strings.json::binder block. Slot/remedy labels and
+## banner copy live here so blue_binder.gd holds only defensive fallbacks.
+var _strings: Dictionary = {}
 var _ordered_ids: Array[String] = []
 var _active_index: int = 0
 
@@ -116,6 +124,7 @@ func _ready() -> void:
 	process_mode = Node.PROCESS_MODE_ALWAYS
 	_load_evidence()
 	_load_frames()
+	_load_strings()
 	_connect_packet_controls()
 	refresh_from_state()
 
@@ -203,7 +212,7 @@ func apply_packet_assessment() -> Dictionary:
 	var score: Dictionary = evaluate_packet()
 	if not bool(score.get("meets_minimum", false)):
 		var minimum_required: int = int(score.get("minimum_required", 0))
-		_set_status("Need at least %d required elements before filing." % minimum_required)
+		_set_status(_banner("need_min_elements", "Need at least %d required elements before filing.") % minimum_required)
 		score["applied"] = false
 		return score
 
@@ -214,7 +223,7 @@ func apply_packet_assessment() -> Dictionary:
 
 	var required_count: int = int(score.get("required_count", 0))
 	var required_total: int = int(score.get("required_total", SLOT_ORDER.size()))
-	_set_status("Packet applied: %d/%d elements, remedy '%s'." % [required_count, required_total, remedy_id])
+	_set_status(_banner("packet_applied", "Packet applied: %d/%d elements, remedy '%s'.") % [required_count, required_total, remedy_id])
 	score["applied"] = true
 	return score
 
@@ -260,7 +269,7 @@ func _on_slot_option_selected(index: int, slot_key: String) -> void:
 		return
 	var evidence_id: String = str(values[index])
 	if not assign_evidence_to_slot(slot_key, evidence_id):
-		_set_status("That evidence does not support %s." % SLOT_LABELS.get(slot_key, slot_key))
+		_set_status(_banner("evidence_does_not_support", "That evidence does not support %s.") % _slot_label(slot_key))
 
 
 func _on_remedy_option_selected(index: int) -> void:
@@ -295,6 +304,44 @@ func _load_frames() -> void:
 		push_error("BlueBinder: argument_frames_ch1.json missing Dictionary 'frames' block")
 		return
 	_frames = parsed["frames"]
+
+
+func _load_strings() -> void:
+	var parsed: Dictionary = _load_json_dictionary(STRINGS_FILE)
+	if parsed.is_empty():
+		return
+	var binder_block: Variant = parsed.get("binder", {})
+	if not (binder_block is Dictionary):
+		push_warning("BlueBinder: case_folder_strings.json missing 'binder' block; using code fallbacks")
+		return
+	_strings = binder_block
+
+
+## _slot_label — canonical slot display name from strings JSON;
+## falls back to const SLOT_LABELS if the strings load failed.
+func _slot_label(slot_key: String) -> String:
+	var labels: Variant = _strings.get("slot_labels", {})
+	if labels is Dictionary and labels.has(slot_key):
+		return String(labels[slot_key])
+	return String(SLOT_LABELS.get(slot_key, slot_key))
+
+
+## _remedy_label — canonical remedy display name from strings JSON;
+## falls back to the inline REMEDY_OPTIONS label, then to the id itself.
+func _remedy_label(remedy_id: String, fallback: String) -> String:
+	var labels: Variant = _strings.get("remedy_labels", {})
+	if labels is Dictionary and labels.has(remedy_id):
+		return String(labels[remedy_id])
+	return fallback
+
+
+## _banner — canonical banner copy from strings JSON; falls back to the
+## inline literal passed by the caller.
+func _banner(key: String, fallback: String) -> String:
+	var banners: Variant = _strings.get("banners", {})
+	if banners is Dictionary and banners.has(key):
+		return String(banners[key])
+	return fallback
 
 
 func _load_json_dictionary(path: String) -> Dictionary:
@@ -353,8 +400,8 @@ func _on_tab_pressed(evidence_id: String) -> void:
 
 func _show_page(idx: int) -> void:
 	if _ordered_ids.is_empty():
-		_page_body_title.text = "No surfaced evidence yet"
-		_page_body_summary.text = "Surface evidence through dialogue and investigation, then return to the binder."
+		_page_body_title.text = _banner("empty_state_title", "No surfaced evidence yet")
+		_page_body_summary.text = _banner("empty_state_body", "Surface evidence through dialogue and investigation, then return to the binder.")
 		_clear_press_lines()
 		_tags_footer.text = ""
 		_refresh_tab_active_state()
@@ -425,7 +472,7 @@ func _card_summary(_evidence_id: String, card: Dictionary) -> String:
 		for slot_id in raw_support:
 			var slot_key: String = str(slot_id)
 			if SLOT_LABELS.has(slot_key):
-				supported_slots.append(String(SLOT_LABELS[slot_key]))
+				supported_slots.append(_slot_label(slot_key))
 	if not supported_slots.is_empty():
 		return "Supports: %s." % ", ".join(supported_slots)
 
@@ -433,7 +480,7 @@ func _card_summary(_evidence_id: String, card: Dictionary) -> String:
 	if source_text != "":
 		return "Source: %s." % _humanize_token(source_text)
 
-	return "Summary pending in evidence_ch1.json."
+	return _banner("summary_pending", "Summary pending in evidence_ch1.json.")
 
 
 func _build_slot_options() -> void:
@@ -477,7 +524,8 @@ func _build_remedy_options() -> void:
 		if remedy_id == "":
 			continue
 		_remedy_option_values.append(remedy_id)
-		_remedy_option.add_item(str(entry.get("label", remedy_id)))
+		var fallback_label: String = str(entry.get("label", remedy_id))
+		_remedy_option.add_item(_remedy_label(remedy_id, fallback_label))
 
 	var remedy_value: String = String(_chapter1().get(REMEDY_STATE_KEY, DEFAULT_REMEDY))
 	if not _is_known_remedy(remedy_value):

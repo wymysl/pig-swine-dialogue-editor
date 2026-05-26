@@ -151,3 +151,39 @@ signal coffee_brewing_completed(result: Dictionary)
 ## TODO(consumer): Judge-skepticism camera/HUD response is deferred; see 2026-05-19 tech critique F5.
 @warning_ignore("unused_signal")
 signal judge_skepticism_raised(round_index: int, proposed_frame: String)
+
+## Trial Record panel — emitted by BattleController.start_round() when a new court round begins.
+## round_index: 0 = rehearsal, 1–3 = live rounds (matches controller _round_index).
+@warning_ignore("unused_signal")
+signal trial_record_round_started(round_index: int)
+
+## Trial Record panel — emitted when Phase 1 fact-finding establishes a fact-flag.
+## evidence_id: the piece of evidence that was established (key in evidence_ch1.json).
+## flag_name: the chapter1 flag written (e.g. "packet_slot_address_non_current").
+@warning_ignore("unused_signal")
+signal trial_record_fact_established(evidence_id: String, flag_name: String)
+
+## Trial Record panel — emitted when a Phase 2 citation resolves against the opponent move.
+## citation_id: the evidence/judgment move id cited by the player.
+## bucket: one of super_effective / effective / not_very_effective / no_effect / backfires.
+## opponent_move: the opponent move's display_name for the move that was in play.
+@warning_ignore("unused_signal")
+signal trial_record_citation_resolved(citation_id: String, bucket: String, opponent_move: String)
+
+## Trial Record panel — emitted by opponent_advance() when an opposing move is presented.
+## move_display_name: the opponent move's human-readable name; empty string if no move active.
+@warning_ignore("unused_signal")
+signal trial_record_opponent_stated(move_display_name: String)
+
+## Trial Record panel — emitted after consume_assembled_packet() scores the packet.
+## packet_result: the Dictionary returned by consume_assembled_packet() (includes outcome band).
+@warning_ignore("unused_signal")
+signal trial_record_packet_scored(packet_result: Dictionary)
+
+## Emitted by consume_assembled_packet() when the packet scorer returns crab_support_withdrawn
+## (i.e. decoy_incapacity was filed and Crab was still recruited). Replaces the former silent
+## _write_chapter1_flag("recruited_crab", false) in battle_controller.gd (Step 5.2,
+## 2026-05-26 design plan). Consumer: court-round NPC layer serves crab_incapacity_withdrawal
+## dialogue state; that state's on_dismiss writes recruited_crab = false.
+@warning_ignore("unused_signal")
+signal crab_withdrew_after_incapacity()

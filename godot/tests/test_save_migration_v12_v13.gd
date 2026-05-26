@@ -162,5 +162,5 @@ func _test_full_v1_to_v13_chain() -> void:
 	_assert(migrated.has("routes_unlocked"), "routes_unlocked exists after full chain")
 	_assert(migrated.has("coffee"), "coffee exists after full chain")
 	_assert(migrated.has("settings"), "settings exists after full chain")
-	_assert(migrated["chapter1"].has("halina_trust"), "halina_trust exists (v11 step regression check)")
+	_assert(migrated["chapter1"].has("halina_stance"), "halina_stance exists (v27 rename of halina_trust)")
 	save_node.free()

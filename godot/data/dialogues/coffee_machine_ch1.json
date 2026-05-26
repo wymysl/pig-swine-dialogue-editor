@@ -1,0 +1,22 @@
+{
+    "version": 1,
+    "npc_id": "coffee_machine_ch1",
+    "display_name": "(coffee machine)",
+    "_provenance": "Promoted 2026-05-24 from data/_drafts/nightly_design_beat13_close_2026-05-17.json::coffee_machine_beat13_close. Standalone env-beat file modelled on postcard_swine_ch1.json. Houses the chapter-1 coffee-machine environmental beats; later chapters' coffee-machine appearances can extend this file or branch a coffee_machine_ch2.json depending on whether the running joke continues episodic or splits per-chapter. The 'admissible only under seal' framing from story.txt Beat 2 is canon for this device; the Beat-13 close is the first of its named env-beat states.",
+    "states": [
+        {
+            "id": "coffee_machine_beat13_close",
+            "trigger": "chapter1.won_court == true && chapter1.pig_court_win_acknowledged == true && !chapter1.beat13_complete",
+            "_comment": "Beat 13 close. Fires AFTER Pig's celebration has set chapter1.pig_court_win_acknowledged (sequencing flag declared SAVE_VERSION 25). Sets chapter1.beat13_complete = true on_dismiss; that flip is what makes postcard_swine_ch1.json::asia_address_label fire on the next interaction (Beat 14). Speaker 'stage_direction' matches postcard_swine_ch1.json::pig_readaloud_cue convention. Single environmental beat, one observation. Extends the 'admissible only under seal' framing from story.txt Beat 2 — the coffee machine has been the chapter's silent witness; here it has the last beat. 'Not quite a complaint and not quite a confession' gives the machine the legal-personhood ambiguity that has been running since Beat 2; the slow single blink-and-off is the visual punchline. once:true for safety.",
+            "speaker": "stage_direction",
+            "lines": [
+                "The coffee machine makes a sound that is not quite a complaint and not quite a confession. The light on the side blinks once, slowly, and stays off."
+            ],
+            "on_dismiss": [
+                {"set": "chapter1.beat13_complete", "value": true}
+            ],
+            "once": true,
+            "tags": ["beat13", "chapter_close", "coffee_machine", "stage_direction", "env_beat"]
+        }
+    ]
+}

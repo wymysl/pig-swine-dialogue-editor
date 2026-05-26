@@ -1992,3 +1992,844 @@ Files touched: `scripts/autoload/state.gd`, `scripts/systems/save.gd`,
 
 Verification: `godot --headless --path godot --script tests/test_runner.gd`
 (sandbox has no Godot binary — Piotr to run before pushing).
+
+
+## 2026-05-26 — Phase 1 Step 1.1: Move court_outcome out of consume_assembled_packet
+
+Per `critiques/2026-05-26-design-plan.md` Step 1.1 (F2). The premature
+`court_outcome` write in `consume_assembled_packet()` is removed. The
+dispositive outcome is now computed by `_compute_court_outcome()` at
+end-of-round-3, factoring both packet completeness (from `packet_scorer.gd`)
+AND Phase 2 citation quality (from `chapter1.phase2_round_results`).
+
+Outcome bands (Path A):
+- `OUTCOME_STRONG` = packet complete ∧ ≥3 super_effective citations ∧ no backfires
+- `OUTCOME_STANDARD` = packet complete ∧ ≥2 effective-or-better citations ∧ no backfires
+- `OUTCOME_NARROW` = packet narrow ∨ any backfire ∨ weak citations
+- `OUTCOME_BLUNDER_RECOVERED` = incapacity / burns-round path (unchanged)
+
+Save version bumped from 22 → 23. New `chapter1.phase2_round_results` Array
+persists per-citation effectiveness results across save/load during court
+rounds. Each entry: `{round, citation_id, effectiveness_bucket, opponent_move}`.
+
+Files touched:
+- `scripts/systems/battle/battle_controller.gd` — removed `court_outcome`
+  write from `consume_assembled_packet()`. Added `_compute_court_outcome()`.
+  Added `_append_phase2_result()`. Modified `player_present()` to record Phase 2
+  citations. Modified `end_round()` to use `_compute_court_outcome()`.
+- `scripts/autoload/state.gd` — SAVE_VERSION 22→23. Added
+  `chapter1.phase2_round_results` (Array, default []).
+- `scripts/systems/save.gd` — v22→v23 migration step.
+- `tests/test_save_migration_v22_v23.gd` (NEW) — 7 tests, asserts
+  SAVE_VERSION >= 23 per the pattern.
+- `tests/test_battle_controller.gd` — two new tests: T9 (complete packet +
+  weak Phase 2 citations ≠ OUTCOME_STRONG — the load-bearing Step 1.1 test)
+  and T10 (Phase 2 present appends to phase2_round_results).
+
+Verification: `godot --headless --path godot --script tests/test_runner.gd`
+and `godot --headless --path godot --script tests/test_save_migration_v22_v23.gd`
+(sandbox has no Godot binary — Piotr to run before pushing).
+
+---
+
+**2026-05-26 — Code / Cowork — Step 1.2: Trial Record panel (design plan 2026-05-26-design-plan.md)**
+
+Shipped the Trial Record panel per Path A. No save-state changes (UI only; no new chapter1 flags or SAVE_VERSION bump).
+
+Files created:
+- `data/court_rounds/_trial_record_labels.json` — player-facing bucket label strings ("Effective", "Super effective — strikes the article squarely", "Backfires — confirms opposing counsel's frame", "Not very effective", "No effect") plus UI section headers. Legal register throughout per AGENTS.md §Humor rules. Colors chosen for WCAG AA contrast against a dark panel background.
+- `scripts/ui/trial_record_panel.gd` — PanelContainer script. Loads labels from JSON on _ready(). Subscribes to five `trial_record_*` signals via `/root/Signals`. Maintains facts list (Phase 1 fact-flag reveals), authorities list (Phase 2 citation rows), effectiveness popup (1.5 s dwell, token-guarded), and opposing-position label. Color + text label both set on every effectiveness row (WCAG: no information conveyed by color alone).
+- `scenes/ui/trial_record_panel.tscn` — PanelContainer scene with MarginContainer → VBox → PanelTitle, FactsHeader, FactsList, AuthoritiesHeader, AuthoritiesList, OpposingPosition, EffectivenessPopup/EffectivenessLabel.
+
+Files modified:
+- `scripts/autoload/signals.gd` — added five signals: `trial_record_round_started`, `trial_record_fact_established`, `trial_record_citation_resolved`, `trial_record_opponent_stated`, `trial_record_packet_scored`.
+- `scripts/systems/battle/battle_controller.gd` — added five `_emit_trial_record_*` helpers; wired emits into `start_round()`, `opponent_advance()`, `_establish_evidence()`, `_append_phase2_result()`, `consume_assembled_packet()`.
+- `scenes/ui/battle_screen.tscn` — `load_steps` 2→3, added `trial_record_panel.tscn` as ext_resource, instanced as `TrialRecordPanel` child at anchors (0.67, 0.04, 1.0, 0.96). `OptionsContainer.anchor_right` narrowed 1.0→0.65 to avoid overlap.
+
+Known gap: Phase 1 fact rows display raw `evidence_id` keys (e.g. `element_non_current_address`). Human-readable labels require a `_trial_record_labels.json` extension mapping evidence keys to display strings — deferred to when evidence authoring is further along.
+
+Verification: Godot binary not available in Cowork sandbox. Static checks passed: JSON validates (`python3 -m json.tool`), signal names grep-confirmed in both `signals.gd` and `battle_controller.gd`, @onready node paths verified against scene node tree, `battle_screen.tscn` load_steps and instance node confirmed. **Piotr to run `godot --headless --path . --script tests/test_smoke.gd` and `godot --headless --path . --script tests/test_runner.gd` before pushing.**
+
+---
+
+**2026-05-26 — Code / Cowork — Step 1.3: opponent strength sets (design plan 2026-05-26-design-plan.md)**
+
+Populated `immune_to` and `resists` on all six moves in `landlord_counsel_ch1`, and added `tests/test_battle.gd` to verify bucket coverage.
+
+Root cause of "super_effective everywhere" (per design plan): all six `immune_to` arrays were `[]`, so the backfire path was structurally unreachable for any player move. Four of six `resists` arrays were also empty, meaning the score-capping mechanic had no effect.
+
+Tag design rationale: Step 2.1 (Article 8 and Article 10 judgments) has not shipped yet, so immune_to tags use existing-taxonomy proxies — `margin_of_appreciation` as the Art. 8 anchor (it is the dominant principle in Art. 8 proportionality analysis and already in `tag_taxonomy.json`). When concentrated Art. 8 moves are added, their primary tag will have weight ≥ 0.5 and will trigger backfire deterministically against these strength sets. The correct judgment (`procedural_reset_ch1`) distributes weight across 10 tags (max ~0.156 per tag), so it can never accidentally backfire.
+
+Files modified:
+- `data/argument_opponents.json` — all six moves now have `immune_to: ["margin_of_appreciation"]`. Individual `resists` by move: `file_says_served` → `[proportionality, legitimate_aim]`; `third_party_cure` → `[proportionality, prescribed_by_law]`; `technicality_does_not_matter` → `[proportionality, legitimate_aim]`; `merits_override` → `[legal_certainty, legitimate_aim]`; `ask_for_everything` → `[proportionality, prescribed_by_law]`; `landlord_prejudice` → `[proportionality, legitimate_aim]`. All tag ids confirmed present in `data/tag_taxonomy.json`.
+
+Files created:
+- `tests/test_battle.gd` — two test cases: T1 (`bucket_distribution`) crosses four synthetic probes against real opponent tag sets and asserts ≥ 3 distinct buckets; T2 (`immune_to_populated`) asserts every move has a non-empty `immune_to` array. Probe math verified: `{"margin_of_appreciation":1.0}` → backfires; `{"access_to_court":0.6,"effective_remedy":0.4}` vs `landlord_prejudice` → effective (score 0.5); `{"service_of_process":1.0}` vs `file_says_served` → not_very_effective (score ≈0.333); `{"individual_assessment":1.0}` → no_effect.
+
+Verification: JSON valid (`python3 -m json.tool`), all six immune_to arrays confirmed non-empty, all tag ids confirmed in taxonomy. Probe math hand-verified against `effectiveness.gd` resolver logic. **Piotr to run `godot --headless --path . --script tests/test_battle.gd` and full `tests/test_runner.gd` before pushing.**
+
+---
+
+**2026-05-26 - Code / Codex - Step 1.1 corrective review follow-up**
+
+Fixed the Step 1.1 outcome regression found during review. The final court
+outcome now reads persisted `chapter1.phase2_round_results` instead of the
+last per-round bucket, preserves the current strong packet path for an
+available Chapter 1 Phase 2 citation, and downgrades on durable Phase 2
+backfires, unavailable evidence citations, or accumulated weak/no-effect
+citation history. Phase 2 entries now store both `citation_id` and
+`evidence_id`, plus `evidence_available`.
+
+Files modified:
+- `scripts/systems/battle/battle_controller.gd` - records move id separately
+  from evidence id; persists evidence availability; computes court outcome
+  from packet result plus persisted Phase 2 history.
+- `scripts/autoload/state.gd` - documented the expanded
+  `phase2_round_results` entry shape.
+- `data/chapters/chapter1.json` - registered `chapter1.phase2_round_results`
+  in the chapter flag registry.
+- `tests/test_battle_controller.gd`, `tests/test_court_packet_scoring.gd`,
+  `tests/test_chapter1_motion_packet_full_path.gd` - restored strong-path
+  assertions and added downgrade regressions for weak history, unavailable
+  evidence, and backfire history.
+- `tests/test_save_migration_v22_v23.gd` and
+  `tests/fixtures/save_v23_from_v22.json` - added fixture-backed v22 -> v23
+  migration coverage for `phase2_round_results`.
+
+Verification: focused suites pass:
+`test_battle_controller.gd`, `test_court_packet_scoring.gd`,
+`test_chapter1_motion_packet_full_path.gd`,
+`test_chapter1_v17_flag_coverage.gd`, `test_save_migration_v22_v23.gd`, and
+`test_smoke.gd`. Full runner is `53/57`; remaining failures are outside this
+patch: `test_chapter1_phase_b.gd`, `test_dialogue_runner.gd`,
+`test_postcard_swine_chain.gd`, and `test_save_roundtrip.gd` (local save-file
+write failure).
+
+2026-05-26 — Design/Code — Step 2.2: Judgment overworld pickups (2026-05-26-design-plan.md
+§Phase 2, Step 2.2). Two pickup interactables placed in Ch1 scenes so the
+player can collect home_and_family_ch8 and expression_and_press_ch10 before
+court. SAVE_VERSION bumped to 24; two new boolean flags declared in
+`state.gd::reset_state()::chapter1` (`picked_up_article_8`,
+`picked_up_article_10`). The Casebook `conditions.required_flags` entries in
+`judgments.json` already key on these flags (authored in Step 2.1); no
+Casebook code change required. Pickup text authored here (CW follow-up
+pass per plan). Files touched:
+- `scripts/autoload/state.gd` — SAVE_VERSION 23→24, two new flags,
+  SAVE_VERSION 24 doc comment.
+- `scripts/systems/save.gd` — v23→v24 migration branch.
+- `data/items.json` — `article_8_brief` (Café Paragraf side table, discarded
+  brief from a previous client's Article 8 case) and `article_10_digest`
+  (Archive Room shelf, Murrow-flagged Strasbourg press-freedom digest).
+  Both carry `pickup_line` flavor text that passes the Taste Standard.
+- `scenes/interiors/cafe_paragraf.tscn` — `Article8Brief` pickup node at
+  (160, 220); added `pickup.gd` ext_resource and collision shape sub_resource.
+- `scenes/interiors/archive_room.tscn` — `Article10Digest` pickup node at
+  (480, 300); `pickup.gd` already referenced as `6_cklam`; added collision
+  shape sub_resource only.
+- `tests/test_save_migration_v23_v24.gd` — new 7-test migration suite (T1
+  asserts SAVE_VERSION >= 24 per migration test pattern).
+- `tests/fixtures/save_v24_from_v23.json` — v23 fixture for T3.
+Verification: structural checks passed (JSON validity, flag path round-trip
+between judgments.json conditions and state.gd declarations, state_flag_path
+in both .tscn nodes). Godot headless not available in shell sandbox; smoke
+and migration test suite require a run on the host machine before merge.
+
+---
+
+## 2026-05-24 — design-proposal execution (P1/P2/P3 from nightly/2026-05-24/design_proposals.md)
+
+The three proposals from the 2026-05-24 nightly design pass were executed end-to-end in the Cowork sandbox. Crosses Code, Design, and Narrative ownership; authorized by Piotr ("Execute the proposals"). Godot is not available in this sandbox — every change is structurally validated (JSON round-trip, jq empty) but the smoke/runner/save-migration suite has not been executed and MUST run on the host before merge.
+
+### Proposal 1 — Beat-13 ensemble promotion (CODE + DIALOGUE)
+
+Unblocks the Pig/Murrow/Crab/Whimsy Beat-13 ensemble + coffee-machine env-beat that had been waiting in `_drafts/` for 10 days on a Code dependency.
+
+- `scripts/autoload/state.gd` — SAVE_VERSION 24 → 25. Added `chapter1.client_fee_collected` (bool, false) and `chapter1.pig_court_win_acknowledged` (bool, false) to `reset_state()`. Version-history doc block extended with the v25 rationale.
+- `scripts/systems/save.gd` — added v24→v25 migration step (idempotent backfill of both bools as false). Version-history header extended.
+- `data/chapters/chapter1.json::new_state_flags` — appended registry entries for both flags with `_type`, `_owner`, `_reader`, and `set_by` strings. `beat13_complete`'s `set_by` updated to point at the new `coffee_machine_ch1.json::coffee_machine_beat13_close` (which now sets the flag); previously the `set_by` string was aspirational ("Beat 13 office payoff close") with no actual writer.
+- `tests/test_save_migration_v24_v25.gd` — NEW. 7 tests: T1 SAVE_VERSION >= 25 (NOT == 25, per `feedback_pig_swine_save_migration_test_pattern.md`); T2 v24-fixture-shape migrates with both flags as false; T3 already-true flags survive; T4 idempotency; T5 `reset_state()` declares both with correct defaults; T6 missing-chapter1 guard; T7 full v1→v25 chain regression (asserts the new flags land at the end of the full migration tower).
+- `data/dialogues/pig.json::pig_b13_celebration` — REPLACED the 2026-05-19 F9 placeholder body with the richer draft content from `nightly_design_pig_2026-05-14.json`. State id preserved; trigger broadened from `court_won_procedural_reset` to `won_court` (captures all victory variants including narrow/weak wins); `on_dismiss` writes both v25 flags. Pig now names rent / Sikorska fee / printer / Swine retainer per story.txt §Beat 13's concrete-numbers requirement. One textual delta from the draft: line 4 says "Mrs. Sikorska" not "Halina Sikorska" — Halina has not given Cula first-name privileges in Ch1 per the Halina bible.
+- `data/dialogues/murrow.json::murrow_b13_brief` — TODO placeholder replaced with the drafted dry-collegial line ("The motion is on the record. The ledger is current. The next file is already on the shelf.").
+- `data/dialogues/crab.json::crab_b13_response` — TODO placeholder replaced with the drafted opportunist-register line ("It was the only possible result from those facts. Good facts, correctly presented.").
+- `data/dialogues/whimsy.json::whimsy_b13_response` — TODO placeholder replaced with the drafted theatrical-aesthete line ("Cula. The judgment has a throughline, a reversal, and a satisfying last line. I want the dramatic rights.").
+- `data/dialogues/coffee_machine_ch1.json` — NEW file. Standalone env-beat per the 2026-05-17 draft's `_promotion_target` recommendation. Holds the chapter-1 coffee-machine env-beats (currently just the Beat-13 close); later chapters can extend this file. `coffee_machine_beat13_close` writes `chapter1.beat13_complete = true` on dismiss, which unblocks the Beat-14 postcard chain.
+- `data/_drafts/nightly_design_pig_2026-05-14.json` — `_status` updated to **DONE 2026-05-24**. Safe to `git rm` from host.
+- `data/_drafts/nightly_design_beat13_close_2026-05-17.json` — `_status` updated to **DONE 2026-05-24** (partial promotion; Asia half had already landed prior; coffee_machine half landed this session). Safe to `git rm` from host.
+
+Order of fire after this lands: court win sets `chapter1.won_court` → pig_b13_celebration fires (sets client_fee_collected + pig_court_win_acknowledged + dialogue_states_seen via once:true) → asia_b13_congratulation / murrow_b13_brief / crab_b13_response / whimsy_b13_response can fire on any-order interaction (each gated `!chapter1.beat13_complete`) → coffee_machine_beat13_close fires on the next office interaction (gated on `pig_court_win_acknowledged && !beat13_complete`; sets `beat13_complete = true`) → Beat 14 postcard chain unblocks.
+
+### Proposal 2 — Office Street signage data + dispatcher (DATA + CODE)
+
+The 2026-05-18 Pixellab sprints placed five named signage Sprite2D props (`PigSwineSign`, `NoticeBoard`, `CourtSignpost`, `StreetNameOfficeStreet`, `StreetNameCounselRow`) in `office_street.tscn` with no interactable wiring. They were decorative-only, in tension with the AGENTS.md §Stack invariants rule that all player-facing text lives in JSON.
+
+- `data/signage_ch1.json` — NEW Design-owned data file. Five sign entries with `id`, `_anchor` (scene path), `lines`, optional `lines_unlocked` + `_gate_flag` for the court signpost (shows the helpful "Open today. Try not to be late." note once `chapter1.court_unlocked` is true). Notice-board text drawn from the `dialogue_samples.txt §Sign and notice text samples` register; English-first per `feedback_pig_swine_english_first_signage.md`. Every line passes the Taste Standard 5/5.
+- `scripts/actors/sign.gd` — NEW Code-owned actor script modelled on `pickup.gd`. Loads `signage_ch1.json` at boot; on E, dispatches lines through the existing dialogue box via `Signals.dialogue_line_ready` with empty speaker (stage-direction render). Evaluates `_gate_flag` against State.data when present and picks `lines_unlocked` over `lines` accordingly. Does NOT go through `dialogue_runner` — signs are stateless reads, not NPC state machines.
+
+**NOT executed this sprint (deferred to a paired Code artifact):**
+- Scene wiring of Area2D + CollisionShape2D + sign.gd as children of each of the five named Sprite2D nodes in `office_street.tscn`. This is `.tscn` surgery and the sandbox cannot run Godot to verify ext_resource/sub_resource id stability; doing it blind risks breaking the scene. Recommended host workflow: open the scene in the Godot editor; for each named Sprite2D, add a child Area2D, add a child CollisionShape2D + RectangleShape2D (size 48×48 or scaled to the prop), attach `sign.gd`, and set `sign_id` to the matching entry. Until that wiring lands, the signs remain decorative — but the data and dispatcher are ready.
+
+### Proposal 3 — `smokers_lawyer_ch1` voice spec + stub (NARRATIVE + DATA)
+
+The 2026-05-18 sprints placed a `smokers_lawyer_ch1` NPC in `office_street.tscn` (line 314) with no voice spec anywhere. The dialogue runner has been logging a missing-file warning on interaction for six days. Per `design.md §Halt conditions`, lines cannot be authored until a voice spec is on file.
+
+- `narrative_revision/voice_spec_smokers_lawyer_ch1.md` — NEW DRAFT voice spec. Character (a junior associate at a competing firm, NOT Pig & Swine staff); register (dry, tired, contemptuous-of-his-own-job; junior-Murrow before the precision is earned); address forms (toward Cula: "Cula" on recognition, "counsel" before; toward firm: "Pig & Swine"); first-meeting carve-out (transactional, like the barista); forbidden patterns; out-of-scope items; recommended scope for v1 lines (4 lines total). Pending Piotr's accept/reject.
+- `data/dialogues/smokers_lawyer_ch1.json` — NEW minimal stub. `_voice_spec_pending: true` marks it for future replacement. Single state with a voice-neutral stage-direction observation ("(He glances up, registers a colleague, looks back at his cigarette.)"). Silences the runtime warning without committing to a register. Once Piotr accepts the voice spec, a follow-up Design pass replaces this stub with the four-line v1 content per the spec's recommended scope and clears `_voice_spec_pending`.
+
+### Verification
+
+The Cowork sandbox has no `godot` binary; every host-side test below MUST run before merge.
+
+- JSON validity (executed in sandbox): `jq empty` against every modified JSON file (`chapter1.json`, `signage_ch1.json`, `coffee_machine_ch1.json`, `smokers_lawyer_ch1.json`, all four NPC dialogue files) — **EXIT 0** on each.
+- Host commands required:
+  - `godot --headless --path godot --script tests/test_smoke.gd --log-file /tmp/pig_swine_smoke_b13_v25.log` → expected EXIT 0.
+  - `godot --headless --path godot --script tests/test_save_migration_v24_v25.gd --log-file /tmp/pig_swine_save_v24_v25.log` → expected EXIT 0, all T1–T7 PASS.
+  - `godot --headless --path godot --script tests/test_runner.gd --log-file /tmp/pig_swine_runner_b13_v25.log` → expected EXIT 0; test count rises by one (the new v24_v25 migration test).
+  - `godot --headless --path godot --export-release "Web" exports/web/index.html --log-file /tmp/pig_swine_export_b13_v25.log` → expected EXIT 0.
+- Playable assertion (manual on host): from a v24 save with `won_court=true`, re-entering the office should play pig_b13_celebration once, then any-order Murrow/Crab/Whimsy/Asia Beat-13 lines, then coffee_machine_beat13_close, then Beat 14 postcard chain. All Beat-13 NPC states fire exactly once each.
+
+### Drafts safe to delete (host-only — sandbox lacks delete permission on .git/)
+
+```
+git rm godot/data/_drafts/nightly_design_pig_2026-05-14.json
+git rm godot/data/_drafts/nightly_design_beat13_close_2026-05-17.json
+```
+
+### Memory follow-ups (Cowork agent)
+
+None this session — execution was within established conventions (voice-spec halt; save-migration test pattern; one bundled PR per scope discipline). The 2026-05-24 design-proposals doc itself is the artifact that should be referenced from any future "what did this session do" lookup.
+
+---
+
+## 2026-05-26 — Phase 2 Step 2.3: Effectiveness threshold recalibration + opponent tag wiring (design-plan 2026-05-26-design-plan.md)
+
+Per `critiques/2026-05-26-design-plan.md` Step 2.3. Root cause found before edits: with 10-tag normalized judgments each tag carries weight ~0.09–0.10; dot products against 3–4 tag weak_to arrays peaked at ~0.094, which falls below the previous `not_very_effective` threshold of 0.15. The entire bucket range was unreachable from any real judgment — Python simulation confirmed: `Reachable buckets (old): ['no_effect']`.
+
+**Fix 1 — threshold recalibration (`scripts/systems/battle/effectiveness.gd`).**
+Lowered all thresholds by ~10× to match normalized multi-tag judgment scale:
+- `STRENGTH_BACKFIRE_THRESHOLD`: 0.5 → 0.05
+- `super_effective`: 0.70 → 0.07
+- `effective`: 0.40 → 0.04
+- `not_very_effective`: 0.15 → 0.015
+
+Added calibration-rationale comment block above the constants documenting the normalization math.
+
+**Fix 2 — opponent tag wiring (`data/argument_opponents.json`).**
+Two moves in `landlord_counsel_ch1` updated so the real judgment × opponent matrix spans meaningful differentiation:
+- `merits_override.weak_to`: `[access_to_court, procedural_fairness]` (2 tags) → `[access_to_court, procedural_fairness, effective_remedy, prescribed_by_law]` (4 tags). The procedural judgment lands in `effective` here (score 0.05–0.067) rather than `no_effect`.
+- `landlord_prejudice.weak_to`: `[effective_remedy, access_to_court]` (2 tags) → `[effective_remedy, prescribed_by_law, legal_certainty]` (3 tags). The procedural judgment lands in `effective` here too; a focused single-tag probe (weight 1.0 on one weak tag) produces `super_effective` (score 0.333).
+
+**Fix 3 — test updates (`tests/test_effectiveness.gd`).**
+T3 and T6 were calibrated for the old thresholds:
+- T3: `weak` dict changed to `{service_of_process: 0.1, access_to_court: 0.9}` so score = 0.06 falls in the new `effective` band [0.04, 0.07); expected score in comment updated.
+- T6: `move_tags` changed to `{margin_of_appreciation: 0.03, service_of_process: 0.97}` so the 0.03 strength-tag weight falls below the new `STRENGTH_BACKFIRE_THRESHOLD` of 0.05; comment updated.
+
+**Fix 4 — `tests/test_battle.gd` rewritten for all-five-bucket coverage.**
+Previous test proved 3 buckets; Step 2.3 acceptance requires all five. The `_test_bucket_distribution` function was replaced with five probes across three opponent moves:
+- **super_effective**: `{effective_remedy: 1.0}` vs `landlord_prejudice` (3-tag weak_to) → score ≈ 0.333 ≥ 0.07 ✓
+- **effective**: `{service_of_process: 0.8, access_to_court: 0.2}` vs `merits_override` (4-tag weak_to) → score = 0.05 ∈ [0.04, 0.07) ✓
+- **not_very_effective**: `{echr_8: 0.9, access_to_court: 0.1}` vs `file_says_served` (3-tag weak_to) → score ≈ 0.033 ∈ [0.015, 0.04) ✓
+- **no_effect**: `{echr_10: 1.0}` vs `file_says_served` → score = 0.0 < 0.015 ✓
+- **backfires**: `{margin_of_appreciation: 1.0}` vs `file_says_served` → weight 1.0 ≥ 0.05, in immune_to → backfires ✓
+
+Tally assertion upgraded from "at least 3 distinct buckets" to "all 5 distinct buckets."
+
+**Fix 5 — `data/tag_taxonomy.json` `effectiveness_buckets` score ranges updated** to match new thresholds. `_doc` field extended with the normalization rationale.
+
+All five probes verified via Python simulation before committing. Real judgment matrix post-calibration: Art. 8 judgment (`home_and_family_ch8`) backfires against all 6 opponent moves (margin_of_appreciation weight ~0.10 ≥ 0.05; in all immune_to); Art. 10 judgment (`expression_and_press_ch10`) produces no_effect against all 6 (no tag overlap). The procedural Ch1 judgment produces `effective` across most moves. `super_effective` and `not_very_effective` remain reachable via the test's synthetic probes but require fine-tuned player moves in live play — acceptable at this stage.
+
+Files touched:
+- `scripts/systems/battle/effectiveness.gd` — threshold constants.
+- `data/argument_opponents.json` — `merits_override.weak_to`, `landlord_prejudice.weak_to`.
+- `tests/test_effectiveness.gd` — T3, T6.
+- `tests/test_battle.gd` — full rewrite of `_test_bucket_distribution`, header updated.
+- `data/tag_taxonomy.json` — `effectiveness_buckets` score ranges and `_doc`.
+
+No save-state changes; no SAVE_VERSION bump. Verification: Python simulation all 5 probes PASS; static checks only (no Godot binary in sandbox). **Piotr to run `godot --headless --path godot --script tests/test_effectiveness.gd`, `tests/test_battle.gd`, and `tests/test_runner.gd` before pushing.**
+
+---
+
+## 2026-05-26 — Phase 3 Step 3.1: Author chapter1_round_2.json and chapter1_round_3.json (design plan 2026-05-26-design-plan.md)
+
+Per `critiques/2026-05-26-design-plan.md` Step 3.1 (F3a, Path A). Two new court-round data files landed, each Code+Design pass complete (no DESIGN_TODO placeholders). Round 1 was the only court-round file before this; Ch1 now ships three.
+
+**Files created:**
+- `data/court_rounds/chapter1_round_2.json` (871 lines). Round 2 = fair hearing / wrong-address. Theme: Article 6 right-to-be-heard, prosecuted via the ex parte hearing of the eighth. Phase 1 witnesses: Court Stenographer (3 statements + 1 latent), Court Bailiff (3 statements). Four primary `_fact.*` flags (`ex_parte_hearing_held`, `no_appearance_logged`, `no_authority_check_at_door`, `bailiff_served_petitioner_address`) plus four bonus flags gated on `chapter1.client_meeting_evidence` carriers and `chapter1.has_rights_memo`. Phase 2 has two judge counter-questions (`jq_article_6_substance`, `jq_merits_anticipation`) against landlord moves `technicality_does_not_matter` and `merits_override` (court_rounds[1] in `argument_opponents.json`). Phase 2 citations are gated on Round 1 primary facts (`_fact.notice_received_april_28`, `_fact.resident_no_authority`) per design plan's cascade requirement. Victory_resolution is advance-only — no `court_won_procedural_reset` write, no `court_outcome` write; only `chapter1.casebook_judge_state := 'round_2_react'` to trigger the existing `judge_b12_react_r2` dialogue in `judge_district_ch1.json`.
+
+- `data/court_rounds/chapter1_round_3.json` (832 lines). Round 3 = remedy proportionality. Theme: modest procedural reset; merits-not-decided discipline (story.txt Beat 12 §Remedy discipline). Phase 1 witnesses: Court Clerk (returning from Round 1; 3 statements), Court Usher (3 statements). Four primary `_fact.*` flags (`rehearing_window_available`, `merits_reservable`, `no_landlord_prejudice_filed`, `client_present_today`) plus four bonus flags. Phase 2 has two judge counter-questions (`jq_remedy_what_exactly`, `jq_landlord_prejudice_test`) against landlord moves `ask_for_everything` and `landlord_prejudice` (court_rounds[2]). Phase 2 citations are gated on cumulative R1+R2+R3 primary facts — the strongest move (`motion_to_set_aside_full` against the prejudice question) requires four cross-round facts. Victory_resolution is the dispositive court-arc resolver post-Step-3.2: `primary_fact_flags` is the cumulative twelve-flag set across all three rounds; `primary_fact_count` aliases the cumulative count; branches write `chapter1.court_won_procedural_reset := true` and `chapter1.casebook_judge_state := 'round_3_remedy'` (triggers the existing `judge_b12_remedy_<band>` dialogue in `judge_district_ch1.json`). Branches do NOT write `chapter1.court_outcome` per design plan Step 1.1 (`_compute_court_outcome()` is authoritative; SAVE_VERSION 23).
+
+**Cascade discipline (per design plan).** Round 2 Phase 2 citations require Round 1 primary facts; Round 3 Phase 2 citations require Round 1 + Round 2 primary facts. Missing a fact in an earlier round locks the stronger citation in a later round, forcing fallback to thinner moves and narrowing the achievable outcome band. Specifically: `third_clause_non_cure` in R2 requires R1's `_fact.resident_no_authority` AND R2's `_fact.no_authority_check_at_door`; `rehearing_as_remedy` in R3 requires R3's `_fact.client_present_today` plus R1/R2 facts; `motion_to_set_aside_full` against the R3 prejudice question requires R1's `_fact.notice_received_april_28` and `_fact.landlord_knew_address` plus R2's `_fact.no_appearance_logged` plus R3's `_fact.no_landlord_prejudice_filed`.
+
+**Misfit-judgment surfacing.** Per the per-question `available_citations` schema, only `procedural_reset_ch1` moves are listed (R2: `motion_to_set_aside`, `third_clause_non_cure`, `rehearing_as_remedy`, `notice_window`; R3: `rehearing_as_remedy`, `motion_to_set_aside`, `motion_to_set_aside_full`). The Article 8 / Article 10 misfit judgments shipped in Step 2.1 are not added to `available_citations` because the schema scopes that list to the judge-licit citation set. Misfit selection is a parallel Phase 2 surface (Casebook UI) where the resolver computes backfire/no_effect from tag dot products. This matches Step 2.3's recalibration math: the misfit judgments' weighted tag distributions produce `backfires` against Round 2's `immune_to: [margin_of_appreciation]` (Art. 8 anchor) and `no_effect` against Round 3's opponent moves (Art. 10 has zero tag overlap).
+
+**Files NOT modified, with rationale:**
+- `data/dialogues/judge_district_ch1.json` — Round 2 and Round 3 bench prompts (`judge_b12_round2_open`, `judge_b12_round3_open`) and round-react states (`judge_b12_react_r2`, all `judge_b12_remedy_*` variants) already exist; no additions needed.
+- `data/judge_reactions_ch1.json` — design plan called for "extensions for new round-specific judge beats" but on inspection the file holds only frame-commit reaction templates (5 entries: `approving_set_aside`, `tolerant_try_again`, `cool_dismissal`, `sharper_really_your_theory`, `icy_silence`). Frame commit fires once at court entry, not per round. Per-question Phase 2 judge speech lives inline in the court_rounds JSON files I authored (`judge_counter_questions[].text` and `defeat_lines` / `partial_lines` arrays). Per-round bench prompts live in `judge_district_ch1.json`. No structural slot in `judge_reactions_ch1.json` exists for the kind of additions Step 3.1 implies. **Side note for Step 3.2:** the frame-commit templates' `post_reaction_player_options[].leads_to_state_id` still routes "round_3_open" directly after Round 1 close (single-round-architecture vestige). With Rounds 2 and 3 now wired, the controller refactor in Step 3.2 needs to either re-target those routes to `round_2_open` or move post_reaction advancement out of the templates entirely.
+- `scripts/systems/battle/battle_controller.gd` — Step 3.1's scope is data authoring; loader and round-cycling logic for the new files is Step 3.2's job. The data sits inert until Step 3.2 lands.
+- `data/court_rounds/chapter1_round_1.json` — Round 1's victory_resolution still writes both `chapter1.court_won_procedural_reset` AND `chapter1.court_outcome` (the latter is now-vestigial per Step 1.1). Cleaning that is Step 3.2 work; I did not touch Round 1's file.
+- `data/argument_frames_ch1.json` — Round 1's frame_gates already reference frame ids (`third_party_non_cure`, `fair_hearing_article_6`, `merits_defence`) that are NOT in argument_frames_ch1.json's actual frames set (`defective_service_135bis`, `substantive_defense`, `notice_period_failure`, `standing_wrong_party`, `overbroad_remedy`, `incapacity_defense`). This inconsistency predates my work — the schema's cross-reference contract says every frame_gates key must be a valid `chapter1.proposed_frame` value, but Round 1 itself violates the contract. My Round 2 and Round 3 files mirror Round 1's frame names for consistency. **Resolution candidates for a future sprint:** either (a) extend `argument_frames_ch1.json` to declare `third_party_non_cure`, `fair_hearing_article_6`, `merits_defence` as additional supplementary frames distinct from the player-selectable frame/blunder enum; or (b) collapse the court_rounds frame_gates set down to the six canonical frame ids.
+
+**Verification (sandbox-static):**
+- `jq empty` against both new files: EXIT 0.
+- Python cross-reference script: every `article_tags`/`principle_tags`/`context_tags`/`pressure_weakness_tags`/`pressure_strength_tags`/`move_tags` tag id resolves against `tag_taxonomy.json`; every weighted dictionary sums to 1.0 (±0.001); every `evidence_id` resolves against `evidence_ch1.json`; every `move_id` resolves against `procedural_reset_ch1.principle_moves[]`; every `opponent_pressure_move` resolves against `landlord_counsel_ch1.court_rounds[].moves[]` (R2 uses court_rounds[1] moves, R3 uses court_rounds[2] moves); every `_fact.*` reference in R2's `requires_fact_flags` resolves to R1 or R2 locally; every `_fact.*` reference in R3's `requires_fact_flags` resolves to R1, R2, or R3. The frame_gates inconsistency is inherited from Round 1, documented above, not regression.
+- Witness `cooperation_budget` totals match declared `witness_cooperation_total` (R2: 3+2=5; R3: 2+2=4).
+- Taste Standard pass on every `text`, `follow_up_text`, `judge_reaction`, `text` (counter-question), `flavor_line`, `defeat_lines`, `partial_lines`, and `result_text`. Address forms: judge addresses Cula as "Counsel" throughout (per `judge_district_ch1.json _address_forms`); no `Doctor Cula` (banned per memory `feedback_pig_swine_address_forms`); `Mrs. Sikorska` used in narration and witness statements (Halina has not given Cula first-name privileges in Ch1); English-first signage and procedural register per `feedback_pig_swine_english_first_signage`; Polish legal nouns preserved where doctrinally precise (`doręczenie zastępcze`, third clause, KPC Article 135-bis § 2).
+
+**Host-side verification required (sandbox has no Godot binary):**
+- `godot --headless --path godot --script tests/test_smoke.gd` — expected EXIT 0; the new files load via the same JSON.parse path as Round 1.
+- `godot --headless --path godot --script tests/test_runner.gd` — expected EXIT 0; no new tests added by this step (Step 3.2 lands the controller tests for round cycling).
+- JSON-validity-only check: `python3 -m json.tool` against both new files — confirmed EXIT 0 in sandbox.
+
+**No save-state changes; no SAVE_VERSION bump.** The new `_fact.*` flags are transient `_fact.` namespace, not `chapter1.*` state. They are declared in the round files' `local_fact_flags` blocks and live only across Phase 1 → Phase 2 of their own round (Round 3's victory_resolution uses them as cumulative inputs but does not persist them across the chapter).
+
+**Open work flagged for Step 3.2 (Controller surgery):**
+1. Load `chapter1_round_2.json` and `chapter1_round_3.json` in the controller; route `start_round(round_index)` to the correct file.
+2. Drop the recursive `start_round(opponent.id, round_index + 1)` in `end_round` (per design plan Step 3.2 acceptance).
+3. Neuter `chapter1_round_1.json::phase_2_closing.victory_resolution`'s `court_outcome` write — Round 1 should write only `court_won_procedural_reset` (or nothing) once Step 3.2 makes Round 3 dispositive. Until then, both Round 1 and Round 3 resolvers fire and Round 3 is the authoritative one.
+4. Re-target frame-commit `post_reaction_player_options[].leads_to_state_id` from `round_3_open` to `round_2_open` (or refactor post-reaction advancement out of the templates).
+5. Optionally close the frame_gates / argument_frames_ch1.json inconsistency documented above.
+
+---
+
+## 2026-05-26 — Phase 3 Step 3.2: Drop recursive start_round + per-round file loading (design plan 2026-05-26-design-plan.md)
+
+Per `critiques/2026-05-26-design-plan.md` Step 3.2 (F3a controller) and the four
+followups Step 3.1's SPRINT_LOG flagged for this step. Landed the narrow Step 3.2
+scope: the controller no longer auto-advances round → round, each `start_round`
+call caches its own `chapter1_round_N.json`, Round 1's data file stops writing
+`court_outcome`, and the well-fitted-frame post-reaction routing walks through
+all three rounds instead of skipping to Round 3.
+
+The wider per-round Phase-1-into-Phase-2 reshape (Round 1 and Round 2 also
+running their own Phase 2 closings, contributing per-round entries to
+`chapter1.phase2_round_results`) is **intentionally deferred**: the data is in
+place but the controller still treats R1–R2 as pure Phase 1 fact-finding and
+R3 as the sole Phase 2 closing. See "Deferred follow-ups" below.
+
+### Files touched
+
+- `scripts/systems/battle/battle_controller.gd` —
+  - New const `ROUND_FILE_TEMPLATE = "res://data/court_rounds/chapter%d_round_%d.json"`.
+  - New member `_active_round_data: Dictionary` populated on every `start_round`.
+  - `start_round(opp_id, N)` now also calls `_load_round_file(opp.chapter, N)`
+    and stores the parsed dict.
+  - `end_round()` for `_round_index < 3` no longer recurses into
+    `start_round(opp.id, _round_index + 1)`. It writes the round's `react_tag`
+    to `chapter1.casebook_judge_state`, returns `next_round_index` in the
+    result Dict, and yields to the caller.
+  - `end_round()` for `_round_index == 3` is unchanged: writes `react_tag`,
+    runs `consume_assembled_packet`, then `_compute_court_outcome`, then
+    writes `court_won_procedural_reset` / `won_court` / `court_outcome`.
+  - New public getter `get_active_round_data() -> Dictionary` (deep-copy of
+    the cached dict) for downstream consumers (Trial Record panel, dialogue,
+    future per-round Phase 2 wiring, tests).
+  - New private helper `_load_round_file(chapter: int, round_index: int)`
+    with explicit file-existence and parse-failure error paths.
+
+- `data/court_rounds/chapter1_round_1.json` — neutered the `court_outcome`
+  writes in all four `victory_resolution.branches[].sets` arrays
+  (`blunder_recovered` / `narrow_victory` / `standard_victory` /
+  `strong_victory`). Each branch now sets only
+  `chapter1.court_won_procedural_reset := true`. Added a
+  `_court_outcome_note` field on `blunder_recovered` documenting the move
+  and citing this SPRINT_LOG entry. Rationale: the dispositive court_outcome
+  is computed at end-of-Round-3 by `_compute_court_outcome()` against the
+  accumulated `phase2_round_results` (Step 1.1, SAVE_VERSION 23). Round 1
+  writing its own `court_outcome` was a vestigial single-round-architecture
+  hangover that conflicted with the Phase 2 quality downgrade layer.
+
+- `data/judge_reactions_ch1.json` —
+  `templates.approving_set_aside.post_reaction_player_options[0]` retargeted
+  from `leads_to_state_id: round_3_open` (and id/text "proceed_to_remedy" /
+  "Proceed to the remedy phase.") to `leads_to_state_id: round_2_open` (id
+  "proceed_to_next_round", text "Proceed to the next round."). The well-
+  fitted-frame path no longer skips Rounds 2 and 3 — even a clean opener
+  walks through the fair-hearing round and the remedy round. Added a
+  `_routing_note` field documenting the change.
+
+- `tests/test_battle_controller.gd` —
+  - **T8** (`_test_end_to_end_three_round_smoke`) updated to drive each round
+    explicitly: `start_round(opp, 1) → opponent_advance → player_present →
+    end_round → start_round(opp, 2) → … → start_round(opp, 3) → …`. Adds
+    assertions that intermediate `end_round` calls return `next_round_index`
+    correctly and the terminal R3 `end_round` does NOT return `next_round_index`.
+  - **T14** (new — `_test_start_round_loads_chapter1_round_file`): asserts
+    `start_round(opp, N)` populates the file cache for N ∈ {1, 2, 3} and
+    that `get_active_round_data()` returns dicts with the expected `id`,
+    `chapter`, and top-level `phase_1_fact_finding` / `phase_2_closing`
+    keys.
+  - **T15** (new — `_test_end_round_intermediate_returns_next_index_no_recursion`):
+    asserts `end_round` on R1 returns `next_round_index == 2` and writes
+    `casebook_judge_state := round_1_react`; asserts the controller does
+    NOT auto-advance (`get_active_round_data().id == chapter1_round_1`
+    until the caller explicitly drives `start_round(opp, 2)`); same shape
+    for R2 → R3.
+  - **T16** (new — `_test_state_accumulates_across_rounds`): asserts
+    `chapter1.*` flags written before / during Round 1 (proposed_frame,
+    binder_read_*, etc.) are still visible at the top of Round 2 and the
+    top of Round 3. Witness cooperation resets per-round (Phase 1 behavior),
+    but persistent state does not.
+  - **T17** (new — `_test_mid_round_2_save_roundtrip`): drives to mid-Round-2
+    (R1 ended, R2 opened, opponent advanced, one present landed), then runs
+    a full disk save/load round-trip via a standalone `Save` node instance
+    (pattern lifted from `test_save_roundtrip.gd::_make_save`). Asserts
+    `chapter1.casebook_judge_state == "round_2_open"` and
+    `chapter1.proposed_frame` survive the round-trip. No `SAVE_VERSION` bump
+    needed — the controller refactor is in-memory-cache only, not a saved-
+    state shape change.
+
+### Verification (sandbox-static, host commands required)
+
+The Cowork sandbox has no `godot` binary; every host-side test below MUST run
+before merge.
+
+- JSON validity (executed in sandbox): `python3 -m json.tool` against every
+  modified JSON file — **EXIT 0** on each
+  (`chapter1_round_1.json`, `chapter1_round_2.json`, `chapter1_round_3.json`,
+  `judge_reactions_ch1.json`).
+- Structural checks executed in sandbox:
+  - No `chapter1.court_outcome` write remains in `chapter1_round_1.json`
+    victory_resolution branches (Python AST walk).
+  - `approving_set_aside.post_reaction_player_options[0].leads_to_state_id`
+    is `"round_2_open"`, not `"round_3_open"`.
+  - No remaining recursive `start_round(_active_opponent...)` call site in
+    `battle_controller.gd` (the prior recursion at line 415 is gone; only a
+    docstring reference at line 414 mentions the deprecated pattern).
+  - Test function count in `test_battle_controller.gd`: 18 (`_test_*` defs)
+    and 18 calls in `_init()`, matching.
+
+- Host-side commands required (Piotr to run before merge):
+  - `godot --headless --path godot --script tests/test_smoke.gd
+    --log-file /tmp/pig_swine_smoke_step_3_2.log` → expected EXIT 0.
+  - `godot --headless --path godot --script tests/test_battle_controller.gd
+    --log-file /tmp/pig_swine_battle_step_3_2.log` → expected all 17 named
+    tests PASS (T1–T13, T8 refactored, T14–T17 new). Watch in particular:
+    T8 R1 `end_round` must return `next_round_index == 2`; T17's
+    `save_node.save_game()` writes to `user://test_battle_round_save_*.json`
+    and `save_node.load_game()` restores `casebook_judge_state == "round_2_open"`.
+  - `godot --headless --path godot --script tests/test_runner.gd
+    --log-file /tmp/pig_swine_runner_step_3_2.log` → expected EXIT 0; the
+    runner picks up the new T14–T17 cases automatically.
+  - `godot --headless --path godot --export-release "Web" exports/web/index.html
+    --log-file /tmp/pig_swine_export_step_3_2.log` → expected EXIT 0.
+
+### Deferred follow-ups (open at end of Step 3.2)
+
+These were considered for Step 3.2 and intentionally deferred to keep the
+controller surgery surgical. Each is a real change with non-trivial scope:
+
+1. **Per-round Phase 1 → Phase 2 internal split.** The new round files have
+   both `phase_1_fact_finding` and `phase_2_closing` blocks, but the
+   controller still treats R1–R2 as Phase 1 only and R3 as Phase 2 only.
+   Wiring Round 1's and Round 2's own Phase 2 closings (so all three rounds
+   contribute Phase 2 entries to `chapter1.phase2_round_results`) requires
+   a new public method to transition Phase 1 → Phase 2 within a round, a
+   new state-machine transition between `round_N_open` and `round_N_react`
+   that triggers Phase 2 setup, and a full test rewrite. Out of scope for
+   Step 3.2's literal acceptance; in scope for the Phase 3 gate language.
+   Recommended next step.
+
+2. **Data-driven `victory_resolution` evaluation in `end_round`.** Currently
+   the controller's hardcoded `_compute_court_outcome` produces the final
+   band; the round files' `victory_resolution.branches[].when` predicates
+   and `sets[]` writes are unused at runtime (data-as-documentation).
+   Lifting `DialogueRunner._evaluate_trigger` into the controller (or
+   shared utility) and adding `primary_fact_count` / `decoy_count` as
+   synthetic predicate paths would make the round file authoritative for
+   per-round resolution. Cleaner data flow; same outcome math.
+
+3. **Phase 1 witness data consumption from the round file.** `player_press`
+   currently matches `witness_statement_id` against the opponent's
+   `move_id` (a hack — see comment in `battle_controller.gd::_select_opponent_move`).
+   The round files declare real `witnesses[].statements[]` arrays with
+   real `press_options[]` and `present_options[]`. Wiring `player_press` to
+   look up press options from the round file would replace the hack and
+   surface witness press chains to the UI cleanly.
+
+4. **`frame_gates` ↔ `argument_frames_ch1.json` cross-reference inconsistency.**
+   Step 3.1 SPRINT_LOG followup #5. Round 1's `frame_gates` keys
+   (`third_party_non_cure`, `fair_hearing_article_6`, `merits_defence`) are
+   not declared as `chapter1.proposed_frame` enum values in
+   `argument_frames_ch1.json`. Schema-violating but inherited. Either
+   declare these as supplementary frames or collapse to the canonical six.
+
+5. **Whether the well-fitted-frame `approving_set_aside` path should
+   really walk through R2's fair-hearing fact-finding.** The retarget from
+   round_3_open → round_2_open is the right call for the 3-round arc, but
+   the in-fiction beat (judge sets aside on a clean Round 1 procedural
+   defect) might want to *skip* R2's fair-hearing inquiry. If so, a future
+   patch could route `proceed_to_next_round` to a R2-skip state. For now
+   the simpler "always run all three rounds" routing is in place.
+
+### Memory follow-ups (Cowork agent)
+
+None this session. The Step 3.2 work was scoped within established
+conventions:
+- Save migration test pattern (`feedback_pig_swine_save_migration_test_pattern.md`)
+  — no migration this step, no new SAVE_VERSION.
+- Per-step deferral discipline — explicit "deferred follow-ups" block here
+  rather than smuggling in a wider refactor.
+- Two-pass authoring discipline — Code-only edits to data files; no Design
+  text changes (the `_court_outcome_note` and `_routing_note` fields are
+  Code-side documentation, not player-facing text).
+
+---
+
+## 2026-05-26 — Phase 4 Step 4.1: Murrow rehearsal encounter (design plan 2026-05-26-design-plan.md)
+
+Per `critiques/2026-05-26-design-plan.md` Step 4.1 (F11 — teach the verb before Beat 12). Lands
+the Phase-1-only rehearsal encounter: data file, controller entry points, Murrow's drill-partner
+dialogue, and the save-state foundation (SAVE_VERSION 26).
+
+### Files touched
+
+- `data/court_rounds/chapter1_round_0_rehearsal.json` — new file. Schema-conformant with Round 1's
+  `phase_1_fact_finding` block but downscaled: no `opponent_id`, no `phase_2_closing`, no verdict.
+  One witness (`murrow_as_witness`, display name "Murrow (as Record Clerk)"), `cooperation_budget: 3`.
+  Three press options across four statements (press_address_current on registry_service_record →
+  registry_no_audit; press_filing_date on registry_service_record → registry_filing_date;
+  press_correction_history on registry_no_audit → registry_no_correction). One present option
+  on registry_no_audit (present_renumbering_rehearsal, evidence_id: renumbering_2015_fact, cost 0).
+  Four local_fact_flags, all `scope: local_round` — no chapter1 state writes occur during the
+  rehearsal. The judge_reaction on present_renumbering_rehearsal explicitly names what the verb does,
+  so the player understands the mechanic. Taste Standard pass on all player-facing text.
+
+- `scripts/systems/battle/battle_controller.gd` —
+  - New const `REHEARSAL_PATH` pointing at the new file.
+  - New member `_rehearsal_active: bool = false` guarding the rehearsal path.
+  - `start_rehearsal() -> bool`: loads the rehearsal file, arms `_phase_one` with
+    `witness_cooperation_total` from the file, sets `_round_index = 0`, sets
+    `_active_round_data`, emits `trial_record_round_started(0)`. Returns false if
+    data is not loaded or the file is missing.
+  - `end_rehearsal() -> Dictionary`: writes `chapter1.rehearsal_complete = true` (the
+    only persistent flag write the rehearsal makes), clears `_rehearsal_active`,
+    returns `{ rehearsal_complete, facts_established, presses_used }`.
+  - `is_rehearsal_active() -> bool`: predicate for callers and tests.
+  - `rehearsal_press(statement_id, local_fact_flag) -> Dictionary`: decrements
+    cooperation, records the local fact in `_phase_one.established_evidence_ids`,
+    emits `trial_record_fact_established(statement_id, "")`. No chapter1 writes.
+  - `rehearsal_present(evidence_id, local_fact_flag) -> Dictionary`: records local
+    fact, emits `trial_record_fact_established(evidence_id, "")`. No chapter1 writes.
+
+- `scripts/autoload/state.gd` — SAVE_VERSION bumped 25 → 26. Three new chapter1 flags:
+  `rehearsal_accepted: false` (edge-trigger; game orchestration reads and clears it),
+  `rehearsal_complete: false` (persistent; set by end_rehearsal(), silences the offer),
+  `rehearsal_declined: false` (persistent; set by murrow_rehearsal_skip, silences the
+  offer and the debrief independently from rehearsal_complete so the debrief state can
+  gate on `rehearsal_complete && !rehearsal_declined`).
+
+- `scripts/systems/save.gd` — v26 migration step added (inject three bool defaults for
+  rehearsal_accepted / rehearsal_complete / rehearsal_declined on pre-v26 saves). Version
+  history comment updated.
+
+- `data/dialogues/murrow.json` — four new states inserted before `murrow_b13_brief`:
+  - `murrow_rehearsal_offer`: trigger `met_murrow && has_law_binder && !rehearsal_complete
+    && !rehearsal_declined && !court_ready && !entered_court`. Options chain to
+    murrow_rehearsal_accepted / murrow_rehearsal_skip.
+  - `murrow_rehearsal_accepted`: chained from offer "yes". 5-line prep sequence. on_dismiss
+    writes `rehearsal_accepted = true` (edge-trigger for orchestration) and clears
+    state_choice. once:true.
+  - `murrow_rehearsal_skip`: chained from offer "no". 1-line acknowledgment. on_dismiss
+    writes `rehearsal_declined = true` and clears state_choice. once:true.
+  - `murrow_rehearsal_debrief`: trigger `rehearsal_complete && !rehearsal_declined &&
+    !court_ready && !entered_court && met_murrow`. 3-line dry debrief. once:true.
+  All states use bare "Cula" address form (post-friend-invitation per AGENTS.md
+  §Address forms). Taste Standard pass on all lines.
+
+### Design decisions
+
+- `rehearsal_declined` is a separate flag from `rehearsal_complete` so the debrief does
+  not fire for players who skipped. A simpler design (one flag for both paths) would make
+  "you have used them" fire for a player who never touched the rehearsal.
+- `rehearsal_accepted` is edge-triggered (not persistent) because the persistent fact is
+  *completion*, not *acceptance*. Acceptance is consumed by the orchestration layer; if
+  that layer never fires (Step 1.2 not yet built), the flag sits harmlessly as true.
+- The rehearsal controller methods (`rehearsal_press`, `rehearsal_present`) do NOT call
+  `_write_chapter1_flag` for evidence flags; they only track locally in
+  `_phase_one.established_evidence_ids`. This matches the acceptance criteria
+  ("no flags written beyond rehearsal_complete = true").
+- `trial_record_round_started(0)` is emitted with round_index=0. The signal's docstring
+  in signals.gd already notes "0 = rehearsal" — no signals.gd edit needed.
+- Rehearsal is optional: murrow_rehearsal_skip fires once and sets rehearsal_declined,
+  so the offer silences itself permanently. The real court round works with no rehearsal.
+
+### Acceptance (sandbox-static; host commands required before merge)
+
+JSON validity (executed in sandbox):
+- `python3 -m json.tool data/court_rounds/chapter1_round_0_rehearsal.json` — EXIT 0 ✓
+- `python3 -m json.tool data/dialogues/murrow.json` — EXIT 0 ✓
+
+Structural checks (executed in sandbox):
+- `chapter1_round_0_rehearsal.json`: 3 press options, 1 present option,
+  cooperation_total=3, 4 local_fact_flags — all confirmed ✓
+- SAVE_VERSION = 26 in state.gd ✓
+- `rehearsal_accepted`, `rehearsal_complete`, `rehearsal_declined` declared in
+  reset_state() ✓
+- v26 migration branch present in save.gd ✓
+- `REHEARSAL_PATH` constant declared in battle_controller.gd ✓
+- `_write_chapter1_flag("rehearsal_complete", true)` in end_rehearsal(); no other
+  chapter1 writes in the rehearsal methods ✓
+- murrow_rehearsal_{offer,accepted,skip,debrief} state ids confirmed in murrow.json ✓
+- murrow_rehearsal_offer trigger excludes `rehearsal_declined` ✓
+- murrow_rehearsal_debrief trigger excludes `rehearsal_declined` ✓
+
+Host-side commands required (Piotr to run before merge):
+- `godot --headless --path godot --script tests/test_smoke.gd
+  --log-file /tmp/pig_swine_smoke_step_4_1.log` → expected EXIT 0.
+- `godot --headless --path godot --script tests/test_runner.gd
+  --log-file /tmp/pig_swine_runner_step_4_1.log` → expected EXIT 0; no new
+  GUT tests added in this step (dedicated rehearsal tests are a follow-up
+  per the acceptance plan; the smoke test confirms parser/script load).
+- `godot --headless --path godot --export-release "Web" exports/web/index.html
+  --log-file /tmp/pig_swine_export_step_4_1.log` → expected EXIT 0.
+- Manual verification: load a pre-v26 save fixture via test_save_load.gd (or
+  the in-game save menu) and confirm rehearsal_accepted / rehearsal_complete /
+  rehearsal_declined are present and false after migration.
+
+### Open work (not in Step 4.1 scope)
+
+1. **Game orchestration bridge.** `murrow_rehearsal_accepted` on_dismiss writes
+   `rehearsal_accepted = true`. Nothing currently listens for `chapter1_flag_changed
+   ("rehearsal_accepted", true)` to transition to the rehearsal scene. This bridge
+   lives in the battle screen / scene orchestration layer (Step 1.2 or a dedicated
+   rehearsal_screen.tscn). Until then, the flag sits true harmlessly.
+2. **Dedicated GUT tests for rehearsal methods.** `test_battle_controller.gd` should
+   gain T18 (start_rehearsal loads file, arms cooperation) and T19 (end_rehearsal writes
+   rehearsal_complete, returns presses_used). Not blocked by Step 4.1 acceptance.
+3. **Step 1.2 Trial Record panel.** The rehearsal emits `trial_record_round_started(0)`
+   and `trial_record_fact_established` but there is no consumer yet. The panel is the
+   primary teaching surface; the rehearsal data file and controller are ready for it.
+4. **v26 save migration test.** test_save_load.gd should gain a fixture from a v25
+   save and assert all three rehearsal flags appear and default false after migration.
+   Not blocked by Step 4.1 acceptance.
+
+---
+
+## 2026-05-26 — Design (CW/Sonnet 4.6) — Step 5.1 (F9): Incapacity consequence pass
+
+**Remediation plan ref:** `critiques/2026-05-26-design-plan.md` §Phase 5, Step 5.1.
+**Open Decision resolved:** D3 = option (c) — DialogueRunner thought-balloon UI element for `cula_internal` speaker states.
+
+### Files changed
+
+**`data/dialogues/judge_district_ch1.json`**
+- Added state `round_1_sit_down_bench_initiative` (after `judge_b12_react_r1_technical`, before `judge_b12_round2_open`).
+- Trigger: `chapter1.casebook_judge_state == 'round_1_bench_initiative'` (set by battle_controller on bench_initiative leads_to_round_outcome path; controller wiring deferred to Step 3.2).
+- Two lines: bench names the service defect on its own reading of the file; bench moves to second question. Counsel not credited. Register: dry-institutional, not cruel.
+- on_dismiss: sets `casebook_judge_state` to `round_2_open` so the three-round structure continues.
+- This closes the dangling `leads_to_state_id: "round_1_sit_down_bench_initiative"` reference in `judge_reactions_ch1.json::icy_silence`.
+
+**`data/dialogues/cula.json`**
+- Added state `incapacity_recovery_internal` (after `cula_b8_technical_internal_fee`, before `cula_b9_archive_setup`).
+- Trigger: `chapter1.court_won_procedural_reset == true && chapter1.decoy_incapacity == true && !chapter1.incapacity_reflection_seen`.
+- `once: true`. Speaker: `cula_internal`. Line: "I held the wrong argument. The court found the right one without me."
+- on_dismiss: sets `chapter1.incapacity_reflection_seen = true`.
+- **STAGING NOTE:** `cula_internal` has no rendered display channel until the DialogueRunner thought-balloon extension lands (D3 = option c). State is authored and staged; dispatch wiring is deferred to the AG sprint that builds the thought-balloon UI element. Until then the state exists in the file and will not display.
+
+**`scripts/systems/battle/packet_scorer.gd`**
+- `_packet_recovery_source`: changed `return "court_redirect"` → `return "bench_initiative"` (the label used when the no-incapacity / no-ally path returns; renamed per design plan §Step 5.1 scope).
+
+**`tests/test_chapter1_motion_packet_full_path.gd`**
+- Updated assertion at the `court_redirect` test to assert `"bench_initiative"` with a matching description string.
+
+### What the acceptance criteria say vs what landed
+
+- ✅ Filing incapacity costs visible credit in the room — the missing `round_1_sit_down_bench_initiative` judge state now exists with the bench finding the defect itself.
+- ✅ Judge lines make clear Cula did not speak the winning argument ("The court notes, on its own reading of the file…").
+- ✅ `packet_scorer.gd` recovery_source label renamed.
+- ⚠️ Cula's internal line staged but NOT yet rendered — pending thought-balloon DialogueRunner extension (D3 = c, separate AG sprint).
+- ⚠️ OUTCOME_BLUNDER_RECOVERED `result_text` in both round_1 and round_3 already carries non-crediting language ("the bench's reasoning, not counsel's"; "in spite of how it was carried in"). No change needed; the "you recovered" text cited in the plan does not appear in the current files.
+- ✅ Day-One Survivor badge still awards unconditionally via `postcard_swine_ch1.json::chapter_close` — no change required.
+- ✅ No new save-state fields added; `incapacity_reflection_seen` is NEW. **Save version bump required before this step ships.** This was not executed in this session because: (a) the rendering channel doesn't exist yet, meaning the state can't be tested end-to-end, and (b) the save migration should be batched with Step 5.3 (halina_trust rename, planned for SAVE_VERSION 15) to minimise migration chain length. Flagged for the AG sprint that closes D3.
+
+### Host-side verification required
+
+- `godot --headless --path godot --script tests/test_smoke.gd`
+- `godot --headless --path godot --script tests/test_runner.gd` (test_chapter1_motion_packet_full_path.gd assertion updated; should now pass with `bench_initiative`).
+
+### Open work
+
+1. **DialogueRunner thought-balloon extension (D3 = c).** AG sprint required before `incapacity_recovery_internal` displays. Once the channel exists, also add `chapter1.incapacity_reflection_seen` to `state.gd` defaults and a SAVE_VERSION bump (batched with Step 5.3 if possible).
+2. **battle_controller wiring.** The `bench_initiative` leads_to_round_outcome in `judge_reactions_ch1.json::icy_silence` needs to set `chapter1.casebook_judge_state = "round_1_bench_initiative"` so the new judge state's trigger fires correctly on save-load. Wiring lives in the Step 3.2 controller refactor.
+3. **`packet_scorer 2.gd`.** macOS filesystem duplicate; rename did not propagate (file not accessible from sandbox). Piotr to manually apply or delete the duplicate.
+
+---
+
+## 2026-05-26 — Step 5.3: F7 halina_trust → halina_stance + incapacity_penalty (SAVE_VERSION 27)
+
+### Scope
+
+Design plan §Step 5.3. `chapter1.halina_trust` (int) replaced by `chapter1.halina_stance` (String) and `chapter1.incapacity_penalty` (bool). No new game logic — pure refactor.
+
+### Files changed
+
+**`scripts/autoload/state.gd`**
+- SAVE_VERSION bumped 26 → 27.
+- `"halina_trust": 0` replaced by `"halina_stance": ""` and `"incapacity_penalty": false` in `reset_state()`.
+
+**`scripts/systems/save.gd`**
+- v27 migration block added to `migrate_save()`. Thresholds: `halina_trust >= 5` → stance "high"; `0 ≤ trust < 5` → "blunt"; `trust < 0` → "blunt" + `incapacity_penalty = true`; key absent → `halina_stance = ""`. `halina_trust` key erased in all cases.
+
+**`data/dialogues/halina.json`**
+- `trust_path` / `trust_delta` removed from all three `client_meeting_intro` option choices.
+- Each `client_meeting_r0_response_*` `on_dismiss` gains a `set` action writing `chapter1.halina_stance` to `"high"` / `"blunt"` / `"technical"` respectively.
+- R0 branch trigger: `chapter1.halina_trust >= 2` → `chapter1.client_meeting_stance == 'sympathetic'`.
+- R1 response trigger: `chapter1.halina_trust >= 3` → `chapter1.halina_stance == 'high'`; trust_delta removed from round options.
+- R2 response trigger: `chapter1.halina_trust >= 4` → `chapter1.halina_stance == 'high'`; trust_delta removed from round options.
+- Reveal trigger: `chapter1.halina_trust >= 5` → `chapter1.halina_stance == 'high' && !chapter1.incapacity_penalty`.
+
+**`data/argument_frames_ch1.json`**
+- `halina_trust_delta_on_select` removed from all frames.
+- `incapacity_defense`: `halina_trust_delta_on_select: -4` replaced by `incapacity_penalty_on_select: true`.
+
+**`data/argument_frames_ch2.json`**
+- All `halina_trust_delta_on_select: 0` entries removed.
+
+**`scripts/systems/battle/packet_scorer.gd`**
+- `trust_delta` accumulation loop and `"halina_trust_delta"` return key removed.
+
+**`scripts/systems/battle/battle_controller.gd`**
+- Trust delta application block replaced: `has_incapacity_blunder` flag now writes `incapacity_penalty = true` directly.
+
+**`data/chapters/chapter1.json`**
+- `halina_trust` field replaced by `halina_stance` and `incapacity_penalty`.
+
+**Tests updated** (halina_trust → halina_stance / incapacity_penalty):
+- `tests/test_chapter1_motion_packet_full_path.gd`
+- `tests/test_court_packet_scoring.gd`
+- `tests/test_chapter1_phase_b.gd`
+- `tests/test_halina_intro_chain.gd`
+- `tests/test_save_roundtrip.gd`
+- `tests/test_save_migration_v12_v13.gd`
+- `tests/test_save_migration_v14_v15.gd`
+- `tests/test_save_migration_v15_v16.gd`
+- `tests/test_save_migration_v16_v17.gd`
+- `tests/test_save_migration_v17_v18.gd`
+- `tests/test_save_migration_v10_v11.gd`
+- `tests/test_save_migration_v11_v12.gd`
+
+**`tests/test_save_migration_v26_v27.gd`** — new file, 8 tests: SAVE_VERSION >= 27, three trust-to-stance threshold paths, no-trust-key path, idempotency, reset_state defaults, v1→v27 chain regression.
+
+### Verification performed
+
+- `grep -rn halina_trust scripts/ data/ tests/` returns zero matches.
+- All logic changes are structural (string key rename + threshold collapse); no new runtime paths introduced.
+
+### Host-side verification required
+
+- `godot --headless --path godot --script tests/test_smoke.gd`
+- `godot --headless --path godot --script tests/test_runner.gd`
+
+(Godot binary not reachable from the Linux shell sandbox; must be run locally.)
+
+---
+
+## 2026-05-26 — Phase 6 Step 6.1: Battle mechanics rewrite proposal
+
+Per `critiques/2026-05-26-design-plan.md` Step 6.1 (F6 full spec sync).
+
+### Files changed
+
+**`PROPOSAL_battle_mechanics_rewrite.md`** — new draft replacement for the
+body of root `battle_mechanics.txt`. The proposal:
+- Preserves the Casebook Battle System intent: judgments, principle moves,
+  opponent moves, and Article/Principle/Context tag effectiveness.
+- Removes the obsolete design direction from the current root spec: wild
+  argument encounters, encounter rates, training battles, Casebook completion
+  pressure, grinding for judgments, and Final Printer as a mini-game.
+- Adds the approved two-phase court-round structure: Phase 1 fact-finding
+  followed by Phase 2 closing/citation.
+- Documents the Trial Record panel, motion-packet assembly, outcome bands, Path
+  A tag effectiveness, Murrow rehearsal, Ch1 three-round court structure, and
+  save-state fields now present in the runtime.
+- Includes a spec-consistency table mapping every major section to shipped
+  runtime files or approved `PROPOSALS.md` / plan decisions.
+- Notes the current chapter-number conflict: older proposals call the finale
+  Chapter 5, while current `story.txt` / `CURATION_BOARD.md` use the six-chapter
+  shape with the final hearing in Chapter 6. The proposal follows `story.txt`.
+
+### Governance
+
+No edit was made to root `battle_mechanics.txt`. Per `AGENTS.md`, the root
+source spec remains human-owned unless the user explicitly delegates the edit.
+This step lands only the proposal artifact requested by Step 6.1.
+
+### Verification performed
+
+- Static source check against current runtime/docs:
+  `data/tag_taxonomy.json`, `data/judgments.json`,
+  `data/argument_opponents.json`, `data/evidence_ch1.json`,
+  `data/argument_frames_ch1.json`, `data/court_rounds/_schema.md`,
+  `scripts/systems/battle/effectiveness.gd`,
+  `scripts/systems/battle/packet_scorer.gd`,
+  `scripts/systems/battle/battle_controller.gd`,
+  `scripts/autoload/state.gd`, `PROPOSALS.md`, `PLAN.md`, `story.txt`, and
+  `style_canon.txt`.
+- No Godot test run needed; docs/proposal-only change.
+
+---
+
+## 2026-05-26 — Phase 6 Step 6.2: Source-of-truth governance Option A
+
+Per `critiques/2026-05-26-design-plan.md` Step 6.2. User chose **Option A**:
+demote the five root `.txt` files to frozen reference and promote active Godot
+docs/data/runtime as authority.
+
+### Files changed
+
+**`../AGENTS.md`**
+- Replaced root-spec reading requirement with active-source/data reading.
+- Rewrote Source Of Truth section: `godot/PLAN.md`, `godot/PROPOSALS.md`,
+  `godot/CONVENTIONS.md`, `godot/data/`, `godot/scripts/`, `godot/scenes/`,
+  `SPRINT_LOG.md`, and `BUILD_NOTES.md` are now active authority.
+- Root `story.txt`, `world.txt`, `minigames.txt`, `battle_mechanics.txt`, and
+  `style_canon.txt` are explicitly frozen reference only.
+
+**`AGENTS.md`**
+- Rewrote Source of truth section with the same hierarchy.
+- Updated file-ownership, reading-order, Casebook-register, and forbidden-pattern
+  language so agents do not treat root `.txt` files as authoritative.
+
+**`PLAN.md`**
+- Rewrote Source of truth section.
+- Updated early references that previously cited `story.txt`, `world.txt`,
+  `minigames.txt`, or `battle_mechanics.txt` as active drivers.
+- Marked root `.txt` files as frozen reference in the repository map.
+
+**`PROPOSALS.md`**
+- Added an authority-update banner noting that this file is now active design
+  authority and that older proposal wording about root-spec edits is historical
+  rationale.
+
+**Role skills**
+- Updated `.antigravity/skills/code.md`, `design.md`, `qa.md`, and `art.md` so
+  required reading and halt conditions point to active Godot docs/data/proposals
+  first and root `.txt` files only as frozen reference.
+
+### Verification performed
+
+- `rg` check over `../AGENTS.md`, `AGENTS.md`, `PLAN.md`, `PROPOSALS.md`, and
+  `.antigravity/skills/` confirms no remaining active instruction says to follow
+  root `.txt` files as source of truth.
+
+---
+
+## 2026-05-26 — Phase 7 Steps 7.1 and 7.2: Governance bookends
+
+Per `critiques/2026-05-26-design-plan.md` Phase 7 (governance bookends, no sprints).
+
+**Step 7.1 — Proposals-in-flight cap**
+- Added "Working Rules" section to `godot/AGENTS.md` (new): "No new `PROPOSAL_*.md` file may be opened while another is in DEVELOP. The exception is hostile-critique response plans, which are not proposals."
+- Closed two in-flight proposals in `PROPOSALS.md` status table:
+  - `PROPOSAL_player_driven_argument.md` → **DONE** (subsumed into 2026-05-26 remediation plan)
+  - `PROPOSAL_mechanical_depth_2026-05-18.md` → **DONE** (subsumed into 2026-05-26 remediation plan)
+
+**Step 7.2 — Ch2 playtest gate**
+- Added bullet to `godot/PLAN.md` §"Out of scope until Chapter 1 ships": "No Ch2 authoring (data files, scenes, dialogue, opponents) until a stranger has played through Ch1 on the web build, sat through the Day-One Summary, and signed off on the Casebook reveal."
+
+Files modified:
+- `godot/AGENTS.md` — added Working Rules section.
+- `godot/PLAN.md` — added Ch2 playtest gate to Out of scope.
+- `godot/PROPOSALS.md` — marked two in-flight proposals DONE in status table.
+
+Verification: No code changes; governance-only edits. All files remain valid YAML/Markdown/JSON structure. No Godot test run needed.
+- Docs/governance-only change; no Godot test run needed.

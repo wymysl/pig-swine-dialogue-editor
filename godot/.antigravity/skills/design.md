@@ -10,16 +10,15 @@ When the task involves dialogue, quest text, NPC lines, docket notes, item descr
 
 - `AGENTS.md` (especially §Source of truth, §Cast canonical names, §Address forms in dialogue, §Humor rules)
 - `PLAN.md` §Vertical slice plan and §Out of scope
+- `PROPOSALS.md` for active editorial/design decisions and proposal status
 - `SPRINT_LOG.md` (last 5 entries)
-- `../story.txt` — the relevant chapter section: beats, NPC behavior, gates
-- `../style_canon.txt` — Taste Standard pass/reject examples, voice references, court line templates, running jokes catalogue
 - `data/voice_references/<character_id>.jsonl` — per-character voice-reference drafts (audited corpus). NOT committed game text; use as voice reference, then author fresh lines into the runtime `data/dialogues/<npc_id>.json`
-- `../battle_mechanics.txt` §Player-facing terminology — when writing Casebook judgment names, summaries, principle moves, or opponent statements
-- `../minigames.txt` — when writing mini-game flavor text
 - `data/dialogues/<npc_id>.json` files (one per NPC; see AGENTS.md ownership table)
 - `data/asia_hints.json` when working on Asia content
 - `data/chapters/chapter*.json` (text fields you will modify)
 - `data/items.json`, `data/judgments.json`, `data/argument_opponents.json` (text fields)
+- Frozen root `.txt` files only when active docs/data point to them or the user
+  explicitly asks for historical context
 
 ## Allowed writes
 
@@ -38,7 +37,9 @@ When the task involves dialogue, quest text, NPC lines, docket notes, item descr
 - `data/chapters/*.json` state-machine fields
 - Renaming any topic_id, npc_id, item_id, or quest_step_id without filing a rename proposal first
 - Inventing legal doctrine that doesn't exist (parody real procedure or halt)
-- Writing content for an NPC whose voice has not been established in `../story.txt`, `../style_canon.txt`, or `data/voice_references/<character_id>.jsonl` — file a voice-spec request artifact first
+- Writing content for an NPC whose voice has not been established in active
+  dialogue data, `data/voice_references/<character_id>.jsonl`, or an approved
+  proposal — file a voice-spec request artifact first
 
 ## Persona patterns
 
@@ -50,7 +51,7 @@ When the task involves dialogue, quest text, NPC lines, docket notes, item descr
   address form wrong fails the Taste Standard.
 
 - **Polish-legal flavor**: reference real procedure (KPC articles, doręczenie zastępcze, nieważność postępowania, postanowienie incydentalne, KPA) parodied, never explained inside dialogue.
-- **NPC voices**: preserve and extend, do not replace. Use the canonical names — **Dr. A. Cula**, **Mr. Pig**, **Mr. Swine**, **Murrow**, **Crab**, **Whimsy**, **Asia**. Voice profiles live in `../style_canon.txt`; per-character draft lines in `data/voice_references/<character_id>.jsonl`; chapter-specific voice context in `../story.txt`.
+- **NPC voices**: preserve and extend, do not replace. Use the canonical names — **Dr. A. Cula**, **Mr. Pig**, **Mr. Swine**, **Murrow**, **Crab**, **Whimsy**, **Asia**. Active voice sources are committed dialogue data, `data/voice_references/<character_id>.jsonl`, and approved proposals; frozen root references may provide historical context only.
   - Dr. A. Cula: observational, dry, occasionally surprised by his own competence.
   - Mr. Pig: panicked, formal-while-falling-apart, escalating sentence energy.
   - Murrow: dry, archival, helpful only when asked precisely; almost never uses adjectives.
@@ -61,7 +62,7 @@ When the task involves dialogue, quest text, NPC lines, docket notes, item descr
 - **Three expression variants** per key dialogue line where supported by the dialogue runner: `{ "neutral": "...", "agitated": "...", "deadpan": "..." }`.
 - **Maintain running jokes**: sentient resentful coffee machine, Swine's postcards from inexplicable places, Whimsy's near-miss arguments, Murrow's archival omniscience, the printer with feelings, judges' restrained surprise.
 - **Lines under ~140 characters** where possible. Break longer thoughts across consecutive typewriter lines.
-- **Four dialogue states** per recurring NPC: before-quest / during-investigation / ready-for-court / after-victory. Asia additionally has per-progress hint states (one per major beat) per `../story.txt`.
+- **Four dialogue states** per recurring NPC: before-quest / during-investigation / ready-for-court / after-victory. Asia additionally has per-progress hint states in active hint/dialogue data.
 - **Wrong Casebook moves must be funny but not totally nonsensical**. Templates: "client was spiritually present", "envelope looked guilty", "deadline was emotionally unreasonable".
 - **Casebook flavor**: judgment summaries are one sentence, plain language. Principle move flavor lines are ≤80 characters. Judges' restrained-surprise reactions stay dry — "Counsel, surprisingly, that is a point", never "well done".
 
@@ -86,7 +87,11 @@ When the task involves dialogue, quest text, NPC lines, docket notes, item descr
 
 - Asked to invent Polish legal doctrine that doesn't exist — parody a real one or halt.
 - Asked to make Pig & Swine look actively corrupt or actively malicious — halt.
-- Asked to write content for an NPC whose voice is not established in `../story.txt` — file a voice-spec request artifact and halt.
-- Asked to silently rewrite the four `.txt` source files — those are human-only edits; file a `SPEC_PROPOSAL` artifact and halt.
-- Asked to use Pokémon-style game terminology in player-facing Casebook text — use the legal register from `../battle_mechanics.txt` or halt.
+- Asked to write content for an NPC whose voice is not established in active data
+  or approved proposals — file a voice-spec request artifact and halt.
+- Asked to silently rewrite the frozen root `.txt` files — those are human-only
+  reference files; file a proposal artifact and halt.
+- Asked to use Pokémon-style game terminology in player-facing Casebook text —
+  use the legal register from active Godot governance, approved proposals, and
+  runtime UI data or halt.
 - Required reading missing or unreadable — halt and ask the human.

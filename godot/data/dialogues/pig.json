@@ -116,13 +116,20 @@
         },
         {
             "id": "pig_b13_celebration",
-            "trigger": "chapter1.court_won_procedural_reset == true",
-            "_comment": "2026-05-19 critique F9: previously-missing Beat 13 celebration speech that cula_b13_pig_celebration_response in cula.json was authored to react to. Firm-first / client-second ordering is load-bearing — the player should register that this firm celebrates its own survival before the client's. Maritime tic recedes (sincere undercut beat per style_canon §Mr. Pig arc rule; not the Ch5 fully-sincere moment, but the first hairline crack in the panic frame). once:true uses SAVE_VERSION 12 declarative fire-once (dialogue_states_seen) — no manual flag needed. Ordered before has_binder_and_memo so this state wins on Beat 13. **2026-05-25 fan-out:** Cula's response inlined from cula.json::cula_b13_pig_celebration_response (queued for deletion).",
+            "trigger": "chapter1.won_court == true",
+            "_comment": "Beat 13 celebration. **2026-05-24 promotion** of data/_drafts/nightly_design_pig_2026-05-14.json::pig_beat13.proposed_state body. Replaces the 2026-05-19 F9 placeholder. story.txt Beat 13 anchor: firm-first / client-second ordering load-bearing; rent / Sikorska fee / printer / Swine retainer all named per the spec's concrete-numbers requirement. Maritime tic at 1-of-4 density (the rent-can-breathe line carries the residual maritime register; everything else is matter-of-fact). on_dismiss writes both v25 sequencing flags: chapter1.client_fee_collected (story.txt anchor) and chapter1.pig_court_win_acknowledged (gates coffee_machine_ch1.json env-beat). Trigger broadened to won_court to capture all victory variants (procedural_reset and any future weak/narrow wins). once:true via SAVE_VERSION 12 dialogue_states_seen.",
             "lines": [
                 "Dr. A. Cula! We have survived another impossible thing.",
-                "The firm carries on. The client — yes, the client — also carries on. Both, mercifully, in that order.",
-                "I would offer a toast, but the only glasses in this office are the ones Mr. Murrow reads with.",
-                {"speaker": "cula", "text": "Temporarily saved is still saved, Mr. Pig. I am learning that this office measures success in survivable intervals."}
+                "The rent will breathe. The Sikorska fee came through. The printer can wait.",
+                "The client — yes, the client — also survived. The firm will see another month.",
+                {"speaker": "cula", "text": "The motion was granted. Mrs. Sikorska will have her hearing."},
+                "Yes. Good. That too.",
+                "Mr. Swine's retainer is still — somewhere. Sea of Japan. Presumably alive.",
+                {"speaker": "cula", "text": "Presumably."}
+            ],
+            "on_dismiss": [
+                {"set": "chapter1.client_fee_collected", "value": true},
+                {"set": "chapter1.pig_court_win_acknowledged", "value": true}
             ],
             "once": true
         },

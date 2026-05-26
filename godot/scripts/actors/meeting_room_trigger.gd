@@ -103,7 +103,7 @@ func _dispatch_halina_intro_dialogue() -> void:
 ## When the runner writes client_meeting_stance from the option pick,
 ## this fires synchronously; we disable the boundary. Skipping when not
 ## awaiting prevents misfires from unrelated chapter1 flag changes.
-func _on_chapter1_flag_changed(flag_name: String, _value) -> void:
+func _on_chapter1_flag_changed(flag_name: String, _value: Variant) -> void:
 	if not _awaiting_stance_commit:
 		return
 	if flag_name != "client_meeting_stance":

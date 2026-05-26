@@ -28,28 +28,39 @@ For any non-trivial task, read in this order:
    "should we do X" questions are already answered here; check before pitching.
 7. The relevant role skill under `godot/.antigravity/skills/`:
    `code.md`, `design.md`, `art.md`, or `qa.md`.
-8. Relevant sections of the root spec files:
-   `story.txt`, `world.txt`, `minigames.txt`, `battle_mechanics.txt`,
-   `style_canon.txt`.
-9. The source files you intend to edit.
+8. Active source/data files you intend to edit or rely on. For implementation
+   work, prefer `godot/data/`, `godot/scripts/`, `godot/scenes/`,
+   `godot/PROPOSALS.md`, and `godot/PLAN.md`.
+9. Root `.txt` files only when explicitly relevant as frozen historical
+   reference. They no longer override active Godot docs, data, or runtime.
 
 `godot/CURATION_BOARD.md` is a live human tracker. Read it when planning
 multi-step work, but do not edit it unless the user specifically asks.
 
 ## Source Of Truth
 
-- Creative canon: the five root `.txt` files.
-- Current implementation conventions: `godot/CONVENTIONS.md`.
-- Role ownership and hard governance: `godot/AGENTS.md` plus the role skill
-  files in `godot/.antigravity/skills/`.
+As of 2026-05-26 Step 6.2, the five root `.txt` files are frozen reference
+material. They are useful historical design context, but they are no longer the
+authority for active Godot work.
+
+- Governance and role ownership: `godot/AGENTS.md` plus the role skill files in
+  `godot/.antigravity/skills/`.
 - Scope and build plan: `godot/PLAN.md`.
 - Editorial decisions and proposal status: `godot/PROPOSALS.md`.
+- Current implementation conventions: `godot/CONVENTIONS.md`.
+- Runtime content and mechanics: `godot/data/`, `godot/scripts/`, and
+  `godot/scenes/`.
 - Recent reality: `godot/SPRINT_LOG.md` and `godot/BUILD_NOTES.md`.
+- Frozen reference only: `story.txt`, `world.txt`, `minigames.txt`,
+  `battle_mechanics.txt`, and `style_canon.txt`.
 
-When sources disagree, do not smooth it over silently. For creative canon,
-follow the root `.txt` specs. For current runtime numbers and asset dimensions,
-follow `godot/CONVENTIONS.md`. For file ownership, follow `godot/AGENTS.md`.
-If a conflict still matters, stop and ask the human.
+When sources disagree, do not smooth it over silently. Prefer the active Godot
+source in this order: runtime data/code/scenes for shipped behavior,
+`godot/CONVENTIONS.md` for current runtime numbers and asset dimensions,
+`godot/PLAN.md` and `godot/PROPOSALS.md` for scope and design decisions, and
+`godot/AGENTS.md` for ownership. If a root `.txt` file disagrees with active
+Godot sources, treat the root file as stale reference and surface the drift if
+it matters.
 
 ## Current Technical Baseline
 
@@ -166,8 +177,9 @@ Default to surfacing uncertainty, not hiding it.
 - Prefer `rg`/`rg --files` for search.
 - Use `apply_patch` for manual text edits.
 - Do not use destructive git commands unless the user explicitly asks.
-- Do not edit the five root source spec files unless the user explicitly asks.
-  Normally propose changes instead.
+- Do not edit the five frozen root reference files unless the user explicitly
+  asks. Normally update active Godot docs/data or propose a follow-up artifact
+  instead.
 - Do not add runtime dependencies, addons, or engine plugins without approval.
 - Do not hardcode player-facing strings in `.gd`; runtime text belongs in JSON.
 - Keep JSON valid and stable. Use structured parsing tools for non-trivial data
@@ -185,8 +197,8 @@ The detailed ownership table is in `godot/AGENTS.md`. In short:
   Taste Standard compliance.
 - Art owns sprites, portraits, tiles, decoration scene children, music, and SFX.
 - QA owns tests, build notes, web export verification, and bug artifacts.
-- Human owns governance docs, root source specs, and curation direction unless
-  they explicitly delegate a change.
+- Human owns governance docs, frozen root reference files, and curation
+  direction unless they explicitly delegate a change.
 
 If a task crosses roles, change only the files required for the requested role
 or produce a clear request for the responsible role.

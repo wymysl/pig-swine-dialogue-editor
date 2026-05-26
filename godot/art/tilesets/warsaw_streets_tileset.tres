@@ -1,4 +1,4 @@
-[gd_resource type="TileSet" format=3 uid="uid://cqsnntche2v8r"]
+[gd_resource type="TileSet" load_steps=7 format=3 uid="uid://cqsnntche2v8r"]
 
 [ext_resource type="Texture2D" uid="uid://bg4ech6fow6nw" path="res://art/tiles/warsaw_street.png" id="1_street"]
 [ext_resource type="Texture2D" uid="uid://1gdlb764pxs1" path="res://art/tiles/warsaw_sidewalk.png" id="2_sidewalk"]

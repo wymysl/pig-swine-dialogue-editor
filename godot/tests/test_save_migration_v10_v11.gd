@@ -79,7 +79,6 @@ func _init() -> void:
 	## -------------------------------------------------------------------
 	var trust_ok: bool = true
 	var v11_expected: Dictionary = {
-		"halina_trust": 0,
 		"halina_r0_done": false,
 		"halina_r1_choice": "",
 		"halina_r1_done": false,
@@ -108,10 +107,16 @@ func _init() -> void:
 	if trust_ok:
 		_pass("T3: all v11 halina trust meter keys present with correct defaults")
 
+	if migrated["chapter1"].get("halina_stance") != "blunt":
+		_fail("T3: expected migrated halina_stance to be 'blunt', got " + str(migrated["chapter1"].get("halina_stance")))
+	if migrated["chapter1"].get("incapacity_penalty") != false:
+		_fail("T3: expected migrated incapacity_penalty to be false")
+
 	## -------------------------------------------------------------------
 	## Test 4: idempotency — re-running from v11 doesn't clobber set values.
 	## -------------------------------------------------------------------
-	migrated["chapter1"]["halina_trust"] = 4
+	migrated["chapter1"]["halina_stance"] = "high"
+	migrated["chapter1"]["incapacity_penalty"] = true
 	migrated["chapter1"]["halina_r0_done"] = true
 	migrated["chapter1"]["halina_r1_choice"] = "warm"
 	migrated["chapter1"]["halina_r1_done"] = true
@@ -155,6 +160,11 @@ func _init() -> void:
 				reset_ok = false
 	if reset_ok:
 		_pass("T5: reset_state declares all v11 halina trust meter defaults")
+	
+	if reset_ch1.get("halina_stance") != "":
+		_fail("T5: expected reset_state halina_stance to be '', got " + str(reset_ch1.get("halina_stance")))
+	if reset_ch1.get("incapacity_penalty") != false:
+		_fail("T5: expected reset_state incapacity_penalty to be false")
 
 	## -------------------------------------------------------------------
 	## Test 6: full chain v1 -> v11 produces all halina trust keys.
@@ -180,6 +190,11 @@ func _init() -> void:
 				chain_ok = false
 	if chain_ok:
 		_pass("T6: v1 -> v11 migration chain produces all halina trust meter keys")
+	
+	if from_v1["chapter1"].get("halina_stance") != "blunt":
+		_fail("T6: expected chain halina_stance to be 'blunt', got " + str(from_v1["chapter1"].get("halina_stance")))
+	if from_v1["chapter1"].get("incapacity_penalty") != false:
+		_fail("T6: expected chain incapacity_penalty to be false")
 
 	_finish()
 

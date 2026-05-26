@@ -38,7 +38,8 @@
     { "key": "chapter1.has_law_binder", "default": false, "set_by": "engine — pickup.gd via items.json procedural_binder" },
     { "key": "chapter1.has_rights_memo", "default": false, "set_by": "engine — pickup.gd via items.json rights_memo" },
 
-    { "key": "chapter1.halina_trust", "default": 0, "_type": "int", "set_by": "engine — dialogue_runner.gd trust_delta on options choices during Beat 8 client meeting (halina.json)" },
+    { "key": "chapter1.halina_stance", "default": "", "_type": "String", "_enum": ["high", "blunt", "technical", ""], "set_by": "halina.json r0_response on_dismiss — 'high' (sympathetic opener) / 'blunt' (blunt_procedural) / 'technical'. Replaces halina_trust int (SAVE_VERSION 27)." },
+    { "key": "chapter1.incapacity_penalty", "default": false, "_type": "bool", "set_by": "engine — battle_controller.gd consume_assembled_packet — written true when incapacity_defense blunder is filed. Replaces -4 halina_trust_delta_on_select (SAVE_VERSION 27)." },
     { "key": "chapter1.halina_r0_done", "default": false, "set_by": "halina.json client_meeting_r0_response_* on_dismiss" },
     { "key": "chapter1.halina_r1_choice", "default": "", "set_by": "halina.json client_meeting_r1 options write_path" },
     { "key": "chapter1.halina_r1_done", "default": false, "set_by": "halina.json client_meeting_r1_response_* on_dismiss" },
@@ -89,15 +90,19 @@
 
     { "key": "chapter1.judicial_patience", "default": 5, "_type": "int", "_owner": "battle_controller.gd Phase 2 sub-controller", "_reader": "data/court_rounds/chapter1_round_1.json Phase 2 deltas (pending), victory branch resolution", "_range": "typical 0..7; blunder selections reduce starting patience per argument_frames_ch1.json deltas", "set_by": "engine — future battle_controller.gd Phase 2 sub-controller (PROPOSALS.md §10)" },
     { "key": "chapter1.witness_cooperation", "default": 0, "_type": "int", "_owner": "battle_controller.gd Phase 1 sub-controller", "_reader": "data/court_rounds/chapter1_round_1.json Phase 1 budget tracking (pending)", "_range": "initialised per witness at Phase 1 start from court_rounds[].witnesses[].cooperation_budget", "set_by": "engine — future battle_controller.gd Phase 1 sub-controller (PROPOSALS.md §10)" },
+    { "key": "chapter1.phase2_round_results", "default": [], "_type": "array", "_owner": "battle_controller.gd Phase 2 sub-controller", "_reader": "battle_controller.gd _compute_court_outcome; trial_record_panel.gd via trial_record_citation_resolved signal", "_entry_shape": "{ round, citation_id, evidence_id, evidence_available, effectiveness_bucket, opponent_move }", "set_by": "engine — battle_controller.gd records each Phase 2 citation result at player_present()" },
 
-    { "key": "chapter1.beat13_complete", "default": false, "set_by": "Beat 13 office payoff close" },
+    { "key": "chapter1.client_fee_collected", "default": false, "_type": "bool", "_owner": "pig.json pig_b13_celebration on_dismiss", "_reader": "story.txt §Beat 13 anchor; future Ch2 fee-status references", "set_by": "pig.json pig_b13_celebration on_dismiss (SAVE_VERSION 25)" },
+    { "key": "chapter1.pig_court_win_acknowledged", "default": false, "_type": "bool", "_owner": "pig.json pig_b13_celebration on_dismiss", "_reader": "coffee_machine_ch1.json coffee_machine_beat13_close trigger", "set_by": "pig.json pig_b13_celebration on_dismiss (SAVE_VERSION 25) — sequencing flag so the env-beat fires AFTER Pig has spoken" },
+    { "key": "chapter1.beat13_complete", "default": false, "set_by": "coffee_machine_ch1.json coffee_machine_beat13_close on_dismiss" },
     { "key": "chapter1.received_swine_postcard", "default": false, "set_by": "Beat 14 postcard arrival trigger / postcard_swine_ch1.json asia_address_label on_dismiss" },
     { "key": "chapter1.postcard_asia_announced", "default": false, "set_by": "postcard_swine_ch1.json asia_address_label on_dismiss" },
     { "key": "chapter1.postcard_readaloud_cue_shown", "default": false, "set_by": "postcard_swine_ch1.json pig_readaloud_cue on_dismiss" },
     { "key": "chapter1.postcard_body_read", "default": false, "set_by": "postcard_swine_ch1.json pig_readaloud_body on_dismiss" },
     { "key": "chapter1.pig_postcard_reaction_shown", "default": false, "set_by": "postcard_swine_ch1.json pig_postcard_reaction on_dismiss" },
     { "key": "chapter1.cula_postcard_reaction_shown", "default": false, "set_by": "postcard_swine_ch1.json cula_postcard_reaction on_dismiss (added 2026-05-19 per critique F4 partial; inlines orphaned cula.json::cula_b14_postcard_reaction)" },
-    { "key": "chapter1.whimsy_postcard_deflection_shown", "default": false, "set_by": "postcard_swine_ch1.json whimsy_archaic_deflection on_dismiss" },
+    { "key": "chapter1.whimsy_postcard_deflection_shown", "default": false, "_type": "bool", "set_by": "postcard_swine_ch1.json whimsy_deflects_swine_postcard on_dismiss" },
+    { "key": "chapter1.incapacity_reflection_seen", "default": false, "_type": "bool", "set_by": "cula.json incapacity_recovery_internal on_dismiss" },
     { "key": "chapter1.complete", "default": false, "set_by": "postcard_swine_ch1.json chapter_close on_dismiss" },
 
     { "key": "badges.day_one_survivor", "default": false, "set_by": "postcard_swine_ch1.json chapter_close award_badge action" },

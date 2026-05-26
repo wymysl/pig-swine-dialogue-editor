@@ -62,17 +62,19 @@ func _init() -> void:
 	## -------------------------------------------------------------------
 	## Test 3: resolve() — effective when partial weight match.
 	## -------------------------------------------------------------------
-	## 0.6 weight on a weakness with 0.7 magnitude → 0.42 score, which is
-	## inside the "effective" band (>= 0.40, < 0.70). Move's other 0.4 is
+	## 0.6 weight on a weakness with 0.1 magnitude → 0.06 score, which is
+	## inside the "effective" band (>= 0.04, < 0.07). Move's other 0.4 is
 	## on an unrelated tag and contributes nothing.
+	## (Recalibrated Step 2.3 2026-05-26: thresholds 10× lower to match
+	## normalized multi-tag judgment weights.)
 	move_tags = {"service_of_process": 0.6, "procedural_fairness": 0.4}
-	weak = {"service_of_process": 0.7, "access_to_court": 0.3}
+	weak = {"service_of_process": 0.1, "access_to_court": 0.9}
 	strong = {"margin_of_appreciation": 1.0}
 	r = script.resolve(move_tags, weak, strong)
 	if r.bucket != "effective":
 		_fail("T3: expected effective, got %s (score %f)" % [r.bucket, r.score])
-	elif not is_equal_approx(r.score, 0.42):
-		_fail("T3: expected score 0.42, got %f" % r.score)
+	elif not is_equal_approx(r.score, 0.06):
+		_fail("T3: expected score 0.06, got %f" % r.score)
 	else:
 		_pass("T3: partial weight match → effective bucket")
 
@@ -111,16 +113,17 @@ func _init() -> void:
 	## -------------------------------------------------------------------
 	## Test 6: resolve() — minor weight on opponent strength does NOT backfire.
 	## -------------------------------------------------------------------
-	## A move with only 0.3 weight on a strong tag is below the
-	## STRENGTH_BACKFIRE_THRESHOLD of 0.5 and should NOT backfire.
-	move_tags = {"margin_of_appreciation": 0.3, "service_of_process": 0.7}
+	## A move with only 0.03 weight on a strong tag is below the
+	## STRENGTH_BACKFIRE_THRESHOLD of 0.05 and should NOT backfire.
+	## (Recalibrated Step 2.3 2026-05-26: threshold lowered to 0.05.)
+	move_tags = {"margin_of_appreciation": 0.03, "service_of_process": 0.97}
 	weak = {"service_of_process": 1.0}
 	strong = {"margin_of_appreciation": 1.0}
 	r = script.resolve(move_tags, weak, strong)
 	if r.bucket == "backfires":
 		_fail("T6: minor tag on strength should NOT trigger backfire")
 	elif r.bucket != "super_effective":
-		_fail("T6: expected super_effective (0.7 on weakness), got %s (score %f)" % [r.bucket, r.score])
+		_fail("T6: expected super_effective (0.97 on weakness), got %s (score %f)" % [r.bucket, r.score])
 	else:
 		_pass("T6: sub-threshold strength overlap → no backfire")
 

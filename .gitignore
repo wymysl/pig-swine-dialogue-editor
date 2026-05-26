@@ -33,6 +33,11 @@ godot/test_tex.gd*
 godot/test_office.tscn
 godot/_recover_office.gd*
 
+# macOS Finder duplicate files (e.g. "file 2.png", "file.png 2.import")
+* 2.png
+* 2.png.import
+*.png 2.import
+
 # Backup files (spec stage backups, dialogue voice-reference backups)
 *.bak
 *.bak.*

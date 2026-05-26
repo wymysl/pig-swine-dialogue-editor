@@ -6,8 +6,12 @@
 [ext_resource type="SpriteFrames" path="res://art/sprites/cula/cula_sprite_frames.tres" id="4_cula_frames"]
 [ext_resource type="Texture2D" path="res://art/sprites/whimsy/whimsy_idle_front.png" id="5_3yqnk"]
 [ext_resource type="Script" path="res://scripts/actors/minigame_trigger.gd" id="6_651sy"]
+[ext_resource type="Script" path="res://scripts/actors/pickup.gd" id="7_pickup"]
 [ext_resource type="PackedScene" path="res://scenes/components/npc_walking_canon.tscn" id="1_canon"]
 [ext_resource type="SpriteFrames" path="res://art/sprites/whimsy/whimsy_sprite_frames.tres" id="frames_whimsy"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_a8brief"]
+size = Vector2(40.0, 40.0)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_2"]
 size = Vector2(48, 16)
@@ -134,3 +138,15 @@ minigame_scene_path = "res://scenes/minigames/coffee_brewing.tscn"
 pattern_id = "chapter1_court_coffee"
 repeatable = false
 availability_flag = ""
+
+[node name="Article8Brief" type="Area2D" parent="."]
+position = Vector2(160, 220)
+collision_layer = 4
+collision_mask = 2
+script = ExtResource("7_pickup")
+item_id = "article_8_brief"
+display_name = "Abandoned Article 8 Brief"
+state_flag_path = "chapter1.picked_up_article_8"
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Article8Brief"]
+shape = SubResource("RectangleShape2D_a8brief")

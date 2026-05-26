@@ -147,7 +147,7 @@ func _write_state_flag() -> void:
 			sigs.chapter1_flag_changed.emit(key, value)
 
 
-func _read_state_value(path: String):
+func _read_state_value(path: String) -> Variant:
 	var state_node = get_node_or_null("/root/State")
 	var parts = path.split(".")
 	if parts.size() != 2 or state_node == null:
@@ -162,7 +162,7 @@ func _read_state_value(path: String):
 	return target[key]
 
 
-func _pickup_state_value(current_value):
+func _pickup_state_value(current_value: Variant) -> Variant:
 	if current_value is String:
 		return item_id
 	return true

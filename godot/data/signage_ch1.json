@@ -1,0 +1,56 @@
+{
+    "version": 1,
+    "_doc": "Chapter 1 Office Street signage text. Single source of truth for the player-readable sign props placed in scenes/world/routes/office_street.tscn during the 2026-05-18 Pixellab sprints (PigSwineSign, NoticeBoard, CourtSignpost, StreetNameOfficeStreet, StreetNameCounselRow). Schema: signs[] of { id, _anchor, lines, lines_unlocked?, _gate_flag? }. Read by scripts/actors/sign.gd via sign_id binding; lines dispatch through the existing dialogue box on E. English-first per feedback_pig_swine_english_first_signage.md; tone register adjacent to dialogue_samples.txt §Sign and notice text samples (Asia-adjacent dry flavor over institutional surfaces). Every line passes Taste Standard 5/5: real referent (community kiosk-board / institutional plate / wayfinding sign), alive (specific texture), clear (player understands what the sign is), future-proof (no chapter-specific lore that would break at later chapter rereads).",
+    "_owner": "Design (text) + Code (sign.gd dispatch). Per AGENTS.md §Stack invariants, no player-facing strings live in .tscn or .gd; this file is the authoritative source.",
+    "signs": [
+        {
+            "id": "pig_swine_office_sign",
+            "_anchor": "office_street.tscn::PigSwineSign",
+            "_doc": "Hangs over the front door of Pig & Swine. The 'possibly open' undercut is the firm's institutional voice — uncertain even about itself. Two short declaratives.",
+            "lines": [
+                "Pig & Swine.",
+                "Attorneys, counselors, possibly open."
+            ]
+        },
+        {
+            "id": "street_notice_board_ch1",
+            "_anchor": "office_street.tscn::NoticeBoard",
+            "_doc": "Community notice board, three pinned items deep. Each line is a single pinned slip, written in the institutional surface voice of a Warsaw kiosk-board. Three short notices: a missing-pet flyer with a legal pun, a building-works notice with the half-attempt at compliance that Polish institutional signage actually has, and a tenants' meeting notice that has been indefinitely postponed.",
+            "lines": [
+                "(A community notice board, three pinned items deep.)",
+                "• 'CAT MISSING. ANSWERS TO MOTION TO DISMISS.'",
+                "• 'BUILDING WORKS, FLOOR 4. ENTRANCE STILL TECHNICALLY ALLOWED.'",
+                "• 'TENANTS' ROW MONTHLY MEETING — INDEFINITELY POSTPONED.'"
+            ]
+        },
+        {
+            "id": "court_signpost_ch1",
+            "_anchor": "office_street.tscn::CourtSignpost",
+            "_doc": "Wayfinding signpost at the branch point. Pre-readiness: bare directional. Post-readiness (gated on chapter1.court_unlocked): adds the ironic helpful note. The unlocked variant uses chapter1.court_unlocked as the gate; sign.gd evaluates this against State.data and picks the right lines.",
+            "lines": [
+                "District Court →"
+            ],
+            "lines_unlocked": [
+                "District Court →",
+                "Open today. Try not to be late."
+            ],
+            "_gate_flag": "chapter1.court_unlocked"
+        },
+        {
+            "id": "street_name_office_street",
+            "_anchor": "office_street.tscn::StreetNameOfficeStreet",
+            "_doc": "Street-name plate. Plain institutional surface. The plate itself carries the joke (it's named 'Office Street' because that is what the firm calls the firm's street).",
+            "lines": [
+                "OFFICE STREET"
+            ]
+        },
+        {
+            "id": "street_name_counsel_row",
+            "_anchor": "office_street.tscn::StreetNameCounselRow",
+            "_doc": "Street-name plate at the branch east. Plain. The legal-quarter institutional voice is in the name, not the line.",
+            "lines": [
+                "COUNSEL ROW"
+            ]
+        }
+    ]
+}

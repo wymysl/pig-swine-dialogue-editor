@@ -55,10 +55,42 @@ extends Node
 ##         chapter1.cula_postcard_reaction_shown (bool)
 ##   22 — rename bonus_evidence_collected → client_meeting_evidence:
 ##         same string-enum semantics, clearer name
+##   23 — Phase 2 citation persistence: chapter1.phase2_round_results (Array)
+##   24 — judgment pickup flags: chapter1.picked_up_article_8 +
+##         chapter1.picked_up_article_10 (bool)
+##   25 — Beat 13 close flags: chapter1.client_fee_collected (bool) +
+##         chapter1.pig_court_win_acknowledged (bool). Both default false.
+##         The first records Pig's Beat-13 acknowledgement of the 5,000 PLN
+##         Sikorska fee; the second is a sequencing flag that lets the
+##         coffee_machine_ch1.json env-beat trigger *after* Pig has spoken.
+##         Together they unblock promotion of two PENDING drafts that have
+##         been waiting for the declaration since 2026-05-14 and 2026-05-17.
+##   26 — Murrow rehearsal: chapter1.rehearsal_accepted (bool, edge-trigger),
+##         chapter1.rehearsal_complete (bool, persistent), and
+##         chapter1.rehearsal_declined (bool, persistent). Design plan
+##         2026-05-26 Step 4.1 (Phase 4 verb-teaching rehearsal).
+##         rehearsal_complete persists so the offer does not repeat after the
+##         player completes the rehearsal. rehearsal_declined persists so the
+##         offer does not repeat after the player explicitly skips it.
+##   27 — halina_trust rename (Step 5.3, design plan 2026-05-26):
+##         chapter1.halina_trust (int) replaced by chapter1.halina_stance
+##         (String enum: "high"/"blunt"/"technical"/"") and
+##         chapter1.incapacity_penalty (bool). Migration: ≥ 5 → "high",
+##         0–4 → "blunt", negative → "blunt" + incapacity_penalty = true.
+##         halina_stance is set by Beat 8 r0-response on_dismiss (halina.json).
+##         incapacity_penalty is written by battle_controller on incapacity
+##         blunder. The old integer never lived in interesting territory; the
+##         ≥ 5 threshold was equivalent to picking the sympathetic opener.
 
 const SAVE_PATH: String = "user://save.json"
+const STRINGS_PATH: String = "res://data/case_folder_strings.json"
 
 var _save_path: String = SAVE_PATH
+## _save_reasons — lazily loaded from case_folder_strings.json::save_reasons.
+## Inline literals in _fail_save / _fail_load act as defensive fallbacks if
+## the strings file can't be read.
+var _save_reasons: Dictionary = {}
+var _save_reasons_loaded: bool = false
 
 
 func _ready() -> void:
@@ -85,7 +117,7 @@ func _state() -> Node:
 func save_game() -> bool:
 	var st: Node = _state()
 	if st == null:
-		_fail_save("State data is unavailable.")
+		_fail_save(_reason("state_unavailable", "State data is unavailable."))
 		return false
 	var payload: Dictionary = {
 		"version": st.SAVE_VERSION,
@@ -95,11 +127,11 @@ func save_game() -> bool:
 	if not DirAccess.dir_exists_absolute(user_dir):
 		var dir_err: Error = DirAccess.make_dir_recursive_absolute(user_dir)
 		if dir_err != OK:
-			_fail_save("Cannot create the save directory.")
+			_fail_save(_reason("cannot_create_dir", "Cannot create the save directory."))
 			return false
 	var file := FileAccess.open(_save_path, FileAccess.WRITE)
 	if file == null:
-		_fail_save("Cannot open the save file for writing.")
+		_fail_save(_reason("cannot_open_write", "Cannot open the save file for writing."))
 		return false
 	file.store_string(JSON.stringify(payload, "\t"))
 	file.close()
@@ -115,19 +147,19 @@ func load_game() -> bool:
 
 	var st: Node = _state()
 	if st == null:
-		_fail_load("State data is unavailable.")
+		_fail_load(_reason("state_unavailable", "State data is unavailable."))
 		return false
 
 	var file := FileAccess.open(_save_path, FileAccess.READ)
 	if file == null:
-		_fail_load("Cannot open the save file for reading.")
+		_fail_load(_reason("cannot_open_read", "Cannot open the save file for reading."))
 		return false
 	var text: String = file.get_as_text()
 	file.close()
 
 	var parsed = JSON.parse_string(text)
 	if parsed == null or not parsed is Dictionary:
-		_fail_load("The save file is corrupt; progress was reset.")
+		_fail_load(_reason("corrupt_reset", "The save file is corrupt; progress was reset."))
 		st.data = st.reset_state()
 		return false
 
@@ -137,6 +169,30 @@ func load_game() -> bool:
 	saved_data = migrate_save(saved_data, version)
 	st.data = saved_data
 	return true
+
+
+## _reason — lazily load and look up a failure-reason string keyed by
+## case_folder_strings.json::save_reasons.<key>. Inline fallbacks ship with
+## each call site so a strings-file load failure still produces a readable
+## toast.
+func _reason(key: String, fallback: String) -> String:
+	if not _save_reasons_loaded:
+		_load_save_reasons()
+	return str(_save_reasons.get(key, fallback))
+
+
+func _load_save_reasons() -> void:
+	_save_reasons_loaded = true
+	var file: FileAccess = FileAccess.open(STRINGS_PATH, FileAccess.READ)
+	if file == null:
+		return
+	var parsed: Variant = JSON.parse_string(file.get_as_text())
+	file.close()
+	if not (parsed is Dictionary):
+		return
+	var reasons: Variant = parsed.get("save_reasons", {})
+	if reasons is Dictionary:
+		_save_reasons = reasons
 
 
 func _fail_save(reason: String) -> void:
@@ -511,4 +567,92 @@ func migrate_save(saved_data: Dictionary, old_version: int) -> Dictionary:
 				ch1_v22.erase("bonus_evidence_collected")
 			elif not ch1_v22.has("client_meeting_evidence"):
 				ch1_v22["client_meeting_evidence"] = ""
+
+	## v22 -> v23: Phase 2 citation persistence (Step 1.1). Add
+	## chapter1.phase2_round_results as empty Array. court_outcome is no longer
+	## written by consume_assembled_packet(); the dispositive outcome is computed
+	## at end-of-round-3 via _compute_court_outcome().
+	if old_version < 23:
+		if saved_data.has("chapter1") and saved_data["chapter1"] is Dictionary:
+			var ch1_v23: Dictionary = saved_data["chapter1"]
+			if not ch1_v23.has("phase2_round_results") \
+					or not ch1_v23["phase2_round_results"] is Array:
+				ch1_v23["phase2_round_results"] = []
+
+	## v23 -> v24: Judgment pickup flags (Step 2.2). Add
+	## chapter1.picked_up_article_8 and chapter1.picked_up_article_10 as false.
+	## These gate the home_and_family_ch8 and expression_and_press_ch10
+	## Casebook conditions in judgments.json.
+	if old_version < 24:
+		if saved_data.has("chapter1") and saved_data["chapter1"] is Dictionary:
+			var ch1_v24: Dictionary = saved_data["chapter1"]
+			if not ch1_v24.has("picked_up_article_8"):
+				ch1_v24["picked_up_article_8"] = false
+			if not ch1_v24.has("picked_up_article_10"):
+				ch1_v24["picked_up_article_10"] = false
+
+	## v24 -> v25: Beat 13 close flags. Unblocks promotion of the Pig/Murrow/
+	## Crab/Whimsy Beat-13 ensemble drafts (data/_drafts/
+	## nightly_design_pig_2026-05-14.json) and the coffee-machine env-beat
+	## (data/_drafts/nightly_design_beat13_close_2026-05-17.json), both of
+	## which had been waiting on these flag declarations. Both bools default
+	## false; client_fee_collected anchors Pig's celebration to story.txt
+	## Beat 13, and pig_court_win_acknowledged sequences the env-beat after
+	## Pig has spoken.
+	if old_version < 25:
+		if saved_data.has("chapter1") and saved_data["chapter1"] is Dictionary:
+			var ch1_v25: Dictionary = saved_data["chapter1"]
+			if not ch1_v25.has("client_fee_collected"):
+				ch1_v25["client_fee_collected"] = false
+			if not ch1_v25.has("pig_court_win_acknowledged"):
+				ch1_v25["pig_court_win_acknowledged"] = false
+
+	## v25 -> v26: Murrow rehearsal flags. rehearsal_accepted is an edge-trigger
+	## (cleared by orchestration on scene entry); rehearsal_complete persists so
+	## the offer does not repeat after the player has done it once. rehearsal_declined
+	## is written by murrow_rehearsal_skip and silences the offer + debrief without
+	## marking the rehearsal as completed — so the debrief can gate on
+	## rehearsal_complete && !rehearsal_declined. All three default false on
+	## existing saves (pre-v26 player has not seen any rehearsal state yet).
+	if old_version < 26:
+		if saved_data.has("chapter1") and saved_data["chapter1"] is Dictionary:
+			var ch1_v26: Dictionary = saved_data["chapter1"]
+			if not ch1_v26.has("rehearsal_accepted"):
+				ch1_v26["rehearsal_accepted"] = false
+			if not ch1_v26.has("rehearsal_complete"):
+				ch1_v26["rehearsal_complete"] = false
+			if not ch1_v26.has("rehearsal_declined"):
+				ch1_v26["rehearsal_declined"] = false
+
+	## v26 -> v27: halina_trust (int) renamed to halina_stance (String) +
+	## incapacity_penalty (bool). halina_stance is derived from the old integer
+	## via threshold: ≥ 5 → "high" (sympathetic opener + consistent warm choices),
+	## 0–4 → "blunt" (procedural/technical opener, or sympathetic without follow-
+	## through), negative → "blunt" + incapacity_penalty = true (incapacity blunder
+	## was filed, which applied a -4 penalty). The old halina_trust key is erased.
+	if old_version < 27:
+		if saved_data.has("chapter1") and saved_data["chapter1"] is Dictionary:
+			var ch1_v27: Dictionary = saved_data["chapter1"]
+			if ch1_v27.has("halina_trust"):
+				var old_trust: int = int(ch1_v27["halina_trust"])
+				var migrated_stance: String = "blunt"
+				var migrated_penalty: bool = false
+				if old_trust >= 5:
+					migrated_stance = "high"
+				elif old_trust < 0:
+					migrated_penalty = true
+				ch1_v27.erase("halina_trust")
+				if not ch1_v27.has("halina_stance"):
+					ch1_v27["halina_stance"] = migrated_stance
+				if not ch1_v27.has("incapacity_penalty"):
+					ch1_v27["incapacity_penalty"] = migrated_penalty
+				if not ch1_v27.has("incapacity_reflection_seen"):
+					ch1_v27["incapacity_reflection_seen"] = false
+			else:
+				if not ch1_v27.has("halina_stance"):
+					ch1_v27["halina_stance"] = ""
+				if not ch1_v27.has("incapacity_penalty"):
+					ch1_v27["incapacity_penalty"] = false
+				if not ch1_v27.has("incapacity_reflection_seen"):
+					ch1_v27["incapacity_reflection_seen"] = false
 	return saved_data

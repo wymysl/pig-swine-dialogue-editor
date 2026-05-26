@@ -26,17 +26,18 @@ func _init() -> void:
 		_line_capture[1] = lines
 	)
 
-	_check_stance(state_node, sigs, runner, "sympathetic", 2, "wojcik_witness_statement")
-	_check_stance(state_node, sigs, runner, "blunt_procedural", 0, "return_to_sender_slip")
-	_check_stance(state_node, sigs, runner, "technical", 1, "lease_1962_inheritance_1987")
+	_check_stance(state_node, sigs, runner, "sympathetic", "high", "wojcik_witness_statement")
+	_check_stance(state_node, sigs, runner, "blunt_procedural", "blunt", "return_to_sender_slip")
+	_check_stance(state_node, sigs, runner, "technical", "technical", "lease_1962_inheritance_1987")
 
 	_finish()
 
 
-func _check_stance(state_node: Node, sigs: Node, runner: Node, stance: String, expected_trust: int, expected_evidence: String) -> void:
+func _check_stance(state_node: Node, sigs: Node, runner: Node, stance: String, expected_halina_stance: String, expected_evidence: String) -> void:
 	var ch1: Dictionary = state_node.data["chapter1"]
 	ch1["halina_met"] = false
-	ch1["halina_trust"] = 0
+	ch1["halina_stance"] = ""
+	ch1["incapacity_penalty"] = false
 	ch1["halina_r0_done"] = false
 	ch1["client_meeting_stance"] = ""
 	ch1["client_meeting_evidence"] = ""
@@ -61,19 +62,21 @@ func _check_stance(state_node: Node, sigs: Node, runner: Node, stance: String, e
 			stance, str(_line_capture[0]), str(lines)
 		])
 
-	if ch1["client_meeting_stance"] == stance and int(ch1["halina_trust"]) == expected_trust:
-		_pass("chain '%s' writes stance and trust delta" % stance)
+	if ch1["client_meeting_stance"] == stance:
+		_pass("chain '%s' writes client_meeting_stance" % stance)
 	else:
-		_fail("chain '%s' wrong stance/trust; stance=%s trust=%s" % [
-			stance, str(ch1["client_meeting_stance"]), str(ch1["halina_trust"])
+		_fail("chain '%s' wrong client_meeting_stance; got=%s" % [
+			stance, str(ch1["client_meeting_stance"])
 		])
 
 	sigs.dialogue_dismissed.emit()
-	if ch1["halina_r0_done"] == true and ch1["client_meeting_evidence"] == expected_evidence:
-		_pass("dismiss '%s' writes first-round evidence %s" % [stance, expected_evidence])
+	if ch1["halina_r0_done"] == true and ch1["client_meeting_evidence"] == expected_evidence \
+			and ch1.get("halina_stance", "") == expected_halina_stance:
+		_pass("dismiss '%s' writes r0_done, evidence=%s, halina_stance=%s" % [stance, expected_evidence, expected_halina_stance])
 	else:
-		_fail("dismiss '%s' wrong r0 state; r0_done=%s evidence=%s" % [
-			stance, str(ch1["halina_r0_done"]), str(ch1["client_meeting_evidence"])
+		_fail("dismiss '%s' wrong r0 state; r0_done=%s evidence=%s halina_stance=%s (expected %s)" % [
+			stance, str(ch1["halina_r0_done"]), str(ch1["client_meeting_evidence"]),
+			str(ch1.get("halina_stance", "MISSING")), expected_halina_stance
 		])
 
 

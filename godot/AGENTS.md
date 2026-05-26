@@ -8,17 +8,44 @@ Pig & Swine RPG is a top-down tile legal-comedy RPG built in Godot 4.6.2 with GD
 
 ## Source of truth
 
-The unified game spec lives in five `.txt` files at the repo root, read in this order:
+As of 2026-05-26 Step 6.2, the five root `.txt` files are frozen reference
+material. They remain useful historical context, but they no longer override
+active Godot docs, runtime data, or shipped implementation.
 
-1. `../story.txt` — chapters, beats, NPC behavior, gates, court structure. Authoritative for what happens.
-2. `../world.txt` — overworld structure, 128×128 coordinate system, district scenes, route blockers, chapter-based unlocking, English↔Polish place-name translation table.
-3. `../minigames.txt` — Coffee Brewing, Document Chase. (Scooter Racing, Ski Slalom dropped; Final Printer is a Casebook battle.)
-4. `../battle_mechanics.txt` — the Casebook Battle System.
-5. `../style_canon.txt` — Taste Standard examples, voice references, visual style canon, audio canon, court design principles, Warsaw atmosphere and easter-egg roster. Authoritative for how things sound and look.
+Active authority lives here:
+
+1. `AGENTS.md` and the role skill files in `.antigravity/skills/` — governance,
+   ownership, taste rules, and role boundaries.
+2. `PLAN.md` — current scope, build plan, out-of-scope calls, and standing
+   project decisions.
+3. `PROPOSALS.md` — approved editorial/design decisions and proposal status.
+4. `CONVENTIONS.md` — current runtime numbers, asset dimensions, palettes, and
+   implementation conventions.
+5. `data/` — committed runtime content: dialogue, chapters, items, doors,
+   Casebook judgments, opponents, court rounds, evidence, tags, and voice
+   references.
+6. `scripts/` and `scenes/` — shipped behavior and current implementation
+   reality.
+7. `SPRINT_LOG.md` and `BUILD_NOTES.md` — recent implementation facts,
+   verification notes, and known follow-ups.
+
+Frozen reference files at the repo root:
+
+```text
+../story.txt
+../world.txt
+../minigames.txt
+../battle_mechanics.txt
+../style_canon.txt
+```
+
+Read those only when active sources point to them, when mining historical
+context, or when the user explicitly asks. If they disagree with active Godot
+sources, treat the root file as stale and follow the active source.
 
 Voice references for individual characters live in `data/voice_references/<character_id>.jsonl`. These are illustrative draft lines, NOT committed game text; Design agents read them when authoring per-NPC dialogue files in `data/dialogues/<npc_id>.json`. Every committed line still goes through the Taste Standard pass at JSON-authoring time.
 
-The `_legacy/archive/` JS prototype, the `_legacy/design/` folder, and `_legacy/dialogue_samples.txt` (superseded by `data/voice_references/`) are out-of-scope. Do not reference them; do not cite `design_bible.md` — its useful material has been ported into `style_canon.txt` and this file.
+The `_legacy/archive/` JS prototype, the `_legacy/design/` folder, and `_legacy/dialogue_samples.txt` (superseded by `data/voice_references/`) are out-of-scope. Do not reference them; do not cite `design_bible.md` — its useful material has been ported into active Godot governance/data and frozen reference files.
 
 ## Cast — canonical names
 
@@ -32,7 +59,8 @@ In narration, spec docs, code identifiers, JSON keys, autoload paths, and these 
 - **Whimsy** — *aplikant adwokacki*; rhetorical associate, deployed for courtroom flourish. Not "Wymysl". Late 20s.
 - **Asia** — front-desk secretary. Permanent office NPC, repeatable hint source.
 
-Other named NPCs are introduced per chapter; their names live in `../story.txt`.
+Other named NPCs are introduced per chapter in active chapter/dialogue data and
+approved proposals. If an older root reference disagrees, active Godot data wins.
 
 ## Address forms in dialogue
 
@@ -115,7 +143,7 @@ A line that passes 4 of 5 is rejected. Edge case: "Clear" can be relaxed for del
 - **No fake Latin.** No fourth-wall jokes about being a game. No modern internet voice ("yikes", "tbh", emoji). No sex jokes, scatological jokes, slurs.
 - **Real people forbidden.** Invent fictional analogues. Real Polish institutions named directly are permitted, never libelous.
 - **Asia tone**: warm, dry, practical. She is the front-desk secretary, not a lawyer. She softens player confusion without breaking immersion.
-- **Casebook UI register**: legal, not gamey. Use "Argument Strength" not "HP", "Legal Encounter" not "Battle", "Authority" not "Element". See `battle_mechanics.txt` §Player-facing terminology.
+- **Casebook UI register**: legal, not gamey. Use "Argument Strength" not "HP", "Legal Encounter" not "Battle", "Authority" not "Element". Active wording comes from this file, `PLAN.md`, `PROPOSALS.md`, and runtime UI data; `battle_mechanics.txt` is frozen reference only.
 
 ## File ownership table
 
@@ -150,7 +178,7 @@ Hard rule: agents only write files they own. To touch a file owned by another ro
 | `BUILD_NOTES.md` | QA | Append-only. |
 | `SPRINT_LOG.md` | All | Append-only. Every agent on completion. |
 | `CURATION_BOARD.md` | Human only | Live session tracker. Agents may read; agents do not edit. Read at the top of every multi-step task to see "Current Build State" and "Next Best Task". |
-| `../story.txt`, `../world.txt`, `../minigames.txt`, `../battle_mechanics.txt`, `../style_canon.txt` | Human only | Spec source-of-truth. Agents read; agents propose changes via artifacts; the human edits. |
+| `../story.txt`, `../world.txt`, `../minigames.txt`, `../battle_mechanics.txt`, `../style_canon.txt` | Human only | Frozen reference files. Agents may read for historical context, but these files are not authoritative over `PLAN.md`, `PROPOSALS.md`, `CONVENTIONS.md`, `data/`, or runtime behavior. |
 | `data/voice_references/<character_id>.jsonl` | Design (authoring) / Human (acceptance) | Voice-reference drafts per character. NOT committed game text. Read by Design when authoring `data/dialogues/<npc_id>.json`. |
 | `PLAN.md`, `AGENTS.md`, `MANAGING_AGENTS.md`, `.antigravity/skills/**`, `PROPOSALS.md` | Human only | Project governance. |
 
@@ -213,23 +241,28 @@ If any of these fail, the artifact is not done.
 2. Last 5 entries of `SPRINT_LOG.md`.
 3. `PLAN.md` §Vertical slice plan and §Out of scope.
 4. The role-specific Required Reading list in `.antigravity/skills/<role>.md`.
-5. The relevant section(s) of the five `.txt` source files (story, world, minigames, battle_mechanics, style_canon).
-6. Then the task.
+5. Active source/data files relevant to the task.
+6. Frozen root `.txt` reference only if active docs/data point there or the user explicitly asks.
+7. Then the task.
 
 ## Dispute escalation
 
 If two agents' artifacts disagree (e.g., Design wrote a dialogue branch that Code didn't gate), the next agent that notices files a `DISPUTE` artifact and stops. The Orchestrator (human) resolves before any further work. Do not silently reconcile.
 
+## Working Rules
+
+- No new `PROPOSAL_*.md` file may be opened while another is in DEVELOP. The exception is hostile-critique response plans, which are not proposals.
+
 ## Forbidden patterns
 
 - Editing `state.gd`, `casebook.gd`, `signals.gd`, or `Main.tscn` from outside the Code role.
-- Editing the five `.txt` source files at repo root (only the human edits these).
+- Editing the five frozen `.txt` reference files at repo root (only the human edits these).
 - Renaming any exported symbol or autoload path without a deprecation window.
 - Adding a runtime dependency (Godot plugin, addon) without human approval.
 - Building Chapter N+1 content while Chapter N is not yet shippable per `PLAN.md` §Vertical slice plan.
 - Inventing Polish legal doctrine that does not exist. Parody real procedure or halt.
 - Making Pig & Swine look actively corrupt or actively malicious.
-- Using game-y terminology in Casebook UI text ("HP", "monster", "type advantage", "level up"). Use the legal register from `battle_mechanics.txt`.
+- Using game-y terminology in Casebook UI text ("HP", "monster", "type advantage", "level up"). Use the legal register from active Godot governance, approved proposals, and runtime UI data.
 - Building wild-argument overworld encounters. Battles only in scripted court rounds and scripted advocate challenges.
 - Building Scooter Racing or Ski Slalom mini-games. Chapter 4 ships with travel-narrative cutscenes instead.
 - Treating the Final Printer as a mini-game. It is a Casebook battle in Chapter 5.

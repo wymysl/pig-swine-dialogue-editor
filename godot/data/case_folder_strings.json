@@ -30,5 +30,36 @@
     "save_completed": "Saved.",
     "save_failed_prefix": "Save failed:",
     "case_folder_acquired": "Press [%s] to open your case folder."
+  },
+  "save_reasons": {
+    "_doc": "Failure-reason text concatenated by save_status_toast.gd after status.save_failed_prefix. Keys are consumed by scripts/systems/save.gd.",
+    "state_unavailable": "State data is unavailable.",
+    "cannot_create_dir": "Cannot create the save directory.",
+    "cannot_open_write": "Cannot open the save file for writing.",
+    "cannot_open_read": "Cannot open the save file for reading.",
+    "corrupt_reset": "The save file is corrupt; progress was reset."
+  },
+  "binder": {
+    "_doc": "Motion Packet tab strings. Slot/remedy labels are canonical; banner strings are status-line copy.",
+    "slot_labels": {
+      "element_non_current_address": "Address non-current",
+      "element_landlord_knowledge": "Landlord knowledge",
+      "element_timely_actual_notice_motion": "Actual-notice window",
+      "element_no_third_party_cure": "No third-party authority"
+    },
+    "remedy_labels": {
+      "procedural_reset": "Procedural reset",
+      "merits_dismissal": "Merits dismissal",
+      "tenancy_ruling": "Tenancy ruling",
+      "dismissal_with_prejudice": "Dismissal with prejudice"
+    },
+    "banners": {
+      "need_min_elements": "Need at least %d required elements before filing.",
+      "packet_applied": "Packet applied: %d/%d elements, remedy '%s'.",
+      "evidence_does_not_support": "That evidence does not support %s.",
+      "empty_state_title": "No surfaced evidence yet",
+      "empty_state_body": "Surface evidence through dialogue and investigation, then return to the binder.",
+      "summary_pending": "Summary pending in evidence_ch1.json."
+    }
   }
 }

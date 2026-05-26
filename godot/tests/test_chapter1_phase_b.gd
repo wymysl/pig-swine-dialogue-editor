@@ -82,7 +82,8 @@ func _init() -> void:
 		state_node.data["chapter1"]["client_meeting_evidence"] = ""
 		state_node.data["chapter1"]["client_fee_agreed"] = false
 		state_node.data["chapter1"]["cardiologist_plant_landed"] = false
-		state_node.data["chapter1"]["halina_trust"] = 0
+		state_node.data["chapter1"]["halina_stance"] = ""
+		state_node.data["chapter1"]["incapacity_penalty"] = false
 		state_node.data["chapter1"]["halina_r0_done"] = false
 		state_node.data["chapter1"]["halina_r1_choice"] = ""
 		state_node.data["chapter1"]["halina_r1_done"] = false
@@ -231,33 +232,34 @@ func _init() -> void:
 		"blunt_procedural": "return_to_sender_slip",
 		"technical": "lease_1962_inheritance_1987",
 	}
-	var stance_to_trust: Dictionary = {
-		"sympathetic": 2,
-		"blunt_procedural": 0,
-		"technical": 1,
+	var stance_to_halina_stance: Dictionary = {
+		"sympathetic": "high",
+		"blunt_procedural": "blunt",
+		"technical": "technical",
 	}
 	var test_idx: int = 7
 	for stance in ["sympathetic", "blunt_procedural", "technical"]:
 		reset_ch1.call()
 		state_node.data["chapter1"]["halina_arrived"] = true
 		state_node.data["chapter1"]["client_meeting_stance"] = stance
-		state_node.data["chapter1"]["halina_trust"] = stance_to_trust[stance]
 		runner._on_dialogue_requested("halina", "Mrs. Sikorska")
 		sigs.dialogue_dismissed.emit()
 
 		var ch1: Dictionary = state_node.data["chapter1"]
 		var expected_evidence: String = stance_to_evidence[stance]
+		var expected_halina_stance: String = stance_to_halina_stance[stance]
 		var t_ok: bool = (
 			ch1["client_meeting_stance"] == stance
 			and ch1["halina_r0_done"] == true
 			and ch1["client_meeting_evidence"] == expected_evidence
+			and ch1["halina_stance"] == expected_halina_stance
 		)
 		if t_ok:
-			_pass("T%d: halina '%s' dispatch writes round-0 evidence=%s" % [test_idx, stance, expected_evidence])
+			_pass("T%d: halina '%s' dispatch writes round-0 evidence=%s halina_stance=%s" % [test_idx, stance, expected_evidence, expected_halina_stance])
 		else:
-			_fail("T%d: halina '%s' round-0 flag writes failed; ch1 state: stance=%s trust=%s r0_done=%s evidence=%s last_lines=%s" % [
+			_fail("T%d: halina '%s' round-0 flag writes failed; ch1 state: stance=%s halina_stance=%s r0_done=%s evidence=%s last_lines=%s" % [
 				test_idx, stance,
-				str(ch1["client_meeting_stance"]), str(ch1["halina_trust"]),
+				str(ch1["client_meeting_stance"]), str(ch1.get("halina_stance", "MISSING")),
 				str(ch1["halina_r0_done"]), str(ch1["client_meeting_evidence"]),
 				str(_line_capture[1])
 			])

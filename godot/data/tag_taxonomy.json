@@ -1,5 +1,5 @@
 {
-  "version": 2,
+  "version": 3,
   "_doc": "Closed taxonomy for the Casebook Battle System. Single source of truth for tags. Adding a tag requires a Code artifact and an update to scripts/systems/battle/effectiveness.gd's tag set assertions. Removing a tag is a save-migration concern. Chapter 1 working set only — Ch2+ tags are added when the first Ch2 encounter that consumes them lands. See critique 2026-05-19-design.md §F10 for the discipline rationale.",
   "_owner": "Code",
 
@@ -7,6 +7,8 @@
     "_doc": "Convention articles consumed by Chapter 1. Namespace: 'echr_<n>' or 'pl_const_<n>'. Ch2+ articles are added with the encounter that first references them.",
 
     "echr_6":      "Right to a fair trial",
+    "echr_8":      "Right to respect for private and family life, home, and correspondence",
+    "echr_10":     "Freedom of expression",
     "pl_const_45": "Right to a fair and public hearing"
   },
 
@@ -22,7 +24,13 @@
     "margin_of_appreciation":   "Domestic authorities have latitude within limits",
     "prescribed_by_law":        "Interference must have a basis in domestic law",
     "legitimate_aim":           "Interference must serve one of the listed aims",
-    "service_of_process":       "Notice and proper service (doręczenie zastępcze and analogues)"
+    "service_of_process":       "Notice and proper service (doręczenie zastępcze and analogues)",
+    "private_life":             "Respect for private and family life (Article 8 § 1 core right)",
+    "home_inviolability":       "Protection of the home as a Convention-protected space",
+    "expression":               "Freedom of expression and opinion (Article 10 § 1 core right)",
+    "press_freedom":            "Freedom of the press and journalistic watchdog function",
+    "chilling_effect":          "Deterrent effect of state action on future exercise of Convention rights",
+    "public_interest":          "Public interest as justification or defense in rights balancing"
   },
 
   "context_tags": {
@@ -34,15 +42,17 @@
     "housing":           "Tenancy, eviction, social housing",
     "service_failure":   "Defective notice, missed delivery, postal theatre",
     "documentary":       "Evidence is paper-bound; missing or mishandled documents",
-    "deadline":          "Time-limit pressure; calendars, KPC time periods"
+    "deadline":          "Time-limit pressure; calendars, KPC time periods",
+    "family":            "Family relationships, kinship ties, child welfare, household continuity",
+    "public_discourse":  "Public debate, journalism, media, academic and political expression"
   },
 
   "effectiveness_buckets": {
-    "_doc": "Five narrative buckets. Resolver in scripts/systems/battle/effectiveness.gd maps a numeric score to one of these.",
-    "super_effective":       { "score_min":  0.70, "score_max":  1.00, "label": "Directly responsive authority" },
-    "effective":             { "score_min":  0.40, "score_max":  0.6999, "label": "Relevant authority, imperfect fit" },
-    "not_very_effective":    { "score_min":  0.15, "score_max":  0.3999, "label": "Broadly legal but wrong principle" },
-    "no_effect":             { "score_min":  0.00, "score_max":  0.1499, "label": "Legally irrelevant" },
-    "backfires":             { "score_min": -1.00, "score_max": -0.0001, "label": "Argument lands on opponent's strength" }
+    "_doc": "Five narrative buckets. Resolver in scripts/systems/battle/effectiveness.gd maps a numeric score to one of these. Thresholds calibrated 2026-05-26 (Step 2.3) for normalized multi-tag judgments: 10-tag judgments produce per-tag weights ~0.09-0.10; dot products against 3-4 tag weak_to arrays peak ~0.25-0.35 (super_effective) and fall to ~0.015-0.04 for 1-2 tag overlaps.",
+    "super_effective":       { "score_min":  0.07,  "score_max":  1.00,   "label": "Directly responsive authority" },
+    "effective":             { "score_min":  0.04,  "score_max":  0.0699, "label": "Relevant authority, imperfect fit" },
+    "not_very_effective":    { "score_min":  0.015, "score_max":  0.0399, "label": "Broadly legal but wrong principle" },
+    "no_effect":             { "score_min":  0.00,  "score_max":  0.0149, "label": "Legally irrelevant" },
+    "backfires":             { "score_min": -1.00,  "score_max": -0.0001, "label": "Argument lands on opponent's strength" }
   }
 }

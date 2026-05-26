@@ -73,13 +73,11 @@ static func score(chapter1: Dictionary, frames: Dictionary, evidence: Dictionary
 	var has_incapacity: bool = selected_blunders.has("incapacity_defense")
 	var burns_round_attempt: bool = false
 	var patience_delta: int = 0
-	var trust_delta: int = 0
 	for frame_id in selected_blunders:
 		var frame: Dictionary = {}
 		if frames.get(frame_id, {}) is Dictionary:
 			frame = frames.get(frame_id, {})
 		patience_delta += int(frame.get("judicial_patience_delta_on_select", 0))
-		trust_delta += int(frame.get("halina_trust_delta_on_select", 0))
 		burns_round_attempt = burns_round_attempt or bool(frame.get("burns_round_attempt", false))
 
 	var support_patience_delta: int = 0
@@ -127,7 +125,6 @@ static func score(chapter1: Dictionary, frames: Dictionary, evidence: Dictionary
 		"reaction_template": _packet_reaction_template(selected_blunders),
 		"judicial_patience_delta": patience_delta,
 		"packet_support_patience_delta": support_patience_delta,
-		"halina_trust_delta": trust_delta,
 		"starting_judicial_patience": starting_patience,
 		"burns_round_attempt": burns_round_attempt,
 		"has_incapacity_blunder": has_incapacity,
@@ -280,7 +277,7 @@ static func _packet_recovery_source(chapter1: Dictionary, outcome: String, has_i
 		return "crab_rescue"
 	if bool(chapter1.get("recruited_whimsy", false)):
 		return "whimsy_rescue"
-	return "court_redirect"
+	return "bench_initiative"
 
 
 static func _minimum_required_elements(frames: Dictionary) -> int:

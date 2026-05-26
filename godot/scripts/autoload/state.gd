@@ -2,7 +2,7 @@ extends Node
 ## State autoload — single writer. Owns all persistent game state and save/load.
 ## Migration required for every shape change (see AGENTS.md §Save migration policy).
 
-const SAVE_VERSION: int = 22
+const SAVE_VERSION: int = 27
 
 const TILE_SIZE := 64
 const CHAR_HEIGHT := 64
@@ -37,6 +37,7 @@ func _ready() -> void:
 ##          halina_r1_choice, halina_r1_done, halina_r2_choice, halina_r2_done,
 ##          halina_close_done, landlord_tip_received — drive the Beat 8 trust-
 ##          tiered client meeting (see halina.json Session 29 restructure).
+##          halina_trust renamed in SAVE_VERSION 27 — see below.
 ## Dialogue once-states (SAVE_VERSION 12): top-level dialogue_states_seen — an
 ##          Array[String] of state ids that have fired once already. Populated
 ##          by dialogue_runner when a state declares "once": true. Subsequent
@@ -100,6 +101,52 @@ func _ready() -> void:
 ##          evidence item the player collected during the client meeting
 ##          (stance-dependent string enum). The old name was ambiguous — it
 ##          described acquisition, not the item's narrative role.
+## Phase 2 citation persistence (SAVE_VERSION 23): chapter1.phase2_round_results
+##          (Array) stores per-citation effectiveness results during Phase 2
+##          court rounds. court_outcome is no longer written by
+##          consume_assembled_packet(); the dispositive outcome is computed at
+##          end-of-round-3 via _compute_court_outcome().
+## Judgment pickups (SAVE_VERSION 24): chapter1.picked_up_article_8 and
+##          chapter1.picked_up_article_10 (bool, default false). Written by
+##          the overworld pickup interactables in cafe_paragraf.tscn and
+##          archive_room.tscn respectively. The Casebook conditions gates in
+##          judgments.json key on these flags to include home_and_family_ch8
+##          and expression_and_press_ch10 in get_collected_judgments().
+## halina_trust rename (SAVE_VERSION 27): chapter1.halina_trust (int) replaced
+##          by halina_stance (String enum: "high"/"blunt"/"technical"/"") and
+##          incapacity_penalty (bool). halina_stance is set by the r0-response
+##          on_dismiss in halina.json at the end of the intro round; it is the
+##          dispositive gate for the Beat 8 landlord-intimidation reveal and for
+##          the Beat 8 high-trust dialogue tiers. incapacity_penalty is written
+##          by battle_controller when the incapacity_defense blunder is filed.
+##          The integer never lived in interesting territory: the trust ≥ 5
+##          threshold required the sympathetic opener plus consistent warm
+##          follow-up choices — effectively identical to the opening stance alone.
+##          Migration: ≥ 5 → "high", 0–4 → "blunt", negative → "blunt" +
+##          incapacity_penalty = true. (design plan 2026-05-26 Step 5.3.)
+## Murrow rehearsal (SAVE_VERSION 26): chapter1.rehearsal_accepted (bool,
+##          default false) is written by murrow_rehearsal_accepted's on_dismiss
+##          to signal game orchestration that the player opted in. Cleared to
+##          false once the rehearsal scene starts (edge-triggered, not persistent).
+##          chapter1.rehearsal_complete (bool, default false) is written by
+##          battle_controller.end_rehearsal() and persists so the offer does
+##          not repeat. chapter1.rehearsal_declined (bool, default false) is
+##          written by murrow_rehearsal_skip's on_dismiss; silences the offer
+##          and the debrief without setting rehearsal_complete, so the debrief
+##          state can gate on rehearsal_complete && !rehearsal_declined.
+##          Design plan 2026-05-26 Step 4.1 (Phase 4 verb-teaching rehearsal).
+## Beat 13 close (SAVE_VERSION 25): chapter1.client_fee_collected (bool,
+##          default false) records the 5,000 PLN Sikorska fee that Mr. Pig
+##          announces during the Beat-13 celebration. Referenced by story.txt
+##          §Beat 13 and the celebration script in pig.json. Set on dismiss
+##          of pig.json::pig_b13_celebration.
+##          chapter1.pig_court_win_acknowledged (bool, default false)
+##          sequences the Beat-13 close: Pig's celebration sets it, and the
+##          coffee_machine_ch1.json env-beat triggers on it being true. This
+##          guarantees the ominous-machine line lands AFTER Pig has spoken,
+##          not before. Unblocks promotion of two PENDING drafts that have
+##          been waiting for the flag declaration since 2026-05-14 and
+##          2026-05-17.
 func reset_state() -> Dictionary:
 	return {
 		## room_transition.gd: which scene is currently loaded.
@@ -143,11 +190,17 @@ func reset_state() -> Dictionary:
 			"client_meeting_evidence": "",
 			"cardiologist_plant_landed": false,
 			"client_fee_agreed": false,
-			## Halina trust meter (SAVE_VERSION 11). halina_trust accumulates from
-			## trust_delta values on each options.choices entry during the meeting.
-			## halina_rN_choice guards re-fire during chain; halina_rN_done gates the
-			## next round. landlord_tip_received gates the post-close reveal state.
-			"halina_trust": 0,
+			## Halina stance + incapacity penalty (SAVE_VERSION 27). halina_stance is
+			## set in the Beat 8 r0-response on_dismiss (halina.json); enum:
+			## "high" (sympathetic opener) / "blunt" (blunt_procedural) /
+			## "technical" / "" (unset). incapacity_penalty is written by
+			## battle_controller when incapacity_defense is filed. Together they
+			## replace the old halina_trust integer (SAVE_VERSION 11).
+			## halina_rN_choice guards re-fire during chain; halina_rN_done gates
+			## the next round. landlord_tip_received gates the post-close reveal.
+			"halina_stance": "",
+			"incapacity_penalty": false,
+			"incapacity_reflection_seen": false,
 			"halina_r0_done": false,
 			"halina_r1_choice": "",
 			"halina_r1_done": false,
@@ -171,6 +224,13 @@ func reset_state() -> Dictionary:
 			## PROPOSAL_coffee_engine_followups.md §1.
 			"coffee_retry_decision": "",
 			## Beat 13-14 payoff + postcard.
+			## client_fee_collected — set true when Pig's celebration
+			## acknowledges the Sikorska fee. Story.txt Beat 13 anchor.
+			## pig_court_win_acknowledged — sequencing flag: Pig's
+			## celebration writes it; coffee_machine_ch1.json env-beat
+			## triggers on it. Both default false; declared SAVE_VERSION 25.
+			"client_fee_collected": false,
+			"pig_court_win_acknowledged": false,
 			"beat13_complete": false,
 			"received_swine_postcard": false,
 			"postcard_asia_announced": false,
@@ -245,6 +305,30 @@ func reset_state() -> Dictionary:
 			## initialisation happens at Phase 1 start). Owner: future
 			## battle_controller.gd Phase 1 sub-controller.
 			"witness_cooperation": 0,
+			## phase2_round_results — Array of Dictionaries recording each
+			## Phase 2 citation's effectiveness result. Each entry:
+			## { round: int, citation_id: String,
+			##   evidence_id: String, evidence_available: bool,
+			##   effectiveness_bucket: String, opponent_move: String }.
+			## Written by battle_controller._append_phase2_result(); consumed
+			## by _compute_court_outcome() at end-of-round-3.
+			"phase2_round_results": [],
+			## Judgment pickups (SAVE_VERSION 24). Set true by pickup
+			## interactables in cafe_paragraf.tscn and archive_room.tscn.
+			## Gate the corresponding Casebook conditions in judgments.json.
+			"picked_up_article_8": false,
+			"picked_up_article_10": false,
+			## Murrow rehearsal (SAVE_VERSION 26). rehearsal_accepted is an
+			## edge-trigger: murrow_rehearsal_accepted on_dismiss writes it true;
+			## the orchestration layer clears it on scene entry. rehearsal_complete
+			## is written by battle_controller.end_rehearsal(); persists so the
+			## rehearsal offer does not repeat. rehearsal_declined is written by
+			## murrow_rehearsal_skip on_dismiss; silences the offer and the debrief
+			## state without touching rehearsal_complete (so debrief can gate on
+			## rehearsal_complete && !rehearsal_declined).
+			"rehearsal_accepted": false,
+			"rehearsal_complete": false,
+			"rehearsal_declined": false,
 		},
 		## Badges awarded across the game. Keys declared at reset; value is
 		## flipped true by DialogueRunner award_badge actions. Unknown keys
