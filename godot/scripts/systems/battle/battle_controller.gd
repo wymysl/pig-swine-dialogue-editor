@@ -513,7 +513,10 @@ func consume_assembled_packet() -> Dictionary:
 	if bool(score.get("crab_support_withdrawn", false)):
 		_write_chapter1_flag("recruited_crab", false)
 
-	_write_chapter1_flag("court_outcome", str(score.get("outcome", OUTCOME_BLUNDER_RECOVERED)))
+	## court_outcome is NOT written here. Packet completeness alone cannot
+	## determine the outcome — Phase 2 citation quality matters. The
+	## dispositive outcome is computed by _compute_court_outcome() at
+	## end-of-round-3. See Step 1.1 of the 2026-05-26 design plan.
 	_packet_submission_applied = true
 	_packet_submission_result = score.duplicate(true)
 	return _packet_submission_result.duplicate(true)
