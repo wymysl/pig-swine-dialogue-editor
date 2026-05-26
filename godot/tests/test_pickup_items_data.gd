@@ -99,12 +99,12 @@ func _init() -> void:
 	_interact_with(bonus)
 	await process_frame
 
-	if state_node.data["chapter1"]["bonus_evidence_collected"] == "return_to_sender_slip":
+	if state_node.data["chapter1"]["client_meeting_evidence"] == "return_to_sender_slip":
 		_pass("T5: string state flag writes item_id for bonus evidence")
 	else:
-		_fail("T5: expected return_to_sender_slip, got '%s'" % state_node.data["chapter1"]["bonus_evidence_collected"])
+		_fail("T5: expected return_to_sender_slip, got '%s'" % state_node.data["chapter1"]["client_meeting_evidence"])
 
-	if _has_flag_change("bonus_evidence_collected", "return_to_sender_slip"):
+	if _has_flag_change("client_meeting_evidence", "return_to_sender_slip"):
 		_pass("T6: string pickup emits chapter1_flag_changed with item_id")
 	else:
 		_fail("T6: missing chapter1_flag_changed for bonus evidence")

@@ -67,12 +67,13 @@
         {
             "id": "after_binder_first_engagement",
             "trigger": "chapter1.met_crab == true && chapter1.has_law_binder == true && !chapter1.recruited_crab",
-            "_comment": "v4 late-binder path. Cula already met Crab pre-binder (before_binder fired and set met_crab + element_no_third_party_cure); this state is the work hand-off. Same facts, no Article, chain:true on the state itself fires the post-packet beat. on_dismiss covers the binder reads and the remaining three element bools.",
+            "_comment": "v4 late-binder path. Cula already met Crab pre-binder (before_binder fired and set met_crab + element_no_third_party_cure); this state is the work hand-off. Same facts, no Article, chain:true on the state itself fires the post-packet beat. on_dismiss covers the binder reads and the remaining three element bools. **2026-05-25 critique F1:** verbless date-list ('Envelope: ... Renewal: ... Renumbering: ...') rebuilt as canonical Crab observation-then-implication pairs. The countersigned-2019 renewal is now coupled to the address-disappearance fact rather than recited alongside it.",
             "lines": [
                 {"speaker": "cula", "text": "Crab. I have the binder."},
                 "Heard. Hand it here.",
-                "Envelope: number seven, eighth of April. Renewal: number twelve, two thousand and nineteen, countersigned. Renumbering: two thousand and fifteen.",
-                "Notice receipt the twenty-eighth. Mrs. Sikorska keeps receipts.",
+                "Renumbering was 2015. The notice was sent to a building that stopped being number seven eleven years ago. That is not service.",
+                "The landlord countersigned for the renewal at number twelve in 2019. He knew the number; he sent the writ to the old one anyway. That is postal theatre.",
+                "Notice receipt the twenty-eighth. The current resident at number seven walked it down. Mrs. Sikorska keeps receipts; that helps.",
                 "Three problems, one notice, one Friday. I will take the post. You take the drafting."
             ],
             "on_dismiss": [
@@ -98,6 +99,61 @@
                 "Drafting takes an afternoon. The walking takes Friday. Find me before fourteen hundred if anything in the binder reads wrong."
             ],
             "once": true
+        },
+        {
+            "id": "crab_b5_dwell_options",
+            "trigger": "chapter1.met_crab == true && !chapter1.recruited_crab && chapter1.state_choice == ''",
+            "_comment": "**2026-05-25 fan-out (F4/F5):** Beat 5 dwell-prompt picker for Crab. Scaffolded from cula.json::cula_b5_crab_dwell_options. Address form 'Crab' (post-introduction, peer-to-peer). State-level speaker:'cula'; options chain to reply states. Trigger preserves cula.json's gate (post-met, pre-recruit) — note: this window only opens if the player visited Crab pre-binder via the before_binder path. If Piotr wants dwells to fire post-recruit as well, change the trigger to gate on chapter1.recruited_crab == true.",
+            "speaker": "cula",
+            "lines": ["[Crab is reading; the binder is between you. One more question before the case takes over.]"],
+            "options": {
+                "write_path": "chapter1.state_choice",
+                "chain": true,
+                "choices": [
+                    {"text": "Crab. Before we start: what's the shape of your background?", "value": "cula_b5_crab_dwell_background"},
+                    {"text": "Why Pig & Swine? You could have gone somewhere with a working printer.", "value": "cula_b5_crab_dwell_why_here"},
+                    {"text": "You've seen the binder pages. Any opinion on the case before I waste your afternoon?", "value": "cula_b5_crab_dwell_case_opinion"}
+                ]
+            }
+        },
+        {
+            "id": "crab_b5_dwell_background_reply",
+            "trigger": "chapter1.state_choice == 'cula_b5_crab_dwell_background'",
+            "_comment": "**2026-05-25 fan-out:** Beat 5 dwell — *What's your background?* Per cula.json _comment: 'short, peer-to-peer (same generation per cast canon). No flourish.' Cula's prompt + TODO for Crab's reply (Piotr to author).",
+            "lines": [
+                {"speaker": "cula", "text": "Crab. Before we start: what's the shape of your background?"},
+                "[TODO 2026-05-25: Piotr to author Crab's reply. Voice: terse, plain concrete nouns, two-sentence rhythm (observation + implication). Peer-to-peer register; same career stage as Cula minus the doctorate. Surfaces one biographical fact and one implication for how he reads cases.]"
+            ],
+            "once": true,
+            "on_dismiss": [
+                {"set": "chapter1.state_choice", "value": ""}
+            ]
+        },
+        {
+            "id": "crab_b5_dwell_why_here_reply",
+            "trigger": "chapter1.state_choice == 'cula_b5_crab_dwell_why_here'",
+            "_comment": "**2026-05-25 fan-out:** Beat 5 dwell — *Why are you at Pig & Swine?* Per cula.json _comment: 'direct without being inquisitorial; Crab's reply per beat sheet is brief and unsentimental.' Cula's prompt + TODO for Crab's reply (Piotr to author).",
+            "lines": [
+                {"speaker": "cula", "text": "Why Pig & Swine? You could have gone somewhere with a working printer."},
+                "[TODO 2026-05-25: Piotr to author Crab's reply. Voice: brief, unsentimental, leverage-aware. One reason without sentiment; the printer joke is the player's, not Crab's, so Crab does not return the gag. Possible angle: the firm's clients are the ones who get bad notices, and that is where the procedural work is.]"
+            ],
+            "once": true,
+            "on_dismiss": [
+                {"set": "chapter1.state_choice", "value": ""}
+            ]
+        },
+        {
+            "id": "crab_b5_dwell_case_opinion_reply",
+            "trigger": "chapter1.state_choice == 'cula_b5_crab_dwell_case_opinion'",
+            "_comment": "**2026-05-25 fan-out:** Beat 5 dwell — *Do you have any opinion on the case?* Per cula.json _comment: 'invites procedural observation without prompting an opinion on the client; Crab's reply is leverage-aware, structural.' Cula's prompt + TODO for Crab's reply (Piotr to author).",
+            "lines": [
+                {"speaker": "cula", "text": "You've seen the binder pages. Any opinion on the case before I waste your afternoon?"},
+                "[TODO 2026-05-25: Piotr to author Crab's reply. Voice: structural, two-sentence rhythm. Identifies one piece of leverage in the binder (the renumbering, the countersignature, the resident at #7). Does not editorialize on the client. Sets up Crab's post-packet 'three problems, one notice, one Friday' framing.]"
+            ],
+            "once": true,
+            "on_dismiss": [
+                {"set": "chapter1.state_choice", "value": ""}
+            ]
         },
         {
             "id": "crab_property_transfer_offer",
@@ -182,6 +238,16 @@
             "trigger": "chapter1.recruited_crab == true && chapter1.archive_research_complete == true && !chapter1.court_ready && !chapter1.entered_court",
             "_comment": "Quiet approval beat between archive research and the readiness check. 'Not beautiful but standing in the right order' is the anti-reassurance calibration anchor — it is a fact, not comfort. Bare 'Cula' per AGENTS.md.",
             "lines": ["Cula. The facts are not beautiful. They are standing in the right order. That is what we needed before fourteen hundred."]
+        },
+        {
+            "id": "crab_b13_response",
+            "trigger": "chapter1.court_won_procedural_reset == true && !chapter1.beat13_complete",
+            "_comment": "**2026-05-25 fan-out (F4/F5):** Beat 13 post-victory exchange with Crab, paired with cula.json::cula_b13_crab_response. Per Crab bible: 'pretends not to be impressed' — professional indifference made visible. Cula's reply ('The address argument carried it, Crab. Most of the round was your reading.') is inlined; Crab's lead-in is the TODO Piotr authors. Ordered before after_engagement so b13 wins over the catch-all.",
+            "lines": [
+                "[TODO 2026-05-25: Piotr to author Crab's b13 lead-in. Voice: pretends-not-to-be-impressed register per Crab bible. One short observation that registers the win without flattering counsel. Possible angle: a procedural note about what the bench actually did, dry-collegial.]",
+                {"speaker": "cula", "text": "The address argument carried it, Crab. Most of the round was your reading."}
+            ],
+            "once": true
         },
         {
             "id": "after_engagement",

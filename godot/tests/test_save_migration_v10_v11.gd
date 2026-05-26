@@ -45,7 +45,7 @@ func _init() -> void:
 		"chapter1": {
 			"halina_met": true,
 			"client_meeting_stance": "sympathetic",
-			"bonus_evidence_collected": "wojcik_witness_statement",
+			"client_meeting_evidence": "wojcik_witness_statement",  ## key renamed v22
 			"cardiologist_plant_landed": true,
 			"client_fee_agreed": true,
 			"coffee_buff": "procedurally_alert",

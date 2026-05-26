@@ -121,7 +121,7 @@ func _is_already_collected() -> bool:
 	if current_value is bool:
 		return current_value
 	if current_value is String:
-		return current_value != "" and (current_value == item_id or state_flag_path == "chapter1.bonus_evidence_collected")
+		return current_value != "" and (current_value == item_id or state_flag_path == "chapter1.client_meeting_evidence")
 	return false
 
 

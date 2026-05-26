@@ -51,6 +51,10 @@ extends Node
 ##   20 — Blue Folder foundation:
 ##         chapter1.has_case_folder, top-level case_folder{}, inventory{},
 ##         and active_case_id
+##   21 — postcard Cula reaction:
+##         chapter1.cula_postcard_reaction_shown (bool)
+##   22 — rename bonus_evidence_collected → client_meeting_evidence:
+##         same string-enum semantics, clearer name
 
 const SAVE_PATH: String = "user://save.json"
 
@@ -219,7 +223,7 @@ func migrate_save(saved_data: Dictionary, old_version: int) -> Dictionary:
 			"halina_met": false,
 			"halina_arrived": false,
 			"client_meeting_stance": "",
-			"bonus_evidence_collected": "",
+			"client_meeting_evidence": "",
 			"cardiologist_plant_landed": false,
 			"client_fee_agreed": false,
 			"archive_research_complete": false,
@@ -492,4 +496,19 @@ func migrate_save(saved_data: Dictionary, old_version: int) -> Dictionary:
 			var ch1_v21: Dictionary = saved_data["chapter1"]
 			if not ch1_v21.has("cula_postcard_reaction_shown"):
 				ch1_v21["cula_postcard_reaction_shown"] = false
+
+	## v21 -> v22: 2026-05-26 design-plan Phase 0 Step 0.2. Rename
+	## chapter1.bonus_evidence_collected → chapter1.client_meeting_evidence.
+	## The flag records which bonus evidence item the player collected during
+	## the client meeting. Old name described acquisition; new name reflects
+	## narrative role (the item comes from the client meeting, not from some
+	## generic bonus-collection mechanic).
+	if old_version < 22:
+		if saved_data.has("chapter1") and saved_data["chapter1"] is Dictionary:
+			var ch1_v22: Dictionary = saved_data["chapter1"]
+			if ch1_v22.has("bonus_evidence_collected"):
+				ch1_v22["client_meeting_evidence"] = ch1_v22["bonus_evidence_collected"]
+				ch1_v22.erase("bonus_evidence_collected")
+			elif not ch1_v22.has("client_meeting_evidence"):
+				ch1_v22["client_meeting_evidence"] = ""
 	return saved_data

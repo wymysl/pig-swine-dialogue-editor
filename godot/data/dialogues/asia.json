@@ -80,6 +80,7 @@
             "_comment": "Beat 2 — Core first-meeting block, fires after any greeting variant via chain. Load-bearing 'today is calmer than usual' plant embedded here (chapter_1.md §Beat 2 E-tag: 'her answer should imply that today is calmer than usual, planting the firm's chronic state for chapter-5 retraversal'). Blue-folder and archive orientation = domestic-admin translation of the quest hand-off. Taste Standard: Laugh (pending-miracle label), Clever (real office triage logic), Alive (specific Tuesday morning), Clear (go to Pig / get binder / find Murrow), Future-proof (calmer-than-usual recolors at Ch5). Two jokes: pending-miracle label + 'only drawer that has been closed today'. Dwell options follow via options block with chain:true. Sets met_asia on dismiss.",
             "tags": ["beat2", "first_meeting", "calmer_than_usual_plant"],
             "lines": [
+                {"speaker": "cula", "text": "I see you have all three in motion. I will start with reception."},
                 {"speaker": "asia", "text": "Mr. Pig mentioned you'd be starting today. He mentioned it several times, actually."},
                 {"speaker": "cula", "text": "Is it always this busy?"},
                 {"speaker": "asia", "text": "Today is calmer than usual. I have only filed one thing under 'pending miracle' so far."},
@@ -172,7 +173,8 @@
                 "She does not look up. She is moving a pile of folders from one side of the desk to the other.",
                 {"speaker": "asia", "text": "We are solvent enough to continue scheduling tomorrow. I've put the Sikorska file in the closed-cases drawer, which I should point out is the only drawer that has been closed today."},
                 {"speaker": "cula", "text": "Thank you."},
-                {"speaker": "asia", "text": "Go find Mr. Pig. He's celebrating in a way that is producing paperwork."}
+                {"speaker": "asia", "text": "Go find Mr. Pig. He's celebrating in a way that is producing paperwork."},
+                {"speaker": "cula", "text": "Thanks, Asia. Whatever you are sorting, please do not let me add to the pile until tomorrow."}
             ],
             "options": {
                 "write_path": "chapter1.state_choice",

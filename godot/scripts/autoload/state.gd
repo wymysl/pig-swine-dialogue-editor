@@ -2,7 +2,7 @@ extends Node
 ## State autoload — single writer. Owns all persistent game state and save/load.
 ## Migration required for every shape change (see AGENTS.md §Save migration policy).
 
-const SAVE_VERSION: int = 21
+const SAVE_VERSION: int = 22
 
 const TILE_SIZE := 64
 const CHAR_HEIGHT := 64
@@ -94,6 +94,12 @@ func _ready() -> void:
 ##          across save/load before court.
 ## Blue Folder foundation (SAVE_VERSION 20): chapter1.has_case_folder,
 ##          top-level case_folder{}, inventory{}, and active_case_id.
+## Postcard Cula reaction (SAVE_VERSION 21): chapter1.cula_postcard_reaction_shown.
+## Rename bonus_evidence_collected (SAVE_VERSION 22): renamed to
+##          client_meeting_evidence throughout. The flag records which bonus
+##          evidence item the player collected during the client meeting
+##          (stance-dependent string enum). The old name was ambiguous — it
+##          described acquisition, not the item's narrative role.
 func reset_state() -> Dictionary:
 	return {
 		## room_transition.gd: which scene is currently loaded.
@@ -134,7 +140,7 @@ func reset_state() -> Dictionary:
 			"halina_met": false,
 			"halina_arrived": false,
 			"client_meeting_stance": "",
-			"bonus_evidence_collected": "",
+			"client_meeting_evidence": "",
 			"cardiologist_plant_landed": false,
 			"client_fee_agreed": false,
 			## Halina trust meter (SAVE_VERSION 11). halina_trust accumulates from

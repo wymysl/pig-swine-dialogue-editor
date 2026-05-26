@@ -10,7 +10,7 @@
     "chapter1.binder_read_renumbering",
     "chapter1.halina_met",
     "chapter1.halina_close_done",
-    "chapter1.bonus_evidence_collected",
+    "chapter1.client_meeting_evidence",
     "chapter1.client_meeting_stance",
     "chapter1.entered_court",
     "chapter1.court_outcome",
@@ -176,7 +176,7 @@
     },
     {
       "id": "crab_b8_client_meeting_base",
-      "trigger": "chapter1.recruited_crab == true && chapter1.halina_met == true && !chapter1.halina_close_done && !chapter1.entered_court && !chapter1.bonus_evidence_collected",
+      "trigger": "chapter1.recruited_crab == true && chapter1.halina_met == true && !chapter1.halina_close_done && !chapter1.entered_court && !chapter1.client_meeting_evidence",
       "_comment": "Beat 8 — client meeting, no bonus evidence collected yet. Scenting-leverage-professional register throughout. Crab engages with the structural features of the case as Halina presents documents, not with Halina as a person. Lines stay technical in front of the client per voice agent rule. One or two reaction lines tied to evidence Halina presents. The return-to-sender slip engages him most.",
       "lines": [
         "The tenancy agreement is continuous from 1987. The original lease has the father's name; the inheritance paperwork transfers it to Mrs. Sikorska. The chain is clean.",
@@ -216,7 +216,7 @@
     },
     {
       "id": "crab_b12_round1_no_bonus",
-      "trigger": "chapter1.entered_court == true && !chapter1.court_won_procedural_reset && !chapter1.bonus_evidence_collected",
+      "trigger": "chapter1.entered_court == true && !chapter1.court_won_procedural_reset && !chapter1.client_meeting_evidence",
       "_comment": "Beat 12 — Round 1, defective service argument, no bonus evidence. Crab's evidence carries the round per beat sheet. Argument tag: notice_defect. In court: no colloquial gear-shift per voice agent rule. Short technical fact-stacks. 'Three problems. One notice. One Friday.' shape from calibration anchors.",
       "lines": [
         "The address on the notice is the pre-renumbering number. The building has carried the current number since 2015. The landlord's renewal paperwork, countersigned, uses the current number. Service went to an address the landlord's own records do not recognize as current.",
@@ -225,7 +225,7 @@
     },
     {
       "id": "crab_b12_round1_bonus_sympathetic",
-      "trigger": "chapter1.entered_court == true && !chapter1.court_won_procedural_reset && chapter1.bonus_evidence_collected == 'wojcik_witness' && chapter1.client_meeting_stance == 'sympathetic'",
+      "trigger": "chapter1.entered_court == true && !chapter1.court_won_procedural_reset && chapter1.client_meeting_evidence == 'wojcik_witness' && chapter1.client_meeting_stance == 'sympathetic'",
       "_comment": "Beat 12 — Round 1, sympathetic bonus (Wojcik). Beat sheet: 'provides character-witness texture; produces a stronger judge reaction.' Crab adds the Wojcik statement as corroboration of the address history. In court: all-technical register, no gear-shift. Judge reaction is stronger per beat sheet note.",
       "lines": [
         "The address on the notice is the pre-renumbering number. The building has carried the current number since 2015. The landlord's own renewal, countersigned, uses the current number.",
@@ -235,7 +235,7 @@
     },
     {
       "id": "crab_b12_round1_bonus_blunt_procedural",
-      "trigger": "chapter1.entered_court == true && !chapter1.court_won_procedural_reset && chapter1.bonus_evidence_collected == 'return_to_sender_slip' && chapter1.client_meeting_stance == 'blunt_procedural'",
+      "trigger": "chapter1.entered_court == true && !chapter1.court_won_procedural_reset && chapter1.client_meeting_evidence == 'return_to_sender_slip' && chapter1.client_meeting_stance == 'blunt_procedural'",
       "_comment": "Beat 12 — Round 1, blunt-procedural bonus (return-to-sender slip). Beat sheet: 'provides knockout-style proof-of-knowledge; produces the strongest argument shape; landlord knowledge becomes irrefutable.' Crab presents this as the closing point of the Round 1 argument. All-technical court register. This is the strongest Round 1 shape per beat sheet.",
       "lines": [
         "The address on the notice is the pre-renumbering number. The building has carried the current number since 2015.",
@@ -245,7 +245,7 @@
     },
     {
       "id": "crab_b12_round1_bonus_technical",
-      "trigger": "chapter1.entered_court == true && !chapter1.court_won_procedural_reset && chapter1.bonus_evidence_collected == 'lease_inheritance' && chapter1.client_meeting_stance == 'technical'",
+      "trigger": "chapter1.entered_court == true && !chapter1.court_won_procedural_reset && chapter1.client_meeting_evidence == 'lease_inheritance' && chapter1.client_meeting_stance == 'technical'",
       "_comment": "Beat 12 — Round 1, technical bonus. Beat sheet: 'Technical bonus held for Round 3.' So in Round 1 Crab's core argument runs without that bonus. This state signals the evidence is present but notes its proper home. In court, Crab's Round 1 lines are the same core argument — bonus evidence does not change Round 1 for technical stance.",
       "lines": [
         "The address on the notice is the pre-renumbering number. The building has carried the current number since 2015. The landlord's renewal, countersigned, uses the current number. Service went to an address the landlord's own records do not recognize.",

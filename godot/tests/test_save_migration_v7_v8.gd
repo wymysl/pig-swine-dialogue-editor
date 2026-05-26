@@ -117,7 +117,7 @@ func _init() -> void:
 	## -----------------------------------------------------------------------
 	var new_str_flags: Array = [
 		"client_meeting_stance",
-		"bonus_evidence_collected",
+		"client_meeting_evidence",  ## was bonus_evidence_collected; renamed in v22
 		"casebook_judge_state",
 	]
 	var str_ok: bool = true

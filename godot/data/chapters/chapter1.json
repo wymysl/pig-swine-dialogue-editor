@@ -31,7 +31,7 @@
     { "key": "chapter1.halina_met", "default": false, "set_by": "halina.json client_meeting_<stance>" },
     { "key": "chapter1.halina_arrived", "default": false, "set_by": "engine — Beat 7 close, meeting-room entry trigger gate" },
     { "key": "chapter1.client_meeting_stance", "default": "", "_enum": ["sympathetic", "blunt_procedural", "technical"], "set_by": "Beat 7 stance-pick UI (B.1)" },
-    { "key": "chapter1.bonus_evidence_collected", "default": "", "_enum": ["wojcik_witness_statement", "return_to_sender_slip", "lease_1962_inheritance_1987", "landlord_contact"], "set_by": "halina.json client_meeting_<stance> on_dismiss / client_meeting_r2_response_high on_dismiss (trust≥5 reveal path)" },
+    { "key": "chapter1.client_meeting_evidence", "default": "", "_enum": ["wojcik_witness_statement", "return_to_sender_slip", "lease_1962_inheritance_1987", "landlord_contact"], "set_by": "halina.json client_meeting_<stance> on_dismiss / client_meeting_r2_response_high on_dismiss (trust≥5 reveal path)" },
     { "key": "chapter1.cardiologist_plant_landed", "default": false, "set_by": "halina.json client_meeting_<stance> on_dismiss" },
     { "key": "chapter1.client_fee_agreed", "default": false, "set_by": "halina.json client_meeting_<stance> on_dismiss" },
 

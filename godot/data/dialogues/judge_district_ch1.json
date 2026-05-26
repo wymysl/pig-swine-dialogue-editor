@@ -23,22 +23,22 @@
         {
             "id": "judge_b12_round1_open",
             "trigger": "chapter1.casebook_judge_state == 'round_1_open'",
-            "_comment": "Round 1 bench prompt. Single line; fires before the player's Round 1 argument. No stance variation here — the prompt is the same regardless of carrier. Register: procedural, dry. Judge announces the round's issue: service.",
-            "lines": ["Counsel for the petitioner. The first question is service."],
+            "_comment": "Round 1 bench prompt. Single line; fires before the player's Round 1 argument. No stance variation here — the prompt is the same regardless of carrier. Register: procedural, dry. Judge announces the round's issue: service. **2026-05-25 critique F7:** numbered-template opener ('First question. ...') replaced with a bench-habit moment — the court signals it has read the moving papers and would prefer counsel skip the recital. The implication is a tired-correction register, consistent with §6 dry-surprise templates.",
+            "lines": ["Counsel for the petitioner. The first question is service. The court has the moving papers; counsel may presume the obvious facts have been registered and address the defect itself."],
             "tags": ["beat12", "court", "round_1", "bench_prompt"]
         },
         {
             "id": "judge_b12_react_r1_blunt_procedural",
             "trigger": "chapter1.casebook_judge_state == 'round_1_react' && chapter1.client_meeting_stance == 'blunt_procedural'",
-            "_comment": "Round 1 reaction — blunt-procedural carrier. Bonus evidence: return-to-sender slip proves prior landlord knowledge of the bad address. Strongest reaction. 'Knowledge is not in serious dispute' is the canonical formulation (V1.6). Dry-humor line: 'The court has seen many excuses. It has also seen real procedural defects.' Bench notes this one is the latter category. No warmth; measured acknowledgement only. Adult-occupant (third-clause) point preserved for Round 2.",
-            "lines": ["Counsel. The renumbering, the prior return, and the countersignature are before the court. The court has seen many excuses. It has also seen real procedural defects. This is the latter.", "Knowledge is not in serious dispute. The adult-occupant point is preserved for the second question."],
+            "_comment": "Round 1 reaction — blunt-procedural carrier. Bonus evidence: return-to-sender slip proves prior landlord knowledge of the bad address. Strongest reaction. 'Knowledge is not in serious dispute' is the canonical formulation (V1.6). **2026-05-25 critique F8:** dry-surprise template ('against several expectations on a Friday afternoon') lifted out of the strong-only remedy state so the standard-path player hears the bench's comic register at the load-bearing Round 1 reaction. No warmth; the surprise is in the bench registering competence where it expected boilerplate. Adult-occupant (third-clause) point preserved for Round 2.",
+            "lines": ["Counsel. The renumbering, the prior return, and the countersignature are before the court. Against several expectations on a Friday afternoon, this is a procedural defect rather than an excuse.", "Knowledge is not in serious dispute. The adult-occupant point is preserved for the second question."],
             "tags": ["beat12", "court", "round_1", "dry_surprise", "blunt_procedural_carrier"]
         },
         {
             "id": "judge_b12_react_r1_sympathetic",
             "trigger": "chapter1.casebook_judge_state == 'round_1_react' && chapter1.client_meeting_stance == 'sympathetic'",
-            "_comment": "Round 1 reaction — sympathetic carrier. Bonus evidence: Wójcik affidavit (continuous-residency witness). Secondary reaction strength: affidavit adds texture but service defect stands on documents alone. Bench notes the affidavit, does not belabour it. Single dry-acknowledgement line. Adult-occupant point preserved for Round 2.",
-            "lines": ["Counsel. The affidavit is noted. The renumbering is sufficient on the documents for the service question; the witness statement is supplementary and the court has placed it in the record.", "The respondent may address the third clause."],
+            "_comment": "Round 1 reaction — sympathetic carrier. Bonus evidence: Wójcik affidavit (continuous-residency witness). Secondary reaction strength: affidavit adds texture but service defect stands on documents alone. **2026-05-25 critique F8:** dry-surprise register added to the noted-affidavit line ('was not, perhaps, expecting it') so the standard-path player hears the bench's comic voice; the substance is unchanged. Adult-occupant point preserved for Round 2.",
+            "lines": ["Counsel. The affidavit is noted; the court was not, perhaps, expecting it. The renumbering is sufficient on the documents for the service question; the witness statement is supplementary and the court has placed it in the record.", "The respondent may address the third clause."],
             "tags": ["beat12", "court", "round_1", "dry_surprise", "sympathetic_carrier"]
         },
         {
@@ -51,8 +51,8 @@
         {
             "id": "judge_b12_round2_open",
             "trigger": "chapter1.casebook_judge_state == 'round_2_open'",
-            "_comment": "Round 2 bench prompt. Second question: fair hearing / due process. Single line. Register: procedural, neutral. No stance variation. The bench is directing attention to the third clause of Article 135-bis (third-party non-cure and the fair-hearing consequence).",
-            "lines": ["Second question. Why does the defect matter to the client's right to be heard?"],
+            "_comment": "Round 2 bench prompt. Second question: fair hearing / due process. Register: procedural, neutral, with one bench-habit sentence per critique F7 — the court pre-emptively warns against the lazy 'whichever hearing happened' framing. Lands the bench's diagnosable register without ceding the round's substantive question.",
+            "lines": ["Second question. The court would prefer not to hear that 'fair hearing' has been redefined to mean 'whichever hearing happened.' Why does the defect matter to the client's right to be heard?"],
             "tags": ["beat12", "court", "round_2", "bench_prompt"]
         },
         {
@@ -69,8 +69,8 @@
         {
             "id": "judge_b12_round3_open",
             "trigger": "chapter1.casebook_judge_state == 'round_3_open'",
-            "_comment": "Round 3 bench prompt. Third question: remedy. Single line. Register: procedural, slightly pointed. The bench front-loads the constraint: counsel should be modest. The one-liner is a callback to the canonical voice-reference 'If seeking remedy, ask for the narrow procedural remedy.'",
-            "lines": ["Third question. What exactly does counsel ask the court to do today? The court reminds counsel that a modest remedy is often stronger than an ambitious speech."],
+            "_comment": "Round 3 bench prompt. Third question: remedy. Register: procedural, slightly pointed. Per critique F7, the bench-habit moment ('the court can grant any number of things') sets up the modest-remedy callback as a punchline rather than as boilerplate.",
+            "lines": ["Third question. The court can grant any number of things; the court is interested in which one counsel actually wants. A modest remedy is often stronger than an ambitious speech."],
             "tags": ["beat12", "court", "round_3", "bench_prompt"]
         },
         {

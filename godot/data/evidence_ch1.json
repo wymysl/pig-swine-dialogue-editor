@@ -77,8 +77,8 @@
     "wojcik_witness_statement": {
       "source": "item_wojcik_witness_statement",
       "source_npc": "halina",
-      "discovered_when": "chapter1.bonus_evidence_collected == 'wojcik_witness_statement'",
-      "sets_flag": "chapter1.bonus_evidence_collected",
+      "discovered_when": "chapter1.client_meeting_evidence == 'wojcik_witness_statement'",
+      "sets_flag": "chapter1.client_meeting_evidence",
       "argument_tags": ["service_of_process", "procedural_fairness"],
       "context_tags": ["housing", "civil_proceedings", "documentary"],
       "supports_packet_slots": ["element_landlord_knowledge"],
@@ -90,8 +90,8 @@
     "return_to_sender_slip": {
       "source": "item_return_to_sender_slip",
       "source_npc": "halina",
-      "discovered_when": "chapter1.bonus_evidence_collected == 'return_to_sender_slip'",
-      "sets_flag": "chapter1.bonus_evidence_collected",
+      "discovered_when": "chapter1.client_meeting_evidence == 'return_to_sender_slip'",
+      "sets_flag": "chapter1.client_meeting_evidence",
       "argument_tags": ["service_of_process", "procedural_fairness", "legal_certainty"],
       "context_tags": ["civil_proceedings", "service_failure", "documentary"],
       "supports_packet_slots": ["element_landlord_knowledge"],
@@ -103,8 +103,8 @@
     "lease_1962_inheritance_1987": {
       "source": "item_lease_1962_inheritance_1987",
       "source_npc": "halina",
-      "discovered_when": "chapter1.bonus_evidence_collected == 'lease_1962_inheritance_1987'",
-      "sets_flag": "chapter1.bonus_evidence_collected",
+      "discovered_when": "chapter1.client_meeting_evidence == 'lease_1962_inheritance_1987'",
+      "sets_flag": "chapter1.client_meeting_evidence",
       "argument_tags": ["service_of_process", "procedural_fairness", "prescribed_by_law"],
       "context_tags": ["housing", "civil_proceedings", "documentary"],
       "supports_packet_slots": ["decoy_merits"],
@@ -116,8 +116,8 @@
     "landlord_contact": {
       "source": "witness_halina",
       "source_npc": "halina",
-      "discovered_when": "chapter1.bonus_evidence_collected == 'landlord_contact'",
-      "sets_flag": "chapter1.bonus_evidence_collected",
+      "discovered_when": "chapter1.client_meeting_evidence == 'landlord_contact'",
+      "sets_flag": "chapter1.client_meeting_evidence",
       "argument_tags": ["procedural_fairness"],
       "context_tags": ["housing", "civil_proceedings"],
       "supports_packet_slots": ["element_landlord_knowledge"],

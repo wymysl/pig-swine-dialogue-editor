@@ -31,7 +31,7 @@
     "chapter1.coffee_buff [carried from asia_hint_states_ch1.json v3; in state.gd]",
     "chapter1.won_court [carried from asia_hint_states_ch1.json v3; in state.gd]",
     "chapter1.decoy_incapacity [carried from asia_hint_states_ch1.json v3; in state.gd]",
-    "chapter1.bonus_evidence_collected [string; carried from asia_hint_states_ch1.json v3; in state.gd]"
+    "chapter1.client_meeting_evidence [string; carried from asia_hint_states_ch1.json v3; in state.gd]"
   ],
   "version": 4,
   "npc_id": "asia",
@@ -622,7 +622,7 @@
     },
     {
       "id": "hint_bonus_evidence_wojcik",
-      "trigger": "chapter1.bonus_evidence_collected == 'wojcik_witness_statement' && !chapter1.entered_court",
+      "trigger": "chapter1.client_meeting_evidence == 'wojcik_witness_statement' && !chapter1.entered_court",
       "_comment": "Hint state v3 NEW — sympathetic-stance bonus evidence. Verbatim from asia_hint_states_ch1.json v3.",
       "tags": [
         "hint_state",
@@ -635,7 +635,7 @@
     },
     {
       "id": "hint_bonus_evidence_slip",
-      "trigger": "chapter1.bonus_evidence_collected == 'return_to_sender_slip' && !chapter1.entered_court",
+      "trigger": "chapter1.client_meeting_evidence == 'return_to_sender_slip' && !chapter1.entered_court",
       "_comment": "Hint state v3 NEW — blunt-procedural-stance bonus evidence. Verbatim from asia_hint_states_ch1.json v3.",
       "tags": [
         "hint_state",
@@ -648,7 +648,7 @@
     },
     {
       "id": "hint_bonus_evidence_lease",
-      "trigger": "chapter1.bonus_evidence_collected == 'lease_1962_inheritance_1987' && !chapter1.entered_court",
+      "trigger": "chapter1.client_meeting_evidence == 'lease_1962_inheritance_1987' && !chapter1.entered_court",
       "_comment": "Hint state v3 NEW — technical-stance bonus evidence. Transit-warmth idiom. Verbatim from asia_hint_states_ch1.json v3.",
       "tags": [
         "hint_state",
@@ -662,7 +662,7 @@
     },
     {
       "id": "hint_bonus_evidence_landlord_contact",
-      "trigger": "chapter1.bonus_evidence_collected == 'landlord_contact' && !chapter1.entered_court",
+      "trigger": "chapter1.client_meeting_evidence == 'landlord_contact' && !chapter1.entered_court",
       "_comment": "Hint state v3 NEW — landlord-intimidation reveal. Asia observes affect from the front desk. Verbatim from asia_hint_states_ch1.json v3.",
       "tags": [
         "hint_state",

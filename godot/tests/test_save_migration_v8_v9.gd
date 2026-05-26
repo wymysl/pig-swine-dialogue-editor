@@ -62,7 +62,7 @@ func _init() -> void:
 			"halina_met": true,
 			"halina_arrived": true,
 			"client_meeting_stance": "blunt_procedural",
-			"bonus_evidence_collected": "cardiologist_note",
+			"client_meeting_evidence": "cardiologist_note",  ## key renamed v22
 			"cardiologist_plant_landed": true,
 			"client_fee_agreed": true,
 			"archive_research_complete": true,
@@ -226,7 +226,7 @@ func _init() -> void:
 		"halina_met",                      ## v8 step
 		"halina_arrived",                  ## v8 step
 		"client_meeting_stance",           ## v8 step
-		"bonus_evidence_collected",        ## v8 step
+		"client_meeting_evidence",          ## v8 step (renamed from bonus_evidence_collected in v22)
 		"cardiologist_plant_landed",       ## v8 step
 		"client_fee_agreed",               ## v8 step
 		"archive_research_complete",       ## v8 step

@@ -282,19 +282,19 @@ func _test_v15_v16_regression() -> void:
 		_assert(false,
 			"chapter1.murrow_choice MISSING from new_state_flags — pre-existing drift (v16 catch-up pending)")
 
-## ── T7 ── bonus_evidence_collected enum regression: all four values still declared.
+## ── T7 ── client_meeting_evidence enum regression: all four values still declared.
 func _test_bonus_evidence_enum_regression() -> void:
-	print("[T7] bonus_evidence_collected enum regression")
+	print("[T7] client_meeting_evidence enum regression")
 	var chapter_data := _load_chapter1()
 	if chapter_data.is_empty():
 		return
 	var registry := _registry_chapter1_flags(chapter_data)
 
-	if not registry.has("bonus_evidence_collected"):
-		_assert(false, "chapter1.bonus_evidence_collected missing from registry")
+	if not registry.has("client_meeting_evidence"):
+		_assert(false, "chapter1.client_meeting_evidence missing from registry")
 		return
 
-	var entry: Dictionary = registry["bonus_evidence_collected"]
+	var entry: Dictionary = registry["client_meeting_evidence"]
 	var declared_enum: Array = entry.get("_enum", [])
 
 	var expected: Array = [
@@ -305,4 +305,4 @@ func _test_bonus_evidence_enum_regression() -> void:
 	]
 	for val in expected:
 		_assert(declared_enum.has(val),
-			"bonus_evidence_collected._enum contains '%s'" % val)
+			"client_meeting_evidence._enum contains '%s'" % val)

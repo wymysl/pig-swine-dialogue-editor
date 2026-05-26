@@ -95,28 +95,28 @@
         },
         {
             "id": "hint_bonus_evidence_wojcik",
-            "trigger": "chapter1.bonus_evidence_collected == 'wojcik_witness_statement' && !chapter1.entered_court",
+            "trigger": "chapter1.client_meeting_evidence == 'wojcik_witness_statement' && !chapter1.entered_court",
             "_comment": "Hint state v3 NEW — sympathetic-stance bonus evidence. Verbatim from asia_hint_states_ch1.json v3.",
             "tags": ["hint_state", "warm_direct", "player_driven_v3"],
-            "lines": ["Mrs. Wojcik rang earlier. She wanted to know whether Friday at fourteen hundred was the time, Dr. A. Cula. I said yes."]
+            "lines": ["Mrs. Wójcik rang earlier. She wanted to know whether Friday at fourteen hundred was the time, Dr. A. Cula. I said yes."]
         },
         {
             "id": "hint_bonus_evidence_slip",
-            "trigger": "chapter1.bonus_evidence_collected == 'return_to_sender_slip' && !chapter1.entered_court",
+            "trigger": "chapter1.client_meeting_evidence == 'return_to_sender_slip' && !chapter1.entered_court",
             "_comment": "Hint state v3 NEW — blunt-procedural-stance bonus evidence. Verbatim from asia_hint_states_ch1.json v3.",
             "tags": ["hint_state", "warm_direct", "player_driven_v3"],
             "lines": ["The return-to-sender stamps look right, Dr. A. Cula. Poczta Polska prints the same ink they did in two thousand and ten."]
         },
         {
             "id": "hint_bonus_evidence_lease",
-            "trigger": "chapter1.bonus_evidence_collected == 'lease_1962_inheritance_1987' && !chapter1.entered_court",
+            "trigger": "chapter1.client_meeting_evidence == 'lease_1962_inheritance_1987' && !chapter1.entered_court",
             "_comment": "Hint state v3 NEW — technical-stance bonus evidence. Transit-warmth idiom. Verbatim from asia_hint_states_ch1.json v3.",
             "tags": ["hint_state", "warm_direct", "transit_warmth", "player_driven_v3"],
             "lines": ["Mrs. Sikorska's father worked on the railways, Dr. A. Cula. My grandfather did too. They both had flats from the housing stock."]
         },
         {
             "id": "hint_bonus_evidence_landlord_contact",
-            "trigger": "chapter1.bonus_evidence_collected == 'landlord_contact' && !chapter1.entered_court",
+            "trigger": "chapter1.client_meeting_evidence == 'landlord_contact' && !chapter1.entered_court",
             "_comment": "Hint state v3 NEW — landlord-intimidation reveal. Asia observes affect from the front desk. Verbatim from asia_hint_states_ch1.json v3.",
             "tags": ["hint_state", "warm_direct", "player_driven_v3"],
             "lines": ["Mrs. Sikorska looked tired today, Dr. A. Cula. Not Friday-fourteen-hundred-tired. Older."]

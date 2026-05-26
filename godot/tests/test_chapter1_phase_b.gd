@@ -14,9 +14,9 @@ extends SceneTree
 ##   T6   — Once halina_arrived=true, V1.A state 7 (hint_halina_met) wins
 ##          the priority race — the announcement does NOT re-fire.
 ##   T7-9 — halina.json dispatch reaches the correct round-0 state:
-##          sympathetic → bonus_evidence_collected = wojcik_witness_statement
-##          blunt_procedural → bonus_evidence_collected = return_to_sender_slip
-##          technical → bonus_evidence_collected = lease_1962_inheritance_1987
+##          sympathetic → client_meeting_evidence = wojcik_witness_statement
+##          blunt_procedural → client_meeting_evidence = return_to_sender_slip
+##          technical → client_meeting_evidence = lease_1962_inheritance_1987
 ##          (asserts the state's on_dismiss block writes correctly via the
 ##          DialogueRunner dismiss path).
 ##   T9b  — a low-trust path can progress through r1, r2, and the shared close.
@@ -79,7 +79,7 @@ func _init() -> void:
 		state_node.data["chapter1"]["halina_arrived"] = false
 		state_node.data["chapter1"]["halina_met"] = false
 		state_node.data["chapter1"]["client_meeting_stance"] = ""
-		state_node.data["chapter1"]["bonus_evidence_collected"] = ""
+		state_node.data["chapter1"]["client_meeting_evidence"] = ""
 		state_node.data["chapter1"]["client_fee_agreed"] = false
 		state_node.data["chapter1"]["cardiologist_plant_landed"] = false
 		state_node.data["chapter1"]["halina_trust"] = 0
@@ -250,7 +250,7 @@ func _init() -> void:
 		var t_ok: bool = (
 			ch1["client_meeting_stance"] == stance
 			and ch1["halina_r0_done"] == true
-			and ch1["bonus_evidence_collected"] == expected_evidence
+			and ch1["client_meeting_evidence"] == expected_evidence
 		)
 		if t_ok:
 			_pass("T%d: halina '%s' dispatch writes round-0 evidence=%s" % [test_idx, stance, expected_evidence])
@@ -258,7 +258,7 @@ func _init() -> void:
 			_fail("T%d: halina '%s' round-0 flag writes failed; ch1 state: stance=%s trust=%s r0_done=%s evidence=%s last_lines=%s" % [
 				test_idx, stance,
 				str(ch1["client_meeting_stance"]), str(ch1["halina_trust"]),
-				str(ch1["halina_r0_done"]), str(ch1["bonus_evidence_collected"]),
+				str(ch1["halina_r0_done"]), str(ch1["client_meeting_evidence"]),
 				str(_line_capture[1])
 			])
 		test_idx += 1

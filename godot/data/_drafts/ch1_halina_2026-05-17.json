@@ -7,7 +7,7 @@
     "chapter1.halina_close_done",
     "chapter1.client_fee_agreed",
     "chapter1.client_meeting_stance",
-    "chapter1.bonus_evidence_collected",
+    "chapter1.client_meeting_evidence",
     "chapter1.cardiologist_plant_landed",
     "chapter1.surfaced_notice_timeline",
     "chapter1.surfaced_payment_receipts",
@@ -91,7 +91,7 @@
     {
       "id": "halina_b8_sympathetic_main",
       "trigger": "chapter1.halina_arrived && !chapter1.halina_close_done && chapter1.client_meeting_stance == 'sympathetic'",
-      "_comment": "Sympathetic carrier. Cula opens with care; Halina answers in quietly-warm register; Mrs. Wójcik mention surfaces the bonus evidence (witness statement, document only — Mrs. Wójcik does not appear). Required evidence (tenancy paperwork, defective notice, ex parte docket) surfaces inline. Address forms: 'Dr. A. Cula' and 'Mrs. Sikorska'. Visible change per Rule B: Crab logs the witness; surfaced_resident_no_authority and bonus_evidence_collected set on commit.",
+      "_comment": "Sympathetic carrier. Cula opens with care; Halina answers in quietly-warm register; Mrs. Wójcik mention surfaces the bonus evidence (witness statement, document only — Mrs. Wójcik does not appear). Required evidence (tenancy paperwork, defective notice, ex parte docket) surfaces inline. Address forms: 'Dr. A. Cula' and 'Mrs. Sikorska'. Visible change per Rule B: Crab logs the witness; surfaced_resident_no_authority and client_meeting_evidence set on commit.",
       "lines": [
         {
           "speaker": "cula",
@@ -123,7 +123,7 @@
         }
       ],
       "options": {
-        "write_path": "chapter1.bonus_evidence_collected",
+        "write_path": "chapter1.client_meeting_evidence",
         "chain": true,
         "choices": [
           {
@@ -194,7 +194,7 @@
         }
       ],
       "options": {
-        "write_path": "chapter1.bonus_evidence_collected",
+        "write_path": "chapter1.client_meeting_evidence",
         "chain": true,
         "choices": [
           {
@@ -262,7 +262,7 @@
         }
       ],
       "options": {
-        "write_path": "chapter1.bonus_evidence_collected",
+        "write_path": "chapter1.client_meeting_evidence",
         "chain": true,
         "choices": [
           {
@@ -301,7 +301,7 @@
     },
     {
       "id": "halina_b8_dwell_apartment",
-      "trigger": "chapter1.halina_arrived && !chapter1.halina_close_done && chapter1.bonus_evidence_collected != ''",
+      "trigger": "chapter1.halina_arrived && !chapter1.halina_close_done && chapter1.client_meeting_evidence != ''",
       "_comment": "Optional biographical dwell, available regardless of stance after the main carrier resolves. Address forms: 'Mrs. Sikorska' / 'Dr. A. Cula'. Halina in quietly-warm register; teacher's economy; father / husband / son surface in three short sentences. No reactive line from Cula beyond a brief acknowledgement so the dwell does not overstay (Rule A: under 8 NPC lines; Rule B: visible change is Halina's actual disclosure, not a flag flip).",
       "lines": [
         {
@@ -319,7 +319,7 @@
     },
     {
       "id": "halina_b8_dwell_recommendation",
-      "trigger": "chapter1.halina_arrived && !chapter1.halina_close_done && chapter1.bonus_evidence_collected != ''",
+      "trigger": "chapter1.halina_arrived && !chapter1.halina_close_done && chapter1.client_meeting_evidence != ''",
       "_comment": "Optional dwell — surfaces that Halina came to Pig & Swine on Murrow's recommendation through a former colleague. Plants Murrow's professional reputation outside the firm without explication. Address forms: 'Mr. Murrow' (Halina speaking of him to Cula); 'Mrs. Sikorska' (Cula).",
       "lines": [
         {
@@ -337,7 +337,7 @@
     },
     {
       "id": "halina_b8_dwell_teaching",
-      "trigger": "chapter1.halina_arrived && !chapter1.halina_close_done && chapter1.bonus_evidence_collected != ''",
+      "trigger": "chapter1.halina_arrived && !chapter1.halina_close_done && chapter1.client_meeting_evidence != ''",
       "_comment": "Optional dwell — career. Per Halina bible §Interior register range, lightly-archival register surfaces one Iwaszkiewicz reference (primary anchor per bible). Single literary aside, brief; Cula's response is minimal (no internal narration per Cula will-not-say).",
       "lines": [
         {
@@ -356,9 +356,9 @@
     },
     {
       "id": "halina_b8_epigram",
-      "trigger": "chapter1.halina_arrived && !chapter1.halina_close_done && chapter1.bonus_evidence_collected != ''",
+      "trigger": "chapter1.halina_arrived && !chapter1.halina_close_done && chapter1.client_meeting_evidence != ''",
       "once": true,
-      "_comment": "Single-fire literary epigram, available in any stance per bible. Dryly-observant register. Lands as wisdom on first read; recolors in Ch4 corridor (the player carries it; Halina does not repeat it). Bible recommends placement late in the meeting; the trigger gates on bonus_evidence_collected so it cannot fire before the carrier completes. No Cula reaction line — preserves the recoloring weight per Cula will-not-say (no internal narration).",
+      "_comment": "Single-fire literary epigram, available in any stance per bible. Dryly-observant register. Lands as wisdom on first read; recolors in Ch4 corridor (the player carries it; Halina does not repeat it). Bible recommends placement late in the meeting; the trigger gates on client_meeting_evidence so it cannot fire before the carrier completes. No Cula reaction line — preserves the recoloring weight per Cula will-not-say (no internal narration).",
       "lines": [
         "You go to a lawyer like you go to a doctor: too late.",
         {
@@ -374,7 +374,7 @@
     },
     {
       "id": "halina_b8_close_shared",
-      "trigger": "chapter1.halina_arrived && !chapter1.halina_close_done && chapter1.bonus_evidence_collected != ''",
+      "trigger": "chapter1.halina_arrived && !chapter1.halina_close_done && chapter1.client_meeting_evidence != ''",
       "_comment": "Shared close. Cula summarises the required evidence; Murrow raises the 5,000 PLN fee (NOT a player choice per spec); Halina accepts cleanly; Pig intrusion (panic-register, maritime metaphor, shepherded out by Murrow); retention signed; departure room-thanks. Sets halina_met, halina_close_done, client_fee_agreed. If the technical carrier did not fire (i.e. cardiologist plant has not landed yet via halina_b8_technical_main), the plant lands here as a single neutral logistical line, register-unchanged. Address forms: 'Dr. A. Cula', 'Mrs. Sikorska', 'Mr. Murrow', 'Mr. Pig'. 2026-05-17 lint-fix: inserted Cula 'Mr. Pig.' beat between Murrow's retention close and Pig's intrusion to keep NPC run ≤8 (was 9).",
       "lines": [
         {

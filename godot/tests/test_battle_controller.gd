@@ -127,7 +127,7 @@ func _test_substantive_defense_starts_phase_2_at_three_patience() -> void:
 	print("[T5] substantive_defense starts Phase 2 with judicial_patience 3")
 	_reset_state()
 	_chapter1()["proposed_frame"] = "substantive_defense"
-	_chapter1()["bonus_evidence_collected"] = "lease_1962_inheritance_1987"
+	_chapter1()["client_meeting_evidence"] = "lease_1962_inheritance_1987"
 	_skepticism_events.clear()
 	_controller.start_round("landlord_counsel_ch1", 3)
 	_assert(_chapter1()["judicial_patience"] == 3, "judicial_patience starts at 3")
@@ -142,7 +142,7 @@ func _test_legacy_merits_defence_alias_still_resolves() -> void:
 	print("[T5b] legacy merits_defence alias normalises to substantive_defense")
 	_reset_state()
 	_chapter1()["proposed_frame"] = "merits_defence"
-	_chapter1()["bonus_evidence_collected"] = "lease_1962_inheritance_1987"
+	_chapter1()["client_meeting_evidence"] = "lease_1962_inheritance_1987"
 	_skepticism_events.clear()
 	_controller.start_round("landlord_counsel_ch1", 3)
 	_assert(_chapter1()["judicial_patience"] == 3, "legacy alias also starts at patience 3")

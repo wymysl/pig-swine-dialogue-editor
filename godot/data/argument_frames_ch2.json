@@ -1,0 +1,142 @@
+{
+  "version": 1,
+  "draft": true,
+  "_status": "SKELETON DRAFT 2026-05-25. One of six Ch2 dependencies blocking court_rounds/chapter2_round_1.json. Code-pass only; every display field stubbed DESIGN_TODO per the Ch1 author convention. STRUCTURAL DEPARTURE from argument_frames_ch1.json: Ch2 Round 1 does NOT use motion-packet completeness — it uses Phase 1 fact-flags (see court_rounds/chapter2_round_1.json::phase_1_fact_finding). The packet_requirements and consumes_packet_completeness keys are therefore omitted; phase_1_fact_requirements replaces them. Confirm shape with Design before authoring Round 2 / Round 3 entries: if Ch2 keeps a separate packet-completeness pass for the meta-round, the omitted keys come back.",
+  "_doc": "Chapter 2 frame/blunder selection. Round 1 entries only; Round 2 (likely substantive-rights frame set) and Round 3 (likely remedy-discipline / proportionality frame set) deferred until the corresponding court_rounds files are authored.",
+  "_owner_code": "id, kind, supporting_evidence, statute_anchor, source_npc_primary, strength_rating, well_fitted, court_round_unlock, requires_flags, phase_1_fact_requirements, judge_reaction_template, judicial_patience_delta_on_select, halina_trust_delta_on_select, burns_round_attempt",
+  "_owner_design": "display_name, summary, wrong_shape_correction, present_cue, in_fiction_consequence",
+  "_open_design_questions": [
+    "Q1: do Ch2 frames carry halina_trust_delta_on_select at all? Halina trust is a Ch1 mechanic per the trust-meter rework deferred in 2026-05-19 narrative remediation. Current: deltas all 0 placeholder; remove the key entirely if trust is sunset post-Ch1.",
+    "Q2: does Ch2 use court_round_unlock the same way (round_1_open / round_2_open / round_3_remedy) or do we need ch2-specific unlock ids? Current: uses ch2_round_1_open / ch2_round_2_open / ch2_round_3_open as a guess; reconcile with battle_controller.gd::_unlock_round once Code reviews.",
+    "Q3: should phase_1_fact_requirements duplicate the requires_fact_flags already in chapter2_round_1.json::frame_gates.<id>.available_counter_questions[].requires_fact_flags, or only document the floor that distinguishes frame from blunder? Current: documents the floor; the per-counter-question gates remain authoritative in the court-rounds file."
+  ],
+  "phase_1_fact_inputs": {
+    "primary_fact_flags": [
+      "_fact.rule_text_undefined_dignity",
+      "_fact.no_published_examples",
+      "_fact.poster_unique_target"
+    ],
+    "bonus_fact_flags": [
+      "_fact.rule_amended_post_hoc"
+    ],
+    "_evaluation_note": "Frame/blunder evaluation reads Phase 1 fact-flag count first, then applies the per-entry phase_1_fact_requirements floor below."
+  },
+  "frames": {
+    "rule_vagueness": {
+      "kind": "frame",
+      "supporting_evidence": [
+        "building_rules_extract",
+        "eviction_notice"
+      ],
+      "statute_anchor": "PL Const Art 75 (proper housing) + Convention Art 8 — clarity of law",
+      "source_npc_primary": "administrator_beton",
+      "strength_rating": 5,
+      "well_fitted": true,
+      "court_round_unlock": "ch2_round_1_open",
+      "requires_flags": [
+        "chapter2.cula_engaged_ch2_brief"
+      ],
+      "phase_1_fact_requirements": {
+        "required_primary_flags": [
+          "_fact.rule_text_undefined_dignity"
+        ],
+        "minimum_primary_flags": 1,
+        "_status_note": "Floor for the frame to be a legitimate choice rather than a blunder. The judge's jq_dignity_definition gate requires the additional _fact.no_published_examples flag, which is enforced inside chapter2_round_1.json, not duplicated here."
+      },
+      "judge_reaction_template": "approving_void_for_vagueness",
+      "judicial_patience_delta_on_select": 0,
+      "halina_trust_delta_on_select": 0,
+      "burns_round_attempt": false,
+      "display_name": "DESIGN_TODO",
+      "summary": "DESIGN_TODO",
+      "wrong_shape_correction": "DESIGN_TODO",
+      "present_cue": "DESIGN_TODO"
+    },
+    "overbreadth": {
+      "kind": "frame",
+      "supporting_evidence": [
+        "poster_photo",
+        "eviction_notice"
+      ],
+      "statute_anchor": "PL Const Art 32 (equal treatment) + Convention Art 8 — overbroad sweep of expressive conduct",
+      "source_npc_primary": "zielinska",
+      "strength_rating": 4,
+      "well_fitted": true,
+      "court_round_unlock": "ch2_round_1_open",
+      "requires_flags": [
+        "chapter2.cula_engaged_ch2_brief"
+      ],
+      "phase_1_fact_requirements": {
+        "required_primary_flags": [
+          "_fact.poster_unique_target"
+        ],
+        "minimum_primary_flags": 1,
+        "_status_note": "Floor: poster_unique_target establishes the overbreadth angle (the rule's scope sweeps in protected expression that the building has never enforced against). jq_scope counter-question requires only this flag; jq_targeted_enforcement additionally requires _fact.no_published_examples."
+      },
+      "judge_reaction_template": "approving_overbreadth",
+      "judicial_patience_delta_on_select": 0,
+      "halina_trust_delta_on_select": 0,
+      "burns_round_attempt": false,
+      "display_name": "DESIGN_TODO",
+      "summary": "DESIGN_TODO",
+      "wrong_shape_correction": "DESIGN_TODO",
+      "present_cue": "DESIGN_TODO"
+    },
+    "arbitrary_enforcement": {
+      "kind": "frame",
+      "supporting_evidence": [
+        "poster_photo",
+        "building_rules_extract"
+      ],
+      "statute_anchor": "PL Const Art 32 — uniform application of law",
+      "source_npc_primary": "zielinska",
+      "strength_rating": 4,
+      "well_fitted": true,
+      "court_round_unlock": "ch2_round_1_open",
+      "requires_flags": [
+        "chapter2.cula_engaged_ch2_brief"
+      ],
+      "phase_1_fact_requirements": {
+        "required_primary_flags": [
+          "_fact.poster_unique_target",
+          "_fact.no_published_examples"
+        ],
+        "minimum_primary_flags": 2,
+        "_status_note": "Floor: BOTH flags required. arbitrary_enforcement is the strongest of the three frames on the merits but the most fact-expensive — surfacing _fact.no_published_examples requires the administrator_beton.rule_history press path, which competes with the rule_text definitional pressure on the same witness's cooperation_budget."
+      },
+      "judge_reaction_template": "approving_arbitrary_enforcement",
+      "judicial_patience_delta_on_select": 0,
+      "halina_trust_delta_on_select": 0,
+      "burns_round_attempt": false,
+      "display_name": "DESIGN_TODO",
+      "summary": "DESIGN_TODO",
+      "wrong_shape_correction": "DESIGN_TODO",
+      "present_cue": "DESIGN_TODO"
+    },
+    "merits_defence": {
+      "kind": "blunder",
+      "supporting_evidence": [],
+      "statute_anchor": "Substantive housing-law merits — out of place at the rule-clarity stage",
+      "source_npc_primary": "halina",
+      "strength_rating": 2,
+      "well_fitted": false,
+      "court_round_unlock": "ch2_round_1_open",
+      "requires_flags": [
+        "chapter2.cula_engaged_ch2_brief"
+      ],
+      "phase_1_fact_requirements": {
+        "required_primary_flags": [],
+        "minimum_primary_flags": 0,
+        "_status_note": "Blunder path: no fact-flag floor. Selecting merits_defence in Round 1 burns the round attempt and starts Phase 2 with judicial_patience: 3 per chapter2_round_1.json::frame_gates.merits_defence. Mirrors the Ch1 substantive_defense blunder shape."
+      },
+      "judge_reaction_template": "tolerant_try_again",
+      "judicial_patience_delta_on_select": -2,
+      "halina_trust_delta_on_select": 0,
+      "burns_round_attempt": true,
+      "display_name": "DESIGN_TODO",
+      "summary": "DESIGN_TODO",
+      "wrong_shape_correction": "DESIGN_TODO",
+      "present_cue": "DESIGN_TODO"
+    }
+  }
+}

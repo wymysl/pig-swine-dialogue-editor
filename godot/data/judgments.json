@@ -4,18 +4,18 @@
   "judgments": [
     {
       "id": "procedural_reset_ch1",
-      "_doc": "Beat 12 procedural-reset judgment. Triggers chapter1.court_won_procedural_reset via judge_district_ch1.json remedy_round_3_<stance> on_dismiss. Unlocked as a Casebook entry after court victory. Conditions: casebook_judge_state reaches 'round_3_remedy' AND at least one bonus_evidence_collected item is present OR all three rounds are won without bonus evidence (modest-remedy discipline — the remedy is always procedural, never a full merits win). The actual remedy text lives in judge_district_ch1.json; do not duplicate it here.",
+      "_doc": "Beat 12 procedural-reset judgment. Triggers chapter1.court_won_procedural_reset via judge_district_ch1.json remedy_round_3_<stance> on_dismiss. Unlocked as a Casebook entry after court victory. Conditions: casebook_judge_state reaches 'round_3_remedy' AND at least one client_meeting_evidence item is present OR all three rounds are won without bonus evidence (modest-remedy discipline — the remedy is always procedural, never a full merits win). The actual remedy text lives in judge_district_ch1.json; do not duplicate it here.",
       "chapter_unlock": 1,
       "draft": false,
 
       "conditions": {
-        "_doc": "Judgment 'fires' (is added to Casebook) when all conditions are met. casebook_judge_state must have reached round_3_remedy. court_won_procedural_reset is set true by judge_district_ch1.json on_dismiss; this entry is unlocked at that moment. bonus_evidence_collected is optional — its presence affects argument strength during the rounds but not whether the judgment is awarded.",
+        "_doc": "Judgment 'fires' (is added to Casebook) when all conditions are met. casebook_judge_state must have reached round_3_remedy. court_won_procedural_reset is set true by judge_district_ch1.json on_dismiss; this entry is unlocked at that moment. client_meeting_evidence is optional — its presence affects argument strength during the rounds but not whether the judgment is awarded.",
         "required_flags": [
           { "path": "chapter1.casebook_judge_state", "op": "any_of", "values": ["round_3_remedy"] },
           { "path": "chapter1.court_won_procedural_reset", "op": "eq", "value": true }
         ],
         "bonus_evidence_variants": {
-          "_doc": "Bonus evidence in chapter1.bonus_evidence_collected changes the flavor of the Round 3 argument but not the judgment outcome. All three paths award the same judgment.",
+          "_doc": "Bonus evidence in chapter1.client_meeting_evidence changes the flavor of the Round 3 argument but not the judgment outcome. All three paths award the same judgment.",
           "wojcik_witness_statement": "Round 3 sympathetic carrier — affidavit adds tenancy-validity texture to the rehearing-remedy argument.",
           "return_to_sender_slip": "Round 3 blunt-procedural carrier — slip strengthens the wrongful-service finding underlying the remedy.",
           "lease_1962_inheritance_1987": "Round 3 technical carrier — historical paperwork adds underlying tenancy weight; one-clause acknowledgment from the bench that tenancy is not before the court."

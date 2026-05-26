@@ -75,9 +75,13 @@
         {
             "id": "chapter_close",
             "trigger": "chapter1.whimsy_postcard_deflection_shown == true && !chapter1.complete",
-            "_comment": "Chapter close. The postcard sits on Pig's desk. Ledger drawer closed. Asia's mail stack thinner. Case board still carries the third-clause note. Badge and route unlocks fire here.",
+            "_comment": "Chapter close. The postcard sits on Pig's desk. Ledger drawer closed. Asia's mail stack thinner. Case board still carries the third-clause note. Badge and route unlocks fire here. **2026-05-25 fan-out (F4/F5):** Cula's navigation cue inlined from cula.json::cula_b14_chapter_close (queued for deletion) — names the three newly unlocked districts in Cula's voice so the route_unlock writes have an in-fiction acknowledgment.",
             "speaker": "stage_direction",
-            "lines": ["The postcard remains on Pig's desk. The ledger drawer is closed. Asia's mail stack is thinner. The case board still carries the third-clause note until someone erases it for the next matter."],
+            "lines": [
+                "The postcard remains on Pig's desk. The ledger drawer is closed. Asia's mail stack is thinner. The case board still carries the third-clause note until someone erases it for the next matter.",
+                {"speaker": "cula", "text": "Three districts on the map I could not walk through this morning. That is a lot of doors for one week."},
+                {"speaker": "cula", "text": "Tomorrow. Murrow's next file, then the doors."}
+            ],
             "on_dismiss": [
                 {"set": "chapter1.complete", "value": true},
                 {"award_badge": "day_one_survivor"},

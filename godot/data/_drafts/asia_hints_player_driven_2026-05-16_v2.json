@@ -108,7 +108,7 @@
     },
     {
       "id": "hint_bonus_evidence_wojcik",
-      "trigger": "chapter1.bonus_evidence_collected == 'wojcik_witness_statement' && !chapter1.entered_court",
+      "trigger": "chapter1.client_meeting_evidence == 'wojcik_witness_statement' && !chapter1.entered_court",
       "_comment": "Fires when the high-trust Halina meeting produced Mrs. Wójcik's witness statement. Asia knows Mrs. Wójcik because the second-floor neighbour calls reception when the building's lift breaks — she has had that conversation. The hint confirms the witness is real and available Friday at fourteen hundred (the court time already established). Asia's confirmation of the time is the practical fact; the rest is domestic warmth. Merge note: after the whimsy-posture states.",
       "lines": [
         "Mrs. Wójcik rang earlier. She wanted to know whether Friday at fourteen hundred was the time, Dr. A. Cula. I said yes."
@@ -122,7 +122,7 @@
     },
     {
       "id": "hint_bonus_evidence_slip",
-      "trigger": "chapter1.bonus_evidence_collected == 'return_to_sender_slip' && !chapter1.entered_court",
+      "trigger": "chapter1.client_meeting_evidence == 'return_to_sender_slip' && !chapter1.entered_court",
       "_comment": "Fires when the return-to-sender slip has been collected. Asia's postal practicality is the voice anchor — she handles the post every day. She is not reading the slip for legal significance; she is reading it as a postal object and finding it accurate-looking. 'Two thousand and ten' is the year of Poczta Polska's ink standardisation per the research; it's a specific, concrete fact of the kind Asia would know from daily handling. Merge note: after hint_bonus_evidence_wojcik.",
       "lines": [
         "The return-to-sender stamps look right, Dr. A. Cula. Poczta Polska prints the same ink they did in two thousand and ten."
@@ -136,7 +136,7 @@
     },
     {
       "id": "hint_bonus_evidence_lease",
-      "trigger": "chapter1.bonus_evidence_collected == 'lease_1962_inheritance_1987' && !chapter1.entered_court",
+      "trigger": "chapter1.client_meeting_evidence == 'lease_1962_inheritance_1987' && !chapter1.entered_court",
       "_comment": "Fires when the lease chain document has been collected via the technical-stance Halina meeting. Asia's transit-warmth note: a personal connection to the housing era through her grandfather. Per style_canon.txt Asia voice, the transit-system warmth is her idiom — here it surfaces as a family-railways-and-housing connection to Mrs. Sikorska's father. Once only across the file. 'They both had flats from the housing stock' is Asia placing two people in the same historical moment. No doctrine. Merge note: after hint_bonus_evidence_slip.",
       "lines": [
         "Mrs. Sikorska's father worked on the railways, Dr. A. Cula. My grandfather did too. They both had flats from the housing stock."
@@ -151,7 +151,7 @@
     },
     {
       "id": "hint_bonus_evidence_landlord_contact",
-      "trigger": "chapter1.bonus_evidence_collected == 'landlord_contact' && !chapter1.entered_court",
+      "trigger": "chapter1.client_meeting_evidence == 'landlord_contact' && !chapter1.entered_court",
       "_comment": "Fires when the high-trust-extended Halina meeting produced the landlord-contact intimidation reveal. The highest-trust reveal evidence. Asia notices Mrs. Sikorska's affect as a front-desk observer — she has seen how clients look at different stages of their cases. 'Friday-fourteen-hundred-tired' is the court-date anxiety Asia has seen before; 'Older' is the different, heavier thing she notices here. Quiet concern without alarm. No names the landlord. Merge note: after hint_bonus_evidence_lease.",
       "lines": [
         "Mrs. Sikorska looked tired today, Dr. A. Cula. Not Friday-fourteen-hundred-tired. Older."

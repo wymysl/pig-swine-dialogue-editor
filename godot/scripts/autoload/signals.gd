@@ -78,7 +78,7 @@ signal minigame_finished(minigame_id: String, outcome: String)
 ## flag_name: the chapter1 dictionary key that just changed (e.g. "met_pig").
 ## new_value: the value written. Typed as Variant because chapter1 holds a
 ##            mix of bool (most flags), String (court_outcome, client_meeting_stance,
-##            bonus_evidence_collected, casebook_judge_state, coffee_buff,
+##            client_meeting_evidence, casebook_judge_state, coffee_buff,
 ##            coffee_brew_grade), and potentially other types as the schema
 ##            grows. Subscribers that care about the actual value should
 ##            re-read State.data.chapter1[flag_name] rather than rely on the

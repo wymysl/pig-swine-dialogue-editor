@@ -1918,3 +1918,77 @@ Verification:
 
 - All-file inspection only. The bash sandbox in this session has no `godot` binary; `tests/test_smoke.gd`, `tests/test_runner.gd`, `tests/test_save_roundtrip.gd`, `tests/test_state_writer.gd`, and `tests/test_facing.gd` are not run from this entry. Piotr should run `make verify` (or the smoke + runner pair) before pushing.
 
+
+## 2026-05-25 — narrative-critique remediation (F1/F2/F3/F4/F6/F7/F8/F9/F11) + cula.json fan-out (F5)
+
+Hostile narrative-and-dialogue critique authored at `godot/critiques/2026-05-25-narrative.md` (12 findings). Nine closed in this entry; F12 declined with pushback (recon at `godot/critiques/2026-05-25-narrative-response.md` §F12); F10 (manual `met_*` migration to `once: true`) deferred to a separate sweep sprint per the response doc's S3 classification. One critic-missed runtime bug also fixed (`cula.json` court-round trigger spelling — `round2_open` → `round_2_open`, would have prevented Cula's Round 2/3 lines from firing once dispatched).
+
+Files touched:
+
+- `godot/critiques/2026-05-25-narrative-response.md` — NEW. Verification-and-plan document. Land/partial/push-back triage per finding, then severity-ordered remediation list. Pre-execution sanity check on every concrete file/line claim in the critique.
+- `godot/data/dialogues/asia_hint_states_ch1.json` — F6: `hint_bonus_evidence_wojcik` line 101 player-facing text `Mrs. Wojcik` → `Mrs. Wójcik`. Matches the diacritic spelling used in `halina.json`, `cula.json`, `judge_district_ch1.json`, `items.json`, and `evidence_ch1.json`. The drafted fix in `data/_drafts/nightly_dialogue_fixes_2026-05-22.json` is now redundant.
+- `godot/data/dialogues/whimsy.json` — F3: `whimsy_post_decoy_incapacity` deleted (incapacity pile-on trimmed from 5 voices to 4; Crab walkaway, Halina rebuke, Murrow role-strip, judge icy remedy all preserved). F4: three new states `whimsy_b12_round2_sympathetic` / `whimsy_b12_round2_blunt_procedural` / `whimsy_b12_round2_technical` carrying the canonical soup-and-fork-of-bees metaphor that `judge_b12_react_r2` has been reacting to since the v3 sweep but that was never authored in Whimsy's voice. Each variant pairs the metaphor with one Shakespeare or Wordsworth cite per style canon §2 (Hamlet "law's delay" / Hamlet "insolence of office" / Wordsworth "into the life of things"). Fan-out: new states `whimsy_b7_dwell_options` + three replies + `whimsy_b13_response` scaffolded with Cula prompts inlined and Whimsy TODO placeholders per the 2026-05-25 "you author, I wire" decision. Dwell trigger gated post-recruit (cula.json's original `met && !recruited` gate had no usable window in whimsy.json's fused recruitment).
+- `godot/data/dialogues/cula.json` — S1.3a: four court-round response triggers normalized from `round{2,3}_open`/`round2_active` to `round_{2,3}_open`/`round_2_react` to match `judge_district_ch1.json`'s actual state values. F5 fan-out: 44 states pruned via `/tmp/cula_prune.py` (round-trip-pretty-print–compliant Python serializer mirroring `tools/verify_dialogue_roundtrip.js`). 25 states retained as the voice-doc consolidated reference per Piotr's 2026-05-25 Q4 decision: 4 ambient + 3 b8 internal_fee (await per-zone ambient trigger sprint), 9 Beat 9 archive (await Archive Room scene sprint), 5 Beat 12 court-round responses + 2 Beat 13 internal/silent (await court-round dispatch sprint), 2 family-photo (current dispatch). `_authoring_note` rewritten to document the post-fan-out bucket layout.
+- `godot/data/dialogues/murrow.json` — F1: `court_readiness_check` reauthored. Verbless fragment list (`Procedural binder. On file. / Rights memo. On file. / ... / Confirmed. / Courtroom four.`) replaced with one archival-amused sentence pairing binder and memo ("Two months ago neither could be found; this is, by the standards of this office, an organisational triumph."). Pig's `kraken/bait` maritime aside cut per F11; printer-lease detail preserved in plain register. Fan-out: Cula's `Wrong-door service, fourteen days from actual notice...` summary inlined into `murrow_first_meeting` between the briefing tail and the friend-invitation. Cula's two-line readiness opener (`Murrow. We have service, fairness, and a modest remedy...`) inlined into `court_readiness_check` (replacing the redundant single-line `Murrow. We have the memo.`). Cula's `Understood, Mr. Pig. We will keep the printer informed.` reception line inlined after Pig's lecture. New states `murrow_b4_dwell_options` + three replies + `murrow_b13_brief` scaffolded with Cula prompts inlined and Murrow TODO placeholders.
+- `godot/data/dialogues/crab.json` — F1: `after_binder_first_engagement` reauthored. Verbless date-list (`Envelope: number seven, eighth of April. Renewal: number twelve, two thousand and nineteen, countersigned. Renumbering: two thousand and fifteen.`) rebuilt as canonical Crab observation-then-implication pairs ("Renumbering was 2015. The notice was sent to a building that stopped being number seven eleven years ago. That is not service." / "The landlord countersigned for the renewal at number twelve in 2019. He knew the number; he sent the writ to the old one anyway. That is postal theatre."). Fan-out: new states `crab_b5_dwell_options` + three replies + `crab_b13_response` scaffolded with Cula prompts inlined and Crab TODO placeholders.
+- `godot/data/dialogues/halina.json` — F9: `client_meeting_close` 26-line monolith split into three sequential states. (a) `client_meeting_close` carries fee + retention + Pig's interruption + Murrow's redirect; (b) `client_meeting_cardiologist_plant` is a discrete short state containing only the cardiologist plant + breath; (c) `client_meeting_epigram` carries Halina's "you go to a lawyer like you go to a doctor: too late." plus the Iwaszkiewicz reference flagged for phase-7 voice work in story.txt Beat 8 and never written until now (F2 — Halina names she taught his stories for thirty-eight years and did not believe them until this year; biographical reference framed as a teacher's aside, no fabricated direct quote), plus Cula's response inlined from cula.json's orphan state, plus farewells. Hennessy retainer phone reference cut (per F9 — Hennessy has no setup anywhere in committed Ch1); replaced with printer + rent-envelope callbacks to established firm details. F2: `client_meeting_r0_response_blunt` lifted with two observational asides (the young man's apology at the door; the woman at the landlord's office reading the address back twice). `client_meeting_r0_response_technical` lifted with one biographical sentence (Halina's father as a railwayman assigned to Warsaw — matches the "railways" detail volunteered in the high-trust path). `halina_post_meeting_decoy_incapacity_cold` rebuilt: original closer was a two-clause antithesis (`I am not too old to be served with a letter. I am too inconvenient to be served with the right letter.`) that read as Murrow's voice on Halina's mouth; replaced with three short sentences a 71-year-old former Polish-literature teacher would actually speak, substantive point preserved (case is about service, not capacity), landlord's 2019 countersignature named directly. Fan-out: `Murrow. Archive Room?` closeout bridge inlined at end of `client_meeting_epigram`. New states `client_meeting_dwell_picker` + `client_meeting_dwell_referral` + `client_meeting_dwell_taught` scaffolded with Cula prompts inlined and Halina TODO placeholders (per Piotr's 2026-05-25 Q3 decision; apartment dwell dropped as DUPLICATIVE per the recon — biographical content already in `client_meeting_r0_response_high`).
+- `godot/data/dialogues/judge_district_ch1.json` — F7: three round-opener templates (`First question. ...` / `Second question. ...` / `Third question. ...`) replaced with bench-habit moments. Round 1 signals the court has read the moving papers and would prefer counsel skip the recital. Round 2 pre-emptively warns against the lazy "whichever hearing happened" framing of fair-hearing. Round 3's existing "modest remedy" line reframed as a punchline on "the court can grant any number of things; the court is interested in which one counsel actually wants." F8: dry-surprise register lifted out of the strong-only `judge_b12_remedy_strong` gate. `judge_b12_react_r1_blunt_procedural` now opens with "Against several expectations on a Friday afternoon, this is a procedural defect rather than an excuse." `judge_b12_react_r1_sympathetic` gains "the court was not, perhaps, expecting it" on the noted-affidavit line. Standard-path players now hear the bench's comic register at the load-bearing Round 1 reaction.
+- `godot/data/dialogues/pig.json` — F11: maritime metaphor `crawled below deck` cut from `met_murrow_pre_binder`; replaced with a Hrabal-rhythm wandering sentence that lands on the printer-lease ("Or it was, when I last saw it, which I want to say was Tuesday — Tuesday was also when I last saw the printer-lease renewal, and only one of those two things can still be true."). Tic now appears once in Ch1 (`pig_first_meeting`), in `idle_flavor`, and nowhere else; sets up the Ch5 sincere-Pig moment style canon §2 makes load-bearing. Fan-out: `pig_first_meeting` opener replaced with Cula's three-line canonical first-meeting greeting (name + self-id + period per AGENTS.md §First-meeting introductions — previous bare `Good morning` violated the rule). Cula's `I will take that as a fact and find Mr. Murrow.` tail line inlined after `Six weeks. Understood.`. Cula's `Temporarily saved is still saved, Mr. Pig...` response inlined into `pig_b13_celebration`. New states `pig_b3_dwell_options` + three replies scaffolded with Cula prompts inlined and Pig TODO placeholders.
+- `godot/data/dialogues/postcard_swine_ch1.json` — fan-out: Cula's two-line navigation cue (`Three districts on the map I could not walk through this morning...` / `Tomorrow. Murrow's next file, then the doors.`) inlined into `chapter_close` so the `unlock_route` writes have an in-fiction acknowledgment.
+
+Open per critique (Piotr's decision):
+
+- **F10 `met_*` migration to `once: true`.** ~68 manual `chapter1.met_*` callsites across committed dialogue files. Classified S3 in the critique response (sweep work, not blocking). Editor support landed Session 30 (`once: true` checkbox in `tools/dialogue_editor.html`); this is migration not invention. Deferred to a separate sweep sprint with its own save-fixture test (greeting-no-repeat dwell-tree walk).
+- **F12 Whimsy recruitment line.** Declined per the response doc — the "I have heard worse music" line is Whimsy's cynic-aesthete register (style canon §2 names case-as-music pairing rule), not patronisation of the client. Revisit if playtesters read it the critic's way.
+- **Cula fan-out TODO placeholders.** 22 dwell-reply states across `pig.json` (3), `murrow.json` (3 + 1 b13), `crab.json` (3 + 1 b13), `whimsy.json` (3 + 1 b13), `halina.json` (2) carry Cula prompts inlined and TODO placeholders for the NPC reply lines, per Piotr's 2026-05-25 Q2 decision ("you author, I wire"). Each TODO names the voice register and the load-bearing beat-sheet context for the line.
+- **Cula NO_DISPATCH buckets.** 25 states remain in `cula.json` awaiting three engineering sprints: per-zone ambient trigger dispatch (ambient + internal_fee), Beat 9 Archive Room scene + Murrow archive-state-machine, court-round dispatch (Beat 12 responses + Beat 13 internal/silent).
+- **`tools/voice_audit.py` diacritic-consistency rule.** Recommended in the response doc (would have caught F6 before commit). Not implemented this entry.
+
+Verification:
+
+- `node tools/verify_dialogue_roundtrip.js`: clean — 11 canonical files, 192 state ids, 0 trigger-mismatches, 0 byte-drift violations. One mid-pass byte-drift (single-line primitive `lines` array authored multi-line in `client_meeting_cardiologist_plant`) caught and re-collapsed inline per INLINE_LIMIT=300.
+- `python3 tools/voice_audit.py godot/data/voice_references/`: clean — 40 files audited, 24812 records, 0 violations.
+- Python JSON parse: 12/12 dialogue files valid.
+- Smoke and runner tests (`godot --headless --path godot --script tests/test_smoke.gd` and `... tests/test_runner.gd`) NOT run — the sandbox in this session has no `godot` binary. Piotr should run both before pushing.
+
+
+## 2026-05-26 — Phase 0 hygiene (Steps 0.1 + 0.2) per critiques/2026-05-26-design-plan.md
+
+### Step 0.1 — F8: Move chapter2_round_1.json out of data/court_rounds/
+
+`godot/data/court_rounds/chapter2_round_1.json` relocated to
+`godot/data/_drafts/chapter2_round_1.json` via `git mv`.
+
+The file carried `"draft": true` and a full `_status` block listing six open
+data dependencies (argument_frames_ch2.json, landlord_counsel_ch2 opponent
+entry, evidence_ch2.json, judgments.json::rule_clarity_ch2, tag_taxonomy Ch2
+extension, state.gd::chapter2 defaults). None of those dependencies exist yet.
+Ch2 content is out of scope until Ch1 ships per PLAN.md §Out of scope until
+Chapter 1 ships ("Chapter 2–5 scaffolding beyond the JSON file headers") and
+AGENTS.md §Forbidden patterns ("Building Chapter N+1 content while Chapter N
+is not yet shippable").
+
+Acceptance check: `grep -r '"draft"' godot/data/court_rounds/` → clean.
+
+### Step 0.2 — F12: Rename bonus_evidence_collected → client_meeting_evidence
+
+Save version bumped from 21 → 22. New v21→v22 migration renames the key
+in any existing save. v8 migration default updated to use the new name.
+All runtime code, data, and test references updated. New migration test
+`tests/test_save_migration_v21_v22.gd` asserts SAVE_VERSION >= 22 per the
+save-migration test pattern.
+
+Files touched: `scripts/autoload/state.gd`, `scripts/systems/save.gd`,
+`scripts/actors/pickup.gd`, `scripts/systems/battle/battle_controller.gd`,
+`scripts/autoload/signals.gd`, `data/items.json`, `data/dialogues/halina.json`,
+`data/dialogues/asia_hint_states_ch1.json`, `data/chapters/chapter1.json`,
+`data/judgments.json`, `data/evidence_ch1.json`,
+`data/court_rounds/chapter1_round_1.json`,
+`tests/test_save_migration_v7_v8.gd`, `tests/test_save_migration_v8_v9.gd`,
+`tests/test_save_migration_v10_v11.gd`, `tests/test_chapter1_phase_b.gd`,
+`tests/test_chapter1_v17_flag_coverage.gd`, `tests/test_battle_controller.gd`,
+`tests/test_pickup_items_data.gd`, `tests/test_halina_intro_chain.gd`,
+`tests/test_save_migration_v21_v22.gd` (NEW).
+
+Verification: `godot --headless --path godot --script tests/test_runner.gd`
+(sandbox has no Godot binary — Piotr to run before pushing).

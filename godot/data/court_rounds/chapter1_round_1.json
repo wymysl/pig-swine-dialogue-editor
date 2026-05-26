@@ -240,7 +240,7 @@
                 "id": "present_return_to_sender_slip",
                 "evidence_id": "return_to_sender_slip",
                 "cost": 0,
-                "available_when": "chapter1.bonus_evidence_collected == 'return_to_sender_slip'",
+                "available_when": "chapter1.client_meeting_evidence == 'return_to_sender_slip'",
                 "fact_flags_set": [
                   "_fact.landlord_knew_address",
                   "_fact.bonus_return_to_sender_slip"
@@ -251,7 +251,7 @@
                 "id": "present_landlord_contact",
                 "evidence_id": "landlord_contact",
                 "cost": 0,
-                "available_when": "chapter1.bonus_evidence_collected == 'landlord_contact'",
+                "available_when": "chapter1.client_meeting_evidence == 'landlord_contact'",
                 "fact_flags_set": [
                   "_fact.bonus_landlord_pre_notice_contact"
                 ],
@@ -299,7 +299,7 @@
                 "id": "present_lease_chain_documents",
                 "evidence_id": "lease_1962_inheritance_1987",
                 "cost": 0,
-                "available_when": "chapter1.bonus_evidence_collected == 'lease_1962_inheritance_1987'",
+                "available_when": "chapter1.client_meeting_evidence == 'lease_1962_inheritance_1987'",
                 "fact_flags_set": [
                   "_fact.bonus_lease_chain_documented"
                 ],
@@ -391,7 +391,7 @@
                 "id": "present_wojcik_witness_statement",
                 "evidence_id": "wojcik_witness_statement",
                 "cost": 0,
-                "available_when": "chapter1.bonus_evidence_collected == 'wojcik_witness_statement'",
+                "available_when": "chapter1.client_meeting_evidence == 'wojcik_witness_statement'",
                 "fact_flags_set": [
                   "_fact.bonus_neighbor_continuity"
                 ],

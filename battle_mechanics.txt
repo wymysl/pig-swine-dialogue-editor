@@ -1,3 +1,9 @@
+> WARNING (2026-05-26): This document is the original 2026-04 spec and
+> contradicts the shipped P0. See PROPOSALS.md §1 (DONE 2026-05-04)
+> and §10 (DONE) for current direction. Do not author against
+> §"Wild Argument encounters", §"Casebook collection", §"Encounter rates",
+> or §"Training Battles" until the full rewrite lands (Phase 6).
+
 Yes. This should become a proper core system. The clean implementation name should be:
 
 > **Casebook Battle System**

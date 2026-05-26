@@ -49,11 +49,89 @@
             "once": true
         },
         {
-            "id": "whimsy_post_decoy_incapacity",
-            "trigger": "chapter1.decoy_incapacity == true && chapter1.met_whimsy == true && !chapter1.entered_court",
-            "_comment": "v4 NEW state — cold-pushback complement to crab_post_halina_incapacity_refuses and murrow_post_decoy_incapacity, per the task brief ('Incapacity blunder gets cold in-fiction pushback from Halina/Crab/Murrow' — Whimsy is added for completeness as the third voice in the room). Whimsy's register is rhetorical, so his refusal lands as a refusal-of-rhetoric: he will not sing the line. Address form 'Dr. A. Cula' — the friend-form is suspended for this beat. once:true.",
-            "lines": ["Dr. A. Cula. I sing for the case. I do not sing for that.", "Find me another note. I will lend my voice to any procedural shape that does not require me to call Mrs. Sikorska feeble in open court."],
+            "id": "whimsy_b12_round2_sympathetic",
+            "trigger": "chapter1.casebook_judge_state == 'round_2_open' && chapter1.client_meeting_stance == 'sympathetic' && chapter1.recruited_whimsy == true",
+            "_comment": "**2026-05-25 critique F4:** Whimsy's Round 2 carrier — sympathetic stance. judge_b12_react_r2 has been reacting to the canonical soup-and-fork-of-bees metaphor since the v3 sweep, but the metaphor was never authored in Whimsy's voice. This state lands it. Style canon §1 supplies the soup metaphor verbatim; style canon §2 mandates one Wordsworth or Shakespeare cite per Phase 2 closing where Whimsy is on stage — Hamlet's 'the law's delay' fits the sympathetic register because it names the human cost of procedural injustice directly. Address form: 'Your Honor' (court-formal). once:true. **NOTE — dispatch:** the Round 2 court flow currently relies on the casebook system advancing casebook_judge_state; verify Whimsy's state fires after the player's Casebook move and before judge_b12_react_r2 when the court-round dispatch sprint lands.",
+            "lines": [
+                "Your Honor. A fair hearing is like soup. If one side is given a spoon and the other a fork made of bees, the court must intervene.",
+                "Mrs. Sikorska sat at a kitchen table for three weeks with a docket that had already moved past her. Hamlet named the harm we are asking the court to undo — 'the law's delay' — and he meant precisely this: a notice that arrives at an envelope but not a person."
+            ],
             "once": true
+        },
+        {
+            "id": "whimsy_b12_round2_blunt_procedural",
+            "trigger": "chapter1.casebook_judge_state == 'round_2_open' && chapter1.client_meeting_stance == 'blunt_procedural' && chapter1.recruited_whimsy == true",
+            "_comment": "**2026-05-25 critique F4:** Whimsy's Round 2 carrier — blunt-procedural stance. Soup metaphor verbatim per style canon §1. Shakespeare cite: Hamlet's 'the insolence of office' — same speech as the sympathetic variant's 'law's delay', different complaint, suits the procedural-sequence framing. The cite names what produces this paper. Address form: 'Your Honor'. once:true.",
+            "lines": [
+                "Your Honor. A fair hearing is like soup. If one side is given a spoon and the other a fork made of bees, the court must intervene.",
+                "The sequence here is plain. The address was renumbered in two thousand and fifteen with the landlord's countersignature; notice was served eleven years later to the address that had ceased to exist. Hamlet called this 'the insolence of office.' A fair hearing requires the office in question to consult its own files before serving them."
+            ],
+            "once": true
+        },
+        {
+            "id": "whimsy_b12_round2_technical",
+            "trigger": "chapter1.casebook_judge_state == 'round_2_open' && chapter1.client_meeting_stance == 'technical' && chapter1.recruited_whimsy == true",
+            "_comment": "**2026-05-25 critique F4:** Whimsy's Round 2 carrier — technical stance. Soup metaphor verbatim per style canon §1. Wordsworth cite from 'Lines Composed a Few Miles Above Tintern Abbey': 'we see into the life of things' — suits the documentary completeness the technical stance has placed before the bench (1962 lease, 1987 succession, 2019 renewal). The cite frames the landlord's failure as the absence of that patient attention. Address form: 'Your Honor'. once:true.",
+            "lines": [
+                "Your Honor. A fair hearing is like soup. If one side is given a spoon and the other a fork made of bees, the court must intervene.",
+                "The record before this court spans sixty-four years — original lease, succession, renewal, all in the file. Wordsworth wrote that with patient attention, one sees 'into the life of things.' The landlord did not pay that attention. He served notice on a building the documents show stopped being his address eleven years ago. A fair hearing requires the office to look at its own ledger before it asks the court to enforce silence."
+            ],
+            "once": true
+        },
+        {
+            "id": "whimsy_b7_dwell_options",
+            "trigger": "chapter1.recruited_whimsy == true && !chapter1.halina_arrived && !chapter1.entered_court && chapter1.state_choice == ''",
+            "_comment": "**2026-05-25 fan-out (F4/F5):** Beat 7 dwell-prompt picker for Whimsy. Scaffolded from cula.json::cula_b7_whimsy_dwell_options. **Trigger change vs cula.json:** the original cula.json gate was `met_whimsy && !recruited_whimsy`, but whimsy.json::before_meeting sets BOTH flags on dismiss, leaving no met-but-not-recruited window — the dwell would never fire as gated. Re-gated post-recruit (bare 'Cula' address form per AGENTS.md) and bounded by !halina_arrived && !entered_court so dwells stay in the Café-Paragraf beat. State-level speaker:'cula'; options chain to reply states. **Soft issue:** picker may re-fire after all three replies exhaust because there is no dwell-completed flag — match the pattern used elsewhere in this file; if runner behaviour requires a hard guard, add chapter1.whimsy_b7_dwells_done on the third reply's dismiss.",
+            "speaker": "cula",
+            "lines": ["[Whimsy has agreed. The espresso cup is between you. One more thing before going back to the office.]"],
+            "options": {
+                "write_path": "chapter1.state_choice",
+                "chain": true,
+                "choices": [
+                    {"text": "Whimsy. Why the café, and not the office?", "value": "cula_b7_whimsy_dwell_office"},
+                    {"text": "Setting the law aside for a second: what is your read on this one?", "value": "cula_b7_whimsy_dwell_case_read"},
+                    {"text": "Honest question: do you ever turn up at the office, or is this the rest of the lease?", "value": "cula_b7_whimsy_dwell_office_visits"}
+                ]
+            }
+        },
+        {
+            "id": "whimsy_b7_dwell_office_reply",
+            "trigger": "chapter1.state_choice == 'cula_b7_whimsy_dwell_office'",
+            "_comment": "**2026-05-25 fan-out:** Beat 7 dwell — *Why work from here?* Per cula.json _comment: 'Cula notes Whimsy's physical distancing without naming it.' Cula's prompt + TODO for Whimsy's reply (Piotr to author). Note: cula.json used 'Mr. Whimsy' here pre-recruit; switched to bare 'Whimsy' to match post-recruit address form.",
+            "lines": [
+                {"speaker": "cula", "text": "Whimsy. Why the café, and not the office?"},
+                "[TODO 2026-05-25: Piotr to author Whimsy's reply. Voice: grandiose, theatrical; one extended metaphor about the office vs the café. Brilliant-when-aimed register. Avoids saying anything boring — if the literal answer is 'the office is small,' the reply makes that small into theatre. One Wordsworth or Shakespeare cite is in budget per style canon §2 if it lands; not mandatory.]"
+            ],
+            "once": true,
+            "on_dismiss": [
+                {"set": "chapter1.state_choice", "value": ""}
+            ]
+        },
+        {
+            "id": "whimsy_b7_dwell_case_read_reply",
+            "trigger": "chapter1.state_choice == 'cula_b7_whimsy_dwell_case_read'",
+            "_comment": "**2026-05-25 fan-out:** Beat 7 dwell — *Your read on the case?* Per cula.json _comment: 'Whimsy treats the case as a rhetorical specimen; Cula's line is the prompt that lets it land.' Cula's prompt + TODO for Whimsy's reply (Piotr to author).",
+            "lines": [
+                {"speaker": "cula", "text": "Setting the law aside for a second: what is your read on this one?"},
+                "[TODO 2026-05-25: Piotr to author Whimsy's reply. Voice: rhetorical-aesthete; treats the case as a piece of music or theatre. Pairing rule (style canon §2 Whimsy): useful for rhetoric and proportionality, dangerous on factual work — keep his read in the rhetorical lane. The fair-hearing-as-soup metaphor lives in Round 2; do not preview it here.]"
+            ],
+            "once": true,
+            "on_dismiss": [
+                {"set": "chapter1.state_choice", "value": ""}
+            ]
+        },
+        {
+            "id": "whimsy_b7_dwell_office_visits_reply",
+            "trigger": "chapter1.state_choice == 'cula_b7_whimsy_dwell_office_visits'",
+            "_comment": "**2026-05-25 fan-out:** Beat 7 dwell — *Do you ever come to the office?* Per cula.json _comment: 'Light. Cula has noticed and asks rather than declaring.' Cula's prompt + TODO for Whimsy's reply (Piotr to author).",
+            "lines": [
+                {"speaker": "cula", "text": "Honest question: do you ever turn up at the office, or is this the rest of the lease?"},
+                "[TODO 2026-05-25: Piotr to author Whimsy's reply. Voice: theatrical-evasive; the office vs café arrangement is a Whimsy choice and he should own it without making it about his colleagues. One florid sentence with a deflection at the end.]"
+            ],
+            "once": true,
+            "on_dismiss": [
+                {"set": "chapter1.state_choice", "value": ""}
+            ]
         },
         {
             "id": "after_recruitment_client_upcoming",
@@ -96,6 +174,16 @@
             "trigger": "chapter1.coffee_buff == 'over_caffeinated' && chapter1.met_whimsy == true && !chapter1.recruited_whimsy && !chapter1.entered_court",
             "_comment": "V1.4 coffee reaction — D/F-grade, pre-recruit.",
             "lines": ["Dr. A. Cula. A tragic brew, but tragedy has rights."]
+        },
+        {
+            "id": "whimsy_b13_response",
+            "trigger": "chapter1.court_won_procedural_reset == true && !chapter1.beat13_complete",
+            "_comment": "**2026-05-25 fan-out (F4/F5):** Beat 13 post-victory exchange with Whimsy, paired with cula.json::cula_b13_whimsy_response. Per Whimsy bible / story.txt Beat 13: 'proposes turning the judgment into a musical.' Cula's reply ('I will look forward to the score, Whimsy. The written closing first, if you can.') is inlined; Whimsy's flourish is the TODO Piotr authors. Address form bare 'Whimsy' from Cula (post-recruit per AGENTS.md).",
+            "lines": [
+                "[TODO 2026-05-25: Piotr to author Whimsy's b13 flourish. Voice: theatrical-aesthete; one extended metaphor turning the procedural reset into a performance. The 'judgment as musical' framing is the canonical seed; the actual flourish can wander as long as it lands on something the bench would tolerate. One Wordsworth or Shakespeare cite is in budget.]",
+                {"speaker": "cula", "text": "I will look forward to the score, Whimsy. The written closing first, if you can."}
+            ],
+            "once": true
         }
     ],
     "idle_flavor": ["A procedural argument without a metaphor is like coffee without water. Dry and slightly offensive."]

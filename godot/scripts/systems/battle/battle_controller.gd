@@ -86,7 +86,7 @@ class PhaseTwoController:
 			var key: String = flag_path.substr(9)
 			if chapter1.get(key, false) == true:
 				return true
-			if key == "bonus_evidence_collected" and chapter1.get(key, "") == evidence_id:
+			if key == "client_meeting_evidence" and chapter1.get(key, "") == evidence_id:
 				return true
 		return false
 
@@ -658,7 +658,7 @@ func _establish_evidence(evidence_id: String) -> void:
 	if not flag_path.begins_with("chapter1."):
 		return
 	var key: String = flag_path.substr(9)
-	if key == "bonus_evidence_collected":
+	if key == "client_meeting_evidence":
 		_write_chapter1_flag(key, evidence_id)
 	else:
 		_write_chapter1_flag(key, true)

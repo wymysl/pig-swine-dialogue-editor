@@ -3284,6 +3284,192 @@
 
   /* Topbar play button (matches existing topbar button shape). */
   #play-btn { /* host adds id="play-btn" */ }
+
+  /* ------------------------------------------------------------------
+     File-picker fallback (browsers without File System Access API).
+     Hidden by default; revealed by the JS feature-detect that runs at
+     load and by the catch-block that traps thrown showDirectoryPicker
+     calls (cross-origin iframe, permission denied, etc.). All styling
+     stays inside this block so the FSA-happy path is byte-identical.
+     ------------------------------------------------------------------ */
+  #open-files-btn { display: none; }
+  #open-files-btn.on { display: inline-flex; align-items: center; }
+  #fallback-mode-pill {
+    display: none;
+    align-items: center;
+    padding: 3px 9px;
+    margin-left: 4px;
+    border-radius: 999px;
+    background: rgba(212, 168, 74, 0.15);
+    border: 1px solid var(--accent);
+    color: var(--accent);
+    font-size: 10.5px;
+    font-weight: 500;
+    letter-spacing: 0.02em;
+    white-space: nowrap;
+  }
+  body.light #fallback-mode-pill { background: rgba(212, 168, 74, 0.18); }
+  #fallback-mode-pill.on { display: inline-flex; }
+  /* In fallback mode the topbar gains two extra elements (Choose files +
+     pill) plus the user is typically on a narrow viewport (iPad). The
+     existing #topbar uses overflow:hidden + flex-shrink:0, which clips
+     the right-side view-toggle group on narrow widths. Turn the topbar
+     into a horizontal-scroll container ONLY when fallback is active so
+     the desktop FSA path is byte-identical. */
+  body.fallback-mode #topbar {
+    overflow-x: auto;
+    overflow-y: hidden;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: thin;
+  }
+  body.fallback-mode #topbar::-webkit-scrollbar { height: 4px; }
+  body.fallback-mode #topbar::-webkit-scrollbar-thumb {
+    background: var(--border); border-radius: 2px;
+  }
+  /* In compact mode (topbar overflowing) also drop our button's text-only
+     label, matching the existing pattern for refresh-flags/theme/view-
+     toggle. The pill stays — it's a status indicator — but shrinks. */
+  #topbar.compact #open-files-btn { padding: 5px 8px; }
+  #topbar.compact #fallback-mode-pill {
+    padding: 3px 7px; font-size: 10px; letter-spacing: 0;
+  }
+
+  /* ------------------------------------------------------------------
+     GitHub cloud-save UI. Topbar button, status pill, and modal that
+     captures the PAT + repo coordinates. Modal mirrors the shortcuts
+     modal pattern so light/dark theming and z-index stay coherent.
+     ------------------------------------------------------------------ */
+  #github-btn .gh-cloud { display: inline-block; margin-right: 4px; }
+  #github-btn.connected {
+    color: var(--accent);
+    border-color: var(--accent);
+  }
+  body.light #github-btn.connected { background: rgba(212, 168, 74, 0.12); }
+  #topbar.compact #github-btn { padding: 5px 8px; }
+
+  #github-modal {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.55);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 9500;
+    backdrop-filter: blur(2px);
+  }
+  body.light #github-modal { background: rgba(28, 26, 20, 0.35); }
+  #github-modal.open { display: flex; }
+  .gh-card {
+    background: var(--surface);
+    border: 1px solid var(--border-strong);
+    border-radius: 12px;
+    width: min(560px, calc(100vw - 48px));
+    max-height: calc(100vh - 96px);
+    overflow-y: auto;
+    box-shadow: var(--shadow-lg);
+    font-family: var(--font-ui);
+  }
+  .gh-head {
+    display: flex; align-items: center; gap: 12px;
+    padding: 16px 22px 14px;
+    border-bottom: 1px solid var(--border);
+  }
+  .gh-title {
+    font-family: var(--font-display);
+    font-size: 18px; font-weight: 600;
+    color: var(--text); flex: 1;
+    letter-spacing: -0.01em;
+  }
+  .gh-close {
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--dim);
+    font-family: var(--font-mono);
+    font-size: 11px;
+    padding: 3px 9px;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+  .gh-close:hover { color: var(--accent); border-color: var(--accent); }
+  .gh-body { padding: 16px 22px 22px; }
+  .gh-body label {
+    display: block;
+    font-size: 11px;
+    color: var(--text-2);
+    margin-bottom: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+  .gh-body label small { text-transform: none; color: var(--dim); letter-spacing: 0; font-size: 10.5px; margin-left: 6px; }
+  .gh-body input[type="text"],
+  .gh-body input[type="password"] {
+    width: 100%;
+    box-sizing: border-box;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 5px;
+    padding: 7px 9px;
+    color: var(--text);
+    font-family: var(--font-mono);
+    font-size: 12px;
+    margin-top: 4px;
+  }
+  .gh-body input:focus { outline: none; border-color: var(--accent); }
+  .gh-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .gh-actions {
+    display: flex; gap: 8px; margin-top: 18px;
+    flex-wrap: wrap;
+  }
+  .gh-actions button {
+    background: var(--surface-2);
+    color: var(--text);
+    border: 1px solid var(--border);
+    padding: 7px 14px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-family: var(--font-ui);
+    font-size: 12px;
+  }
+  .gh-actions button:hover { border-color: var(--accent); color: var(--accent); }
+  .gh-actions button.primary {
+    background: var(--accent);
+    color: var(--bg);
+    border-color: var(--accent);
+  }
+  .gh-actions button.primary:hover { background: #e2b95a; color: var(--bg); }
+  .gh-actions button.danger {
+    color: #d36b6b;
+    border-color: var(--border);
+  }
+  .gh-actions button.danger:hover { border-color: #d36b6b; }
+  #gh-status {
+    margin-top: 12px;
+    padding: 8px 10px;
+    border-radius: 5px;
+    font-size: 11.5px;
+    font-family: var(--font-mono);
+    display: none;
+  }
+  #gh-status.ok { display: block; background: rgba(95, 168, 95, 0.12); color: #8ed08e; border: 1px solid rgba(95, 168, 95, 0.35); }
+  #gh-status.err { display: block; background: rgba(211, 107, 107, 0.12); color: #e29494; border: 1px solid rgba(211, 107, 107, 0.4); }
+  #gh-status.info { display: block; background: rgba(212, 168, 74, 0.1); color: var(--accent); border: 1px solid rgba(212, 168, 74, 0.35); }
+  .gh-help {
+    margin-top: 16px;
+    padding: 10px 12px;
+    background: var(--bg);
+    border-radius: 5px;
+    font-size: 11px;
+    color: var(--text-2);
+    line-height: 1.55;
+  }
+  .gh-help strong { color: var(--accent); }
+  .gh-help code {
+    background: var(--surface-2);
+    padding: 1px 5px;
+    border-radius: 3px;
+    font-family: var(--font-mono);
+    font-size: 10.5px;
+  }
 </style>
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#16140f">
@@ -3301,6 +3487,11 @@
     </div>
     <span class="divider-v"></span>
     <button id="open-btn" title="open or restore a folder of dialogue JSON files">Open folder</button>
+    <button id="open-files-btn" title="pick one or more dialogue JSON files (use this on browsers without folder access — iPad / Safari / Firefox)">Choose files…</button>
+    <span id="fallback-mode-pill" title="This browser does not support the File System Access API. Save triggers a file download — drop the downloaded files back into the dialogue folder yourself (e.g. via Working Copy on iPad).">Save = download</span>
+    <input id="fallback-file-input" type="file" multiple accept=".json,application/json" style="display:none">
+    <input id="fallback-gd-input" type="file" accept=".gd,text/plain" style="display:none">
+    <button id="github-btn" title="cloud-save: read and write dialogue files directly to a GitHub repo via PAT"><span class="gh-cloud" aria-hidden="true">☁</span><span class="btn-label">GitHub</span></button>
     <button id="new-file-btn" disabled="" title="create a new dialogue JSON in the opened folder">+ New file</button>
     <button id="save-btn" class="primary" disabled="" title="save current file (⌘S / Ctrl+S)">Save</button>
     <button id="save-all-btn" disabled="" title="save every dirty file (⇧⌘S / Ctrl+Shift+S)">Save all</button>
@@ -3486,6 +3677,45 @@
     </div>
   </div>
 </div>
+<div id="github-modal" role="dialog" aria-modal="true" aria-labelledby="gh-title">
+  <div class="gh-card">
+    <div class="gh-head">
+      <span class="gh-title" id="gh-title">GitHub cloud save</span>
+      <button class="gh-close" id="gh-close-btn" type="button">Esc</button>
+    </div>
+    <div class="gh-body">
+      <label>Personal Access Token <small>fine-grained, scoped to your repo</small>
+        <input type="password" id="gh-pat" placeholder="github_pat_…" autocomplete="off" spellcheck="false">
+      </label>
+      <div class="gh-row">
+        <label>Repo owner
+          <input type="text" id="gh-owner" placeholder="wymysl" autocomplete="off" spellcheck="false">
+        </label>
+        <label>Repo name
+          <input type="text" id="gh-repo" placeholder="pig-swine-rpg" autocomplete="off" spellcheck="false">
+        </label>
+      </div>
+      <div class="gh-row">
+        <label>Branch
+          <input type="text" id="gh-branch" placeholder="main" autocomplete="off" spellcheck="false">
+        </label>
+        <label>Dialogues path
+          <input type="text" id="gh-path" placeholder="godot/data/dialogues" autocomplete="off" spellcheck="false">
+        </label>
+      </div>
+      <div id="gh-status"></div>
+      <div class="gh-actions">
+        <button id="gh-test-btn" type="button">Test connection</button>
+        <button id="gh-connect-btn" class="primary" type="button">Save &amp; load files</button>
+        <button id="gh-disconnect-btn" class="danger" type="button">Disconnect</button>
+      </div>
+      <div class="gh-help">
+        <strong>One-time setup.</strong> Go to <code>github.com → Settings → Developer settings → Personal access tokens → Fine-grained tokens → Generate new</code>. Resource owner: <em>your account</em>. Repository access: <em>Only select repositories → pick the one you'll edit</em>. Permissions → Repository permissions → <em>Contents: Read and write</em>. Set an expiration (90 days recommended). Paste the token above.<br><br>
+        <strong>Security.</strong> Token is stored in this browser's localStorage. Don't enter it on a shared device. Revoke any time at <code>github.com/settings/tokens</code>.
+      </div>
+    </div>
+  </div>
+</div>
 <script src="vendor/graph-view.js"></script>
 <script src="vendor/simulator.js"></script>
 <script>
@@ -3559,7 +3789,15 @@ const _shortcutsModal = document.getElementById('shortcuts-modal');
 const _topbar = document.getElementById('topbar');
 
 function _updateFolderUiState() {
-  const hasFolder = !!dirHandle;
+  // Treat fallback-mode OR github-mode loaded files as a "folder" for UI-
+  // state purposes, so the sidebar empty hint hides and the welcome screen
+  // yields to the editor.
+  const hasFolder = !!dirHandle || (
+    typeof files === 'object' && files && Object.keys(files).length > 0 && (
+      (typeof fallbackMode !== 'undefined' && fallbackMode) ||
+      (typeof githubMode !== 'undefined' && githubMode)
+    )
+  );
   if (_sidebarEmpty) _sidebarEmpty.style.display = hasFolder ? 'none' : '';
   if (_topbar) _topbar.classList.toggle('needs-folder', !hasFolder);
   // While there's no folder, force the welcome (linear pane) into view so
@@ -3857,7 +4095,13 @@ function updateRestoreButton() {
 
 $('#open-btn').addEventListener('click', async () => {
   if (!hasFSA) {
-    alert('This browser does not support directory access. Use Chrome or Edge.');
+    // Browser lacks the File System Access API (iPad Safari, Firefox, etc.).
+    // Route the click to the file-picker fallback module instead of dying.
+    if (typeof triggerFallbackFilePicker === 'function') {
+      triggerFallbackFilePicker();
+    } else {
+      alert('This browser does not support directory access. Use Chrome or Edge.');
+    }
     return;
   }
   try {
@@ -3888,8 +4132,16 @@ $('#open-btn').addEventListener('click', async () => {
     updateRestoreButton();
   } catch (e) {
     if (e.name !== 'AbortError') {
-      console.error(e);
-      alert('Could not open folder: ' + e.message);
+      // Some browsers expose showDirectoryPicker but throw on call (cross-origin
+      // iframe, SecurityError on permission denial, NotAllowedError, etc.).
+      // Surface the file-picker fallback instead of leaving the user stranded.
+      console.warn('Directory picker failed; offering file-picker fallback:', e);
+      if (typeof enableFallbackMode === 'function') enableFallbackMode();
+      if (typeof triggerFallbackFilePicker === 'function') {
+        triggerFallbackFilePicker();
+      } else {
+        alert('Could not open folder: ' + e.message);
+      }
     }
   }
 });
@@ -7042,7 +7294,35 @@ function serializeDialogue(json) {
 async function saveFile(name) {
   const f = files[name];
   if (!f || !f.dirty) return;
+  // GitHub cloud-save path: file was loaded via the REST API and carries
+  // its blob sha so we can PUT a new commit atomically. Wins over both
+  // the FSA and the file-picker download paths when active.
+  if ((typeof githubMode !== 'undefined' && githubMode) || f.githubSha) {
+    try {
+      await ghSaveFile(name);
+      return;
+    } catch (e) {
+      showToast(`Cloud save failed: ${e.message}`, true);
+      console.error(e);
+      throw e;
+    }
+  }
   const text = serializeDialogue(f.json);
+  // Fallback path: no FSA handle (file-picker mode). Trigger a Blob download
+  // instead of writing through. The user is responsible for pushing the file
+  // back into the dialogue folder (e.g. via Working Copy on iPad).
+  if ((typeof fallbackMode !== 'undefined' && fallbackMode) || !f.handle) {
+    try {
+      downloadAsFile(name, text);
+      f.dirty = false;
+      f.savedSnapshot = buildSavedSnapshot(f.json);
+      return;
+    } catch (e) {
+      showToast(`Download failed: ${e.message}`, true);
+      console.error(e);
+      throw e;
+    }
+  }
   try {
     const writable = await f.handle.createWritable();
     await writable.write(text);
@@ -7085,6 +7365,21 @@ $('#save-btn').addEventListener('click', async () => {
 });
 
 $('#save-all-btn').addEventListener('click', async () => {
+  // In fallback mode bundle every dirty file into a single zip download —
+  // sequential downloads on iPad Safari each trigger a "Download this file?"
+  // prompt, so one zip-per-batch is dramatically better UX. GitHub cloud
+  // mode wins over this: we fall through to the regular sequential loop
+  // below (each saveFile call is its own PUT/commit).
+  if (typeof fallbackMode !== 'undefined' && fallbackMode &&
+      !(typeof githubMode !== 'undefined' && githubMode)) {
+    try { await downloadAllDirtyAsZip(); } catch (e) { return; }
+    $('#save-btn').disabled = true;
+    $('#save-all-btn').disabled = true;
+    updateDirty();
+    renderSidebar();
+    renderContent();
+    return;
+  }
   let count = 0;
   for (const name of Object.keys(files)) {
     if (files[name].dirty) {
@@ -7166,6 +7461,17 @@ if (refreshFlagsBtn) {
 const loadStateGdBtn = $('#load-state-gd-btn');
 if (loadStateGdBtn) {
   loadStateGdBtn.addEventListener('click', async () => {
+    // Fallback path: no showOpenFilePicker (iPad Safari, Firefox).
+    // Route through a plain <input type="file"> — gives us a read-only
+    // stateGdText, which is enough to drive the undeclared-flag warning
+    // system. Auto-add / auto-remove still need a real handle and will
+    // surface their existing "state.gd isn't loaded" toast in fallback.
+    if (typeof window.showOpenFilePicker !== 'function') {
+      _pendingGdRole = 'state';
+      const gdInput = document.getElementById('fallback-gd-input');
+      if (gdInput) { gdInput.value = ''; gdInput.click(); }
+      return;
+    }
     try {
       let handle = stateGdHandle;
       if (!handle) {
@@ -7212,6 +7518,16 @@ if (loadStateGdBtn) {
 const loadSaveGdBtn = $('#load-save-gd-btn');
 if (loadSaveGdBtn) {
   loadSaveGdBtn.addEventListener('click', async () => {
+    // Fallback path: no showOpenFilePicker. Use the shared gd file input.
+    // Without a handle, the auto-migration-block writer can't patch save.gd;
+    // we just stash the text so the editor at least sees that save.gd was
+    // loaded.
+    if (typeof window.showOpenFilePicker !== 'function') {
+      _pendingGdRole = 'save';
+      const gdInput = document.getElementById('fallback-gd-input');
+      if (gdInput) { gdInput.value = ''; gdInput.click(); }
+      return;
+    }
     try {
       let handle = saveGdHandle;
       if (!handle) {
@@ -7771,8 +8087,679 @@ function toggleItalic(textarea) {
   textarea.setSelectionRange(newStart, newEnd);
   textarea.dispatchEvent(new Event('input', { bubbles: true }));
 }
-</script>
 
+// ======================================================================
+// FILE-PICKER FALLBACK (browsers without the File System Access API).
+//
+// Engages automatically on iPad Safari, Firefox, and any other browser
+// where `window.showDirectoryPicker` is missing or rejects on call.
+// Adds:
+//   * "Choose files…" button + hidden <input type="file" multiple> for load
+//   * Blob+anchor download path for single-file saves
+//   * Inlined STORED-method ZIP writer for "Save all" → one bundled download
+//   * "File-picker mode (save = download)" status pill so the user knows
+//     saves don't auto-persist and must be pushed back through e.g. Working
+//     Copy on iPad.
+//
+// The FSA-happy desktop path is byte-identical: when `hasFSA` is true and
+// `showDirectoryPicker` succeeds, `fallbackMode` stays false and none of
+// this code runs except the one-shot feature-detect on load.
+// ======================================================================
+
+// `var` so vendor IIFEs (graph-view, simulator) can see it via window lookup,
+// matching the existing convention for `files` / `currentFile`.
+var fallbackMode = false;
+// Routes the fallback gd <input> change event to either state.gd or save.gd
+// parsing depending on which Load button the user clicked. 'state' | 'save'.
+var _pendingGdRole = null;
+
+function enableFallbackMode() {
+  if (fallbackMode) return;
+  fallbackMode = true;
+  // Body class drives the CSS that turns the topbar into a horizontal-scroll
+  // container so the view-toggle group at the right edge stays reachable on
+  // narrow viewports (iPad portrait, etc.).
+  document.body.classList.add('fallback-mode');
+  const filesBtn = document.getElementById('open-files-btn');
+  const pill = document.getElementById('fallback-mode-pill');
+  if (filesBtn) filesBtn.classList.add('on');
+  if (pill) pill.classList.add('on');
+  // Re-evaluate topbar compactness now that two new elements are visible.
+  if (typeof _evaluateTopbarCompactness === 'function') {
+    requestAnimationFrame(_evaluateTopbarCompactness);
+  }
+  // Welcome footnote currently advertises Chrome/Edge only — soften it.
+  const footnote = document.querySelector('.welcome-footnote');
+  if (footnote) {
+    footnote.innerHTML = 'File System Access API not available here — using file-picker fallback. ' +
+      '<span class="dot">·</span> Saves will download files you must place back into the dialogue folder manually.';
+  }
+}
+
+function triggerFallbackFilePicker() {
+  enableFallbackMode();
+  const input = document.getElementById('fallback-file-input');
+  if (!input) return;
+  // Reset value so the change event fires even if user picks the same files
+  // a second time (some browsers suppress change for identical selections).
+  input.value = '';
+  input.click();
+}
+
+async function _handleFallbackFiles(fileList) {
+  if (!fileList || fileList.length === 0) return;
+  // Mirror loadAllFiles semantics: reset `files`, parse each picked .json,
+  // keep only dialogue-shaped objects, seed uids, build saved snapshots.
+  files = {};
+  let loaded = 0;
+  let skipped = 0;
+  for (const file of fileList) {
+    if (!file.name.endsWith('.json')) { skipped++; continue; }
+    try {
+      const text = await file.text();
+      const json = JSON.parse(text);
+      if (
+        json && typeof json === 'object' &&
+        (Array.isArray(json.states) || Array.isArray(json.idle_flavor) || json.npc_id)
+      ) {
+        seedFileUids(json);
+        files[file.name] = {
+          handle: null,                       // no FSA handle in fallback mode
+          json,
+          dirty: false,
+          staging: isStagingFile(file.name),
+          savedSnapshot: buildSavedSnapshot(json)
+        };
+        loaded++;
+      } else {
+        skipped++;
+      }
+    } catch (e) {
+      console.warn(`Skipping ${file.name}: ${e.message}`);
+      skipped++;
+    }
+  }
+  // loadAllFiles also runs these — keep parity so search / flag warnings /
+  // unused-flag panel populate identically to the FSA path.
+  const folderEl = document.getElementById('stat-folder');
+  if (folderEl) folderEl.textContent = `file-picker · ${loaded} file(s)`;
+  const fileCount = document.getElementById('file-count');
+  if (fileCount) fileCount.textContent = String(loaded);
+  // new-file requires a real dirHandle (it calls getFileHandle({create:true})).
+  // Leave it disabled in fallback mode — users do that on desktop.
+  knownSpeakers = (typeof collectSpeakers === 'function') ? collectSpeakers() : [];
+  flagPaths = (typeof harvestFlagPaths === 'function') ? harvestFlagPaths() : [];
+  if (typeof refreshFlagList === 'function') refreshFlagList();
+  if (typeof renderUnusedFlagsPanel === 'function') renderUnusedFlagsPanel();
+  renderSidebar();
+  if (typeof _updateFolderUiState === 'function') _updateFolderUiState();
+  if (loaded > 0) {
+    showToast(`Loaded ${loaded} file${loaded === 1 ? '' : 's'} (file-picker mode)`);
+  } else {
+    showToast(skipped > 0 ? `No dialogue files in selection (${skipped} skipped)` : 'No files picked', true);
+  }
+}
+
+function downloadAsFile(filename, text) {
+  const blob = new Blob([text], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  setTimeout(() => URL.revokeObjectURL(url), 5000);
+}
+
+// -------- Minimal STORED-method ZIP writer (no compression, no deps) --------
+// Built so "Save all" on iPad produces a single download instead of N prompts.
+// STORED method keeps the implementation tiny — no DEFLATE, no CRC table
+// loaded from elsewhere, just the standard CRC-32 polynomial inlined here.
+const _zipCrcTable = (function () {
+  const t = new Uint32Array(256);
+  for (let n = 0; n < 256; n++) {
+    let c = n;
+    for (let k = 0; k < 8; k++) c = (c & 1) ? (0xEDB88320 ^ (c >>> 1)) : (c >>> 1);
+    t[n] = c >>> 0;
+  }
+  return t;
+})();
+
+function _zipCrc32(bytes) {
+  let c = 0xFFFFFFFF >>> 0;
+  for (let i = 0; i < bytes.length; i++) {
+    c = (_zipCrcTable[(c ^ bytes[i]) & 0xFF] ^ (c >>> 8)) >>> 0;
+  }
+  return (c ^ 0xFFFFFFFF) >>> 0;
+}
+
+function _zipBytes(arr) { return new Uint8Array(arr); }
+function _zipU16(n) { return [n & 0xFF, (n >>> 8) & 0xFF]; }
+function _zipU32(n) { return [n & 0xFF, (n >>> 8) & 0xFF, (n >>> 16) & 0xFF, (n >>> 24) & 0xFF]; }
+
+function makeZipBlob(entries) {
+  // entries: [{ filename: string, data: Uint8Array }]
+  // ZIP date 0x0021 = Jan 1 1980 (the earliest representable date).
+  const localChunks = [];
+  const centralChunks = [];
+  let offset = 0;
+  const enc = new TextEncoder();
+  for (const e of entries) {
+    const nameBytes = enc.encode(e.filename);
+    const data = e.data;
+    const crc = _zipCrc32(data);
+    const lfh = _zipBytes([].concat(
+      _zipU32(0x04034b50),
+      _zipU16(20),                 // version needed to extract
+      _zipU16(0),                  // general purpose bit flag
+      _zipU16(0),                  // compression method (stored)
+      _zipU16(0),                  // last mod file time
+      _zipU16(0x0021),             // last mod file date (1980-01-01)
+      _zipU32(crc),
+      _zipU32(data.length),        // compressed size = uncompressed (stored)
+      _zipU32(data.length),
+      _zipU16(nameBytes.length),
+      _zipU16(0)                   // extra field length
+    ));
+    localChunks.push(lfh, nameBytes, data);
+    const lfhTotal = lfh.length + nameBytes.length + data.length;
+    const cdh = _zipBytes([].concat(
+      _zipU32(0x02014b50),
+      _zipU16(20),                 // version made by
+      _zipU16(20),                 // version needed to extract
+      _zipU16(0), _zipU16(0),
+      _zipU16(0), _zipU16(0x0021),
+      _zipU32(crc),
+      _zipU32(data.length),
+      _zipU32(data.length),
+      _zipU16(nameBytes.length),
+      _zipU16(0), _zipU16(0), _zipU16(0), _zipU16(0),
+      _zipU32(0),                  // external file attributes
+      _zipU32(offset)              // relative offset of local header
+    ));
+    centralChunks.push(cdh, nameBytes);
+    offset += lfhTotal;
+  }
+  const cdSize = centralChunks.reduce((s, c) => s + c.length, 0);
+  const cdOffset = offset;
+  const eocd = _zipBytes([].concat(
+    _zipU32(0x06054b50),
+    _zipU16(0), _zipU16(0),
+    _zipU16(entries.length),
+    _zipU16(entries.length),
+    _zipU32(cdSize),
+    _zipU32(cdOffset),
+    _zipU16(0)                     // .ZIP file comment length
+  ));
+  return new Blob([...localChunks, ...centralChunks, eocd], { type: 'application/zip' });
+}
+
+async function downloadAllDirtyAsZip() {
+  const dirty = Object.entries(files).filter(([_, f]) => f.dirty);
+  if (dirty.length === 0) { showToast('Nothing to save'); return; }
+  if (dirty.length === 1) {
+    // No point zipping a single file.
+    const [name, _f] = dirty[0];
+    await saveFile(name);
+    showToast(`Downloaded ${name}`);
+    return;
+  }
+  const enc = new TextEncoder();
+  const entries = dirty.map(([name, f]) => ({
+    filename: name,
+    data: enc.encode(serializeDialogue(f.json))
+  }));
+  const zip = makeZipBlob(entries);
+  const stamp = new Date().toISOString().replace(/[:.]/g, '-').slice(0, 19);
+  const url = URL.createObjectURL(zip);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `dialogue-changes-${stamp}.zip`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  setTimeout(() => URL.revokeObjectURL(url), 5000);
+  // Mark all clean and refresh snapshots so .modified highlights clear.
+  for (const [_name, f] of dirty) {
+    f.dirty = false;
+    f.savedSnapshot = buildSavedSnapshot(f.json);
+  }
+  showToast(`Downloaded ${dirty.length} files as zip`);
+}
+
+// -------- state.gd / save.gd fallback loader -------------------------------
+// Reads the picked .gd file as text and routes to either parseStateGd (so the
+// undeclared-flag warning system lights up) or save.gd's lightweight sanity
+// check. Auto-add / auto-remove flows still need a real FSA handle and will
+// surface their existing "isn't loaded" toast when invoked.
+async function _handleFallbackGdFile(file) {
+  if (!file) return;
+  let text;
+  try {
+    text = await file.text();
+  } catch (e) {
+    showToast(`Couldn't read ${file.name}: ${e.message}`, true);
+    return;
+  }
+  const role = _pendingGdRole;
+  _pendingGdRole = null;
+  if (role === 'state') {
+    stateGdText = text;
+    try { parseStateGd(text); } catch (e) {
+      showToast(`state.gd parse failed: ${e.message}`, true);
+      return;
+    }
+    renderContent();
+    if (typeof renderUnusedFlagsPanel === 'function') renderUnusedFlagsPanel();
+    const lbl = document.querySelector('#load-state-gd-btn .btn-label');
+    if (lbl) lbl.textContent = `state.gd ✓ (${declaredFlagPaths.size})`;
+    showToast(`Parsed ${declaredFlagPaths.size} flag${declaredFlagPaths.size === 1 ? '' : 's'} from ${file.name} (read-only; auto-add disabled in file-picker mode)`);
+  } else if (role === 'save') {
+    saveGdText = text;
+    const lbl = document.querySelector('#load-save-gd-btn .btn-label');
+    if (lbl) lbl.textContent = `save.gd ✓`;
+    if (!/func\s+migrate_save\s*\(/.test(text)) {
+      showToast(`That file doesn't look like save.gd (no migrate_save). Loaded anyway.`, true);
+    } else {
+      showToast(`Loaded ${file.name} (${text.split('\n').length} lines, read-only)`);
+    }
+  } else {
+    // Unknown role — ignore, but warn.
+    console.warn('Fallback gd-input fired with no pending role.');
+  }
+}
+
+// ======================================================================
+// GITHUB CLOUD-SAVE MODULE
+//
+// Talks to GitHub's REST Contents API from the iPad PWA so saves go
+// straight to a (private) repo without downloading files. Requires a
+// fine-grained PAT with Contents: Read and write on the target repo.
+// The PAT + repo coordinates are stored in localStorage on this origin.
+//
+// API surface:
+//   ghIsConfigured() -> boolean       (PAT + owner + repo all set?)
+//   ghGetConfig() / ghSetConfig(...)  (localStorage I/O)
+//   ghTestConnection() -> {ok, ...}   (validates PAT against /user + repo)
+//   ghLoadAllFiles() -> number        (fetches /contents, populates files{})
+//   ghSaveFile(name) -> Promise       (PUT /contents with sha + retry on conflict)
+//
+// File entries loaded via this module carry `githubSha` and `githubPath`
+// fields that saveFile (patched below) detects to route through ghSaveFile.
+// ======================================================================
+
+const _GH_KEYS = {
+  pat: 'dialogue_editor_gh_pat',
+  owner: 'dialogue_editor_gh_owner',
+  repo: 'dialogue_editor_gh_repo',
+  branch: 'dialogue_editor_gh_branch',
+  path: 'dialogue_editor_gh_path',
+};
+
+// `var` so vendor IIFEs can see the flag through window lookup, same as
+// the rest of the host-level state (files, currentFile, fallbackMode).
+var githubMode = false;
+
+function ghGetConfig() {
+  let c = { pat: '', owner: '', repo: '', branch: 'main', path: 'godot/data/dialogues' };
+  try {
+    c.pat = localStorage.getItem(_GH_KEYS.pat) || '';
+    c.owner = localStorage.getItem(_GH_KEYS.owner) || '';
+    c.repo = localStorage.getItem(_GH_KEYS.repo) || '';
+    c.branch = localStorage.getItem(_GH_KEYS.branch) || 'main';
+    c.path = localStorage.getItem(_GH_KEYS.path) || 'godot/data/dialogues';
+  } catch (_) {}
+  return c;
+}
+
+function ghSetConfig(cfg) {
+  try {
+    if (cfg.pat != null) localStorage.setItem(_GH_KEYS.pat, cfg.pat);
+    if (cfg.owner != null) localStorage.setItem(_GH_KEYS.owner, cfg.owner);
+    if (cfg.repo != null) localStorage.setItem(_GH_KEYS.repo, cfg.repo);
+    if (cfg.branch != null) localStorage.setItem(_GH_KEYS.branch, cfg.branch);
+    if (cfg.path != null) localStorage.setItem(_GH_KEYS.path, cfg.path);
+  } catch (_) {}
+}
+
+function ghClearConfig() {
+  try {
+    for (const k of Object.values(_GH_KEYS)) localStorage.removeItem(k);
+  } catch (_) {}
+}
+
+function ghIsConfigured() {
+  const c = ghGetConfig();
+  return !!(c.pat && c.owner && c.repo);
+}
+
+// Strip leading/trailing slashes from path so URL construction stays clean.
+function _ghNormPath(p) {
+  return String(p || '').replace(/^\/+|\/+$/g, '');
+}
+
+async function ghFetch(apiPath, opts) {
+  const cfg = ghGetConfig();
+  const url = apiPath.startsWith('http') ? apiPath : `https://api.github.com${apiPath}`;
+  const headers = Object.assign({
+    'Accept': 'application/vnd.github+json',
+    'Authorization': `Bearer ${cfg.pat}`,
+    'X-GitHub-Api-Version': '2022-11-28',
+  }, (opts && opts.headers) || {});
+  return fetch(url, Object.assign({}, opts || {}, { headers }));
+}
+
+async function ghTestConnection() {
+  const cfg = ghGetConfig();
+  if (!cfg.pat) return { ok: false, message: 'No PAT set' };
+  if (!cfg.owner || !cfg.repo) return { ok: false, message: 'Owner + repo required' };
+  // /user is the cheapest authenticated endpoint; confirms the PAT works.
+  let res;
+  try { res = await ghFetch('/user'); }
+  catch (e) { return { ok: false, message: `Network: ${e.message}` }; }
+  if (res.status === 401) return { ok: false, message: 'PAT rejected (401). Token wrong, expired, or lacks scopes.' };
+  if (!res.ok) return { ok: false, message: `Auth check failed (${res.status})` };
+  const u = await res.json();
+  // Confirm the repo is reachable (404 here = wrong owner/repo OR PAT not
+  // granted to this repo). Private-repo 404 is indistinguishable from non-
+  // existence, which is by design.
+  const r2 = await ghFetch(`/repos/${encodeURIComponent(cfg.owner)}/${encodeURIComponent(cfg.repo)}`);
+  if (r2.status === 404) return { ok: false, message: `Can't see ${cfg.owner}/${cfg.repo}. Check repo name and that the PAT was granted access to it.` };
+  if (!r2.ok) return { ok: false, message: `Repo check failed (${r2.status})` };
+  const repo = await r2.json();
+  return { ok: true, login: u.login, repo: `${cfg.owner}/${cfg.repo}`, defaultBranch: repo.default_branch };
+}
+
+// UTF-8 safe base64 (btoa() only handles Latin-1, so we go via Uint8Array).
+function _ghB64Encode(text) {
+  const bytes = new TextEncoder().encode(text);
+  let bin = '';
+  for (let i = 0; i < bytes.length; i++) bin += String.fromCharCode(bytes[i]);
+  return btoa(bin);
+}
+function _ghB64Decode(b64) {
+  const clean = String(b64 || '').replace(/\s+/g, '');
+  const bin = atob(clean);
+  const bytes = new Uint8Array(bin.length);
+  for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+  return new TextDecoder().decode(bytes);
+}
+
+async function ghLoadAllFiles() {
+  const cfg = ghGetConfig();
+  const dirPath = _ghNormPath(cfg.path);
+  const ref = encodeURIComponent(cfg.branch || 'main');
+  const listRes = await ghFetch(`/repos/${encodeURIComponent(cfg.owner)}/${encodeURIComponent(cfg.repo)}/contents/${dirPath}?ref=${ref}`);
+  if (listRes.status === 404) throw new Error(`Path "${dirPath}" not found on ${cfg.owner}/${cfg.repo}@${cfg.branch}`);
+  if (!listRes.ok) throw new Error(`List failed: ${listRes.status}`);
+  const list = await listRes.json();
+  if (!Array.isArray(list)) throw new Error(`Path "${dirPath}" is not a directory`);
+
+  files = {};
+  let loaded = 0;
+  let skipped = 0;
+  for (const entry of list) {
+    if (entry.type !== 'file' || !entry.name.endsWith('.json')) { skipped++; continue; }
+    let content, sha;
+    // The list endpoint inlines content for files <1MB (rare for our dialogue
+    // files but check anyway). Otherwise, fetch the file's own contents endpoint.
+    if (entry.content && entry.encoding === 'base64') {
+      content = _ghB64Decode(entry.content);
+      sha = entry.sha;
+    } else {
+      const fileRes = await ghFetch(`/repos/${encodeURIComponent(cfg.owner)}/${encodeURIComponent(cfg.repo)}/contents/${dirPath}/${encodeURIComponent(entry.name)}?ref=${ref}`);
+      if (!fileRes.ok) { console.warn(`Skip ${entry.name}: ${fileRes.status}`); skipped++; continue; }
+      const j = await fileRes.json();
+      content = _ghB64Decode(j.content);
+      sha = j.sha;
+    }
+    try {
+      const json = JSON.parse(content);
+      if (json && typeof json === 'object' &&
+          (Array.isArray(json.states) || Array.isArray(json.idle_flavor) || json.npc_id)) {
+        seedFileUids(json);
+        files[entry.name] = {
+          handle: null,
+          json,
+          dirty: false,
+          staging: isStagingFile(entry.name),
+          savedSnapshot: buildSavedSnapshot(json),
+          githubSha: sha,
+          githubPath: `${dirPath}/${entry.name}`,
+        };
+        loaded++;
+      } else {
+        skipped++;
+      }
+    } catch (e) {
+      console.warn(`Skip ${entry.name}: ${e.message}`);
+      skipped++;
+    }
+  }
+  githubMode = true;
+  // Replicate loadAllFiles' tail (sidebar / flag-paths / unused-flags panel).
+  const folderEl = document.getElementById('stat-folder');
+  if (folderEl) folderEl.textContent = `${cfg.owner}/${cfg.repo} · ${loaded} file(s)`;
+  const fileCount = document.getElementById('file-count');
+  if (fileCount) fileCount.textContent = String(loaded);
+  knownSpeakers = (typeof collectSpeakers === 'function') ? collectSpeakers() : [];
+  flagPaths = (typeof harvestFlagPaths === 'function') ? harvestFlagPaths() : [];
+  if (typeof refreshFlagList === 'function') refreshFlagList();
+  if (typeof renderUnusedFlagsPanel === 'function') renderUnusedFlagsPanel();
+  renderSidebar();
+  if (typeof _updateFolderUiState === 'function') _updateFolderUiState();
+  return loaded;
+}
+
+async function ghSaveFile(name, _retried) {
+  const f = files[name];
+  if (!f) return;
+  const cfg = ghGetConfig();
+  const text = serializeDialogue(f.json);
+  const body = {
+    message: `Edit ${name} via dialogue editor (iPad)`,
+    content: _ghB64Encode(text),
+    sha: f.githubSha,
+    branch: cfg.branch || 'main',
+  };
+  const res = await ghFetch(
+    `/repos/${encodeURIComponent(cfg.owner)}/${encodeURIComponent(cfg.repo)}/contents/${f.githubPath}`,
+    {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body),
+    }
+  );
+  if (!res.ok) {
+    // Conflict: remote moved since we loaded. Refetch sha + retry once
+    // (auto-overwrites the remote with our edits — the desired behaviour
+    // for a solo editor; on real concurrent-author setups this would need
+    // a merge prompt).
+    if ((res.status === 409 || res.status === 422) && !_retried) {
+      const ref = encodeURIComponent(cfg.branch || 'main');
+      const fr = await ghFetch(`/repos/${encodeURIComponent(cfg.owner)}/${encodeURIComponent(cfg.repo)}/contents/${f.githubPath}?ref=${ref}`);
+      if (fr.ok) {
+        const j = await fr.json();
+        f.githubSha = j.sha;
+        return ghSaveFile(name, true);
+      }
+    }
+    let errText = '';
+    try { errText = (await res.text()).slice(0, 220); } catch (_) {}
+    throw new Error(`${res.status}${errText ? ' — ' + errText : ''}`);
+  }
+  const j = await res.json();
+  f.githubSha = (j.content && j.content.sha) || f.githubSha;
+  f.dirty = false;
+  f.savedSnapshot = buildSavedSnapshot(f.json);
+}
+
+// -------- Settings modal wiring (idempotent on re-bind) --------
+function _ghOpenModal() {
+  const modal = document.getElementById('github-modal');
+  if (!modal) return;
+  // Hydrate inputs from current localStorage values.
+  const c = ghGetConfig();
+  document.getElementById('gh-pat').value = c.pat;
+  document.getElementById('gh-owner').value = c.owner;
+  document.getElementById('gh-repo').value = c.repo;
+  document.getElementById('gh-branch').value = c.branch;
+  document.getElementById('gh-path').value = c.path;
+  _ghClearStatus();
+  modal.classList.add('open');
+}
+function _ghCloseModal() {
+  const modal = document.getElementById('github-modal');
+  if (modal) modal.classList.remove('open');
+}
+function _ghReadForm() {
+  return {
+    pat: document.getElementById('gh-pat').value.trim(),
+    owner: document.getElementById('gh-owner').value.trim(),
+    repo: document.getElementById('gh-repo').value.trim(),
+    branch: document.getElementById('gh-branch').value.trim() || 'main',
+    path: _ghNormPath(document.getElementById('gh-path').value.trim() || 'godot/data/dialogues'),
+  };
+}
+function _ghSetStatus(kind, msg) {
+  const el = document.getElementById('gh-status');
+  if (!el) return;
+  el.className = ''; el.classList.add(kind);
+  el.textContent = msg;
+}
+function _ghClearStatus() {
+  const el = document.getElementById('gh-status');
+  if (!el) return;
+  el.className = ''; el.textContent = '';
+}
+function _ghRefreshButton() {
+  const btn = document.getElementById('github-btn');
+  if (!btn) return;
+  const lbl = btn.querySelector('.btn-label');
+  if (ghIsConfigured()) {
+    btn.classList.add('connected');
+    if (lbl) {
+      const c = ghGetConfig();
+      lbl.textContent = githubMode ? `${c.owner}/${c.repo}` : 'GitHub';
+    }
+  } else {
+    btn.classList.remove('connected');
+    if (lbl) lbl.textContent = 'GitHub';
+  }
+}
+
+(function _initGithubUI() {
+  const btn = document.getElementById('github-btn');
+  if (btn) btn.addEventListener('click', _ghOpenModal);
+
+  const closeBtn = document.getElementById('gh-close-btn');
+  if (closeBtn) closeBtn.addEventListener('click', _ghCloseModal);
+  const modal = document.getElementById('github-modal');
+  if (modal) modal.addEventListener('click', (e) => { if (e.target === modal) _ghCloseModal(); });
+
+  const testBtn = document.getElementById('gh-test-btn');
+  if (testBtn) testBtn.addEventListener('click', async () => {
+    ghSetConfig(_ghReadForm());
+    _ghSetStatus('info', 'Testing…');
+    const r = await ghTestConnection();
+    if (r.ok) _ghSetStatus('ok', `OK — ${r.login} can access ${r.repo} (default branch: ${r.defaultBranch})`);
+    else _ghSetStatus('err', r.message);
+  });
+
+  const connectBtn = document.getElementById('gh-connect-btn');
+  if (connectBtn) connectBtn.addEventListener('click', async () => {
+    const form = _ghReadForm();
+    if (!form.pat || !form.owner || !form.repo) {
+      _ghSetStatus('err', 'PAT, owner, and repo are required.');
+      return;
+    }
+    ghSetConfig(form);
+    _ghSetStatus('info', 'Connecting…');
+    try {
+      const r = await ghTestConnection();
+      if (!r.ok) { _ghSetStatus('err', r.message); return; }
+      _ghSetStatus('info', `Loading from ${r.repo}…`);
+      const n = await ghLoadAllFiles();
+      _ghRefreshButton();
+      _ghSetStatus('ok', `Loaded ${n} file${n === 1 ? '' : 's'}. Saves will commit directly to ${r.repo}.`);
+      setTimeout(_ghCloseModal, 900);
+      showToast(`Cloud-save active · ${r.repo}`);
+    } catch (e) {
+      _ghSetStatus('err', e.message);
+    }
+  });
+
+  const disconnectBtn = document.getElementById('gh-disconnect-btn');
+  if (disconnectBtn) disconnectBtn.addEventListener('click', () => {
+    ghClearConfig();
+    githubMode = false;
+    document.getElementById('gh-pat').value = '';
+    document.getElementById('gh-owner').value = '';
+    document.getElementById('gh-repo').value = '';
+    document.getElementById('gh-branch').value = '';
+    document.getElementById('gh-path').value = '';
+    _ghRefreshButton();
+    _ghSetStatus('info', 'Disconnected. Token cleared from this browser.');
+  });
+
+  // Esc closes the modal (and so does pressing Esc in the shortcuts modal —
+  // we don't conflict because the global Esc handler closes whichever modal
+  // is open by class).
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && modal && modal.classList.contains('open')) _ghCloseModal();
+  });
+
+  _ghRefreshButton();
+
+  // Auto-load on launch when configured. Runs after a short timeout so the
+  // rest of the editor (GraphView.init, simulator) has a chance to settle.
+  if (ghIsConfigured()) {
+    setTimeout(async () => {
+      try {
+        const n = await ghLoadAllFiles();
+        _ghRefreshButton();
+        showToast(`Cloud-save · loaded ${n} file${n === 1 ? '' : 's'} from ${ghGetConfig().owner}/${ghGetConfig().repo}`);
+      } catch (e) {
+        console.warn('GitHub auto-load failed:', e);
+        showToast(`Cloud-save: auto-load failed — ${e.message}`, true);
+      }
+    }, 120);
+  }
+})();
+
+// -------- Wire up the fallback UI (idempotent, no FSA-path side-effects) -----
+(function _initFallback() {
+  const filesBtn = document.getElementById('open-files-btn');
+  const input = document.getElementById('fallback-file-input');
+  const gdInput = document.getElementById('fallback-gd-input');
+  if (filesBtn) {
+    filesBtn.addEventListener('click', () => triggerFallbackFilePicker());
+  }
+  if (input) {
+    input.addEventListener('change', (e) => {
+      const list = e.target.files;
+      _handleFallbackFiles(list).catch((err) => {
+        console.error(err);
+        showToast(`Load failed: ${err.message}`, true);
+      });
+    });
+  }
+  if (gdInput) {
+    gdInput.addEventListener('change', (e) => {
+      const f = e.target.files && e.target.files[0];
+      _handleFallbackGdFile(f).catch((err) => {
+        console.error(err);
+        showToast(`Load failed: ${err.message}`, true);
+      });
+    });
+  }
+  // Feature-detect at load: if FSA is missing, reveal the fallback UI so it's
+  // discoverable BEFORE the user clicks "Open folder" and hits a surprise.
+  if (!hasFSA) enableFallbackMode();
+})();
+
+</script>
 
 <script>
 if ('serviceWorker' in navigator) {

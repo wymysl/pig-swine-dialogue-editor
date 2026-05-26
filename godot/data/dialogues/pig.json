@@ -5,9 +5,12 @@
         {
             "id": "pig_first_meeting",
             "trigger": "!chapter1.met_pig",
+            "_comment": "**2026-05-25 fan-out (F4/F5):** opener replaced with the canonical Cula first-meeting greeting (name + self-id + period per AGENTS.md §First-meeting introductions); previous bare 'Good morning' violated the rule. Tail line 'I will take that as a fact and find Mr. Murrow.' inlined after 'Six weeks. Understood.' — the second beat was missing in pig.json and the original flow jumped to 'Anyway. I'm digressing.' without registering Cula's pivot to Murrow. Both lifted from cula.json::cula_b3_pig_first_encounter and cula_b3_pig_rent_reaction; those states queued for deletion from cula.json.",
             "lines": [
                 "It would appear that we are...",
-                {"speaker": "cula", "text": "Mr. Pig. Good morning."},
+                {"speaker": "cula", "text": "Mr. Pig. Cula. The reception sent me back."},
+                {"speaker": "cula", "text": "I gather there is a great deal happening this morning."},
+                {"speaker": "cula", "text": "Would you like to start with the firm, the client, or the deadline?"},
                 "Dr. A. Cula! Welcome. You arrive during, well... a moment.",
                 "Let me assure you first: the firm is not bankrupt. Bankruptcy is for firms whose paperwork has caught up with them. We are luckier than that, in a manner of speaking.",
                 "The rent is six weeks overdue.",
@@ -16,6 +19,7 @@
                 {"speaker": "pig", "text": "There is also the printer lease, which has lapsed, and which I have been renewing by telephone every Thursday, and which the leasing company has stopped answering the telephone about, which is new."},
                 "So. We carry on. Less every morning, but recognisably ourselves.",
                 {"speaker": "cula", "text": "Six weeks. Understood."},
+                {"speaker": "cula", "text": "I will take that as a fact and find Mr. Murrow."},
                 "Anyway. I'm digressing. This is your first day, and we need you to start immediately. We have a case to take care of.",
                 "Mr. Murrow has the folder. Mr. Murrow knows the— ask Mr. Murrow.",
                 {"speaker": "cula", "text": "I'll find him."},
@@ -28,6 +32,61 @@
             "once": true
         },
         {
+            "id": "pig_b3_dwell_options",
+            "trigger": "chapter1.pig_revealed_crisis == true && !chapter1.met_murrow && chapter1.state_choice == ''",
+            "_comment": "**2026-05-25 fan-out (F4/F5):** Beat 3 dwell-prompt picker for Mr. Pig. Scaffolded from cula.json::cula_b3_pig_dwell_options. Cula prompt is the picker itself (state-level speaker:'cula'); reply states gate on chapter1.state_choice and clear it on dismiss. Ordered AFTER pig_first_meeting and BEFORE post_meeting_pre_murrow so dwells fire while Cula is still in the room with Pig pre-Murrow.",
+            "speaker": "cula",
+            "lines": ["[A pause. Pig is still here; ask one more thing before going to find Mr. Murrow.]"],
+            "options": {
+                "write_path": "chapter1.state_choice",
+                "chain": true,
+                "choices": [
+                    {"text": "Mr. Pig. The case itself. Could you give me the shape of it?", "value": "cula_b3_pig_dwell_case"},
+                    {"text": "Before I go, Mr. Pig. Are you all right? Today aside.", "value": "cula_b3_pig_dwell_okay"},
+                    {"text": "And Mr. Swine. Is he expected back this week, or is he travelling?", "value": "cula_b3_pig_dwell_swine"}
+                ]
+            }
+        },
+        {
+            "id": "pig_b3_dwell_case_reply",
+            "trigger": "chapter1.state_choice == 'cula_b3_pig_dwell_case'",
+            "_comment": "**2026-05-25 fan-out:** Beat 3 dwell — *What's the case about?* Per cula.json::cula_b3_pig_dwell_case_reply _comment: 'Mr. Pig should not explain the case properly; expected reply is Pig deflecting to Murrow with dignity.' Cula's prompt + TODO for Pig's deflection (Piotr to author per 'you author, I wire' decision 2026-05-25).",
+            "lines": [
+                {"speaker": "cula", "text": "Mr. Pig. The case itself. Could you give me the shape of it?"},
+                "[TODO 2026-05-25: Piotr to author Pig's deflection to Murrow. Voice: panicked-while-formal, escalating then re-routing. Pig knows the case exists; he should not be able to describe its actual procedural shape. End on pointing Cula at Mr. Murrow with dignity intact.]"
+            ],
+            "once": true,
+            "on_dismiss": [
+                {"set": "chapter1.state_choice", "value": ""}
+            ]
+        },
+        {
+            "id": "pig_b3_dwell_okay_reply",
+            "trigger": "chapter1.state_choice == 'cula_b3_pig_dwell_okay'",
+            "_comment": "**2026-05-25 fan-out:** Beat 3 dwell — *Are you okay?* Per cula.json::cula_b3_pig_dwell_okay_reply _comment: 'pierces the panic for one beat; expected reply is a brief admission of sleeplessness per the beat sheet. Exposes Pig's interior range.' Cula's prompt + TODO for Pig's reply (Piotr to author).",
+            "lines": [
+                {"speaker": "cula", "text": "Before I go, Mr. Pig. Are you all right? Today aside."},
+                "[TODO 2026-05-25: Piotr to author Pig's brief admission. Voice: formal-while-cracking. One unguarded sentence about sleeplessness or the rent, then immediate recomposition with a formal redirect. Sets up the Ch5 sincere line by establishing Pig's interior range here.]"
+            ],
+            "once": true,
+            "on_dismiss": [
+                {"set": "chapter1.state_choice", "value": ""}
+            ]
+        },
+        {
+            "id": "pig_b3_dwell_swine_reply",
+            "trigger": "chapter1.state_choice == 'cula_b3_pig_dwell_swine'",
+            "_comment": "**2026-05-25 fan-out:** Beat 3 dwell — *Where is Mr. Swine?* Per cula.json::cula_b3_pig_dwell_swine_reply _comment: 'clarifying question that plants Beat 14 / Chapter 4 Mr. Swine thread.' Cula's prompt + TODO for Pig's evasion-or-half-truth (Piotr to author).",
+            "lines": [
+                {"speaker": "cula", "text": "And Mr. Swine. Is he expected back this week, or is he travelling?"},
+                "[TODO 2026-05-25: Piotr to author Pig's reply about Swine's absence. Voice: airy-evasive on Swine's whereabouts; Pig has incomplete information himself. Plant the Beat 14 postcard (Japan / Sapporo per chapter_1.md) and the Ch4 return without naming either directly.]"
+            ],
+            "once": true,
+            "on_dismiss": [
+                {"set": "chapter1.state_choice", "value": ""}
+            ]
+        },
+        {
             "id": "post_meeting_pre_murrow",
             "trigger": "chapter1.met_pig == true && !chapter1.met_murrow",
             "lines": ["Yes. Mr. Murrow. As I said. Apologies for the noise. Please don't forget to bill this conversation under \"Business Development\"."]
@@ -35,7 +94,8 @@
         {
             "id": "met_murrow_pre_binder",
             "trigger": "chapter1.met_murrow == true && !chapter1.has_law_binder",
-            "lines": ["The procedural binder is in the archive, unless it has finally achieved sentience and crawled below deck."]
+            "_comment": "**2026-05-25 critique F11:** maritime metaphor ('crawled below deck') cut in service of letting Ch5 sincere-Pig land. Replaced with a Hrabal-rhythm wandering sentence that lands on the printer-lease — Pig's other established Ch1 anxiety. The tic now appears once in Ch1 (pig_first_meeting), in idle_flavor (ambient between scenes), and nowhere else.",
+            "lines": ["The procedural binder is in the archive. Or it was, when I last saw it, which I want to say was Tuesday — Tuesday was also when I last saw the printer-lease renewal, and only one of those two things can still be true."]
         },
         {
             "id": "has_binder_only",
@@ -57,8 +117,13 @@
         {
             "id": "pig_b13_celebration",
             "trigger": "chapter1.court_won_procedural_reset == true",
-            "_comment": "2026-05-19 critique F9: previously-missing Beat 13 celebration speech that cula_b13_pig_celebration_response in cula.json was authored to react to. Firm-first / client-second ordering is load-bearing — the player should register that this firm celebrates its own survival before the client's. Maritime tic recedes (sincere undercut beat per style_canon §Mr. Pig arc rule; not the Ch5 fully-sincere moment, but the first hairline crack in the panic frame). once:true uses SAVE_VERSION 12 declarative fire-once (dialogue_states_seen) — no manual flag needed. Ordered before has_binder_and_memo so this state wins on Beat 13.",
-            "lines": ["Dr. A. Cula! We have survived another impossible thing.", "The firm carries on. The client — yes, the client — also carries on. Both, mercifully, in that order.", "I would offer a toast, but the only glasses in this office are the ones Mr. Murrow reads with."],
+            "_comment": "2026-05-19 critique F9: previously-missing Beat 13 celebration speech that cula_b13_pig_celebration_response in cula.json was authored to react to. Firm-first / client-second ordering is load-bearing — the player should register that this firm celebrates its own survival before the client's. Maritime tic recedes (sincere undercut beat per style_canon §Mr. Pig arc rule; not the Ch5 fully-sincere moment, but the first hairline crack in the panic frame). once:true uses SAVE_VERSION 12 declarative fire-once (dialogue_states_seen) — no manual flag needed. Ordered before has_binder_and_memo so this state wins on Beat 13. **2026-05-25 fan-out:** Cula's response inlined from cula.json::cula_b13_pig_celebration_response (queued for deletion).",
+            "lines": [
+                "Dr. A. Cula! We have survived another impossible thing.",
+                "The firm carries on. The client — yes, the client — also carries on. Both, mercifully, in that order.",
+                "I would offer a toast, but the only glasses in this office are the ones Mr. Murrow reads with.",
+                {"speaker": "cula", "text": "Temporarily saved is still saved, Mr. Pig. I am learning that this office measures success in survivable intervals."}
+            ],
             "once": true
         },
         {

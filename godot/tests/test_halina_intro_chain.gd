@@ -39,7 +39,7 @@ func _check_stance(state_node: Node, sigs: Node, runner: Node, stance: String, e
 	ch1["halina_trust"] = 0
 	ch1["halina_r0_done"] = false
 	ch1["client_meeting_stance"] = ""
-	ch1["bonus_evidence_collected"] = ""
+	ch1["client_meeting_evidence"] = ""
 	if state_node.data.has("dialogue_states_seen"):
 		state_node.data["dialogue_states_seen"] = []
 	_line_capture = ["", []]
@@ -69,11 +69,11 @@ func _check_stance(state_node: Node, sigs: Node, runner: Node, stance: String, e
 		])
 
 	sigs.dialogue_dismissed.emit()
-	if ch1["halina_r0_done"] == true and ch1["bonus_evidence_collected"] == expected_evidence:
+	if ch1["halina_r0_done"] == true and ch1["client_meeting_evidence"] == expected_evidence:
 		_pass("dismiss '%s' writes first-round evidence %s" % [stance, expected_evidence])
 	else:
 		_fail("dismiss '%s' wrong r0 state; r0_done=%s evidence=%s" % [
-			stance, str(ch1["halina_r0_done"]), str(ch1["bonus_evidence_collected"])
+			stance, str(ch1["halina_r0_done"]), str(ch1["client_meeting_evidence"])
 		])
 
 

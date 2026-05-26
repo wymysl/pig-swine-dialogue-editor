@@ -47,36 +47,36 @@
             ],
             "on_dismiss": [
                 {"set": "chapter1.halina_r0_done", "value": true},
-                {"set": "chapter1.bonus_evidence_collected", "value": "wojcik_witness_statement"}
+                {"set": "chapter1.client_meeting_evidence", "value": "wojcik_witness_statement"}
             ]
         },
         {
             "id": "client_meeting_r0_response_blunt",
             "trigger": "chapter1.halina_met == false && chapter1.halina_r0_done == false && chapter1.client_meeting_stance == 'blunt_procedural'",
-            "_comment": "Fires when Cula opened blunt-procedurally. Halina gives the notice sequence first; the prior returned letter becomes the stance's bonus evidence.",
+            "_comment": "Fires when Cula opened blunt-procedurally. Halina gives the notice sequence first; the prior returned letter becomes the stance's bonus evidence. **2026-05-25 critique F2:** added two observational asides — the young man's apology at the door, and the woman at the landlord's office who read the address back twice — so the procedural recitation carries the texture the high-trust paths use, without breaking the blunt-procedural register.",
             "lines": [
                 {"speaker": "cula", "text": "Mrs. Sikorska. I wanted to ask about the notice first. Date, receipt, and who brought it to you."},
-                "The notice is dated the eighth of April. I received it on the twenty-eighth. The young man now living at number seven brought it down. He had opened the first page before realising it was not for him.",
+                "The notice is dated the eighth of April. I received it on the twenty-eighth. The young man now living at number seven brought it down. He had opened the first page before realising it was not for him. He apologised at the door.",
                 {"speaker": "cula", "text": "Number seven is your old number."},
                 "Yes. Since the two thousand and fifteen renumbering, my apartment has been number twelve.",
                 {"speaker": "cula", "text": "Had the landlord used the correct address before."},
-                "Yes. In October, a rent statement sent to number seven came back. His office telephoned me and resent it to number twelve.",
+                "Yes. In October, a rent statement sent to number seven came back. A woman at his office telephoned me a week later — she could not have been older than my son. She read the address back twice, to be sure, before they resent it to number twelve.",
                 {"speaker": "crab", "text": "Returned once, corrected once, then repeated. That is useful."},
                 {"speaker": "murrow", "text": "Prior knowledge in paper form. Paper is less forgetful than people."},
                 {"speaker": "cula", "text": "Good. We will ask for the return-to-sender slip."}
             ],
             "on_dismiss": [
                 {"set": "chapter1.halina_r0_done", "value": true},
-                {"set": "chapter1.bonus_evidence_collected", "value": "return_to_sender_slip"}
+                {"set": "chapter1.client_meeting_evidence", "value": "return_to_sender_slip"}
             ]
         },
         {
             "id": "client_meeting_r0_response_technical",
             "trigger": "chapter1.halina_met == false && chapter1.halina_r0_done == false && chapter1.client_meeting_stance == 'technical'",
-            "_comment": "Fires when Cula opened technically (trust < 2, technical stance). Halina stays factual: lease chain, renumbering, notice address discrepancy. Sets bonus_evidence = lease_1962_inheritance_1987.",
+            "_comment": "Fires when Cula opened technically (trust < 2, technical stance). Halina stays factual: lease chain, renumbering, notice address discrepancy. Sets bonus_evidence = lease_1962_inheritance_1987. **2026-05-25 critique F2:** added one biographical sentence (Halina's father as a railwayman assigned to Warsaw) so the technical recitation grounds in a teacher's-tic detail without breaking register. Matches the 'railways' biographical detail volunteered in client_meeting_r0_response_high.",
             "lines": [
                 {"speaker": "cula", "text": "Mrs. Sikorska. The lease chain. Walk me through it from the beginning."},
-                "My father had the lease from nineteen sixty-two. I inherited it in eighty-seven. The renewal is from two thousand and nineteen. The address on the renewal is number twelve — the post-renumbering address.",
+                "My father had the lease from nineteen sixty-two. He was a railwayman — they assigned him the apartment when he was moved to Warsaw. I inherited in eighty-seven, after his death. The renewal is from two thousand and nineteen. Number twelve — the post-renumbering address.",
                 {"speaker": "cula", "text": "And the notice."},
                 "Number seven. The address as it stood before the renumbering. The building was renumbered in two thousand and fifteen. My apartment has not been number seven for eleven years.",
                 {"speaker": "murrow", "text": "The landlord renewed to the correct address in two thousand and nineteen. He knew the renumbering had occurred. The notice is defective on its face."},
@@ -87,7 +87,7 @@
             ],
             "on_dismiss": [
                 {"set": "chapter1.halina_r0_done", "value": true},
-                {"set": "chapter1.bonus_evidence_collected", "value": "lease_1962_inheritance_1987"}
+                {"set": "chapter1.client_meeting_evidence", "value": "lease_1962_inheritance_1987"}
             ]
         },
         {
@@ -123,7 +123,7 @@
             ],
             "on_dismiss": [
                 {"set": "chapter1.halina_r1_done", "value": true},
-                {"set": "chapter1.bonus_evidence_collected", "value": "return_to_sender_slip"}
+                {"set": "chapter1.client_meeting_evidence", "value": "return_to_sender_slip"}
             ]
         },
         {
@@ -177,7 +177,7 @@
             ],
             "on_dismiss": [
                 {"set": "chapter1.halina_r2_done", "value": true},
-                {"set": "chapter1.bonus_evidence_collected", "value": "landlord_contact"},
+                {"set": "chapter1.client_meeting_evidence", "value": "landlord_contact"},
                 {"set": "chapter1.landlord_tip_received", "value": true}
             ]
         },
@@ -198,9 +198,50 @@
             ]
         },
         {
+            "id": "client_meeting_dwell_picker",
+            "trigger": "chapter1.halina_r2_done == true && chapter1.halina_close_done == false && chapter1.state_choice == ''",
+            "_comment": "**2026-05-25 fan-out (F4/F5):** Beat 8 biographical dwell picker. Scaffolded from cula.json::cula_b8_dwell_options with the apartment option dropped (DUPLICATIVE per recon — biographical content already in client_meeting_r0_response_high). Two remaining design-call dwells (referral + taught) authored per Piotr's 2026-05-25 decision. State-level speaker:'cula'. Ordered BEFORE client_meeting_close so picker wins while state_choice is empty; once both dwells fire, picker shows no remaining choices and player advances to close. Soft issue: no hard guard against re-firing if runner doesn't respect once:true on the reply states — match the pattern used for Pig/Murrow/Crab/Whimsy dwells.",
+            "speaker": "cula",
+            "lines": ["[Before the close: one more biographical question.]"],
+            "options": {
+                "write_path": "chapter1.state_choice",
+                "chain": true,
+                "choices": [
+                    {"text": "And how did you come to find us? Was there anyone else you were speaking with?", "value": "cula_b8_dwell_referral"},
+                    {"text": "I take it from how you have laid out the folder that you have done a lot of careful work in your life. What did you teach, before retirement?", "value": "cula_b8_dwell_taught"}
+                ]
+            }
+        },
+        {
+            "id": "client_meeting_dwell_referral",
+            "trigger": "chapter1.state_choice == 'cula_b8_dwell_referral'",
+            "_comment": "**2026-05-25 fan-out:** Beat 8 dwell — *How did you come to find us?* Per cula.json _comment: 'plants Murrow's reputation outside the firm.' Halina-bible reference: clients of this kind would mention a community channel (a neighbour, a tenant union, a parish referral, a former colleague). Cula's prompt + TODO for Halina's reply (Piotr to author).",
+            "lines": [
+                {"speaker": "cula", "text": "And how did you come to find us? Was there anyone else you were speaking with?"},
+                "[TODO 2026-05-25: Piotr to author Halina's reply. Voice: retired-teacher register, one observational aside. The plant: Mr. Murrow has a reputation outside the firm — a neighbour, a former student, a parish, a tenant association mentioned him. Do not over-explain the channel; one specific detail (the person's name or role) is enough. Pays back in Ch4 retraversal.]"
+            ],
+            "once": true,
+            "on_dismiss": [
+                {"set": "chapter1.state_choice", "value": ""}
+            ]
+        },
+        {
+            "id": "client_meeting_dwell_taught",
+            "trigger": "chapter1.state_choice == 'cula_b8_dwell_taught'",
+            "_comment": "**2026-05-25 fan-out:** Beat 8 dwell — *What did you teach?* Per cula.json _comment: 'Halina's reply names Polish language and literature for 38 years and may produce a literary reference.' Pairs with the Iwaszkiewicz reference now in client_meeting_epigram (authored 2026-05-25 per critique F2). Cula's prompt + TODO for Halina's reply (Piotr to author). If a writer is named here, it should NOT be Iwaszkiewicz (avoid double-landing the same author); Polish-literature canon has plenty of room — Tuwim, Konwicki, Szymborska, or a poet she taught to a specific cohort.",
+            "lines": [
+                {"speaker": "cula", "text": "I take it from how you have laid out the folder that you have done a lot of careful work in your life. What did you teach, before retirement?"},
+                "[TODO 2026-05-25: Piotr to author Halina's reply. Voice: retired-teacher register, biographical. Names Polish language and literature; 38 years; one specific writer or text she taught (NOT Iwaszkiewicz — he lands in the epigram state). One sentence of teacher's-tic: noticing what a sentence is doing, naming a register, the kind of class-of-students observation a teacher might make.]"
+            ],
+            "once": true,
+            "on_dismiss": [
+                {"set": "chapter1.state_choice", "value": ""}
+            ]
+        },
+        {
             "id": "client_meeting_close",
             "trigger": "chapter1.halina_met == false && chapter1.halina_r2_done == true && chapter1.halina_close_done == false",
-            "_comment": "Shared close: Cula summarises, Murrow takes the fee, Pig interrupts with Hennessy phone, retention signed, farewells. Cardiologist plant. All meeting paths converge here. Sets halina_met, client_fee_agreed, halina_close_done, cardiologist_plant_landed.",
+            "_comment": "**2026-05-25 critique F9:** 26-line monolith split into three sequential states. This one (close) carries the fee/retention transaction + Pig's interruption + Murrow's redirect. Cardiologist plant moves to client_meeting_cardiologist_plant. Literary epigram + farewells move to client_meeting_epigram. Hennessy retainer phone reference cut (per critique F9 — Hennessy has no setup anywhere in committed Ch1); replaced with printer + rent-envelope callbacks to established Ch1 firm details. Sets client_fee_agreed; the other flags move to the discrete plant states so each plant lands with breath.",
             "lines": [
                 {"speaker": "cula", "text": "The current tenancy paperwork. The defective notice. The court docket. Mr. Murrow has the file."},
                 {"speaker": "murrow", "text": "I do."},
@@ -208,41 +249,58 @@
                 "Thank you. I will be available either way.",
                 {"speaker": "murrow", "text": "The fee for the motion and the rescheduled hearing is five thousand. Fixed. It includes the filing, the appearance, and any drafting necessary if the landlord answers."},
                 "Five thousand. I have the money. I will transfer it before Friday.",
-                "I will need to reschedule with my cardiologist again. He is patient with me.",
-                {"speaker": "murrow", "text": "The retention is ready for signature. I will bring it through."},
+                {"speaker": "murrow", "text": "The retention is ready for signature. Two signatures, here and here. I will witness."},
                 "Thank you.",
-                {"speaker": "pig", "text": "Mr. Murrow. The Hennessy retainer phone has gone overboard. Third time this morning. Where is Asia."},
-                {"speaker": "pig", "text": "And the printer is throwing red lights. Small craft warning, Mr. Murrow —"},
+                {"speaker": "pig", "text": "Mr. Murrow. The printer is throwing red lights again. Third time this morning. Where is Asia."},
+                {"speaker": "pig", "text": "And the rent envelope from upstairs has reappeared in the in-tray, addressed correctly this time —"},
                 {"speaker": "murrow", "text": "Mr. Pig. A moment. The meeting room."},
                 {"speaker": "murrow", "text": "The printer. Now."},
                 "I gather Mr. Pig is the senior partner.",
                 {"speaker": "cula", "text": "He is."},
                 "I gather the firm is busy.",
                 {"speaker": "cula", "text": "It is."},
-                {"speaker": "murrow", "text": "My apologies, Mrs. Sikorska. The Hennessy retainer phone is a long-running matter."},
-                "Of course.",
+                {"speaker": "murrow", "text": "My apologies, Mrs. Sikorska. The printer is a long-running matter."},
+                "Of course."
+            ],
+            "on_dismiss": [
+                {"set": "chapter1.client_fee_agreed", "value": true}
+            ]
+        },
+        {
+            "id": "client_meeting_cardiologist_plant",
+            "trigger": "chapter1.client_fee_agreed == true && chapter1.cardiologist_plant_landed == false && chapter1.halina_close_done == false",
+            "_comment": "**2026-05-25 critique F9:** cardiologist plant extracted from client_meeting_close as a discrete short state. Per story.txt Beat 8: framed neutrally — no italics, no clutched chest, no Cula reaction line. Single Halina line, then dismiss. The next state's trigger (the epigram) waits on cardiologist_plant_landed. The discrete state is the breath the plant needs to be heard rather than skimmed past.",
+            "lines": ["I will need to reschedule with my cardiologist again. He is patient with me."],
+            "on_dismiss": [
+                {"set": "chapter1.cardiologist_plant_landed", "value": true}
+            ]
+        },
+        {
+            "id": "client_meeting_epigram",
+            "trigger": "chapter1.cardiologist_plant_landed == true && chapter1.halina_close_done == false",
+            "_comment": "**2026-05-25 critique F9:** literary epigram extracted from client_meeting_close, now a discrete short state. The Iwaszkiewicz reference (flagged for phase-7 voice work in story.txt Beat 8 and never written until now per critique F2) lands as a teacher's biographical aside — not a fabricated direct quote; Halina names that she taught his stories for thirty-eight years and only now believes them. Cula's response (previously orphaned in cula.json::cula_b8_literary_epigram_reaction per F4 recon) is inlined here. Sets halina_met + halina_close_done; downstream client_meeting_reveal and halina_post_meeting_decoy_incapacity_cold continue to gate on halina_met.",
+            "lines": [
                 "You go to a lawyer like you go to a doctor: too late.",
-                {"speaker": "murrow", "text": "Two signatures. Here and here. I will witness."},
-                "Thank you.",
+                "It is something Iwaszkiewicz might have written. I taught his stories for thirty-eight years. I did not believe them until this year.",
+                {"speaker": "cula", "text": "I will try to make the visit worth the timing, Mrs. Sikorska."},
                 "Until Friday.",
                 {"speaker": "cula", "text": "Until Friday. Thank you, Mrs. Sikorska."},
-                "Thank you, Dr. A. Cula. Mr. Crab. Mr. Whimsy. Mr. Murrow."
+                "Thank you, Dr. A. Cula. Mr. Crab. Mr. Whimsy. Mr. Murrow.",
+                {"speaker": "cula", "text": "Murrow. Archive Room?"}
             ],
             "on_dismiss": [
                 {"set": "chapter1.halina_met", "value": true},
-                {"set": "chapter1.client_fee_agreed", "value": true},
-                {"set": "chapter1.halina_close_done", "value": true},
-                {"set": "chapter1.cardiologist_plant_landed", "value": true}
+                {"set": "chapter1.halina_close_done", "value": true}
             ]
         },
         {
             "id": "halina_post_meeting_decoy_incapacity_cold",
             "trigger": "chapter1.halina_met == true && chapter1.decoy_incapacity == true && !chapter1.entered_court",
-            "_comment": "v4 addition 2026-05-16: 'Incapacity blunder gets cold in-fiction pushback from Halina/Crab/Murrow.' Fires when Cula went back to Crab post-meeting, picked D5, and re-engages Halina before court. In-fiction channel: Mr. Murrow has notified the client (the close establishes Murrow as the firm's contact point with her — 'Mr. Murrow will pass it to me'). Halina's voice stays measured; the cold is in the brevity and in the address-form Cula uses to her, not in volume. She does not raise her voice; she does not negotiate. The line preserves her dignity by treating the proposal as a procedural error to be corrected, not as a personal slight to be forgiven. once:true so the state doesn't loop on each re-engage. **2026-05-19 critique F10:** reordered to fire BEFORE client_meeting_reveal so the behavioural rebuke lands before the earned disclosure when both qualify; a player who maxed trust AND picked the incapacity blunder must hear the correction first, not the gift first.",
+            "_comment": "v4 addition 2026-05-16: 'Incapacity blunder gets cold in-fiction pushback from Halina/Crab/Murrow.' Fires when Cula went back to Crab post-meeting, picked D5, and re-engages Halina before court. In-fiction channel: Mr. Murrow has notified the client. Halina's voice stays measured; the cold is in the brevity and in the address-form Cula uses to her, not in volume. once:true so the state doesn't loop on each re-engage. **2026-05-19 critique F10:** reordered to fire BEFORE client_meeting_reveal so the behavioural rebuke lands before the earned disclosure when both qualify. **2026-05-25 critique F2:** original closer ('I am not too old to be served with a letter. I am too inconvenient to be served with the right letter.') was a two-clause antithesis that read as Murrow's voice on Halina's mouth; rewritten as three short sentences a 71-year-old former Polish-literature teacher would actually speak, with the substantive point preserved (case is about service, not capacity) and the landlord's countersignature named directly.",
             "lines": [
                 "Dr. A. Cula. Mr. Murrow rang. He read me the proposed argument on the question of my age.",
                 {"speaker": "cula", "text": "Mrs. Sikorska —"},
-                "I have lived in that flat since nineteen eighty-seven. I have paid the rent every month since my father died. I am not too old to be served with a letter. I am too inconvenient to be served with the right letter.",
+                "I am seventy-one. I have lived in that flat since nineteen eighty-seven. I am not the reason the letter went to the wrong door. The landlord knew the right door — he countersigned for it in two thousand and nineteen.",
                 "Please withdraw it. The case is not about whether I can read."
             ],
             "once": true
