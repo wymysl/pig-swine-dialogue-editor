@@ -372,6 +372,11 @@ func player_present(move: Resource, evidence_id: String) -> Dictionary:
 		_write_chapter1_flag("judicial_patience", _phase_two.judicial_patience)
 
 	_round_buckets[_round_index] = bucket
+	if not _is_phase_one_round(_round_index):
+		var opponent_move_id: String = ""
+		if opponent_move != null:
+			opponent_move_id = opponent_move.move_id
+		_append_phase2_result(_round_index, evidence_id, bucket, opponent_move_id)
 
 	var result: Dictionary = _base_result(resolved)
 	result["action"] = "present"
@@ -411,19 +416,11 @@ func end_round() -> Dictionary:
 		return result
 
 	_write_chapter1_flag("casebook_judge_state", _active_round.react_tag)
-	var all_non_backfire: bool = true
-	for index in [1, 2, 3]:
-		if str(_round_buckets.get(index, "backfires")) == "backfires":
-			all_non_backfire = false
-			break
 
 	var packet_result: Dictionary = consume_assembled_packet()
-	var outcome: String = str(packet_result.get("outcome", OUTCOME_BLUNDER_RECOVERED))
-	if not all_non_backfire and (outcome == OUTCOME_STRONG or outcome == OUTCOME_STANDARD):
-		outcome = OUTCOME_NARROW
+	var outcome: String = _compute_court_outcome(packet_result)
 	_write_chapter1_flag("court_won_procedural_reset", true)
 	_write_chapter1_flag("won_court", true)
-
 	_write_chapter1_flag("court_outcome", outcome)
 	result["packet_score"] = packet_result
 	result["court_won_procedural_reset"] = bool(_chapter1().get("court_won_procedural_reset", false))
@@ -431,6 +428,60 @@ func end_round() -> Dictionary:
 	result["casebook_judge_state"] = str(_chapter1().get("casebook_judge_state", ""))
 	_last_result = result
 	return result
+
+
+## _compute_court_outcome — determines the dispositive court_outcome band
+## from BOTH packet completeness (via packet_scorer) AND Phase 2 citation
+## quality (via chapter1.phase2_round_results). Replaces the old premature
+## court_outcome write in consume_assembled_packet().
+##
+## Outcome bands (Path A):
+##   OUTCOME_STRONG = packet complete ∧ ≥3 super_effective citations ∧ no backfires
+##   OUTCOME_STANDARD = packet complete ∧ ≥2 effective-or-better citations ∧ no backfires
+##   OUTCOME_NARROW = packet narrow ∨ any backfire ∨ weak citations
+##   OUTCOME_BLUNDER_RECOVERED = incapacity / burns-round path
+func _compute_court_outcome(packet_result: Dictionary) -> String:
+	var packet_outcome: String = str(packet_result.get("outcome", OUTCOME_BLUNDER_RECOVERED))
+
+	## Blunder-recovered stays blunder-recovered — the packet itself is
+	## fatally compromised (incapacity filed, round burned, ≤1 slot supported).
+	if packet_outcome == OUTCOME_BLUNDER_RECOVERED:
+		return OUTCOME_BLUNDER_RECOVERED
+
+	## Read Phase 2 citation results accumulated by player_present().
+	var ch1: Dictionary = _chapter1()
+	var results: Array = []
+	if ch1.get("phase2_round_results", []) is Array:
+		results = ch1.get("phase2_round_results", [])
+
+	var super_effective_count: int = 0
+	var effective_or_better_count: int = 0
+	for entry in results:
+		if not entry is Dictionary:
+			continue
+		var bucket: String = str(entry.get("effectiveness_bucket", "no_effect"))
+		if bucket == "super_effective":
+			super_effective_count += 1
+			effective_or_better_count += 1
+		elif bucket == "effective":
+			effective_or_better_count += 1
+
+	## Check per-round buckets for any backfire across all rounds.
+	var all_non_backfire: bool = true
+	for index in _round_buckets:
+		if str(_round_buckets[index]) == "backfires":
+			all_non_backfire = false
+			break
+
+	## Packet completeness determines the ceiling; citations determine the band.
+	var packet_complete: bool = (packet_outcome == OUTCOME_STRONG or packet_outcome == OUTCOME_STANDARD)
+
+	if packet_complete and all_non_backfire and super_effective_count >= 3:
+		return OUTCOME_STRONG
+	if packet_complete and all_non_backfire and effective_or_better_count >= 2:
+		return OUTCOME_STANDARD
+	## Narrow: backfire in any round, or weak citations, or packet was narrow.
+	return OUTCOME_NARROW
 
 
 func evaluate_packet_submission() -> Dictionary:
@@ -662,6 +713,25 @@ func _establish_evidence(evidence_id: String) -> void:
 		_write_chapter1_flag(key, evidence_id)
 	else:
 		_write_chapter1_flag(key, true)
+
+
+func _append_phase2_result(round_index: int, citation_id: String, effectiveness_bucket: String, opponent_move: String) -> void:
+	var state_node: Node = get_node_or_null("/root/State")
+	if state_node == null:
+		return
+	var data: Dictionary = state_node.get("data")
+	if not data.has("chapter1") or not data["chapter1"] is Dictionary:
+		return
+	var ch1: Dictionary = data["chapter1"]
+	if not ch1.has("phase2_round_results") or not ch1["phase2_round_results"] is Array:
+		return
+	var results: Array = ch1["phase2_round_results"]
+	results.append({
+		"round": round_index,
+		"citation_id": citation_id,
+		"effectiveness_bucket": effectiveness_bucket,
+		"opponent_move": opponent_move,
+	})
 
 
 func _packet_evidence_for_slot(slot_key: String, chapter1: Dictionary) -> String:
